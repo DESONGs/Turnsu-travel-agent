@@ -1,0 +1,30 @@
+(node:63000) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a traveler saying not to replan can still save a higher budget without creating another itinerary (51.689417ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1807.303167
+
+✖ failing tests:
+
+test at tests/travel-conversation-agent.test.mjs:129:1
+✖ a traveler saying not to replan can still save a higher budget without creating another itinerary (51.689417ms)
+  AssertionError [ERR_ASSERTION]: negative planning language must not remove the tool needed to save the user's actual request
+
+  6000 !== 8000
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/travel-conversation-agent.test.mjs:150:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 6000,
+    expected: 8000,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

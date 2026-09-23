@@ -1,0 +1,170 @@
+{
+  "capturedAt": "2026-09-21T19:05:31.256Z",
+  "originalAdoptedVisitsAfterWheelchair": [
+    {
+      "stopId": "s1_arrive",
+      "nodeId": "transport_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T09:00:00+08:00",
+      "endAt": "2026-10-15T09:00:00+08:00",
+      "role": "intercity_arrival",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    },
+    {
+      "stopId": "s2_play",
+      "nodeId": "play_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T10:00:00+08:00",
+      "endAt": "2026-10-15T12:00:00+08:00",
+      "role": "activity",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    },
+    {
+      "stopId": "s3_lunch",
+      "nodeId": "food_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T12:30:00+08:00",
+      "endAt": "2026-10-15T13:45:00+08:00",
+      "role": "meal",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    },
+    {
+      "stopId": "s4_checkin",
+      "nodeId": "stay_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T15:30:00+08:00",
+      "endAt": "2026-10-15T16:00:00+08:00",
+      "role": "stay_check_in",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    },
+    {
+      "stopId": "s5_dinner",
+      "nodeId": "food_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T18:00:00+08:00",
+      "endAt": "2026-10-15T19:30:00+08:00",
+      "role": "meal",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    },
+    {
+      "stopId": "s6_return",
+      "nodeId": "stay_0_e96a0d2503795986dd7b1f2b_1",
+      "startAt": "2026-10-15T20:00:00+08:00",
+      "endAt": "2026-10-15T20:30:00+08:00",
+      "role": "stay_return",
+      "dayIndex": 1,
+      "date": "2026-10-15"
+    }
+  ],
+  "originalAdoptedVisitsUnchanged": true,
+  "care": {
+    "mobility": {
+      "avoidStairs": true,
+      "stepFreeRequired": true,
+      "wheelchairSpaceRequired": true
+    }
+  },
+  "adoptedValidation": "stale",
+  "budgetOnlyFalseSuccessActualBudget": 6000,
+  "budgetOptionActuallySaved": 500,
+  "budgetAnswerDraftVisitCount": 6,
+  "answerTo": {
+    "runId": "run_01452421-7664-4b93-8a21-1299ab4d6d0c",
+    "questionId": "question_50516c05316a25bb",
+    "optionId": "option_c48ef7087c882a68"
+  },
+  "conflictingStaleAnswerCreatedRun": false,
+  "cancelledRun": {
+    "runId": "run_b01b1538-aa02-4130-9449-9edc57773a6f",
+    "status": "cancelled",
+    "writes": 0,
+    "events": [
+      {
+        "type": "run_queued",
+        "status": "queued",
+        "sequence": 1,
+        "at": 1790016622557
+      },
+      {
+        "type": "run_started",
+        "status": "running",
+        "sequence": 2,
+        "at": 1790016622567
+      },
+      {
+        "type": "run_cancel_requested",
+        "status": "cancelling",
+        "sequence": 3,
+        "at": 1790016645604
+      },
+      {
+        "type": "run_finished",
+        "status": "cancelled",
+        "sequence": 4,
+        "at": 1790016645638
+      }
+    ]
+  },
+  "runTimings": [
+    {
+      "runId": "run_966944de-c340-4d7c-b503-e54845f2eb06",
+      "status": "failed",
+      "elapsedMs": 702
+    },
+    {
+      "runId": "run_1d471177-616a-458c-8737-fe6032bb561b",
+      "status": "awaiting_input",
+      "elapsedMs": 29937
+    },
+    {
+      "runId": "run_3f14076e-27cb-455c-82fe-2f4c525b843b",
+      "status": "completed",
+      "elapsedMs": 82901
+    },
+    {
+      "runId": "run_cb13c754-d7b2-417a-a978-e83a9d4aea86",
+      "status": "completed",
+      "elapsedMs": 78665
+    },
+    {
+      "runId": "run_b01b1538-aa02-4130-9449-9edc57773a6f",
+      "status": "cancelled",
+      "elapsedMs": 23081
+    },
+    {
+      "runId": "run_ee32ec91-5541-42c7-b759-e77dbd8e469b",
+      "status": "completed",
+      "elapsedMs": 35916
+    },
+    {
+      "runId": "run_5ea20706-1345-460c-bd4d-cab5672a3f2f",
+      "status": "completed",
+      "elapsedMs": 42797
+    },
+    {
+      "runId": "run_a6ed9fa3-5365-4732-b63b-18fead9683d8",
+      "status": "failed",
+      "elapsedMs": 210169
+    },
+    {
+      "runId": "run_b7481f41-e985-4ae5-a8de-131661030064",
+      "status": "failed",
+      "elapsedMs": 210081
+    },
+    {
+      "runId": "run_01452421-7664-4b93-8a21-1299ab4d6d0c",
+      "status": "awaiting_input",
+      "elapsedMs": 62422
+    },
+    {
+      "runId": "run_4880c6e1-f209-41e3-a606-385d91800d72",
+      "status": "failed",
+      "elapsedMs": 210278
+    },
+    {
+      "runId": "run_e7550e24-b22e-44b2-ad08-83983fb31cb0",
+      "status": "failed",
+      "elapsedMs": 210134
+    }
+  ]
+}

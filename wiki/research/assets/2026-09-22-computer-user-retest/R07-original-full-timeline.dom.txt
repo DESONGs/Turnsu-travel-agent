@@ -1,0 +1,88 @@
+- main:
+  - link "Travel Agent":
+    - /url: /
+    - generic: Travel Agent.
+  - button:
+  - button "Switch to English":
+    - text: 中
+  - button "登录保存旅行":
+  - paragraph: 我的下一段旅程
+  - heading "上海 1 日" [level=1]:
+    - text: 上海
+    - generic: 1 日
+  - button "10/15":
+    - text: 10/15
+  - button "1 人同行":
+    - text: 1 人同行
+  - button "¥6,000":
+    - text: ¥6,000
+  - navigation "旅行视图":
+    - button "发现与比较"
+    - button "行程与路线"
+    - button "旅行手账"
+  - heading "你的行程，放到路上看。" [level=2]
+  - paragraph: 这里只显示已经确认的安排。
+  - button "继续挑选":
+    - text: 继续挑选
+  - button "返回现在与下一步"
+  - complementary "已确认的完整行程":
+    - region "机场、住宿、游玩与餐饮的多点路线":
+      - strong: 这些候选暂时没有可展示的地图
+      - generic: 仍可查看地址与高德导航；取得坐标后会自动出现在这里。
+      - generic: 地图待补
+      - generic: 地图与路线均只展示具名来源返回的资料。
+    - tablist "选择地图日期":
+      - tab "第 1 天" [selected]
+    - generic "5 段移动 · — · — · —" [active]:
+      - generic: 5 段移动 · — · — · —
+    - generic "整趟预算 ~¥500 / ¥6,000 1 个分域仍含待核验价格 · 展开看口径":
+      - strong: 整趟预算 ~¥500 / ¥6,000
+      - generic: 1 个分域仍含待核验价格 · 展开看口径
+    - region "按时间看每一站":
+      - strong: 按时间看每一站
+      - generic: 建议时间可在确认前继续调整
+      - button "AI 优化当前路线":
+        - text: AI 优化当前路线
+      - list:
+        - button "1 第 1 天 · 10月15日 09:00 · 抵达 transport option 0":
+          - generic: "1"
+          - generic: 第 1 天 · 10月15日 09:00 · 抵达
+          - strong: transport option 0
+        - button "查看transport option 0详情":
+        - button "2 第 1 天 · 10月15日 10:00 · 游玩 play option 0":
+          - generic: "2"
+          - generic: 第 1 天 · 10月15日 10:00 · 游玩
+          - strong: play option 0
+        - button "查看play option 0详情":
+        - button "3 第 1 天 · 10月15日 12:30 · 用餐 food option 0":
+          - generic: "3"
+          - generic: 第 1 天 · 10月15日 12:30 · 用餐
+          - strong: food option 0
+        - button "查看food option 0详情":
+        - button "4 第 1 天 · 10月15日 15:30 · 入住 stay option 0":
+          - generic: "4"
+          - generic: 第 1 天 · 10月15日 15:30 · 入住
+          - strong: stay option 0
+        - button "查看stay option 0详情":
+        - button "5 第 1 天 · 10月15日 18:00 · 用餐 food option 0":
+          - generic: "5"
+          - generic: 第 1 天 · 10月15日 18:00 · 用餐
+          - strong: food option 0
+        - button "查看food option 0详情":
+        - button "6 第 1 天 · 10月15日 20:00 · 返回住宿 stay option 0":
+          - generic: "6"
+          - generic: 第 1 天 · 10月15日 20:00 · 返回住宿
+          - strong: stay option 0
+        - button "查看stay option 0详情":
+    - button "日期明确后核验天气天气会影响户外体验、移动缓冲和餐饮动线":
+      - strong: 日期明确后核验天气
+      - text: 天气会影响户外体验、移动缓冲和餐饮动线
+  - navigation "旅行导航":
+    - button "发现":
+      - text: 发现
+    - button "行程":
+      - text: 行程
+    - button "手账":
+      - text: 手账
+    - button "助手":
+      - text: 助手

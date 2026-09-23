@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-21T19:13:19.811Z",
+  "schemasRemoved": [
+    "traveler_2ef22b7eae3e401783b7708aacd38c64",
+    "traveler_2ef22b7eae3e401783b7708aacd38c64_real"
+  ],
+  "runnerExited": true,
+  "otherProjectServicesUntouched": true,
+  "testPostgresContainer": "travel-acceptance-fixes-20260921",
+  "testPostgresRestoredTo": "stopped",
+  "browserTestTabsClosed": true,
+  "viewportOverrideReset": true
+}

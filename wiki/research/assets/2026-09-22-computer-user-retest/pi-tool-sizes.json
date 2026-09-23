@@ -1,0 +1,74 @@
+{
+  "totalBytes": 48635,
+  "ceiling": 48000,
+  "tools": [
+    {
+      "name": "travel_capability_registry_list",
+      "bytes": 33
+    },
+    {
+      "name": "travel_capability_registry_plan",
+      "bytes": 170
+    },
+    {
+      "name": "travel_model_route",
+      "bytes": 231
+    },
+    {
+      "name": "create_trip",
+      "bytes": 3706
+    },
+    {
+      "name": "update_trip_scope",
+      "bytes": 3038
+    },
+    {
+      "name": "get_trip_control_view",
+      "bytes": 81
+    },
+    {
+      "name": "get_trip_plan_view",
+      "bytes": 81
+    },
+    {
+      "name": "get_open_decisions",
+      "bytes": 81
+    },
+    {
+      "name": "research_trip_options",
+      "bytes": 5008
+    },
+    {
+      "name": "propose_trip_change",
+      "bytes": 14979
+    },
+    {
+      "name": "plan_itinerary_trial",
+      "bytes": 3527
+    },
+    {
+      "name": "accept_trip_change",
+      "bytes": 600
+    },
+    {
+      "name": "reject_trip_change",
+      "bytes": 125
+    },
+    {
+      "name": "prepare_booking_handoff",
+      "bytes": 228
+    },
+    {
+      "name": "record_booking_confirmation",
+      "bytes": 321
+    },
+    {
+      "name": "report_trip_disruption",
+      "bytes": 14979
+    },
+    {
+      "name": "submit_trip_feedback",
+      "bytes": 1447
+    }
+  ]
+}
