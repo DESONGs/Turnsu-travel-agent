@@ -1,0 +1,88 @@
+[
+  {
+    "tool": "research_trip_options",
+    "arguments": {
+      "domains": [
+        "play",
+        "food",
+        "stay",
+        "transport"
+      ],
+      "criteria": {
+        "byDomain": {
+          "food": {
+            "keywords": [
+              "本地特色",
+              "正餐"
+            ],
+            "preferenceHints": [
+              "方便衔接游玩路线"
+            ]
+          },
+          "play": {
+            "keywords": [
+              "经典景点",
+              "一日游"
+            ],
+            "preferenceHints": [
+              "适合2人同行",
+              "当天可达"
+            ]
+          },
+          "stay": {
+            "keywords": [
+              "1晚",
+              "双床或大床"
+            ],
+            "preferenceHints": [
+              "交通方便",
+              "方便次日自行返回"
+            ]
+          },
+          "transport": {
+            "keywords": [
+              "地铁",
+              "市内交通"
+            ],
+            "preferenceHints": [
+              "少换乘",
+              "时间可控"
+            ]
+          }
+        },
+        "intercityIntent": "flexible",
+        "localMobilityIntent": [
+          "transit",
+          "taxi",
+          "walk"
+        ]
+      },
+      "question": "为2026年10月15日杭州出发、上海一日游并住一晚（2人，次日自行返回，总预算6000元）查询真实候选：上海市内住宿、可游玩景点与活动、餐饮选择、以及当地交通方案。"
+    }
+  },
+  {
+    "tool": "research_trip_options",
+    "arguments": {
+      "domains": [
+        "food"
+      ],
+      "criteria": {
+        "byDomain": {
+          "food": {
+            "keywords": [
+              "正餐",
+              "小畐",
+              "本地特色菜"
+            ],
+            "preferenceHints": [
+              "方便衔接当日游玩动线",
+              "可堂食",
+              "2人用餐"
+            ]
+          }
+        }
+      },
+      "question": "补查2026年10月15日上海适合2人当日游午餐与晚餐的真实餐厅候选（含价位与所在区域）。"
+    }
+  }
+]

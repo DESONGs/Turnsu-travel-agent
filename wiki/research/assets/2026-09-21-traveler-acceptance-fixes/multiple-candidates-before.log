@@ -1,0 +1,32 @@
+(node:6008) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a complete itinerary adopts two restaurants and charges each actual meal once (26.354041ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 525.460708
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:219:1
+✖ a complete itinerary adopts two restaurants and charges each actual meal once (26.354041ms)
+  AssertionError [ERR_ASSERTION]: [{"code":"itinerary_plan_multiple_candidates_per_domain","severity":"blocking","message":"这次没有完成路线核验，当前方案保持不变。","stopIds":[],"dayIndex":null,"allowedRepairDirections":["request_context"]}]
+  + actual - expected
+
+  + 'needs_repair'
+  - 'trial_ready'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:231:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'needs_repair',
+    expected: 'trial_ready',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

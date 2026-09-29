@@ -1,0 +1,23 @@
+{
+  "kind": "planning_assumptions_not_measurements",
+  "date": "2026-09-15",
+  "onlineUsers": 500,
+  "devicesPerUser": 2,
+  "activePlanningTurns": 500,
+  "meanTurnSeconds": 120,
+  "meanModelCallsPerTurn": 10,
+  "meanModelRequestSeconds": 15,
+  "meanInputTokensPerCall": 8000,
+  "meanOutputTokensPerCallIncludingReasoning": 1000,
+  "childConcurrencyPerTurn": 2,
+  "headroomFraction": 0.3,
+  "providerCallsPerTurnScenarios": [20, 60, 120],
+  "illustrativeWorkerSafeTurnSlots": 75,
+  "apiReplicas": 2,
+  "apiPoolMax": 12,
+  "workerPoolMax": 8,
+  "queuePoolMaxPerWorker": 2,
+  "notifyConnectionsPerProcess": 1,
+  "operationsConnectionsReserve": 10,
+  "meanRetainedBytesPerTurnExample": 262144
+}

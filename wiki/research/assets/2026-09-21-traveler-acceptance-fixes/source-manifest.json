@@ -1,0 +1,25 @@
+{
+  "capturedAt": "2026-09-21T04:35:26.632190+00:00",
+  "note": "This is the final code snapshot in an existing dirty checkout, not a commit or deployment. Each live run has its own earlier source hashes; browser uses the final Web build.",
+  "sha256": {
+    "src/api/travel-service.mjs": "11b386f08d5d91dfd5ae8955b714c8d2187c653a9ba0d3c8d54de5d1e9a4f030",
+    "src/agent/travel-conversation-agent.mjs": "b26ec8ddf42101a330c03ee3af0001ec0232e572ebbd617e14cd7ec2a5fc304f",
+    "src/agent/travel-execution-service.mjs": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3",
+    "src/persistence/execution-repository.mjs": "87ebde1259d53a0051b38b9395cb080cd9d1049b0351a6392d8f1e9769943276",
+    "src/web/travel-app.jsx": "eb5110602aff4d76c528f6b16a7c1b38a0a84b28c82f485c392d03fbf4f8259e",
+    "travel-agent-pi-package/src/core/trip-feasibility.ts": "5418c04660696e315cc056aff6417374aa4c3f7b2e72fa530651bcc22f647d50",
+    "travel-agent-pi-package/src/core/itinerary-proposal.ts": "1b2d1950b80d544bc02a07a16cc81f4927f3419951a40e8174c1dc1fae984f32",
+    "travel-agent-pi-package/src/core/itinerary-schedule.ts": "1c0fced46f07c350af05d1635cc4c925799e3d80910c853063173b3301885aee",
+    "travel-agent-pi-package/src/runtime/trip-runtime-implementation.ts": "86af8da897ee7d9bdf54ee88c9e074b4c7b4bb4ded80cf518254a6022fdb192a",
+    "travel-agent-pi-package/src/host/travel-agent-session.ts": "adaafa9d398e622e7f62c231ccbbb52573ee3763d9e596cdbd9ab5cb09a54709",
+    "travel-agent-pi-package/src/host/travel-decision-policy.ts": "b4f473fb0c23424a774a02b7a50c29f97190f1b37790f4a2d78f9161744eea14",
+    "plugins/travel-agent/skills/plan-trip/SKILL.md": "cb70817e9189543cfe642f1ecab4c0f3203cc5246bc44fe5dd7081becd6acffd",
+    "tests/itinerary-planning-harness.test.mjs": "e9ad05da8e4d8fdd19fa8934dd188544d905879a9ca0344cdbb6ef1c763c550d",
+    "tests/traveler-acceptance-regression.test.mjs": "be6a0f80a7fdef2fca4a824512afb2c64d491ae16d3831f087358d2208cb741e",
+    "tests/travel-model-admission.test.mjs": "93e19e93d0625b85d7e7e45e04dc00cc7bf584b6df1ff6edee7002fc32f54a73",
+    "tests/travel-conversation-agent.test.mjs": "252c3f72816c1ac04f5aaa273ec32cf5fbbe7f0b0f257efe856fa4795386a625",
+    "scripts/test-traveler-scenarios.mjs": "6b7bf358a67df568a799d01e772b418bc40641ba19c41daf090d0bd1a624cd9f",
+    "scripts/probe-traveler-acceptance-guards.mjs": "5e01513eaac7c577c2b50766df33cbd7d8c4b5b6f22ad341ae3b289df239aa98",
+    "tests/fixtures/traveler-acceptance-cases.mjs": "e98b73625fcc14e4e5e323813ffac327d6e8409e66fe5893f7e375f509411196"
+  }
+}

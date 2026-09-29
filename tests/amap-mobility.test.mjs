@@ -5,6 +5,28 @@ import { normalizeTripMobility } from "../travel-agent-pi-package/src/contracts/
 
 const point = (longitude, latitude) => ({ longitude, latitude, coordinateSystem: "GCJ-02" });
 
+test("AMap checks the last visit of a multi-day itinerary as well as the first eight routes", async () => {
+  const routeCalls = [];
+  const fetchImpl = async (url) => {
+    const parsed = new URL(url);
+    if (parsed.pathname === "/v3/geocode/geo") return new Response(JSON.stringify({ status: "1", infocode: "10000", geocodes: [{ citycode: "021", adcode: "310000", location: "121.47,31.23" }] }));
+    routeCalls.push(parsed);
+    if (parsed.pathname.includes("transit")) return new Response(JSON.stringify({ status: "1", infocode: "10000", route: { transits: [] } }));
+    return new Response(JSON.stringify({ status: "1", infocode: "10000", route: { paths: [{ distance: "1000", cost: { duration: "600", taxi: "18" }, steps: [] }] } }));
+  };
+  const selectedNodes = Array.from({ length: 17 }, (_, index) => ({ nodeId: `place_${index}`, domain: "play", title: `测试地点 ${index}`, selected: true, location: { citycode: "021", coordinates: point(121.47 + index * 0.001, 31.23) } }));
+  const itineraryStops = [...selectedNodes, selectedNodes[0]].map((node, index) => ({ nodeId: node.nodeId, stopId: `visit_${index}`, title: node.title, role: "activity", dayIndex: Math.floor(index / 6) + 1, date: `2026-10-${15 + Math.floor(index / 6)}`, startAt: `2026-10-${15 + Math.floor(index / 6)}T${String(8 + index % 6 * 2).padStart(2, "0")}:00:00+08:00` }));
+  const provider = new AmapTravelResearchProvider({ apiKey: "test-key", fetchImpl, requestIntervalMs: 0, rateLimitRetryMs: 0 });
+  const result = normalizeTripMobility(await provider.planMobility({ brief: { destination: "上海" }, selectedNodes, itineraryStops }));
+  assert.equal(result.status, "completed");
+  assert.equal(result.legs.length, 17);
+  assert.equal(result.legs.at(-1).origin.nodeId, "place_16");
+  assert.equal(result.legs.at(-1).destination.stopId, "visit_17");
+  assert.deepEqual(result.coverage.unresolvedStopIds, []);
+  assert.equal(result.coverage.routedStopIds.length, 18);
+  assert.equal(routeCalls.filter(call => call.pathname.includes("driving")).length, 17);
+});
+
 test("AMap mobility turns selected places into bounded walking, transit and taxi alternatives without claiming real-time arrival", async () => {
   const calls = [];
   const fetchImpl = async (url) => {

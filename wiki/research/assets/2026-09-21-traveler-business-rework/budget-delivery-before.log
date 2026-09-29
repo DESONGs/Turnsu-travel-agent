@@ -1,0 +1,30 @@
+(node:60464) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (166.167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1736.877125
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:128:1
+✖ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (166.167ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /4项已采用安排保留/. Input:
+
+  '整趟已知部分的确定性投影约 ¥600 / 总预算 ¥3,000。住：候选含参考价 ≈¥100；整域确定性投影 ~¥100（stay option 0：1 晚 × 1 间房，100 元）。城际交通：候选含参考价 ≈¥100；整域确定性投影 ~¥100（transport option 0：1 人 × 单程票价，100 元）。吃：候选含参考价 ≈¥100；整域确定性投影 ~¥200（food option 0：1 人 × 已排 2 餐，200 元）。玩：候选含参考价 ≈¥100；整域确定性投影 ~¥100（play option 0：1 人 × 已排 1 次体验，100 元）。市内交通：候选价格待核验；整域确定性投影 ~¥100（已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验）。价格仍按来源区分实价、参考价与估算，整趟数字仍标为估算，最终价格需在预订前核对。当前 4 项已采用安排均保留；本轮没有新增确认或购买。'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:150:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '整趟已知部分的确定性投影约 ¥600 / 总预算 ¥3,000。住：候选含参考价 ≈¥100；整域确定性投影 ~¥100（stay option 0：1 晚 × 1 间房，100 元）。城际交通：候选含参考价 ≈¥100；整域确定性投影 ~¥100（transport option 0：1 人 × 单程票价，100 元）。吃：候选含参考价 ≈¥100；整域确定性投影 ~¥200（food option 0：1 人 × 已排 2 餐，200 元）。玩：候选含参考价 ≈¥100；整域确定性投影 ~¥100（play option 0：1 人 × 已排 1 次体验，100 元）。市内交通：候选价格待核验；整域确定性投影 ~¥100（已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验）。价格仍按来源区分实价、参考价与估算，整趟数字仍标为估算，最终价格需在预订前核对。当前 4 项已采用安排均保留；本轮没有新增确认或购买。',
+    expected: /4项已采用安排保留/,
+    operator: 'match',
+    diff: 'simple'
+  }

@@ -1,5 +1,21 @@
 # 第三方候选与审计台账
 
+## 见好旅行规划器：业务参考（2026-09-30）
+
+`awangwang123/jianhao-travel-planner@53e1899d5d1e97a4bd2a2392d8bf4189b8dc0b81`，现场核对公用版 v1.2，仓库 [LICENSE](https://github.com/awangwang123/jianhao-travel-planner/blob/53e1899d5d1e97a4bd2a2392d8bf4189b8dc0b81/LICENSE) 标注 MIT。采用范围仅为路书组织、交通衔接、证据与验收方法研究；未安装 Skill、运行脚本、复制代码/模板或接入其依赖，没有新增运行时权限与 Provider 写面。
+
+该仓库由 Skill 文档、HTML 骨架及两项 Python 文档工具组成；最近观察到导航与版本说明更新，这不足以证明长期维护承诺或生产 SLA。其交通可行性主要为文字工作流，不能把版式校验算作班次/路线验证。来源与比较见[研究记录](./2026-09-30-transport-itinerary-reference-research.md)，开发依据见 [16 迭代规范](../current/16-executable-itinerary-and-transport-iteration.md)。
+
+状态为 **reference_only**，不是新的 Provider 已获接入批准。若后续实际引入代码/资产或服务，按项目规则另做对应 `third-party-audit-v1`，核对固定版本、依赖、许可与写面；不以本条替代该接入审计。
+
+## Jev 结构化判断 API（2026-09-21）
+
+使用项目自写的 HTTP 适配器，固定模型 `jev-1.13.0`、固定 HTTPS 端点，不安装或复制 TypeSafe SDK/Skill 源码。远端服务无可固定的客户端仓库提交，因此仓库 SHA 字段不适用；适配器文件 SHA256、核验时间与官方合同来源记录在 [third-party-audit-v1](./assets/2026-09-20-jev-iteration/jev-third-party-audit.json)。不以某个 SDK 的开源许可代替远端 API 的产品协议。
+
+写面只有受预算约束的模型请求及项目自己的调用记账；远端不能获取工具、购买、浏览器、任意 URL 或状态提交权。快照仅含标准化旅行事实，账号密钥只在请求头，原始响应错误不入日志。取消、20 秒超时、响应体上限、严格答案校验、重试上限和账号冷却已实现。
+
+[官方模型文档](https://docs.typesafe.ai/models)、[HTTP 合同](https://docs.typesafe.ai/api)与[置信度说明](https://docs.typesafe.ai/confidence)已核验。真实只读测试通过了 HTTP 合同，但中文支持判断未全部正确；自动放行仍关闭。[网站条款](https://typesafe.ai/legal/terms)不构成本项目的生产 SLA 或账号产品协议核验。当前采用范围为本地接入与评估，商业上线仍需账号协议、目标语言独立校准和容量证据。
+
 更新时间：2026-08-19。此文记录调研、固定版本和采纳门槛；每一行的状态以该行结论为准，不能把候选或开发 smoke 推断成生产授权。
 
 ## 结论矩阵
@@ -60,6 +76,14 @@
 ```
 
 Web 地图渲染的补充审计：`leaflet@1.9.4` 的 npm 包无运行依赖；包元数据只包含 `prepare: husky install`，安装时已由 `--ignore-scripts` 禁用。它没有 Provider 凭据、出站域或写面。底图 URL 通过 `VITE_TRAVEL_MAP_TILE_URL` 显式配置；前端不能据此增加地点、路线或设施事实。
+
+## 2026-09-14 目的地墨线场景
+
+`three@0.180.0` 精确版本（npm `gitHead: 0af9729d0c143a86a1d725d6e2c3ad83301f3f34`，MIT）用于客户端原创风格化 Mesh、OrbitControls、墨线及点云展示。npm 元数据和包内 LICENSE 已核验：零运行依赖，无 preinstall/install/postinstall/prepare 生命周期；开发 build/test 脚本没有执行。安装使用 `--save-exact --ignore-scripts --userconfig=/dev/null` 并保留 lockfile integrity。只引用该包中的 OrbitControls 和 BufferGeometryUtils，不新增 R3F/Drei、引擎、账号或出站服务。
+
+原始输入不含用户照片或凭据；几何、材质、线条和点云由项目本地生成。CPU 聚焦检查覆盖六类实体、有限坐标、确定性线条、按需 RAF、导览终止及资源释放；Web 构建通过。上述证据不是用户实拍重建或浏览器/真机验收。导入第三方模型、上传用户照片到建模云端及付费生成不包含在此依赖采用范围内。
+
+用户新增参考：[木渡川的建模流程](https://x.com/tanglele0318/status/2098996808936734986)，已对照 [Rodin 官方文档](https://docs.hyper3d.ai/en)、[API 数据保留政策](https://docs.hyper3d.ai/en/legal/data-retention-policy) 与 [定价页](https://hyper3d.ai/pricing?lang=en)。Hyper3D 暂为候选，尚未接入或发送照片；需要明确的云端处理选择、API 配置和测试预算。文章中的 museum-relic-stamp 是图章图片工作流，不是照片自动生成 3D 的运行时依赖，本项目没有安装或复制其素材。
 
 只有 `isolatedSmoke: passed_read_only_isolated` 和 `adoption: eligible` 才可以把 Provider 从 Registry 的 `blocked` 改为可用。
 

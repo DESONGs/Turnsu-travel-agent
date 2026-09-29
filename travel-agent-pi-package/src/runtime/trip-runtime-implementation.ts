@@ -1,4 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
+import { TripBriefSchema, assertSchema } from "../contracts/index.js";
+import { selectedRoute, explicitPriceTotal } from "../core/journey-execution.js";
 
 // Provider and persisted inputs are intentionally normalized from dynamic JSON here.
 // The public TypeScript facade validates every returned value with the TypeBox contracts.
@@ -135,6 +138,10 @@ export function normalizeTravelPrice(value: DynamicValue, defaults: DynamicRecor
     amount,
     currency: String(source.currency ?? defaults.currency ?? "CNY").slice(0, 8) || "CNY",
     quality,
+    ...(source.unit ? { unit: source.unit } : {}),
+    ...(source.quantity != null ? { quantity: source.quantity } : {}),
+    ...(source.includes ? { includes: source.includes } : {}),
+    ...(source.includedByNodeId ? { includedByNodeId: source.includedByNodeId } : {}),
     ...(basis == null ? {} : { basis: String(basis).slice(0, 240) }),
     ...(checkedAt == null ? {} : { checkedAt: String(checkedAt).slice(0, 40) }),
   };
@@ -167,6 +174,8 @@ function hasExplicitTripDuration(brief: DynamicRecord = {}): boolean {
 
 function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicRecord {
   const domain = requireDomain(item.domain);
+  const explicit = explicitPriceTotal(item as Parameters<typeof explicitPriceTotal>[0], state.nodes, state.brief, Math.max(1, asArray(state.travelers).length), state.environment?.mobility?.itinerary);
+  if (explicit) return explicit;
   const price = normalizeTravelPrice(item.price ?? item.cost, {
     currency: state.brief?.currency ?? state.budgetLedger?.currency ?? "CNY",
     checkedAt: item.operability?.checkedAt ?? null,
@@ -175,9 +184,10 @@ function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicReco
   const partySize = Math.max(1, asArray(state.travelers).length);
   const days = tripDurationDays(state.brief);
   const durationKnown = hasExplicitTripDuration(state.brief);
-  const nights = Math.max(1, days - 1);
+  const nights = Number.isInteger(state.brief?.lodgingNights) ? state.brief.lodgingNights : Math.max(1, days - 1);
   const rooms = Math.max(1, Math.ceil(partySize / 2));
   const declaredBasis = String(price.basis ?? "");
+  const visits = asArray(state.environment?.mobility?.itinerary?.stops).filter(stop => stop.nodeId === item.nodeId);
   let multiplier = 1;
   let basis = declaredBasis || "单项价格";
   if (!/trip_total|整趟合计/i.test(declaredBasis)) {
@@ -188,11 +198,13 @@ function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicReco
       multiplier = partySize;
       basis = `${partySize} 人 × 单程票价`;
     } else if (domain === "food") {
-      multiplier = partySize * (durationKnown ? days * 2 : 1);
-      basis = durationKnown ? `${partySize} 人 × ${days} 天 × 每天 2 餐` : `${partySize} 人 × 当前餐饮选择`;
+      const meals = visits.filter(stop => stop.role === "meal").length;
+      multiplier = partySize * (meals || (durationKnown ? days * 2 : 1));
+      basis = meals ? `${partySize} 人 × 已排 ${meals} 餐` : durationKnown ? `${partySize} 人 × ${days} 天 × 每天 2 餐` : `${partySize} 人 × 当前餐饮选择`;
     } else if (domain === "play") {
-      multiplier = partySize * (durationKnown ? days : 1);
-      basis = durationKnown ? `${partySize} 人 × ${days} 天 × 每天 1 项付费体验` : `${partySize} 人 × 当前体验选择`;
+      const activities = visits.filter(stop => stop.role === "activity").length;
+      multiplier = partySize * (activities || (durationKnown ? days : 1));
+      basis = activities ? `${partySize} 人 × 已排 ${activities} 次体验` : durationKnown ? `${partySize} 人 × ${days} 天 × 每天 1 项付费体验` : `${partySize} 人 × 当前体验选择`;
     }
   }
   return {
@@ -225,7 +237,7 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
       bucket.estimated = bucket.committed;
       bucket.quality = knownSelected.some((item) => item.quality === "estimate") ? "estimate"
         : knownSelected.some((item) => item.quality === "reference") ? "reference" : "firm";
-      bucket.basis = unique(knownSelected.map((item) => item.basis).filter(Boolean));
+      bucket.basis = selectedTotals.flatMap((item, index) => item.amount == null ? [] : [`${selected[index].title}：${item.basis}，${item.amount} 元`]);
       continue;
     }
     const candidateTotals = proposalCandidates
@@ -241,6 +253,19 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
     } else {
       bucket.unknownCount = Math.max(1, bucket.unknownCount);
     }
+  }
+  const localRoutes = asArray(state.environment?.mobility?.legs).map(leg => selectedRoute(leg)).filter((route): route is NonNullable<ReturnType<typeof selectedRoute>> => Boolean(route && !route.fareIncludedByNodeId));
+  if (localRoutes.length) {
+    const partySize = Math.max(1, asArray(state.travelers).length);
+    const known = localRoutes.filter(route => typeof route.estimatedFareCny === "number" && Number.isFinite(route.estimatedFareCny));
+    domains.other.estimated = Math.round(known.reduce((sum, route) => sum + (route.estimatedFareCny ?? 0) * (route.mode === "transit" ? partySize : route.mode === "taxi" ? Math.ceil(partySize / 4) : 1), 0) * 100) / 100;
+    domains.other.quality = "estimate";
+    domains.other.basis = ["已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验"];
+    domains.other.unknownCount = localRoutes.length - known.length;
+  } else if (asArray(state.environment?.mobility?.itinerary?.stops).length > 1) {
+    domains.other.quality = "unknown";
+    domains.other.basis = ["已采用站序保留，市内交通与费用需要按新要求重新核验"];
+    domains.other.unknownCount = state.environment.mobility.itinerary.stops.length - 1;
   }
   const committed = Math.round(FOUR_DOMAINS.reduce((sum, domain) => sum + domains[domain].committed, 0) * 100) / 100;
   const estimated = Math.round(BUDGET_DOMAINS.reduce((sum, domain) => sum + Math.max(domains[domain].committed, domains[domain].estimated), 0) * 100) / 100;
@@ -568,10 +593,9 @@ export function applyWeatherObservation(state: DynamicRecord, observation: Dynam
     next.updatedAt = timestamp;
     return next;
   }
-  if (next.pendingProposals.length) {
-    next.proposalHistory.push(...next.pendingProposals.map((proposal: DynamicRecord) => ({ proposalId: proposal.proposalId, status: "superseded_by_weather_change", decidedAt: timestamp, revision: state.revision })));
-    next.pendingProposals = [];
-  }
+  // Weather changes proof applicability, not the existence of a candidate or
+  // saved plan. Freshness and whole-trip checks still run before adoption.
+  next.pendingProposals = next.pendingProposals.map((proposal: DynamicRecord) => ({ ...proposal, baseRevision: state.revision + 1 }));
   refreshBudgetLedger(next);
   next.revision = state.revision + 1;
   next.updatedAt = timestamp;
@@ -604,13 +628,13 @@ function normalizeMobilityObservation(input: DynamicRecord): DynamicRecord {
     checkedAt: input.checkedAt == null ? null : String(input.checkedAt).slice(0, 40),
     freshUntil: input.freshUntil == null ? null : String(input.freshUntil).slice(0, 40),
     coverage: {
-      routedNodeIds: unique(asArray(input.coverage?.routedNodeIds).map((item) => String(item).slice(0, 128))).slice(0, 24),
-      unresolvedNodeIds: unique(asArray(input.coverage?.unresolvedNodeIds).map((item) => String(item).slice(0, 128))).slice(0, 24),
-      routedStopIds: unique(asArray(input.coverage?.routedStopIds).map((item) => String(item).slice(0, 128))).slice(0, 32),
-      unresolvedStopIds: unique(asArray(input.coverage?.unresolvedStopIds).map((item) => String(item).slice(0, 128))).slice(0, 32),
+      routedNodeIds: unique(asArray(input.coverage?.routedNodeIds).map((item) => String(item))),
+      unresolvedNodeIds: unique(asArray(input.coverage?.unresolvedNodeIds).map((item) => String(item))),
+      routedStopIds: unique(asArray(input.coverage?.routedStopIds).map((item) => String(item))),
+      unresolvedStopIds: unique(asArray(input.coverage?.unresolvedStopIds).map((item) => String(item))),
       unscheduled: input.coverage?.unscheduled !== false,
     },
-    legs: asArray(input.legs).slice(0, 8).map((leg) => clone(leg)),
+    legs: asArray(input.legs).map((leg) => clone(leg)),
     itinerary: input.itinerary ? clone(input.itinerary) : null,
     feasibility: input.feasibility ? clone(input.feasibility) : null,
     travelerFit: clone(input.travelerFit ?? {}),
@@ -695,7 +719,7 @@ function researchProposalWithOperations(proposal: DynamicRecord, operations: Dyn
 function briefChangeDomains(previous: DynamicRecord, current: DynamicRecord, travelerScopeChanged: boolean): Set<string> {
   if (travelerScopeChanged) return new Set(FOUR_DOMAINS);
   const changed = new Set([...Object.keys(previous ?? {}), ...Object.keys(current ?? {})].filter((key) => JSON.stringify(previous?.[key]) !== JSON.stringify(current?.[key])));
-  if (["destination", "dates", "durationDays", "partyProfile", "pace", "currency", "totalBudget"].some((key) => changed.has(key))) return new Set(FOUR_DOMAINS);
+  if (["destination", "dates", "durationDays", "planningDomains", "lodgingNights", "partyProfile", "pace", "currency"].some((key) => changed.has(key))) return new Set(FOUR_DOMAINS);
   const affected = new Set<string>();
   if (["origin", "arrivalMode", "arrivalAirport", "arrivalTerminal", "arrivalTime", "arrivalConfirmed", "intercityBooked"].some((key) => changed.has(key))) affected.add("transport");
   if (changed.has("lodgingPreference")) {
@@ -710,6 +734,7 @@ function retainPendingOutsideDomains(state: DynamicRecord, affectedDomains: Set<
   if (!state.pendingProposals.length || !affectedDomains.size) return;
   const retained = [];
   for (const proposal of state.pendingProposals) {
+    if (proposal.itineraryPlan) { retained.push({ ...proposal, baseRevision: nextRevision }); continue; }
     const operations = asArray(proposal.operations);
     const researchOnly = String(proposal.proposalId).startsWith("proposal_research_")
       && operations.every((operation) => operation.kind === "add_candidate" && FOUR_DOMAINS.includes(operation.node?.domain));
@@ -732,6 +757,10 @@ function retainPendingOutsideDomains(state: DynamicRecord, affectedDomains: Set<
 
 function normalizedBriefUpdate(current: DynamicRecord, changes: DynamicRecord, referenceTimestamp = new Date().toISOString()): DynamicRecord {
   const next = clone(current ?? {});
+  for (const field of ["journeys", "vehicle"]) if (changes[field] !== undefined) {
+    assertSchema(TripBriefSchema, { [field]: changes[field] }, "invalid_trip_brief");
+    next[field] = clone(changes[field]);
+  }
   for (const field of BRIEF_TEXT_FIELDS) {
     if (changes[field] === undefined) continue;
     const value = String(changes[field] ?? "").trim();
@@ -743,6 +772,15 @@ function normalizedBriefUpdate(current: DynamicRecord, changes: DynamicRecord, r
     const durationDays = Number(changes.durationDays);
     if (!Number.isInteger(durationDays) || durationDays < 1 || durationDays > 60) throw new Error("invalid_duration_days");
     next.durationDays = durationDays;
+  }
+  if (changes.lodgingNights !== undefined) {
+    const nights = Number(changes.lodgingNights);
+    if (!Number.isInteger(nights) || nights < 0 || nights > 60) throw new Error("invalid_lodging_nights");
+    next.lodgingNights = nights;
+  }
+  if (changes.planningDomains !== undefined) {
+    if (!Array.isArray(changes.planningDomains) || !changes.planningDomains.length || changes.planningDomains.some((domain: string) => !FOUR_DOMAINS.some(known => known === domain))) throw new Error("invalid_planning_domains");
+    next.planningDomains = unique(changes.planningDomains);
   }
   if (typeof next.dates === "string" && /^20\d{2}-\d{2}-\d{2}$/.test(next.dates) && Number.isInteger(next.durationDays) && next.durationDays > 1) {
     next.dates = inclusiveDateRange(next.dates, next.durationDays);
@@ -768,7 +806,7 @@ export function updateTripControlScope(state: DynamicRecord, input: DynamicRecor
   const previousDestination = next.brief?.destination ?? null;
   const previousDates = next.brief?.dates ?? null;
   const previousBrief = JSON.stringify(next.brief ?? {});
-  const previousTravelers = JSON.stringify(next.travelers ?? []);
+  const previousTravelers = clone(next.travelers ?? []);
   next.brief = normalizedBriefUpdate(next.brief, input.brief ?? input, timestamp);
   const environmentScopeChanged = previousDestination !== (next.brief?.destination ?? null)
     || previousDates !== (next.brief?.dates ?? null);
@@ -776,8 +814,8 @@ export function updateTripControlScope(state: DynamicRecord, input: DynamicRecor
     .some((field) => JSON.stringify(previousBriefRecord?.[field]) !== JSON.stringify(next.brief?.[field]));
 
   const travelerProfiles = asArray(input.travelerProfiles);
-  const requestedCount = input.travelerCount === undefined ? Math.max(1, next.travelers.length, travelerProfiles.length) : Number(input.travelerCount);
-  if (!Number.isInteger(requestedCount) || requestedCount < 1 || requestedCount > 12) throw new Error("invalid_traveler_count");
+  const requestedCount = input.travelerCount === undefined ? Math.max(next.travelers.length, travelerProfiles.length) : Number(input.travelerCount);
+  if (!Number.isInteger(requestedCount) || requestedCount < (input.travelerCount === undefined ? 0 : 1) || requestedCount > 12) throw new Error("invalid_traveler_count");
   const language = input.language === undefined ? null : String(input.language ?? "").trim().slice(0, 24);
   const foreignGuestRequired = input.foreignGuestRequired;
   const consumedProfiles = new Set();
@@ -797,7 +835,7 @@ export function updateTripControlScope(state: DynamicRecord, input: DynamicRecor
     return normalizedTravelerRecord({ ...profile, language: profile.language ?? (language || current.language || "zh-CN"), hardConstraints }, index, current);
   });
 
-  const travelerScopeChanged = previousTravelers !== JSON.stringify(next.travelers);
+  const travelerScopeChanged = !isDeepStrictEqual(previousTravelers, next.travelers);
 
   const changed = previousBrief !== JSON.stringify(next.brief)
     || travelerScopeChanged;
@@ -805,11 +843,24 @@ export function updateTripControlScope(state: DynamicRecord, input: DynamicRecor
 
   const nextRevision = state.revision + 1;
   retainPendingOutsideDomains(next, briefChangeDomains(previousBriefRecord, next.brief, travelerScopeChanged), nextRevision, timestamp);
-  refreshBudgetLedger(next);
   const mobilityScopeChanged = environmentScopeChanged || arrivalScopeChanged || travelerScopeChanged;
   if (environmentScopeChanged || mobilityScopeChanged) next.environment = { ...(next.environment ?? {}), updatedAt: timestamp };
   if (environmentScopeChanged) Object.assign(next.environment, { weather: null, weatherInvalidatedAt: timestamp, weatherInvalidatedBy: "trip_scope_change" });
-  if (mobilityScopeChanged) Object.assign(next.environment, { mobility: null, mobilityInvalidatedAt: timestamp, mobilityInvalidatedBy: travelerScopeChanged && !environmentScopeChanged ? "traveler_needs_change" : "trip_scope_change" });
+  if (mobilityScopeChanged) {
+    const previousMobility = next.environment?.mobility;
+    // Keep the user's adopted timetable for comparison when only traveler
+    // requirements change. Its old route proof must not remain confirmable.
+    const retained = travelerScopeChanged && !environmentScopeChanged && !arrivalScopeChanged && previousMobility?.itinerary ? {
+      ...previousMobility,
+      status: "needs_context", checkedAt: null, freshUntil: null, legs: [], travelerFit: {},
+      coverage: { routedNodeIds: [], routedStopIds: [], unresolvedNodeIds: unique(previousMobility.itinerary.stops.map((stop: DynamicRecord) => stop.nodeId)), unresolvedStopIds: previousMobility.itinerary.stops.map((stop: DynamicRecord) => stop.stopId), unscheduled: false },
+      reason: "traveler_needs_change",
+      feasibility: { schemaVersion: "trip-feasibility-v1", status: "needs_context", canConfirm: false, primaryBlocker: "已采用站序保留，路线需要按新的同行人要求重新核验。", issues: [{ code: "traveler_needs_changed", severity: "blocking", message: "已采用站序保留，路线需要按新的同行人要求重新核验。", stopIds: [], dayIndex: null }], checkedAt: null },
+      caveats: ["这是原有站序，尚未按新的同行人要求重新核验；不能视为当前可执行路线。"],
+    } : null;
+    Object.assign(next.environment, { mobility: retained, mobilityInvalidatedAt: timestamp, mobilityInvalidatedBy: travelerScopeChanged && !environmentScopeChanged ? "traveler_needs_change" : "trip_scope_change" });
+  }
+  refreshBudgetLedger(next);
   next.revision = nextRevision;
   next.updatedAt = timestamp;
   if (next.nodes.length) {
@@ -1270,7 +1321,7 @@ export function validateTripCoherence(state: DynamicRecord): DynamicRecord {
     operabilityGaps.push({ domain: "transport", code: "city_mobility_partial" });
   }
   const selectedNodes = state.nodes.filter((node: DynamicRecord) => node.selected);
-  const recommendedMobility = asArray(mobility?.legs).map((leg) => asArray(leg.alternatives).find((alternative) => alternative.mode === leg.recommendedMode)).filter(Boolean);
+  const recommendedMobility = asArray(mobility?.legs).map(leg => selectedRoute(leg)).filter((route): route is NonNullable<ReturnType<typeof selectedRoute>> => route !== null);
   const recommendedIncludesStairs = recommendedMobility.some((alternative) => alternative.accessibilityAssessment?.hasStairs === true
     || asArray(alternative.steps).some((step) => step.walkType?.kind === "stairs" || asArray(step.accessibilityFeatures).some((feature) => feature.kind === "stairs")));
   for (const traveler of state.travelers) {
@@ -1286,7 +1337,9 @@ export function validateTripCoherence(state: DynamicRecord): DynamicRecord {
       hardConstraintViolations.push({ travelerId: traveler.travelerId, code: "traveler_stairs_route_conflict" });
     }
     if ((mobilityNeeds.stepFreeRequired || mobilityNeeds.avoidStairs) && mobility?.travelerFit?.accessibilityEvidence !== "verified") {
-      operabilityGaps.push({ travelerId: traveler.travelerId, domain: "transport", code: "traveler_step_free_route_unverified" });
+      const issue = { travelerId: traveler.travelerId, domain: "transport", code: "traveler_step_free_route_unverified" };
+      if (mobilityNeeds.stepFreeRequired && selectedNodes.length) hardConstraintViolations.push(issue);
+      else operabilityGaps.push(issue);
     }
     const facilities = careNeeds.facilities ?? {};
     if (facilities.accessibleToiletRequired && selectedNodes.length && !selectedNodes.some((node: DynamicRecord) => node.operability?.accessibleToiletVerified === true)) {
@@ -1428,7 +1481,11 @@ export function acceptStagedTripPatch(state: DynamicRecord, proposalId: string, 
   } else {
     result.state.pendingProposals = result.state.pendingProposals
       .filter((item: DynamicRecord) => item.proposalId !== proposalId)
-      .map((item: DynamicRecord) => ({ ...item, baseRevision: result.state.revision }));
+      .flatMap((item: DynamicRecord) => {
+        if (!proposal.itineraryPlan) return [{ ...item, baseRevision: result.state.revision }];
+        const remaining = asArray(item.operations).filter(operation => operation.kind !== "add_candidate" || !result.state.nodes.some((node: DynamicRecord) => node.nodeId === operation.nodeId));
+        return remaining.length ? [researchProposalWithOperations(item, remaining, result.state.revision)] : [];
+      });
     result.state.proposalHistory.push({ proposalId, status: "accepted", decidedAt: now(clock), revision: result.state.revision });
   }
   refreshBudgetLedger(result.state);

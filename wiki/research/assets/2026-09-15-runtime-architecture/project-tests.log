@@ -1,0 +1,23 @@
+(node:75718) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ dynamic travel analysis runs distinct read-only lanes concurrently and joins once (78.298916ms)
+✔ one required lane is executed instead of being mislabeled complete without analysis (48.980708ms)
+✔ one Provider pass feeds the fanout and only one parent-owned proposal is staged (103.975834ms)
+✔ one failed semantic lane degrades without discarding sibling findings or mutating accepted state (79.269584ms)
+✔ lane completions and Join are idempotent by run, lane and attempt (0.709417ms)
+✔ a superseded run is stale-discarded before Join (48.125208ms)
+✔ unverified Kimi remains unavailable as a Child fallback (0.214167ms)
+✔ all Child timeouts produce failed coverage without an automatic unverified fallback (2.786625ms)
+✔ a newer trip scope prevents a late Provider and analysis result from staging a proposal (49.747458ms)
+(node:75719) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ single-process workflow mode fails closed for uncoordinated multi-worker deployment (41.970167ms)
+✔ an uncoordinated multi-worker research request exposes failed semantic coverage instead of claiming full planning (26.307875ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2569.929042

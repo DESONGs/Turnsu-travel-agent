@@ -1,0 +1,21 @@
+{
+  "target": {
+    "proposalId": "itinerary_ab46d512c4cdf2ade3da09bd",
+    "selections": {},
+    "partial": false,
+    "previewId": "itp_9df0eea803513292434eaaf86b75d594",
+    "baseRevision": 1
+  },
+  "result": {
+    "schemaVersion": "trip-commit-result-v1",
+    "status": "rejected",
+    "validation": {
+      "ok": false,
+      "reason": "claim_decision_node_not_found"
+    }
+  },
+  "attemptedSave": false,
+  "selectedBefore": 0,
+  "tripRevision": 1,
+  "explanation": "Read-only replay of the real browser target; database save was replaced by an in-memory return. Original button also failed; regression reproduces claim_decision_node_not_found."
+}

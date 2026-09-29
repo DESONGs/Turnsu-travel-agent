@@ -1,0 +1,390 @@
+{
+  "at": "2026-09-21T17:09:12.430Z",
+  "sourceVerification": [
+    {
+      "file": "src/agent/travel-conversation-agent.mjs",
+      "unchanged": true,
+      "current": "06f58f816ca975798e8b7f536b6e3bb1fe87d4dff64be980289483f388c695e0"
+    },
+    {
+      "file": "src/agent/travel-execution-service.mjs",
+      "unchanged": true,
+      "current": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3"
+    },
+    {
+      "file": "src/api/travel-service.mjs",
+      "unchanged": true,
+      "current": "5b1ebf299266852c5e356ae65f2d53a578975ddf2907abc08d29121ff528ec7e"
+    },
+    {
+      "file": "src/web/travel-app.jsx",
+      "unchanged": true,
+      "current": "a23393b8011c7db7b10f731c02ca71cb5f15efd16a19fa325cef8b264c6fe2e9"
+    },
+    {
+      "file": "travel-agent-pi-package/src/host/travel-planning-delivery.ts",
+      "unchanged": true,
+      "current": "0095281bbf6b289052323fe29270d4ad10f81ef20179d4f21957bb0715890f8d"
+    },
+    {
+      "file": "travel-agent-pi-package/src/core/trip-feasibility.ts",
+      "unchanged": true,
+      "current": "b8b5d5765f14c5c75521197cd9cecf6d995ff31981758e073ef85f7d12b1e6bc"
+    },
+    {
+      "file": "travel-agent-pi-package/src/core/itinerary-proposal.ts",
+      "unchanged": true,
+      "current": "8861e068fa19cab9514b421490e4b4fec9ffc932727f9bf0cd2f5b4b0484a27c"
+    },
+    {
+      "file": "scripts/test-traveler-scenarios.mjs",
+      "unchanged": false,
+      "current": "151c10ad0230748c6bbdeb14c2cb1bba9770925984acad65c137128b6a438fa1"
+    },
+    {
+      "file": "dist/index.html",
+      "unchanged": true,
+      "current": "326443c5b7609bff5f54edf1c7cf6d2d5f19da0a411a0fe303c59628e0cb040c"
+    }
+  ],
+  "runs": [
+    {
+      "runId": "run_4c6ea052-35b4-40ab-af68-1e8780a48995",
+      "conversationId": "conversation_add78580",
+      "tripId": null,
+      "input": "想出去玩几天，帮我安排一下。",
+      "status": "awaiting_input",
+      "processingMs": 3074,
+      "modelCalls": [
+        {
+          "run_id": "run_4c6ea052-35b4-40ab-af68-1e8780a48995",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 1,
+          "input_tokens": 10186,
+          "output_tokens": 435
+        }
+      ]
+    },
+    {
+      "runId": "run_b0a743ee-16c4-4d3b-bddc-124e1db469c3",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。",
+      "status": "awaiting_input",
+      "processingMs": 7016,
+      "modelCalls": [
+        {
+          "run_id": "run_b0a743ee-16c4-4d3b-bddc-124e1db469c3",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 2,
+          "input_tokens": 26712,
+          "output_tokens": 1306
+        }
+      ]
+    },
+    {
+      "runId": "run_0f699146-f671-41b8-8f46-c70a9d33b827",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。",
+      "status": "completed",
+      "processingMs": 29010,
+      "modelCalls": [
+        {
+          "run_id": "run_0f699146-f671-41b8-8f46-c70a9d33b827",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 2,
+          "input_tokens": 6027,
+          "output_tokens": 722
+        },
+        {
+          "run_id": "run_0f699146-f671-41b8-8f46-c70a9d33b827",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 4,
+          "input_tokens": 70831,
+          "output_tokens": 5885
+        }
+      ],
+      "trialStatus": "trial_ready",
+      "canConfirm": true
+    },
+    {
+      "runId": "run_66fa0298-05dd-4529-b0fe-abeeb205fa7d",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "把总预算改成3000元，已经采用的安排全部保留，只保存预算调整，不要重新排整个行程。",
+      "status": "completed",
+      "processingMs": 11339,
+      "modelCalls": [
+        {
+          "run_id": "run_66fa0298-05dd-4529-b0fe-abeeb205fa7d",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 4,
+          "input_tokens": 50145,
+          "output_tokens": 1783
+        }
+      ]
+    },
+    {
+      "runId": "run_d906a8b4-888e-4bc8-91e5-e55229552536",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "从已经查到的候选里，把酒店换成另一家、晚餐换成另一家餐厅；午餐、高铁和其他游玩安排保持原样。预算还是3000，不要重新研究不受影响的内容。请先做完整调整草案，不要替我采用。",
+      "status": "completed",
+      "processingMs": 49877,
+      "modelCalls": [
+        {
+          "run_id": "run_d906a8b4-888e-4bc8-91e5-e55229552536",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 8,
+          "input_tokens": 138910,
+          "output_tokens": 11377
+        },
+        {
+          "run_id": "run_d906a8b4-888e-4bc8-91e5-e55229552536",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 1,
+          "input_tokens": 2875,
+          "output_tokens": 361
+        }
+      ],
+      "trialStatus": "trial_ready",
+      "canConfirm": true
+    },
+    {
+      "runId": "run_14ea46f8-ce7b-4274-83d2-e292caa574f4",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "我补充一个重要条件：我使用轮椅，全程无台阶是硬要求，可以打车。请针对这份已采用行程补查无障碍证据，并生成相应的完整调整草案；保留现有安排作对照，不要替我采用，也不要放宽条件。",
+      "status": "failed",
+      "code": "execution_model_budget_exhausted",
+      "processingMs": 163476,
+      "modelCalls": [
+        {
+          "run_id": "run_14ea46f8-ce7b-4274-83d2-e292caa574f4",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 4,
+          "input_tokens": 12056,
+          "output_tokens": 1444
+        },
+        {
+          "run_id": "run_14ea46f8-ce7b-4274-83d2-e292caa574f4",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 14,
+          "input_tokens": 272733,
+          "output_tokens": 36473
+        }
+      ]
+    },
+    {
+      "runId": "run_821423b8-ef57-4331-88d2-8fafac32ccb6",
+      "conversationId": "conversation_c7fafa94",
+      "tripId": "trip_28df7b23",
+      "input": "2026年10月15日我一个人在上海住一晚，整趟预算3000元。现在只比较安静的酒店候选，先不要餐厅、景点或完整行程，也不要确认。",
+      "status": "completed",
+      "processingMs": 11893,
+      "modelCalls": [
+        {
+          "run_id": "run_821423b8-ef57-4331-88d2-8fafac32ccb6",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 3,
+          "input_tokens": 36372,
+          "output_tokens": 1773
+        },
+        {
+          "run_id": "run_821423b8-ef57-4331-88d2-8fafac32ccb6",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 1,
+          "input_tokens": 1796,
+          "output_tokens": 202
+        }
+      ]
+    },
+    {
+      "runId": "run_6afc418a-7aff-41e8-bc8a-5a543868dfd3",
+      "conversationId": "conversation_6704df0e",
+      "tripId": "trip_3bf15687",
+      "input": "2026年10月15日我从杭州到上海玩一天，总预算只有100元，必须包含高铁、当天吃饭、一个收费景点和一晚酒店。请安排完整行程，预算不能增加，也不能默默删掉要求。",
+      "status": "awaiting_input",
+      "processingMs": 48725,
+      "modelCalls": [
+        {
+          "run_id": "run_6afc418a-7aff-41e8-bc8a-5a543868dfd3",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 6,
+          "input_tokens": 124014,
+          "output_tokens": 9876
+        },
+        {
+          "run_id": "run_6afc418a-7aff-41e8-bc8a-5a543868dfd3",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 4,
+          "input_tokens": 11820,
+          "output_tokens": 1444
+        }
+      ],
+      "trialStatus": "needs_repair",
+      "canConfirm": false
+    },
+    {
+      "runId": "run_014f57bd-4291-4f26-aa87-7fffd7c70f6f",
+      "conversationId": "conversation_6225eb44",
+      "tripId": "trip_732152f8",
+      "input": "请先读取当前已保存的旅行要求、已完成的工作和未完成事项，继续规划；不要重复提交已经确认的操作。",
+      "status": "failed",
+      "code": "execution_model_budget_exhausted",
+      "processingMs": 60970,
+      "modelCalls": [
+        {
+          "run_id": "run_014f57bd-4291-4f26-aa87-7fffd7c70f6f",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 8,
+          "input_tokens": 60811,
+          "output_tokens": 10752
+        }
+      ]
+    },
+    {
+      "runId": "run_40b15efb-fe28-4817-ab1e-414773d3e8b7",
+      "conversationId": "conversation_6704df0e",
+      "tripId": "trip_3bf15687",
+      "input": "预算改为650元，原要求不变，重新核验",
+      "status": "failed",
+      "code": "agent_model_response_incomplete",
+      "processingMs": 20645,
+      "modelCalls": [
+        {
+          "run_id": "run_40b15efb-fe28-4817-ab1e-414773d3e8b7",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 6,
+          "input_tokens": 50462,
+          "output_tokens": 3372
+        },
+        {
+          "run_id": "run_40b15efb-fe28-4817-ab1e-414773d3e8b7",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 4,
+          "input_tokens": 12810,
+          "output_tokens": 1444
+        }
+      ]
+    },
+    {
+      "runId": "run_03b7db11-9169-45f2-8100-1677178b8975",
+      "conversationId": "conversation_6704df0e",
+      "tripId": "trip_3bf15687",
+      "input": "请先读取当前已保存的旅行要求、已完成的工作和未完成事项，继续规划；不要重复提交已经确认的操作。",
+      "status": "failed",
+      "code": "agent_model_response_incomplete",
+      "processingMs": 10452,
+      "modelCalls": [
+        {
+          "run_id": "run_03b7db11-9169-45f2-8100-1677178b8975",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 2,
+          "input_tokens": 6933,
+          "output_tokens": 722
+        },
+        {
+          "run_id": "run_03b7db11-9169-45f2-8100-1677178b8975",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 1,
+          "input_tokens": null,
+          "output_tokens": null
+        }
+      ]
+    },
+    {
+      "runId": "run_f889d8fa-ecbc-4017-9da4-4b2241d5c8b6",
+      "conversationId": "conversation_502b29f4",
+      "tripId": null,
+      "input": "2026年10月15日至16日我一个人从杭州去上海两天，预算6000元，请生成完整行程。",
+      "status": "failed",
+      "code": "agent_model_response_incomplete",
+      "processingMs": 564,
+      "modelCalls": [
+        {
+          "run_id": "run_f889d8fa-ecbc-4017-9da4-4b2241d5c8b6",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 1,
+          "input_tokens": null,
+          "output_tokens": null
+        }
+      ]
+    },
+    {
+      "runId": "run_d2020160-b943-4097-879c-ec856fc460f0",
+      "conversationId": "conversation_538c2b8e",
+      "tripId": "trip_1bf14035",
+      "input": "2026年10月15日我和一位家人共2人从杭州到上海玩一天，预算6000元，晚上住一晚，第二天自行返回。请查询真实候选并排完整行程，不要使用示例景点或虚构路线。",
+      "status": "completed",
+      "processingMs": 62086,
+      "modelCalls": [
+        {
+          "run_id": "run_d2020160-b943-4097-879c-ec856fc460f0",
+          "scope": "typesafe_account",
+          "status": "finished",
+          "calls": 5,
+          "input_tokens": 20446,
+          "output_tokens": 1646
+        },
+        {
+          "run_id": "run_d2020160-b943-4097-879c-ec856fc460f0",
+          "scope": "deepseek",
+          "status": "finished",
+          "calls": 8,
+          "input_tokens": 146850,
+          "output_tokens": 9402
+        }
+      ]
+    }
+  ],
+  "facts": {
+    "budget": 3000,
+    "hardMobility": [
+      {
+        "avoidStairs": true,
+        "stepFreeRequired": true,
+        "wheelchairSpaceRequired": true
+      }
+    ],
+    "selectedNodeIdsPreserved": true,
+    "adoptedItineraryPreserved": false,
+    "adoptedStopsBefore": 7,
+    "adoptedStopsAfter": 0,
+    "mobilityAfter": null,
+    "arrivalModeBefore": null,
+    "arrivalModeAfter": "火车",
+    "evidenceBefore": "after-adoption.json",
+    "evidenceAfter": "after-discard.json",
+    "interpretation": "Selected place identity alone is not itinerary preservation; the adopted stop schedule and route proof are absent after the new accessibility requirement.",
+    "timelineLossPersistsAfterRefresh": true,
+    "refreshEvidence": "C05-after-discard-refresh.txt"
+  },
+  "qaCleanup": {
+    "at": "2026-09-21T17:12:15.163Z",
+    "temporaryTabsClosed": true,
+    "viewportReset": true,
+    "harnessExitCode": 0,
+    "testDatabaseContainerRestoredToStopped": true
+  }
+}

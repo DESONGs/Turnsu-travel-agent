@@ -55,6 +55,7 @@ test("auth configuration check reports exact callbacks only when every channel h
     writeFile(applePrivate, appleKeys.privateKey.export({ type: "pkcs8", format: "pem" }), { mode: 0o600 }),
   ]);
   await writeFile(envFile, [
+    "DATABASE_URL=postgres://localhost/travel_auth_configuration_fixture",
     "TRAVEL_AGENT_PUBLIC_ORIGIN=https://travel.example.com",
     `TRAVEL_AGENT_SESSION_SECRET=${"s".repeat(48)}`,
     `TRAVEL_AGENT_AUTH_STATE_SECRET=${"a".repeat(48)}`,
@@ -96,4 +97,11 @@ test("auth configuration check reports exact callbacks only when every channel h
   });
   assert.equal(report.desktop.status, "disabled_until_desktop_release");
   assert.equal(report.channels.every((channel) => channel.status === "passed_live_smoke"), true);
+  await writeFile(envFile, (await readFile(envFile, "utf8")).replace(/^DATABASE_URL=.*\n/m, ""));
+  await assert.rejects(run(process.execPath, ["--import", "tsx", join(process.cwd(), "scripts", "check-auth-configuration.mjs")], { env: { ...process.env, DATABASE_URL: "", TRAVEL_AGENT_ENV_FILE: envFile } }), (error) => {
+    const missingDatabase = JSON.parse(error.stdout);
+    assert.equal(missingDatabase.status, "needs_manual_configuration");
+    assert.ok(missingDatabase.sharedIssues.some((issue) => issue.startsWith("DATABASE_URL")));
+    return true;
+  });
 });

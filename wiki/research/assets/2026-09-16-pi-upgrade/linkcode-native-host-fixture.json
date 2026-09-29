@@ -1,0 +1,14 @@
+{
+  "status": "passed_local_fixture_native_host",
+  "linkcode": "0.30.0",
+  "pi": "0.85.1",
+  "skillRead": true,
+  "resumedSawHistory": true,
+  "businessState": "shared_http_api",
+  "confirmationCancelled": true,
+  "shellAndBypassBlocked": true,
+  "imagePersistence": false,
+  "credentialPersistence": false,
+  "modelCalls": 6,
+  "evidence": "real adapter/sdk/api; fixture model"
+}

@@ -1,7 +1,14 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { randomUUID } from "node:crypto";
 import { Type, type Static, type TSchema } from "typebox";
 import { createTravelService } from "../../src/api/create-travel-service.mjs";
+import { travelHttpToolsFromEnv, TRAVEL_HOST_TOOLS, TRAVEL_HOST_CONFIRMATION_TOOLS, type TravelHttpTools } from "../src/host/travel-http-tools.js";
 import { ItineraryPlanSchema, ResearchCriteriaInputSchema, TripBriefSchema, TripPatchProposalSchema, TravelerSchema } from "../src/contracts/index.js";
+import { loadTravelSkill } from "../../src/agent/travel-skill-loader.mjs";
+
+// Itinerary proof is produced by plan_itinerary_trial, not authored through
+// generic candidate/disruption proposals. Reuse the remaining canonical fields.
+const candidateProposalParameters = Type.Omit(TripPatchProposalSchema, ["itineraryPlan", "itineraryPreviewId", "planningRunId", "planningAttempt", "requireCompletePlan", "planningUserRequest"]);
 
 const travelerProfileParameters = Type.Object({
   travelerId: Type.Optional(Type.String()),
@@ -38,7 +45,7 @@ function response(details: unknown) {
   return {
     content: [{ type: "text" as const, text: JSON.stringify(details, null, 2) }],
     details,
-    isError: statusOf(details) === "rejected" || statusOf(details) === "needs_rebase",
+    isError: ["error", "rejected", "needs_rebase", "cancelled"].includes(String(statusOf(details))),
   };
 }
 
@@ -46,21 +53,30 @@ function errorField(error: unknown, field: string): unknown {
   return error && typeof error === "object" ? Reflect.get(error, field) : undefined;
 }
 
-function register<const Parameters extends TSchema>(pi: ExtensionAPI, config: {
+type ToolConfig<Parameters extends TSchema> = {
   name: string;
   label: string;
   description: string;
   parameters: Parameters;
   run: (params: Static<Parameters>) => Promise<unknown>;
-}) {
+};
+
+function register<const Parameters extends TSchema>(pi: ExtensionAPI, config: ToolConfig<Parameters>, host?: TravelHttpTools) {
   pi.registerTool({
     name: config.name,
     label: config.label,
     description: config.description,
     parameters: config.parameters,
-    async execute(_id, params) {
+    async execute(_id, params, signal, _update, context) {
       try {
-        return response(await config.run(params));
+        signal?.throwIfAborted();
+        if (host && TRAVEL_HOST_CONFIRMATION_TOOLS.has(config.name)) {
+          if (!context.hasUI) return response({ status: "rejected", code: "explicit_user_confirmation_required" });
+          const confirmed = await context.ui.confirm("确认旅行操作", `${config.label}\n${JSON.stringify(params, null, 2)}`, signal ? { signal } : undefined);
+          if (!confirmed) return response({ status: "rejected", code: "user_declined" });
+          signal?.throwIfAborted();
+        }
+        return response(host ? await host.invoke(config.name, params, signal) : await config.run(params));
       } catch (error: unknown) {
         return response({ status: "error", code: errorField(error, "code") ?? "internal_error", details: errorField(error, "details") ?? null });
       }
@@ -68,13 +84,18 @@ function register<const Parameters extends TSchema>(pi: ExtensionAPI, config: {
   });
 }
 
-export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service = createTravelService(process.env) } = {}) {
-  register(pi, {
+export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service, host }: {
+  service?: ReturnType<typeof createTravelService>; host?: TravelHttpTools;
+} = {}) {
+  // Laziness is important: API hosts must never construct a second local TripStore.
+  const getService = () => service ??= createTravelService(process.env);
+  const registerTool = <const Parameters extends TSchema>(config: ToolConfig<Parameters>) => register(pi, config, host);
+  registerTool({
     name: "create_trip", label: "Create Trip", description: "Create the persistent shared state for one complete Travel V1 trip.",
     parameters: Type.Object({ tripId: Type.Optional(Type.String()), brief: Type.Optional(TripBriefSchema), travelers: Type.Optional(Type.Array(Type.Partial(TravelerSchema))) }),
-    run: (params) => service.createTrip(params),
+    run: (params) => getService().createTrip(params),
   });
-  register(pi, {
+  registerTool({
     name: "update_trip_scope", label: "Update Trip Scope", description: "Save newly understood traveler facts without inferring them from keywords or overwriting omitted facts.",
     parameters: Type.Object({
       tripId: Type.String(),
@@ -84,21 +105,21 @@ export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service = crea
       foreignGuestRequired: Type.Optional(Type.Boolean()),
       travelerProfiles: Type.Optional(Type.Array(travelerProfileParameters, { maxItems: 12 })),
     }),
-    run: (params) => service.updateTripScope(params),
+    run: (params) => getService().updateTripScope(params),
   });
-  register(pi, {
+  registerTool({
     name: "get_trip_control_view", label: "Get Trip Control View", description: "Read trip revision, open decisions, dirty set, queues, and pending proposals.",
-    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => service.getTripControlView(tripId),
+    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => getService().getTripControlView(tripId),
   });
-  register(pi, {
+  registerTool({
     name: "get_trip_plan_view", label: "Get Trip Plan View", description: "Read the linked food, stay, transport, and play plan with QA.",
-    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => service.getTripPlanView(tripId),
+    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => getService().getTripPlanView(tripId),
   });
-  register(pi, {
+  registerTool({
     name: "get_open_decisions", label: "Get Open Decisions", description: "Read unresolved decisions and staged proposals.",
-    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => service.getOpenDecisions(tripId),
+    parameters: Type.Object({ tripId: Type.String() }), run: ({ tripId }) => getService().getOpenDecisions(tripId),
   });
-  register(pi, {
+  registerTool({
     name: "research_trip_options", label: "Research Trip Options", description: "Request provider-backed research; reports provider_unavailable until an audited provider is enabled.",
     parameters: Type.Object({
       tripId: Type.String(),
@@ -108,17 +129,17 @@ export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service = crea
       domains: Type.Optional(Type.Array(Type.Union([Type.Literal("play"), Type.Literal("food"), Type.Literal("stay"), Type.Literal("transport")]), { minItems: 1, maxItems: 4 })),
       criteria: Type.Optional(ResearchCriteriaInputSchema),
     }),
-    run: (params) => service.researchTripOptions(params),
+    run: (params) => getService().researchTripOptions(params),
   });
-  register(pi, {
+  registerTool({
     name: "propose_trip_change", label: "Propose Trip Change", description: "Stage a revisioned TripPatchProposal without changing the accepted plan.",
-    parameters: Type.Object({ tripId: Type.String(), proposal: TripPatchProposalSchema }), run: (params) => service.proposeTripChange(params),
+    parameters: Type.Object({ tripId: Type.String(), proposal: candidateProposalParameters }), run: (params) => getService().proposeTripChange(params),
   });
-  register(pi, {
+  registerTool({
     name: "plan_itinerary_trial", label: "Plan Itinerary Trial", description: "Check one model-authored itinerary against real routes and constraints; at most one repair attempt and no state commit.",
-    parameters: Type.Object({ tripId: Type.String(), plan: ItineraryPlanSchema }), run: (params) => service.planItineraryTrial(params),
+    parameters: Type.Object({ tripId: Type.String(), plan: ItineraryPlanSchema }), run: (params) => getService().planItineraryTrial(params),
   });
-  register(pi, {
+  registerTool({
     name: "accept_trip_change", label: "Accept Trip Change", description: "Parent-only atomic commit of one staged proposal.",
     parameters: Type.Object({
       tripId: Type.String(),
@@ -130,27 +151,27 @@ export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service = crea
       previewId: Type.Optional(Type.String({ maxLength: 128 })),
       baseRevision: Type.Optional(Type.Integer({ minimum: 0 })),
       routeModes: Type.Optional(Type.Record(Type.String(), Type.Union([Type.Literal("walk"), Type.Literal("transit"), Type.Literal("taxi")]))),
-    }), run: (params) => service.acceptTripChange(params),
+    }), run: (params) => getService().acceptTripChange(params),
   });
-  register(pi, {
+  registerTool({
     name: "reject_trip_change", label: "Reject Trip Change", description: "Reject one staged proposal without changing the accepted plan.",
-    parameters: Type.Object({ tripId: Type.String(), proposalId: Type.String() }), run: (params) => service.rejectTripChange(params),
+    parameters: Type.Object({ tripId: Type.String(), proposalId: Type.String() }), run: (params) => getService().rejectTripChange(params),
   });
-  register(pi, {
+  registerTool({
     name: "prepare_booking_handoff", label: "Prepare Booking Handoff", description: "Prepare an external handoff for a selected fresh offer; never purchases.",
     parameters: Type.Object({ tripId: Type.String(), nodeId: Type.String(), offerId: Type.String(), explicitUserConfirmation: Type.Boolean() }),
-    run: (params) => service.prepareBookingHandoff(params),
+    run: (params) => getService().prepareBookingHandoff(params),
   });
-  register(pi, {
+  registerTool({
     name: "record_booking_confirmation", label: "Record Booking Confirmation", description: "Record a user-provided external confirmation and lock its decision.",
     parameters: Type.Object({ tripId: Type.String(), nodeId: Type.String(), offerId: Type.Optional(Type.String()), confirmationRef: Type.String(), baseRevision: Type.Integer(), explicitUserConfirmation: Type.Boolean() }),
-    run: (params) => service.recordBookingConfirmation(params),
+    run: (params) => getService().recordBookingConfirmation(params),
   });
-  register(pi, {
+  registerTool({
     name: "report_trip_disruption", label: "Report Trip Disruption", description: "Stage a bounded disruption patch for the affected neighborhood.",
-    parameters: Type.Object({ tripId: Type.String(), proposal: TripPatchProposalSchema }), run: (params) => service.reportTripDisruption(params),
+    parameters: Type.Object({ tripId: Type.String(), proposal: candidateProposalParameters }), run: (params) => getService().reportTripDisruption(params),
   });
-  register(pi, {
+  registerTool({
     name: "submit_trip_feedback", label: "Submit Trip Feedback", description: "Record trip-linked visit feedback; shared structured experience remains non-authoritative user evidence.",
     parameters: Type.Object({
       tripId: Type.String(),
@@ -165,10 +186,42 @@ export function registerTravelBusinessRuntime(pi: ExtensionAPI, { service = crea
       waitMinutes: Type.Optional(Type.Integer({ minimum: 0, maximum: 1_440 })),
       visitDate: Type.Optional(Type.String({ pattern: "^20\\d{2}-\\d{2}-\\d{2}$" })),
     }),
-    run: (params) => service.submitTripFeedback(params),
+    run: (params) => getService().submitTripFeedback(params),
   });
 }
 
 export default function (pi: ExtensionAPI) {
-  registerTravelBusinessRuntime(pi);
+  const host = travelHttpToolsFromEnv(process.env);
+  registerTravelBusinessRuntime(pi, host ? { host } : {});
+  if (host) {
+    const allowed = new Set<string>([...TRAVEL_HOST_TOOLS, "travel_read_skill"]);
+    let calls = 0;
+    let plans = 0;
+    let research = 0;
+    let runId = "";
+    pi.on("before_agent_start", async (event) => {
+      calls = 0; plans = 0; research = 0; runId = `hostplan_${randomUUID()}`;
+      return { systemPrompt: `${event.systemPrompt}\nThis API host uses create_trip then update_trip_scope for save_trip_understanding. Use travel_read_skill for the installed Skills; no shell or general filesystem tool is available. Read current control and plan views before continuing a historical trip. Research delegates bounded Child analysis to the shared TravelService. Plan runId for this turn: ${runId}; at most attempt 1 and one repair attempt 2. Never claim confirmation until the confirmation dialog is accepted and the API returns committed. Images must use the request-only Web path.` };
+    });
+    pi.on("tool_call", async (event, context) => {
+      if (!allowed.has(event.toolName)) return { block: true, reason: "travel_host_tool_not_allowed" };
+      if (++calls > 12 || (event.toolName === "research_trip_options" && ++research > 2)) {
+        await context.abort();
+        return { block: true, reason: "travel_host_tool_budget_exhausted" };
+      }
+      if (event.toolName === "plan_itinerary_trial") {
+        const plan = event.input["plan"];
+        if (++plans > 2 || !plan || typeof plan !== "object" || Reflect.get(plan, "runId") !== runId || Reflect.get(plan, "attempt") !== plans) {
+          return { block: true, reason: "itinerary_planning_run_identity_mismatch" };
+        }
+      }
+      return undefined;
+    });
+    pi.registerTool({
+      name: "travel_read_skill", label: "Read Travel Skill",
+      description: "Read one installed Travel Skill by name. No arbitrary file access is available.",
+      parameters: Type.Object({ skillId: Type.Union([Type.Literal("understand-trip"), Type.Literal("research-trip"), Type.Literal("plan-trip"), Type.Literal("recover-trip")]) }),
+      async execute(_id, { skillId }) { return response(loadTravelSkill(skillId)); },
+    });
+  }
 }

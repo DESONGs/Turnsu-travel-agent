@@ -75,6 +75,7 @@ const candidateCounts = Object.fromEntries(Object.entries(proposal.byDomain).map
 assert.ok(Object.values(candidateCounts).some((count) => count > 0), "Live providers returned no candidate in any domain");
 const selections = Object.fromEntries(Object.entries(proposal.byDomain).filter(([, candidates]) => candidates.length).map(([domain, candidates]) => [domain, candidates[0].nodeId]));
 const accepted = await travelService.acceptTripChange({ tripId: first.tripId, proposalId: proposal.proposalId, selections });
+if (accepted.status !== "committed") process.stdout.write(`${JSON.stringify({ status: "blocked_live_golden_path", candidateCounts, analysisCoverage: proposal.analysis?.coverage, validation: accepted.validation, feasibility: accepted.feasibility, artifactDir: rootDir })}\n`);
 assert.equal(accepted.status, "committed", "User selections did not commit through the Parent Agent service boundary");
 const acceptedPlan = await travelService.getTripPlanView(first.tripId);
 const acceptedDomains = Object.entries(acceptedPlan.byDomain).filter(([, candidates]) => candidates.some((candidate) => candidate.selected)).map(([domain]) => domain).sort();

@@ -1,0 +1,31 @@
+(node:98024) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (72.204ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (8.860875ms)
+✔ a missing departure date is resolved before asking about arrival preferences (12.713209ms)
+✖ unknown family size does not discard the destination, dates or budget already provided (12.829ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (79.98325ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1705.344291
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:63:1
+✖ unknown family size does not discard the destination, dates or budget already provided (12.829ms)
+  AssertionError [ERR_ASSERTION]: known facts must survive the necessary question
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:70:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,97 @@
+{
+  "testedAt": "2026-09-20T17:33:15.994Z",
+  "schemaVersion": "travel-jev-capacity-v1",
+  "users": 500,
+  "durationMs": 1000,
+  "evidenceScope": "Controlled models and fictional travel Providers through real authenticated HTTP, native Pi, two API/two Worker processes and PostgreSQL. Not external model capacity or commercial travel quality.",
+  "modelLimits": {
+    "Jev": {
+      "normalRpm": 1080,
+      "retryRpm": 60,
+      "hardRpm": 1200,
+      "tps": 250000
+    },
+    "Parent": {
+      "concurrent": 64,
+      "rpm": 10000,
+      "tpm": 100000000,
+      "controlled": true
+    }
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 83801,
+      "failures": []
+    }
+  ],
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "e6e9d2c62f8e411f6be0a8013744423bc9cedf537a1571991589568ed7a23147",
+    "src/agent/travel-execution-service.mjs": "6b0ca834c53e02c292ac4e900c240d9b5b5643304faded5fd97d7414cce06138",
+    "src/persistence/execution-repository.mjs": "e5aab1e0c7c457994d30c0788ef70cec4eebdf943e1bf9eb66c5f910bcc5ced7",
+    "src/api/travel-service.mjs": "6d9d7ad77be39ca6d798a97cc9e2587aaeec0819256ea3b088c445e9ac431db4",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "24dee49efd233699fc44059d51c335cb32307dad2734344acc588aaae587abea",
+    "travel-agent-pi-package/src/host/jev-client.ts": "cfcb75a4a9015d00f139fdf6f25979de26e3bcafab2b27056b7bf4ab56b4c3b0",
+    "tests/fixtures/jev-planning.mjs": "9ee33500be38756b687fff76f802f423def9712dccaafd6a356843fc7e5a7560"
+  },
+  "elapsedMs": 83801,
+  "status": "passed_controlled_planning",
+  "sustained30Minutes": false,
+  "requests": 1007,
+  "maxRolling60s": 802,
+  "maxNormal60s": 802,
+  "maxRetry60s": 0,
+  "completionP50Ms": 48132,
+  "completionP95Ms": 82348,
+  "completionP99Ms": 82404,
+  "firstDispatchP95Ms": 10257,
+  "processMetrics": [
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 0,
+      "routeCalls": 0,
+      "judgmentCalls": 0,
+      "activeRuns": 0,
+      "rss": 172228608
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 0,
+      "routeCalls": 0,
+      "judgmentCalls": 0,
+      "activeRuns": 0,
+      "rss": 223363072
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 276,
+      "routeCalls": 228,
+      "judgmentCalls": 493,
+      "activeRuns": 0,
+      "dispatchError": null,
+      "rss": 370212864
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 278,
+      "routeCalls": 247,
+      "judgmentCalls": 514,
+      "activeRuns": 0,
+      "dispatchError": null,
+      "rss": 369639424
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "status": "passed_live_model_smoke",
+  "coverage": "complete",
+  "analysisId": "analysis_run_714aa2f8",
+  "lanes": [
+    {
+      "lane": "inventory_budget",
+      "skillId": "plan-trip",
+      "reasonCodes": [
+        "inventory_verified_cost_uncertain",
+        "price_missing_quality_acceptable",
+        "budget_underutilized_missing_domains",
+        "accessibility_evidence_missing"
+      ]
+    },
+    {
+      "lane": "local_discovery",
+      "skillId": "research-trip",
+      "reasonCodes": [
+        "insufficient_accessibility_evidence",
+        "single_source_per_candidate",
+        "budget_compatible"
+      ]
+    },
+    {
+      "lane": "operability_schedule",
+      "skillId": "plan-trip",
+      "reasonCodes": [
+        "budget_sufficient",
+        "accessibility_unverified",
+        "temporal_anchors_absent"
+      ]
+    }
+  ],
+  "failedLanes": [],
+  "timedOutLanes": [],
+  "degradedReasons": [],
+  "modelFallback": {
+    "primaryStatus": "configured",
+    "fallbackStatus": "available",
+    "fallbackModel": "moonshotai-cn/kimi-k2.6"
+  },
+  "joinCount": 1,
+  "durationMs": 32722
+}

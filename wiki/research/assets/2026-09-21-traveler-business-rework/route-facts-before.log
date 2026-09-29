@@ -1,0 +1,55 @@
+(node:96103) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (64.4325ms)
+✖ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (68.053666ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (74.878625ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (7.08825ms)
+✔ a missing departure date is resolved before asking about arrival preferences (11.57975ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (9.611417ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (80.824166ms)
+✖ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (94.178583ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (111.569333ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 7
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2079.121083
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:43:1
+✖ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (68.053666ms)
+  AssertionError [ERR_ASSERTION]: a successful tool result is input to Parent, not permission to end its task
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:59:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/traveler-acceptance-regression.test.mjs:130:1
+✖ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (94.178583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:154:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

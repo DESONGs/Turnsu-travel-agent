@@ -3,7 +3,7 @@ import { execFile } from "node:child_process";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import { promisify } from "node:util";
-import { piHostCompatibility } from "../src/agent/pi-host-compatibility.mjs";
+import { piHostCompatibility, SUPPORTED_PI_HOST } from "../src/agent/pi-host-compatibility.mjs";
 
 const execFileAsync = promisify(execFile);
 const commands = [
@@ -21,7 +21,7 @@ for (const entry of commands) {
 const globalHost = matrix.find((entry) => entry.host === "target_global");
 if (globalHost && !globalHost.supported) {
   globalHost.loadGate = "blocked_before_business_extensions";
-  globalHost.diagnostic = `unsupported_pi_host_version:${globalHost.version};required>=0.84.1<0.85.0`;
+  globalHost.diagnostic = `unsupported_pi_host_version:${globalHost.version};required>=${SUPPORTED_PI_HOST.minimum}<${SUPPORTED_PI_HOST.maximumExclusive}`;
 }
 const status = globalHost?.supported ? "passed_compatibility_gate" : "incompatible_global_host_blocked";
 process.stdout.write(`${JSON.stringify({ status, matrix })}\n`);

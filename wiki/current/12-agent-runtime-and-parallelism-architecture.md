@@ -1,5 +1,64 @@
 # Agent Runtime、Skills 与动态并行架构
 
+## 2026-09-22 当前架构修订（待实现）
+
+新增 [14 持续规划业务模型](./14-continuous-planning-business-model.md)与 [15 上下文与模型交接](./15-model-context-and-handoff.md)，作为本轮改造依据。原生 Pi、Parent 的开放规划、受限 Child、Jev、统一提交及 PostgreSQL 执行层保留；持久计划独立于可失效证明，当前目标/问题/步骤通过同源上下文接续。
+
+本页 9 月 21 日实现中的 proposal/preview 计划存储、进程内 attempt 状态和依赖分散交接尚有实际缺陷，不以原有测试数量表示已修复。本轮改造顺序、迁移、共同验收及未完成门槛见[主线程交接](../research/2026-09-22-continuous-planning-redesign-handoff.md)。以下内容作为旧实现和仍有效边界阅读；与 14/15 冲突处以后者为准。
+
+## 2026-09-21 自动推进与 Jev 当前实现
+
+已确认的[第二版方案](../research/2026-09-20-jev-travel-decision-team-design.md)已进入业务链路：原生 Parent 负责开放规划；`travel-decision-policy.ts` 给出读取、修改草案、交回 Parent、提问与交付五类结果；Jev 判断经过校准和业务边界后才可推动草案。完整行程在研究后继续读取候选、调用试排并核验，必要问题的回答携带原目标自动接续。没有建立第二套 TripState、任务队列或提交服务。
+
+```mermaid
+flowchart LR
+  UI[Web / 桌面 / 小程序] --> HTTP[统一任务与 answerTo 接口]
+  HTTP --> RUN[PostgreSQL Run / 续执行步骤 / 问题消费]
+  RUN --> WORKER[租约 Worker]
+  WORKER --> PARENT[原生 Pi Parent]
+  PARENT --> SERVICE[TravelService]
+  SERVICE --> READ[原 Provider 取证]
+  READ --> SNAPSHOT[不可变决策快照]
+  SNAPSHOT --> JEV[Jev 批量判断 / 固定账号预算]
+  SNAPSHOT --> CHILD[off 或 shadow 的独立 Child 会话]
+  JEV --> POLICY[代码边界与校准门槛]
+  CHILD --> PARENT
+  POLICY --> PARENT
+  PARENT --> CHECK[Mobility / 预算 / Checker]
+  CHECK -->|核验结果与完整问题| PARENT
+  PARENT --> DRAFT[可撤销草案或一个必要问题]
+  DRAFT --> UI
+  UI --> ADOPT[原采用入口 / 唯一 Runtime 提交]
+```
+
+**上下文与交接：** 不拼接 Agent 私有会话窗口。快照包含相关要求、候选、锁定、证据引用、版本、未知和时效；独立问题合批，后继规划在判断完成后继续。Child 仅有分工内的读工具，输出经身份、候选与证据引用校验。工具原始回执保持完整 JSON，禁止从中间截断；Parent 模型输入可以用带版本的替代回执合并过期的重复状态快照，具体边界见 [04](./04-runtime-and-development.md)。已完成步骤按依赖哈希与有效期复用，未知写入不自动重放。
+
+**业务交付返工：** 工具完成不是 Parent 完成。完整规划进入同一 Pi 会话的专用阶段，只携带相关 Skill、事实和工具，继续比较、补查、组合与一次修复；`planningPhase` 随续执行保留。核验结果回到 Parent 后才生成交付解释，未通过时保留可见草案和实际缺口；不会靠早停或固定成功文案缩短等待。证据与剩余来源、质量、容量门槛见[业务闭环返工](../research/2026-09-21-traveler-business-rework.md)。
+
+跨请求的历史工具明细另由原生 Pi 摘要管理，触发点和恢复语义见 [04](./04-runtime-and-development.md)。不会清空对话、丢弃用户要求或借摘要重置预算。已采用站序与当前路线证明分开处理：新同行人约束使证明失效，原站序仍可对照；最新试排替代上一次待采用草案，工具回执把实际保存状态交给 Parent。
+
+交接必须表达业务范围和下一步所有者：完整草案用 `scope=complete_trip`，按全部站点整体采用；原选中项仅在草案明确替换时退出。未知设施证据由 Parent 负责补查，用户不负责证明外部事实；只有用户事实与必要取舍可以等待回答。一次规划中的摘要同样由 Pi 原生机制处理，不能用强制结束模型或覆盖最终回复代替交付。
+
+**持久配额等待：** 同一个 execution repository 保存 `notBefore / expiresAt / waitReason / continuation`。Jev 正常 1,080、重试 60、余量 60 RPM，任意连续 60 秒合计不超过 1,200；数据库时间和账号锁原子检查 TPS、输入与在途。Trip 单在途，用户公平、短交互/续算 2:1、空闲互借。配额等待释放 Worker，原生自定义消息带回已完成步骤；四分钟总截止时间不随恢复重置。
+
+**回答与取消：** 稳定问题/选项 ID、归属与依赖哈希、原子一次消费；旧答案不能覆盖新事实，重复相同答案返回同一任务。取消和业务写入在原租约/fence 校验下排序，迟到结果不得提交。客户端自动跟随等待，一次只展示一个必要问题。
+
+**发布状态：** 代码接线与受控行为验证已完成；真实 Jev 中文小样本存在一例支持判断误差，模板默认不启用自动放行。500 在线短测、500 规划持续测试、真实供应商容量分别记账。当前不能宣布商用 500 并发已经通过，详情以[实现与验证记录](../research/2026-09-21-jev-automatic-planning-implementation.md)为准。
+
+---
+
+## 2026-09-18 原生执行基线
+
+最新用户决策是借鉴 LinkCode 改造原工作台。Web Parent 与业务 Child 已使用 Pi 0.85.1 原生 `AgentSession`；HTTP 先把带 `requestId` 的任务存入 PostgreSQL，由持有租约的 Worker 执行。取消、检查点、事件回放、模型账号预算和业务写入校验已接入真实产品路径。Web / 桌面共享 SSE 客户端，微信与支付宝源码共享同一任务协议并提供停止、恢复与问题选项。
+
+上下文按当前事实、原生对话检查点、Child 分工材料分别处理；每次 Parent 调用刷新事实，原生压缩与 Child 也经过模型预算。不同 Agent 拥有独立窗口，通过版本化事实和受校验的结果交接；Trip Runtime 继续拥有唯一业务提交权。详情和部署方式见[本轮实现记录](../research/2026-09-18-workbench-native-pi-execution-implementation.md)。
+
+**验收状态：** 本地短时 500 个受控 Parent / 1,000 条连接已验证；实际 Worker 失效接续与 PostgreSQL 跨实例验证已执行。最新真实复杂规划运行了三路 Child，其中一路交接格式失败，最终仍缺部分候选与可采用路线；本地高德 WebService 配置缺失已定位，代码会明确返回资料缺口。交接格式纠正已通过行为回归，尚未重跑真实模型验收。500 个真实复杂规划、持续负载和生产端验收仍未完成，不能声称已具备商用 500 并发能力。
+
+---
+
+以下为 2026-08-27 的问题基线与分阶段演进记录；其中“直接 Agent Core”“内存协调”等初始描述不再代表上面列出的当前执行链。
+
 - 日期：2026-08-27
 - 状态：四个 Changeset、P0/P1 状态一致性加固与行程 Plan–Check–Repair Harness 已实施；fixture、live model、Pi consumer、Provider、Web 自然会话和浏览器继续按独立验收门记录
 - 范围：Travel Parent Agent、Pi package、Extensions、Skills、Provider 研究、动态并行与相关测试
@@ -326,12 +385,13 @@ Join 另外返回 `requiredLanes`、`startedLanes`、`completedLanes`、`failedL
 - Proposal ID 稳定关联 runId；同条件刷新复用现有 Proposal，不生成竞争提案；
 - Child 仍无 commit、accept、booking、Provider 凭据、Shell、任意 URL、社交写或递归委派能力。
 
-### 模型 fallback
+### Child 模型路由与 fallback
 
-- DeepSeek 是 Web 语义分析主路由；Kimi 只有专用的“真实 Child + 组合 Skill + 结构化 Schema + 无状态写入”smoke 为 `passed_live_smoke` 后才进入 fallback；
-- 未通过时固定为 `fallback_unavailable`，不能用普通模型调用冒充 Child fallback；
-- 主模型与 fallback 使用同一 Schema、candidate/evidence allowlist 和 TripState 不写入检查。
-- 2026-08-28 Kimi 首次复验曾为 partial，随后一度因不兼容的 JSON 请求选项变为 failed；门控期间本地 ledger 都正确撤销旧通过。按 Provider 分开 JSON 选项并保留共同的有界对象提取后，最新 2/2 lane 完整通过，当前 Web fallback 才恢复 available。锁定 Pi consumer 的普通只读 Child 成功仍不能替代这项结构化门。
+- 2026-09-16 起，Kimi 只有专用的“真实 Child + 组合 Skill + 结构化 Schema + 无状态写入”smoke 为 `passed_live_smoke` 后，才作为只读语义分析主路由；既有配置的推理模型作为 fallback。Parent 模型配置不随之改变；
+- Kimi 未通过时不进入路由，使用既有推理模型，且没有已验证的备用路由时明确显示 `fallback_unavailable`；不能用普通模型调用冒充 Child smoke；
+- 主模型与 fallback 使用同一 Schema、candidate/evidence allowlist 和 TripState 不写入检查；
+- 在一次真实 Provider 快照回放中，三个 Kimi Child 均完成、一次 Join，耗时 35.645 秒。该样本未重新取数，不证明完整规划延迟或 500 并发，证据见 [升级验证](../research/2026-09-16-pi-085-linkcode-internal-host-validation.md)；
+- 历史：2026-08-28 Kimi 首次复验曾为 partial，随后因不兼容的 JSON 请求选项变为 failed，门控期间 ledger 撤销旧通过；按 Provider 分开 JSON 选项后才恢复可用。锁定 Pi consumer 的普通只读 Child 成功仍不能替代结构化分析门控。
 
 ### Provider 空库存
 
@@ -342,7 +402,7 @@ Join 另外返回 `requiredLanes`、`startedLanes`、`completedLanes`、`failedL
 
 ### 宿主与生产执行模式
 
-- 项目锁定宿主范围是 Pi `>=0.84.1 <0.85.0`；当前项目 Pi 0.84.1 通过，目标全局 Pi 0.74.0 被明确拒绝；
+- 2026-09-16 项目锁定 Pi `0.85.1`（`>=0.85.1 <0.85.2`）；0.85.0 实验发布与较老宿主继续拒绝。隔离 LinkCode 0.30.0 原生 adapter 的接线、SDK 接口差异与验收边界见 [升级验证](../research/2026-09-16-pi-085-linkcode-internal-host-validation.md)；
 - Workflow coordinator 目前是进程内、单实例实现。`/api/health` 暴露 `workflowExecutionMode=single_process`、worker 数和不支持 background resume/cross-instance steer；
 - 配置为多 worker/多实例且无已实现 coordinator 时，语义 fan-out 被关闭，服务退回单请求同步/部分结果模式；不声称跨实例 resume、steer 或 exactly-once；
 - 后续确有横向扩容需求时再引入 PostgreSQL lease、heartbeat、event sequence 和原子 Join，本轮不增加 Redis/Kafka/通用队列。
@@ -373,6 +433,8 @@ Join 另外返回 `requiredLanes`、`startedLanes`、`completedLanes`、`failedL
 
 ## 15. 有反馈依赖的行程规划 Harness（2026-08-30）
 
+**2026-09-21 修订：** 下方初版流程中的 blocked 只结束这次核验，不强制结束 Parent；Parent 必须解释已保留的草案和具体缺口。失败试排也持久保存预览，但不改变已采用状态。完整计划增加 `scope`，Parent Tool 要求显式填写，整体提交语义以上方业务返工和 [02](./02-agent-architecture.md) 为准。
+
 行程规划不进入 Dynamic Workflow fan-out，也不新增 planning Sub-agent。原因是它的第二步依赖第一次 Checker 结果，属于 Parent 内的顺序反馈循环：
 
 ```text
@@ -382,7 +444,7 @@ Parent + plan-trip
   → AMap + deterministic Checker
   → feasible: one pending proposal artifact
   → needs_repair: Parent attempt 2 once
-  → blocked/needs_context: stop
+  → blocked/needs_context: preserve partial draft, Parent explains gaps
 ```
 
 ### 单一合同与运行身份
@@ -392,9 +454,11 @@ Parent + plan-trip
 - `operationId = runId:attempt`；规划复用独立的 `TravelAnalysisRunCoordinator` 实例完成 supersede、AbortSignal、attempt replay、stale discard 与 terminal Join。它是短期运行控制，不是第二份旅行状态。
 - 规划上下文由服务端从现有 Trip/Proposal/Environment 只读组装；只在直接规划意图中加载 `plan-trip` 与唯一的 `plan_itinerary_trial`，避免普通回合携带大规划合同，也避免先用一轮模型 Tool 取回服务端已经拥有的事实。
 
-### 状态所有权
+### 状态所有权（9 月 21 日旧实现，按 14/15 替换）
 
-- attempt 失败或 repair 不写状态；成功 Trial 可把 canonical plan 与 preview pointer 附着到现有 pending proposal，revision 与 selected nodes 不变。
+下列 proposal/preview 与 environment.mobility 归属是待迁移实现，不是下一轮长期计划存储规范。受控复现已经证明预览过期、刷新路线和要求变化可破坏计划显示或内容；新合同必须让核验与计划生命周期独立。
+
+- 成功、失败和 repair 的已形成草案都可把 canonical plan 与 preview pointer 附着到现有 pending proposal，revision 与 selected nodes 不变；失败只保存待核验草案，不采用。
 - 用户“保持当前”只移除 itinerary 字段；研究候选继续保留。用户“采用优化方案”才由现有 `acceptTripChange` 提交候选并把同一份已核验 Mobility 写入 `environment.mobility`。
 - 逐段 route mode 先经服务端复核，再随同一 Trial 确认。确认会复用 preview cache；缓存不存在时只能重新核验同一 canonical plan，不能让模型临时改写。
 - `buildItineraryDraft()` 只保留为 quick comparison / conservative fallback；正常计划通过 `itineraryPlanToDraft()` 保留模型明确站序，`finalizeItinerarySchedule()` 只顺延 flexible time，不擅自重排。

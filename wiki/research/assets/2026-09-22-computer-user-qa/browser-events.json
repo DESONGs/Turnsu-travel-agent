@@ -1,0 +1,374 @@
+[
+  {
+    "at": "2026-09-21T16:46:26.294Z",
+    "kind": "submit",
+    "caseId": "C01",
+    "text": "想出去玩几天，帮我安排一下。"
+  },
+  {
+    "at": "2026-09-21T16:46:50.790Z",
+    "kind": "observation",
+    "name": "C01-question",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:46:55.312Z",
+    "kind": "observation",
+    "name": "C01-reloaded",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:47:12.517Z",
+    "kind": "observation",
+    "name": "C01-restored",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:49:37.066Z",
+    "kind": "submit",
+    "caseId": "C02",
+    "text": "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。"
+  },
+  {
+    "at": "2026-09-21T16:49:41.525Z",
+    "kind": "submit",
+    "caseId": "C08",
+    "text": "2026年10月15日我和一位家人共2人从杭州到上海玩一天，预算6000元，晚上住一晚，第二天自行返回。请查询真实候选并排完整行程，不要使用示例景点或虚构路线。"
+  },
+  {
+    "at": "2026-09-21T16:49:59.466Z",
+    "kind": "observation",
+    "name": "C08-real-provider-result",
+    "url": "http://127.0.0.1:55428/"
+  },
+  {
+    "at": "2026-09-21T16:50:09.074Z",
+    "kind": "submit",
+    "caseId": "C02-retry-after-harness-restart",
+    "text": "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。"
+  },
+  {
+    "at": "2026-09-21T16:50:25.364Z",
+    "kind": "observation",
+    "name": "C02-date-question",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:50:29.183Z",
+    "kind": "observation",
+    "name": "C08-real-provider-final",
+    "url": "http://127.0.0.1:55428/"
+  },
+  {
+    "at": "2026-09-21T16:50:46.517Z",
+    "kind": "observation",
+    "name": "C08-outcome",
+    "url": "http://127.0.0.1:55428/"
+  },
+  {
+    "at": "2026-09-21T16:50:53.931Z",
+    "kind": "observation",
+    "name": "C08-expanded",
+    "url": "http://127.0.0.1:55428/"
+  },
+  {
+    "at": "2026-09-21T16:50:59.574Z",
+    "kind": "observation",
+    "name": "C08-retry-read",
+    "url": "http://127.0.0.1:55428/"
+  },
+  {
+    "at": "2026-09-21T16:51:25.601Z",
+    "kind": "observation",
+    "name": "C02-mobile-question",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:51:25.895Z",
+    "kind": "submit",
+    "caseId": "C02-answer",
+    "text": "2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。"
+  },
+  {
+    "at": "2026-09-21T16:51:50.915Z",
+    "kind": "observation",
+    "name": "C02-after-answer",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:32.891Z",
+    "kind": "observation",
+    "name": "C02-draft-ready",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:37.697Z",
+    "kind": "observation",
+    "name": "C02-draft-message",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:38.030Z",
+    "kind": "observation",
+    "name": "C02-mobile-itinerary",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:43.700Z",
+    "kind": "observation",
+    "name": "C02-route-details",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:50.092Z",
+    "kind": "observation",
+    "name": "C03-adopted",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:58.938Z",
+    "kind": "observation",
+    "name": "C03-after-refresh",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:52:59.502Z",
+    "kind": "submit",
+    "caseId": "C03-budget-only",
+    "text": "把总预算改成3000元，已经采用的安排全部保留，只保存预算调整，不要重新排整个行程。"
+  },
+  {
+    "at": "2026-09-21T16:53:18.983Z",
+    "kind": "observation",
+    "name": "C03-budget-reply",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:53:19.594Z",
+    "kind": "observation",
+    "name": "C03-budget-preserved-route",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:53:25.049Z",
+    "kind": "submit",
+    "caseId": "C04",
+    "text": "从已经查到的候选里，把酒店换成另一家、晚餐换成另一家餐厅；午餐、高铁和其他游玩安排保持原样。预算还是3000，不要重新研究不受影响的内容。请先做完整调整草案，不要替我采用。"
+  },
+  {
+    "at": "2026-09-21T16:53:39.869Z",
+    "kind": "observation",
+    "name": "C04-progress",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:06.073Z",
+    "kind": "observation",
+    "name": "C04-result",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:33.532Z",
+    "kind": "observation",
+    "name": "C04-completed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:43.078Z",
+    "kind": "observation",
+    "name": "C04-full-reply",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:43.417Z",
+    "kind": "observation",
+    "name": "C04-review",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:43.746Z",
+    "kind": "observation",
+    "name": "C04-discarded",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:54:50.413Z",
+    "kind": "submit",
+    "caseId": "C05",
+    "text": "我补充一个重要条件：我使用轮椅，全程无台阶是硬要求，可以打车。请针对这份已采用行程补查无障碍证据，并生成相应的完整调整草案；保留现有安排作对照，不要替我采用，也不要放宽条件。"
+  },
+  {
+    "at": "2026-09-21T16:55:08.760Z",
+    "kind": "observation",
+    "name": "C05-progress",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:55:36.468Z",
+    "kind": "observation",
+    "name": "C05-later",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:55:43.450Z",
+    "kind": "observation",
+    "name": "C05-old-plan-during-check",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:55:50.322Z",
+    "kind": "observation",
+    "name": "C05-result",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:56:04.024Z",
+    "kind": "observation",
+    "name": "C05-completed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:56:50.846Z",
+    "kind": "submit",
+    "caseId": "C06",
+    "text": "2026年10月15日我一个人在上海住一晚，整趟预算3000元。现在只比较安静的酒店候选，先不要餐厅、景点或完整行程，也不要确认。"
+  },
+  {
+    "at": "2026-09-21T16:57:07.871Z",
+    "kind": "observation",
+    "name": "C06-current",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:57:12.107Z",
+    "kind": "observation",
+    "name": "C06-reply",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:57:21.580Z",
+    "kind": "observation",
+    "name": "C06-full-reply",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:57:22.756Z",
+    "kind": "submit",
+    "caseId": "C07",
+    "text": "2026年10月15日我从杭州到上海玩一天，总预算只有100元，必须包含高铁、当天吃饭、一个收费景点和一晚酒店。请安排完整行程，预算不能增加，也不能默默删掉要求。"
+  },
+  {
+    "at": "2026-09-21T16:57:29.515Z",
+    "kind": "observation",
+    "name": "C05-final",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:58:08.237Z",
+    "kind": "observation",
+    "name": "C07-current",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:58:11.642Z",
+    "kind": "observation",
+    "name": "C05-failed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:58:21.411Z",
+    "kind": "action",
+    "caseId": "C05-recovery",
+    "action": "点击失败后的继续规划一次"
+  },
+  {
+    "at": "2026-09-21T16:58:26.458Z",
+    "kind": "observation",
+    "name": "C07-result",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:58:35.691Z",
+    "kind": "observation",
+    "name": "C07-blocked-budget",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:58:36.275Z",
+    "kind": "action",
+    "caseId": "C07-answer",
+    "action": "点击稳定预算选项：改为650元，重新核验"
+  },
+  {
+    "at": "2026-09-21T16:59:22.314Z",
+    "kind": "observation",
+    "name": "C07-answer-failed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T16:59:35.310Z",
+    "kind": "action",
+    "caseId": "C07-recovery",
+    "action": "点击预算选项失败后的继续规划一次"
+  },
+  {
+    "at": "2026-09-21T17:00:18.263Z",
+    "kind": "observation",
+    "name": "C05-recovery-failed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:00:18.335Z",
+    "kind": "observation",
+    "name": "C07-recovery-failed",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:00:29.826Z",
+    "kind": "submit",
+    "caseId": "C09",
+    "text": "2026年10月15日至16日我一个人从杭州去上海两天，预算6000元，请生成完整行程。"
+  },
+  {
+    "at": "2026-09-21T17:00:41.741Z",
+    "kind": "observation",
+    "name": "C09-before-cancel-state",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:03:26.547Z",
+    "kind": "observation",
+    "name": "C05-after-failed-recovery-plan",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:04:34.315Z",
+    "kind": "observation",
+    "name": "C05-original-after-discard",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:04:40.129Z",
+    "kind": "observation",
+    "name": "C05-original-timeline-lost",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:09:03.188Z",
+    "kind": "observation",
+    "name": "C05-after-discard-refresh",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:11:14.771Z",
+    "kind": "observation",
+    "name": "C05-after-discard-refresh",
+    "url": "http://127.0.0.1:18900/"
+  },
+  {
+    "at": "2026-09-21T17:11:19.827Z",
+    "kind": "observation",
+    "name": "C05-after-discard-refresh",
+    "url": "http://127.0.0.1:18900/"
+  }
+]

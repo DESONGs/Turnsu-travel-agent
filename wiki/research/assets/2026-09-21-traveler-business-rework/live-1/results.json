@@ -1,0 +1,3440 @@
+{
+  "schemaVersion": "traveler-acceptance-results-v1",
+  "startedAt": "2026-09-21T05:05:11.194Z",
+  "datasetHash": "fc0cab034b0b224e1cbbfa29f40167b504a2c4f381bf4e7f17671f1d4ecb510d",
+  "node": "v26.7.0",
+  "evidenceScope": "Real native Pi Parent and Jev, authenticated HTTP and PostgreSQL. T08 uses configured travel Providers; other model scenarios use explicitly fictional reference travel facts. Browser scenarios are recorded separately. No purchases or third-party posts.",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "aba1c596489bca33bddfac26d107d9838693fcc992b2a6faa51039872cab81eb",
+    "src/agent/travel-execution-service.mjs": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3",
+    "src/api/travel-service.mjs": "90450d69676b8f8aba7c593623490b93c86c9236c8528b580ce3aec30616c6f6",
+    "src/persistence/execution-repository.mjs": "87ebde1259d53a0051b38b9395cb080cd9d1049b0351a6392d8f1e9769943276",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "24dee49efd233699fc44059d51c335cb32307dad2734344acc588aaae587abea",
+    "tests/fixtures/traveler-acceptance-cases.mjs": "e98b73625fcc14e4e5e323813ffac327d6e8409e66fe5893f7e375f509411196",
+    "travel-agent-pi-package/src/core/trip-feasibility.ts": "63a5c012865616a5e5bcf6ce9e9a4ab2917fc88a905e5c0c0adba697094fd808",
+    "travel-agent-pi-package/src/core/itinerary-proposal.ts": "1b2d1950b80d544bc02a07a16cc81f4927f3419951a40e8174c1dc1fae984f32",
+    "travel-agent-pi-package/src/core/itinerary-schedule.ts": "1c0fced46f07c350af05d1635cc4c925799e3d80910c853063173b3301885aee",
+    "travel-agent-pi-package/src/runtime/trip-runtime-implementation.ts": "d692bb762a942f69825f23d2b232114b99a8cff2621b4b975ffdd47945a33bd3",
+    "travel-agent-pi-package/src/host/travel-agent-session.ts": "adaafa9d398e622e7f62c231ccbbb52573ee3763d9e596cdbd9ab5cb09a54709",
+    "plugins/travel-agent/skills/plan-trip/SKILL.md": "1558adaabc7f018529c81159ffe00d4eaa2ab71fe19e8c155f46460ddae1ae9f",
+    "src/web/travel-app.jsx": "ed5bd16c90b5b2251e4cbeda9897227c2f3525f8e816ba6b2c834b32daef6859"
+  },
+  "configured": {
+    "parent": true,
+    "child": true,
+    "jev": true,
+    "amap": false
+  },
+  "rows": [
+    {
+      "id": "T05",
+      "title": "补一个日期后自动继续，重复点击不重复执行",
+      "travelFacts": "fictional_reference_provider",
+      "checks": [
+        {
+          "name": "完成或等待一个用户回答",
+          "passed": true,
+          "actual": "awaiting_input"
+        },
+        {
+          "name": "未擅自确认安排",
+          "passed": true,
+          "actual": []
+        },
+        {
+          "name": "形成稳定问题",
+          "passed": true,
+          "actual": {
+            "schemaVersion": "travel-question-v2",
+            "runId": "run_f240b951-e9d0-438b-bad5-5c17387b644a",
+            "questionId": "question_527f4dfb227b686d",
+            "question": "上海这一天想定在哪天出发？日期一确定，我才能核验当天天气、酒店房态和杭州到上海的车次班次，再排出具体的按天行程。",
+            "choices": [
+              "9月下旬出发（本周内）",
+              "10月1日至7日国庆假期",
+              "其他日期，我直接告诉你"
+            ],
+            "options": [
+              {
+                "optionId": "option_c1c35536a79fcfc1",
+                "label": "9月下旬出发（本周内）",
+                "impact": "节前工作日，客流和房价通常更平稳，室内外安排都好排"
+              },
+              {
+                "optionId": "option_6fa418c9f75333bd",
+                "label": "10月1日至7日国庆假期",
+                "impact": "假期客流量大、房价偏高，户外热门点需要备选并留出换乘缓冲"
+              },
+              {
+                "optionId": "option_2381a6ffe6df9480",
+                "label": "其他日期，我直接告诉你",
+                "impact": "我按你给的日期重新核验天气与房态，再定顺序"
+              }
+            ],
+            "dependencyHash": "10642f772f5c53f35ebc37a1e0a3eded0e12e36836a1626f85913fac88167f7e",
+            "readSet": [
+              "tripId",
+              "revision",
+              "brief",
+              "travelers",
+              "nodes",
+              "locks"
+            ],
+            "status": "open",
+            "impact": "出发日期直接决定天气核验、住宿价格与房态、景点开放情况和城际班次是否可查，是这趟行程能否落地的前提。"
+          }
+        },
+        {
+          "name": "优先询问缺失的出发日期",
+          "passed": true,
+          "actual": {
+            "schemaVersion": "travel-question-v2",
+            "runId": "run_f240b951-e9d0-438b-bad5-5c17387b644a",
+            "questionId": "question_527f4dfb227b686d",
+            "question": "上海这一天想定在哪天出发？日期一确定，我才能核验当天天气、酒店房态和杭州到上海的车次班次，再排出具体的按天行程。",
+            "choices": [
+              "9月下旬出发（本周内）",
+              "10月1日至7日国庆假期",
+              "其他日期，我直接告诉你"
+            ],
+            "options": [
+              {
+                "optionId": "option_c1c35536a79fcfc1",
+                "label": "9月下旬出发（本周内）",
+                "impact": "节前工作日，客流和房价通常更平稳，室内外安排都好排"
+              },
+              {
+                "optionId": "option_6fa418c9f75333bd",
+                "label": "10月1日至7日国庆假期",
+                "impact": "假期客流量大、房价偏高，户外热门点需要备选并留出换乘缓冲"
+              },
+              {
+                "optionId": "option_2381a6ffe6df9480",
+                "label": "其他日期，我直接告诉你",
+                "impact": "我按你给的日期重新核验天气与房态，再定顺序"
+              }
+            ],
+            "dependencyHash": "10642f772f5c53f35ebc37a1e0a3eded0e12e36836a1626f85913fac88167f7e",
+            "readSet": [
+              "tripId",
+              "revision",
+              "brief",
+              "travelers",
+              "nodes",
+              "locks"
+            ],
+            "status": "open",
+            "impact": "出发日期直接决定天气核验、住宿价格与房态、景点开放情况和城际班次是否可查，是这趟行程能否落地的前提。"
+          }
+        },
+        {
+          "name": "另一API恢复同一问题",
+          "passed": true
+        },
+        {
+          "name": "双击只创建一个回答任务",
+          "passed": true
+        },
+        {
+          "name": "回答只写入一次",
+          "passed": true
+        },
+        {
+          "name": "日期回答后自动形成草案",
+          "passed": true,
+          "actual": "trial_ready"
+        },
+        {
+          "name": "预算和目的地保留",
+          "passed": true,
+          "actual": {
+            "dates": "2026-10-15",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 1,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1
+          }
+        }
+      ],
+      "turns": [
+        {
+          "runId": "run_f240b951-e9d0-438b-bad5-5c17387b644a",
+          "status": "awaiting_input",
+          "admissionMs": 44,
+          "totalMs": 6791,
+          "firstUsefulMs": null,
+          "brief": {
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 1,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1
+          },
+          "travelers": [
+            {
+              "role": "traveler",
+              "language": "zh-CN",
+              "careNeeds": {},
+              "travelerId": "traveler_1",
+              "displayName": "你",
+              "operability": {},
+              "relationship": null,
+              "hardConstraints": [],
+              "softPreferences": []
+            }
+          ],
+          "selected": [],
+          "question": {
+            "schemaVersion": "travel-question-v2",
+            "runId": "run_f240b951-e9d0-438b-bad5-5c17387b644a",
+            "questionId": "question_527f4dfb227b686d",
+            "question": "上海这一天想定在哪天出发？日期一确定，我才能核验当天天气、酒店房态和杭州到上海的车次班次，再排出具体的按天行程。",
+            "choices": [
+              "9月下旬出发（本周内）",
+              "10月1日至7日国庆假期",
+              "其他日期，我直接告诉你"
+            ],
+            "options": [
+              {
+                "optionId": "option_c1c35536a79fcfc1",
+                "label": "9月下旬出发（本周内）",
+                "impact": "节前工作日，客流和房价通常更平稳，室内外安排都好排"
+              },
+              {
+                "optionId": "option_6fa418c9f75333bd",
+                "label": "10月1日至7日国庆假期",
+                "impact": "假期客流量大、房价偏高，户外热门点需要备选并留出换乘缓冲"
+              },
+              {
+                "optionId": "option_2381a6ffe6df9480",
+                "label": "其他日期，我直接告诉你",
+                "impact": "我按你给的日期重新核验天气与房态，再定顺序"
+              }
+            ],
+            "dependencyHash": "10642f772f5c53f35ebc37a1e0a3eded0e12e36836a1626f85913fac88167f7e",
+            "readSet": [
+              "tripId",
+              "revision",
+              "brief",
+              "travelers",
+              "nodes",
+              "locks"
+            ],
+            "status": "open",
+            "impact": "出发日期直接决定天气核验、住宿价格与房态、景点开放情况和城际班次是否可查，是这趟行程能否落地的前提。"
+          },
+          "outcome": {
+            "status": "ready",
+            "missingDomains": [],
+            "incompleteAnalysis": [],
+            "planningStatus": null
+          },
+          "reply": "上海这一天想定在哪天出发？日期一确定，我才能核验当天天气、酒店房态和杭州到上海的车次班次，再排出具体的按天行程。",
+          "userMessages": [
+            "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。"
+          ],
+          "candidateDomains": [],
+          "planningAvailability": {
+            "status": "available"
+          },
+          "providerReads": [],
+          "accounting": [
+            {
+              "scope": "deepseek",
+              "calls": 2,
+              "input_tokens": "24037",
+              "output_tokens": "1214"
+            }
+          ],
+          "toolErrors": [],
+          "events": [
+            {
+              "type": "run_queued",
+              "status": "queued",
+              "sequence": 1,
+              "at": 1789967111402
+            },
+            {
+              "type": "run_started",
+              "status": "running",
+              "sequence": 2,
+              "at": 1789967111409
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_Exlae2xYvNAjqATQ838Z4086",
+              "sequence": 3,
+              "at": 1789967114490
+            },
+            {
+              "type": "tool_finished",
+              "status": "saved",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_Exlae2xYvNAjqATQ838Z4086",
+              "sequence": 4,
+              "at": 1789967114523
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "ask_travel_question",
+              "toolCallId": "call_00_pITrjIUCIdaRdteNE0UN2898",
+              "sequence": 5,
+              "at": 1789967117808
+            },
+            {
+              "type": "tool_finished",
+              "status": "needs_context",
+              "toolName": "ask_travel_question",
+              "toolCallId": "call_00_pITrjIUCIdaRdteNE0UN2898",
+              "sequence": 6,
+              "at": 1789967117867
+            },
+            {
+              "type": "run_finished",
+              "status": "awaiting_input",
+              "sequence": 7,
+              "at": 1789967117914
+            }
+          ]
+        },
+        {
+          "runId": "run_9ab2edee-5d58-459b-a7cf-46ae9b434f0e",
+          "status": "completed",
+          "admissionMs": 18,
+          "totalMs": 24800,
+          "firstUsefulMs": 5023,
+          "brief": {
+            "dates": "2026-10-15",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 1,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1
+          },
+          "travelers": [
+            {
+              "role": "traveler",
+              "language": "zh-CN",
+              "careNeeds": {},
+              "travelerId": "traveler_1",
+              "displayName": "你",
+              "operability": {},
+              "relationship": null,
+              "hardConstraints": [],
+              "softPreferences": []
+            }
+          ],
+          "selected": [],
+          "trial": {
+            "schemaVersion": "itinerary-planning-trial-v1",
+            "status": "trial_ready",
+            "tripId": "trip_9ac1c8d5",
+            "revision": 1,
+            "committed": false,
+            "previewId": "itp_d275ddd7d8b53b47e031b347ef580629",
+            "planningSource": "model_plan",
+            "planSummary": {
+              "objective": "2026年10月15日一个人从杭州到上海玩一天，当晚在上海住一晚，第二天自行返程；只安排10月15日这一天的完整行程，不做返程安排。",
+              "priorities": [
+                "上午先抵达上海，把白天完整时段留给游览",
+                "先寄存行李再游览，入住放到傍晚回住宿时办",
+                "午餐和晚餐落在两段游览之间，不打断游玩节奏",
+                "一个人出行，全天减少来回折返"
+              ],
+              "assumptions": [
+                "10月15日所在日期的天气资料目前还查不到，户外那一段和步行动线要等临近出发重新核验后再定。",
+                "行程里的价格都是参考价，酒店房态和城际班次都需要在预订前再确认一次。",
+                "上午按 08:00 从杭州东出发、09:00 抵达上海虹桥的城际班次作为对照，不是已经购买的车票。",
+                "第二天返程由你自行安排，本次不排返程车次。"
+              ],
+              "needsContext": [],
+              "stopRationales": [
+                {
+                  "nodeId": "transport_0_452924229c813ff522a342a8_1",
+                  "dayIndex": 1,
+                  "role": "intercity_arrival",
+                  "rationale": "按对照班次上午抵达上海虹桥，把上午到傍晚的连续时段留给当天游览，返程留到第二天自行安排。"
+                },
+                {
+                  "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                  "dayIndex": 1,
+                  "role": "bag_drop",
+                  "rationale": "抵达后先寄存行李，白天的游览不用拖着箱子，正式入住留到傍晚回到同一处再办。"
+                },
+                {
+                  "nodeId": "play_0_452924229c813ff522a342a8_1",
+                  "dayIndex": 1,
+                  "role": "activity",
+                  "rationale": "上午先用室内、安静、有本地文化介绍的这一处作为当天第一个游览点，节奏轻，适合刚下车进入状态。"
+                },
+                {
+                  "nodeId": "food_0_452924229c813ff522a342a8_1",
+                  "dayIndex": 1,
+                  "role": "meal",
+                  "rationale": "午餐放在上午和下午两段游览之间，作为休息和补给，避免把用餐挤进游玩时段。"
+                },
+                {
+                  "nodeId": "play_2_452924229c813ff522a342a8_3",
+                  "dayIndex": 1,
+                  "role": "activity",
+                  "rationale": "下午换成一类白天户外性质的体验，与上午的室内项目区分开，一天里不重复同一种玩法。"
+                },
+                {
+                  "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                  "dayIndex": 1,
+                  "role": "stay_check_in",
+                  "rationale": "傍晚回到上午寄存行李的同一家住宿办入住，行李和落脚点只处理一次，也把白天整段留给游览。"
+                },
+                {
+                  "nodeId": "food_2_452924229c813ff522a342a8_3",
+                  "dayIndex": 1,
+                  "role": "meal",
+                  "rationale": "晚餐排在入住之后，当天游览收尾再吃饭，之后直接休息，为第二天自行返程留出体力。"
+                }
+              ]
+            },
+            "selectedNodes": [
+              {
+                "nodeId": "transport_0_452924229c813ff522a342a8_1",
+                "domain": "transport",
+                "title": "transport option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T09:00:00+08:00",
+                "location": {
+                  "name": "transport option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person_one_way",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "arrivalAt": "2026-10-15T09:00:00+08:00",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "highSpeed": true,
+                  "departureAt": "2026-10-15T08:00:00+08:00",
+                  "sourceLabel": "decision_fixture",
+                  "arrivalPlace": {
+                    "label": "上海虹桥"
+                  },
+                  "mobilityRole": "intercity_inventory",
+                  "researchDepth": "provider_search",
+                  "routeVerified": false,
+                  "transportType": "TRAIN",
+                  "departurePlace": {
+                    "label": "杭州东"
+                  },
+                  "planningWindow": {
+                    "basis": "provider_schedule",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "label": "出发日 · 城际抵达",
+                    "startAt": "2026-10-15T08:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 0.27,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.73,
+                    "candidateId": "transport_0"
+                  },
+                  "scheduleVerified": true,
+                  "inventoryVerified": true,
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "play_0_452924229c813ff522a342a8_1",
+                "domain": "play",
+                "title": "play option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T10:00:00+08:00",
+                "location": {
+                  "name": "play option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T12:00:00+08:00",
+                    "label": "第 1 天 10:00–12:00 · 轻松体验",
+                    "startAt": "2026-10-15T10:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 0.16,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.84,
+                    "candidateId": "play_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "food_0_452924229c813ff522a342a8_1",
+                "domain": "food",
+                "title": "food option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T18:00:00+08:00",
+                "location": {
+                  "name": "food option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T19:30:00+08:00",
+                    "label": "第 1 天 18:00–19:30 · 晚餐",
+                    "startAt": "2026-10-15T18:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 0.15,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.85,
+                    "candidateId": "food_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "play_2_452924229c813ff522a342a8_3",
+                "domain": "play",
+                "title": "play option 2",
+                "summary": "户外活动，白天环境热闹",
+                "time": "2026-10-15T10:00:00+08:00",
+                "location": {
+                  "name": "play option 2",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T12:00:00+08:00",
+                    "label": "第 1 天 10:00–12:00 · 轻松体验",
+                    "startAt": "2026-10-15T10:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "户外活动，白天环境热闹",
+                  "decisionJudgment": {
+                    "fit": 0.09,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.91,
+                    "candidateId": "play_2"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                "domain": "stay",
+                "title": "stay option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T16:00:00+08:00",
+                "location": {
+                  "name": "stay option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_night_room",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T18:00:00+08:00",
+                    "label": "第 1 天 16:00–18:00 · 抵达后入住",
+                    "startAt": "2026-10-15T16:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 0.28,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.72,
+                    "candidateId": "stay_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "food_2_452924229c813ff522a342a8_3",
+                "domain": "food",
+                "title": "food option 2",
+                "summary": "户外活动，白天环境热闹",
+                "time": "2026-10-15T18:00:00+08:00",
+                "location": {
+                  "name": "food option 2",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:22.387Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:22.387Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T19:30:00+08:00",
+                    "label": "第 1 天 18:00–19:30 · 晚餐",
+                    "startAt": "2026-10-15T18:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "户外活动，白天环境热闹",
+                  "decisionJudgment": {
+                    "fit": 0.13,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.87,
+                    "candidateId": "food_2"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              }
+            ],
+            "mobility": {
+              "schemaVersion": "trip-mobility-v1",
+              "status": "completed",
+              "destination": "上海",
+              "source": "fixture",
+              "checkedAt": "2026-09-21T05:05:37.097Z",
+              "freshUntil": "2026-09-21T06:05:37.097Z",
+              "coverage": {
+                "routedNodeIds": [
+                  "transport_0_452924229c813ff522a342a8_1",
+                  "stay_0_452924229c813ff522a342a8_1",
+                  "play_0_452924229c813ff522a342a8_1",
+                  "food_0_452924229c813ff522a342a8_1",
+                  "play_2_452924229c813ff522a342a8_3",
+                  "food_2_452924229c813ff522a342a8_3"
+                ],
+                "unresolvedNodeIds": [],
+                "routedStopIds": [
+                  "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival",
+                  "stay_0_452924229c813ff522a342a8_1:1:bag_drop",
+                  "play_0_452924229c813ff522a342a8_1:1:activity",
+                  "food_0_452924229c813ff522a342a8_1:1:meal",
+                  "play_2_452924229c813ff522a342a8_3:1:activity",
+                  "stay_0_452924229c813ff522a342a8_1:1:stay_check_in",
+                  "food_2_452924229c813ff522a342a8_3:1:meal"
+                ],
+                "unresolvedStopIds": [],
+                "unscheduled": false
+              },
+              "legs": [
+                {
+                  "legId": "fixture_leg_0",
+                  "origin": {
+                    "nodeId": "transport_0_452924229c813ff522a342a8_1",
+                    "stopId": "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival",
+                    "label": "transport option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "startAt": "2026-10-15T01:00:00.000Z",
+                    "endAt": "2026-10-15T01:00:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:bag_drop",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T01:40:00.000Z",
+                    "endAt": "2026-10-15T02:10:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_1",
+                  "origin": {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:bag_drop",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T01:40:00.000Z",
+                    "endAt": "2026-10-15T02:10:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "play_0_452924229c813ff522a342a8_1",
+                    "stopId": "play_0_452924229c813ff522a342a8_1:1:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T02:30:00.000Z",
+                    "endAt": "2026-10-15T04:30:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_2",
+                  "origin": {
+                    "nodeId": "play_0_452924229c813ff522a342a8_1",
+                    "stopId": "play_0_452924229c813ff522a342a8_1:1:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T02:30:00.000Z",
+                    "endAt": "2026-10-15T04:30:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "food_0_452924229c813ff522a342a8_1",
+                    "stopId": "food_0_452924229c813ff522a342a8_1:1:meal",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T04:45:00.000Z",
+                    "endAt": "2026-10-15T05:45:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_3",
+                  "origin": {
+                    "nodeId": "food_0_452924229c813ff522a342a8_1",
+                    "stopId": "food_0_452924229c813ff522a342a8_1:1:meal",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T04:45:00.000Z",
+                    "endAt": "2026-10-15T05:45:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "play_2_452924229c813ff522a342a8_3",
+                    "stopId": "play_2_452924229c813ff522a342a8_3:1:activity",
+                    "label": "play option 2",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T06:15:00.000Z",
+                    "endAt": "2026-10-15T08:15:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_4",
+                  "origin": {
+                    "nodeId": "play_2_452924229c813ff522a342a8_3",
+                    "stopId": "play_2_452924229c813ff522a342a8_3:1:activity",
+                    "label": "play option 2",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T06:15:00.000Z",
+                    "endAt": "2026-10-15T08:15:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:stay_check_in",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T08:30:00.000Z",
+                    "endAt": "2026-10-15T09:15:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_5",
+                  "origin": {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:stay_check_in",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T08:30:00.000Z",
+                    "endAt": "2026-10-15T09:15:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "food_2_452924229c813ff522a342a8_3",
+                    "stopId": "food_2_452924229c813ff522a342a8_3:1:meal",
+                    "label": "food option 2",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T10:00:00.000Z",
+                    "endAt": "2026-10-15T11:15:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                }
+              ],
+              "itinerary": {
+                "schemaVersion": "trip-itinerary-v1",
+                "planningSource": "model_plan",
+                "tripDates": [
+                  "2026-10-15"
+                ],
+                "stops": [
+                  {
+                    "nodeId": "transport_0_452924229c813ff522a342a8_1",
+                    "domain": "transport",
+                    "title": "transport option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "startAt": "2026-10-15T09:00:00+08:00",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "timeSource": "provider_schedule",
+                    "fixed": true,
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "rationale": "按对照班次上午抵达上海虹桥，把上午到傍晚的连续时段留给当天游览，返程留到第二天自行安排。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival"
+                  },
+                  {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "domain": "stay",
+                    "title": "stay option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T09:40:00+08:00",
+                    "endAt": "2026-10-15T10:10:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "抵达后先寄存行李，白天的游览不用拖着箱子，正式入住留到傍晚回到同一处再办。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:bag_drop"
+                  },
+                  {
+                    "nodeId": "play_0_452924229c813ff522a342a8_1",
+                    "domain": "play",
+                    "title": "play option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T10:30:00+08:00",
+                    "endAt": "2026-10-15T12:30:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk",
+                      "transit"
+                    ],
+                    "rationale": "上午先用室内、安静、有本地文化介绍的这一处作为当天第一个游览点，节奏轻，适合刚下车进入状态。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "play_0_452924229c813ff522a342a8_1:1:activity"
+                  },
+                  {
+                    "nodeId": "food_0_452924229c813ff522a342a8_1",
+                    "domain": "food",
+                    "title": "food option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T12:50:00+08:00",
+                    "endAt": "2026-10-15T13:50:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk"
+                    ],
+                    "rationale": "午餐放在上午和下午两段游览之间，作为休息和补给，避免把用餐挤进游玩时段。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "food_0_452924229c813ff522a342a8_1:1:meal"
+                  },
+                  {
+                    "nodeId": "play_2_452924229c813ff522a342a8_3",
+                    "domain": "play",
+                    "title": "play option 2",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T14:15:00+08:00",
+                    "endAt": "2026-10-15T16:15:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk",
+                      "transit"
+                    ],
+                    "rationale": "下午换成一类白天户外性质的体验，与上午的室内项目区分开，一天里不重复同一种玩法。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "play_2_452924229c813ff522a342a8_3:1:activity"
+                  },
+                  {
+                    "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                    "domain": "stay",
+                    "title": "stay option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T16:35:00+08:00",
+                    "endAt": "2026-10-15T17:20:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit",
+                      "walk"
+                    ],
+                    "rationale": "傍晚回到上午寄存行李的同一家住宿办入住，行李和落脚点只处理一次，也把白天整段留给游览。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "stay_0_452924229c813ff522a342a8_1:1:stay_check_in"
+                  },
+                  {
+                    "nodeId": "food_2_452924229c813ff522a342a8_3",
+                    "domain": "food",
+                    "title": "food option 2",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T18:00:00+08:00",
+                    "endAt": "2026-10-15T19:15:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk"
+                    ],
+                    "rationale": "晚餐排在入住之后，当天游览收尾再吃饭，之后直接休息，为第二天自行返程留出体力。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "food_2_452924229c813ff522a342a8_3:1:meal"
+                  }
+                ],
+                "days": [
+                  {
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "stopIds": [
+                      "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival",
+                      "stay_0_452924229c813ff522a342a8_1:1:bag_drop",
+                      "play_0_452924229c813ff522a342a8_1:1:activity",
+                      "food_0_452924229c813ff522a342a8_1:1:meal",
+                      "play_2_452924229c813ff522a342a8_3:1:activity",
+                      "stay_0_452924229c813ff522a342a8_1:1:stay_check_in",
+                      "food_2_452924229c813ff522a342a8_3:1:meal"
+                    ]
+                  }
+                ]
+              },
+              "feasibility": {
+                "schemaVersion": "trip-feasibility-v1",
+                "canConfirm": true,
+                "status": "feasible",
+                "primaryBlocker": null,
+                "issues": [
+                  {
+                    "code": "flexible_window_shifted",
+                    "severity": "warning",
+                    "message": "food option 0已按前序路线耗时顺延。",
+                    "stopIds": [
+                      "food_0_452924229c813ff522a342a8_1:1:meal"
+                    ],
+                    "dayIndex": 1,
+                    "observed": {
+                      "previousEndAt": "2026-10-15T12:30:00+08:00",
+                      "requestedStartAt": "2026-10-15T12:50:00+08:00",
+                      "earliestStartAt": "2026-10-15T12:50:00+08:00",
+                      "routeMinutes": 20,
+                      "routeMode": "taxi"
+                    },
+                    "allowedRepairDirections": [
+                      "shift_later"
+                    ],
+                    "checkedAt": "2026-09-21T05:05:37.097Z"
+                  },
+                  {
+                    "code": "flexible_window_shifted",
+                    "severity": "warning",
+                    "message": "stay option 0已按前序路线耗时顺延。",
+                    "stopIds": [
+                      "stay_0_452924229c813ff522a342a8_1:1:stay_check_in"
+                    ],
+                    "dayIndex": 1,
+                    "observed": {
+                      "previousEndAt": "2026-10-15T16:15:00+08:00",
+                      "requestedStartAt": "2026-10-15T16:35:00+08:00",
+                      "earliestStartAt": "2026-10-15T16:35:00+08:00",
+                      "routeMinutes": 20,
+                      "routeMode": "taxi"
+                    },
+                    "allowedRepairDirections": [
+                      "shift_later"
+                    ],
+                    "checkedAt": "2026-09-21T05:05:37.097Z"
+                  }
+                ],
+                "checkedAt": "2026-09-21T05:05:37.097Z"
+              },
+              "travelerFit": {
+                "constrainedTravelerIds": [],
+                "maxContinuousWalkMeters": null,
+                "maxTransfers": null,
+                "planningWalkingTarget": null,
+                "planningTransferTarget": null,
+                "walkingTargetSource": null,
+                "transferTargetSource": null,
+                "stepFreeRequired": false,
+                "avoidStairs": false,
+                "accessibilityEvidence": "not_required",
+                "stayAnchorFits": []
+              },
+              "reason": null,
+              "caveats": [
+                "Controlled fixture, not a real route"
+              ],
+              "sourceDocumentation": null,
+              "fabricatedResults": false
+            },
+            "itinerary": {
+              "schemaVersion": "trip-itinerary-v1",
+              "planningSource": "model_plan",
+              "tripDates": [
+                "2026-10-15"
+              ],
+              "stops": [
+                {
+                  "nodeId": "transport_0_452924229c813ff522a342a8_1",
+                  "domain": "transport",
+                  "title": "transport option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "intercity_arrival",
+                  "startAt": "2026-10-15T09:00:00+08:00",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "timeSource": "provider_schedule",
+                  "fixed": true,
+                  "preferredModes": [
+                    "transit"
+                  ],
+                  "rationale": "按对照班次上午抵达上海虹桥，把上午到傍晚的连续时段留给当天游览，返程留到第二天自行安排。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival"
+                },
+                {
+                  "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                  "domain": "stay",
+                  "title": "stay option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "startAt": "2026-10-15T09:40:00+08:00",
+                  "endAt": "2026-10-15T10:10:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "抵达后先寄存行李，白天的游览不用拖着箱子，正式入住留到傍晚回到同一处再办。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "stay_0_452924229c813ff522a342a8_1:1:bag_drop"
+                },
+                {
+                  "nodeId": "play_0_452924229c813ff522a342a8_1",
+                  "domain": "play",
+                  "title": "play option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T10:30:00+08:00",
+                  "endAt": "2026-10-15T12:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk",
+                    "transit"
+                  ],
+                  "rationale": "上午先用室内、安静、有本地文化介绍的这一处作为当天第一个游览点，节奏轻，适合刚下车进入状态。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "play_0_452924229c813ff522a342a8_1:1:activity"
+                },
+                {
+                  "nodeId": "food_0_452924229c813ff522a342a8_1",
+                  "domain": "food",
+                  "title": "food option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "meal",
+                  "startAt": "2026-10-15T12:50:00+08:00",
+                  "endAt": "2026-10-15T13:50:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk"
+                  ],
+                  "rationale": "午餐放在上午和下午两段游览之间，作为休息和补给，避免把用餐挤进游玩时段。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "food_0_452924229c813ff522a342a8_1:1:meal"
+                },
+                {
+                  "nodeId": "play_2_452924229c813ff522a342a8_3",
+                  "domain": "play",
+                  "title": "play option 2",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T14:15:00+08:00",
+                  "endAt": "2026-10-15T16:15:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk",
+                    "transit"
+                  ],
+                  "rationale": "下午换成一类白天户外性质的体验，与上午的室内项目区分开，一天里不重复同一种玩法。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "play_2_452924229c813ff522a342a8_3:1:activity"
+                },
+                {
+                  "nodeId": "stay_0_452924229c813ff522a342a8_1",
+                  "domain": "stay",
+                  "title": "stay option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "startAt": "2026-10-15T16:35:00+08:00",
+                  "endAt": "2026-10-15T17:20:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "walk"
+                  ],
+                  "rationale": "傍晚回到上午寄存行李的同一家住宿办入住，行李和落脚点只处理一次，也把白天整段留给游览。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "stay_0_452924229c813ff522a342a8_1:1:stay_check_in"
+                },
+                {
+                  "nodeId": "food_2_452924229c813ff522a342a8_3",
+                  "domain": "food",
+                  "title": "food option 2",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "meal",
+                  "startAt": "2026-10-15T18:00:00+08:00",
+                  "endAt": "2026-10-15T19:15:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk"
+                  ],
+                  "rationale": "晚餐排在入住之后，当天游览收尾再吃饭，之后直接休息，为第二天自行返程留出体力。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "food_2_452924229c813ff522a342a8_3:1:meal"
+                }
+              ],
+              "days": [
+                {
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "stopIds": [
+                    "transport_0_452924229c813ff522a342a8_1:1:intercity_arrival",
+                    "stay_0_452924229c813ff522a342a8_1:1:bag_drop",
+                    "play_0_452924229c813ff522a342a8_1:1:activity",
+                    "food_0_452924229c813ff522a342a8_1:1:meal",
+                    "play_2_452924229c813ff522a342a8_3:1:activity",
+                    "stay_0_452924229c813ff522a342a8_1:1:stay_check_in",
+                    "food_2_452924229c813ff522a342a8_3:1:meal"
+                  ]
+                }
+              ]
+            },
+            "feasibility": {
+              "schemaVersion": "trip-feasibility-v1",
+              "canConfirm": true,
+              "status": "feasible",
+              "primaryBlocker": null,
+              "issues": [
+                {
+                  "code": "flexible_window_shifted",
+                  "severity": "warning",
+                  "message": "food option 0已按前序路线耗时顺延。",
+                  "stopIds": [
+                    "food_0_452924229c813ff522a342a8_1:1:meal"
+                  ],
+                  "dayIndex": 1,
+                  "observed": {
+                    "previousEndAt": "2026-10-15T12:30:00+08:00",
+                    "requestedStartAt": "2026-10-15T12:50:00+08:00",
+                    "earliestStartAt": "2026-10-15T12:50:00+08:00",
+                    "routeMinutes": 20,
+                    "routeMode": "taxi"
+                  },
+                  "allowedRepairDirections": [
+                    "shift_later"
+                  ],
+                  "checkedAt": "2026-09-21T05:05:37.097Z"
+                },
+                {
+                  "code": "flexible_window_shifted",
+                  "severity": "warning",
+                  "message": "stay option 0已按前序路线耗时顺延。",
+                  "stopIds": [
+                    "stay_0_452924229c813ff522a342a8_1:1:stay_check_in"
+                  ],
+                  "dayIndex": 1,
+                  "observed": {
+                    "previousEndAt": "2026-10-15T16:15:00+08:00",
+                    "requestedStartAt": "2026-10-15T16:35:00+08:00",
+                    "earliestStartAt": "2026-10-15T16:35:00+08:00",
+                    "routeMinutes": 20,
+                    "routeMode": "taxi"
+                  },
+                  "allowedRepairDirections": [
+                    "shift_later"
+                  ],
+                  "checkedAt": "2026-09-21T05:05:37.097Z"
+                }
+              ],
+              "checkedAt": "2026-09-21T05:05:37.097Z"
+            },
+            "impact": {
+              "stopCount": 6,
+              "estimatedDecisionCostCny": 750,
+              "budget": {
+                "currency": "CNY",
+                "totalBudget": 6000,
+                "domains": {
+                  "stay": {
+                    "committed": 100,
+                    "estimated": 100,
+                    "quality": "reference",
+                    "basis": [
+                      "stay option 0：1 晚 × 1 间房，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "transport": {
+                    "committed": 100,
+                    "estimated": 100,
+                    "quality": "reference",
+                    "basis": [
+                      "transport option 0：1 人 × 单程票价，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "food": {
+                    "committed": 200,
+                    "estimated": 200,
+                    "quality": "reference",
+                    "basis": [
+                      "food option 0：1 人 × 已排 1 餐，100 元",
+                      "food option 2：1 人 × 已排 1 餐，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "play": {
+                    "committed": 200,
+                    "estimated": 200,
+                    "quality": "reference",
+                    "basis": [
+                      "play option 0：1 人 × 已排 1 次体验，100 元",
+                      "play option 2：1 人 × 已排 1 次体验，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "other": {
+                    "committed": 0,
+                    "estimated": 150,
+                    "quality": "estimate",
+                    "basis": [
+                      "已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验"
+                    ],
+                    "unknownCount": 0
+                  }
+                },
+                "committed": 600,
+                "estimated": 750,
+                "exceedsBudget": false
+              },
+              "budgetDelta": {
+                "committed": 600,
+                "estimated": 250,
+                "exceedsBudget": false
+              },
+              "route": {
+                "legCount": 6,
+                "totalMinutes": 120,
+                "walkingMeters": 0,
+                "transfers": 0,
+                "estimatedFareCny": 150
+              },
+              "baseline": {
+                "kind": "none",
+                "route": null
+              },
+              "deltaFromConfirmed": null,
+              "weather": null,
+              "stayAnchorFits": []
+            },
+            "caveats": [
+              "这是试选路线，不会修改已确认行程。",
+              "Controlled fixture, not a real route"
+            ],
+            "fabricatedResults": false,
+            "operationId": "planrun_602c958d:1",
+            "runId": "planrun_602c958d",
+            "baseRevision": 1,
+            "attempt": 1,
+            "proposalId": "itinerary_5dc7241a6d527a7783145804",
+            "selections": {},
+            "issues": [
+              {
+                "code": "flexible_window_shifted",
+                "severity": "warning",
+                "message": "food option 0已按前序路线耗时顺延。",
+                "stopIds": [
+                  "food_0_452924229c813ff522a342a8_1:1:meal"
+                ],
+                "dayIndex": 1,
+                "observed": {
+                  "previousEndAt": "2026-10-15T12:30:00+08:00",
+                  "requestedStartAt": "2026-10-15T12:50:00+08:00",
+                  "earliestStartAt": "2026-10-15T12:50:00+08:00",
+                  "routeMinutes": 20,
+                  "routeMode": "taxi"
+                },
+                "allowedRepairDirections": [
+                  "shift_later"
+                ],
+                "checkedAt": "2026-09-21T05:05:37.097Z"
+              },
+              {
+                "code": "flexible_window_shifted",
+                "severity": "warning",
+                "message": "stay option 0已按前序路线耗时顺延。",
+                "stopIds": [
+                  "stay_0_452924229c813ff522a342a8_1:1:stay_check_in"
+                ],
+                "dayIndex": 1,
+                "observed": {
+                  "previousEndAt": "2026-10-15T16:15:00+08:00",
+                  "requestedStartAt": "2026-10-15T16:35:00+08:00",
+                  "earliestStartAt": "2026-10-15T16:35:00+08:00",
+                  "routeMinutes": 20,
+                  "routeMode": "taxi"
+                },
+                "allowedRepairDirections": [
+                  "shift_later"
+                ],
+                "checkedAt": "2026-09-21T05:05:37.097Z"
+              }
+            ],
+            "accept": {
+              "proposalId": "itinerary_5dc7241a6d527a7783145804",
+              "selections": {},
+              "partial": false,
+              "previewId": "itp_d275ddd7d8b53b47e031b347ef580629",
+              "baseRevision": 1
+            },
+            "checkedAt": "2026-09-21T05:05:37.097Z",
+            "providerCallCount": 1
+          },
+          "outcome": {
+            "status": "ready",
+            "missingDomains": [],
+            "incompleteAnalysis": [],
+            "planningStatus": "trial_ready"
+          },
+          "reply": "10月15日的行程草案已经按你的要求排好并通过路线与时间核验，还只是草案，没有确认写入行程。\n\n当天安排（10月15日，一个人）\n08:00–09:00 杭州东出发、上午抵达上海虹桥的城际班次作为对照起点（只作对照，不是已购票）\n09:40–10:10 先到住宿处寄存行李，白天不用拖着箱子；正式入住留到傍晚\n10:30–12:30 第一段游览：室内、安静、带本地文化介绍的场所，适合刚下车慢慢进入状态\n12:50–13:50 午餐，卡在两段游览之间，用来休息补给\n14:15–16:15 第二段游览：换成白天户外的热闹场所，和上午的室内项目区分开\n16:35–17:20 回到上午寄存行李的同一家住宿办入住\n18:00–19:15 晚餐，排在入住之后，吃完直接休息，给第二天自行返程留体力\n\n取舍说明\n把行李寄存放在游览前、入住放在傍晚，是为了把白天整段留给玩，代价是傍晚要回到同一处办手续，好处是全天路线基本不折返。两段游览一室内一户外，是避免一天里重复同一种玩法；如果你更想整天都偏室内，下午那段可以换。返程按你的要求没有排，第二天由你自行安排。\n\n需要你知道的待核验点\n10月15日的天气资料目前还查不到，所以下午那段户外和步行动线要等临近出发重新核验，遇雨或大风我会给你换成室内备选。\n目前可用候选条目给的是类型描述，还没有具名场馆；你选定后我再落到具体名称、位置和当天的衔接。\n已排项目的价格都是参考价：城际对照班次约100元、住一晚约100元、两餐各约100元、两项体验各约100元，合计约600元，另有市内交通估算约150元，整体离你6000元的预算还有很大余量。房态、票价和班次请在预订前再核一次。\n\n下一步你可以直接在方案区确认这份草案，或者告诉我下午想偏室内还是接受户外，我按你的偏好调整后再给你看。",
+          "userMessages": [
+            "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。",
+            "2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。"
+          ],
+          "candidateDomains": [
+            "play",
+            "food",
+            "stay",
+            "transport"
+          ],
+          "planningAvailability": {
+            "status": "available"
+          },
+          "providerReads": [
+            {
+              "tripId": "trip_9ac1c8d5",
+              "domains": [
+                "play",
+                "food",
+                "stay",
+                "transport"
+              ],
+              "destination": "上海",
+              "at": 1789967122388
+            }
+          ],
+          "accounting": [
+            {
+              "scope": "deepseek",
+              "calls": 5,
+              "input_tokens": "96309",
+              "output_tokens": "4853"
+            },
+            {
+              "scope": "typesafe_account",
+              "calls": 2,
+              "input_tokens": "5823",
+              "output_tokens": "722"
+            }
+          ],
+          "toolErrors": [],
+          "events": [
+            {
+              "type": "run_queued",
+              "status": "queued",
+              "sequence": 1,
+              "at": 1789967118212
+            },
+            {
+              "type": "run_started",
+              "status": "running",
+              "sequence": 2,
+              "at": 1789967118218
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_WMrnDrHI9mTJL5pJRyB18306",
+              "sequence": 3,
+              "at": 1789967119605
+            },
+            {
+              "type": "tool_finished",
+              "status": "saved",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_WMrnDrHI9mTJL5pJRyB18306",
+              "sequence": 4,
+              "at": 1789967119616
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_00_iempptwCyZXJGpmX9XT25749",
+              "sequence": 5,
+              "at": 1789967122378
+            },
+            {
+              "type": "tool_finished",
+              "status": "proposed",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_00_iempptwCyZXJGpmX9XT25749",
+              "sequence": 6,
+              "at": 1789967123235
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_m32Y1V5BafkpAEaAhte45292",
+              "sequence": 7,
+              "at": 1789967124123
+            },
+            {
+              "type": "tool_finished",
+              "status": "ready",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_m32Y1V5BafkpAEaAhte45292",
+              "sequence": 8,
+              "at": 1789967124216
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_koSvUzNjpwyXEFiksqoX1017",
+              "sequence": 9,
+              "at": 1789967137062
+            },
+            {
+              "type": "tool_finished",
+              "status": "trial_ready",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_koSvUzNjpwyXEFiksqoX1017",
+              "sequence": 10,
+              "at": 1789967137156
+            },
+            {
+              "type": "run_finished",
+              "status": "completed",
+              "sequence": 11,
+              "at": 1789967142624
+            }
+          ]
+        }
+      ],
+      "manualReview": "pending",
+      "automatedStatus": "passed"
+    },
+    {
+      "id": "T04",
+      "title": "两天完整规划",
+      "travelFacts": "fictional_reference_provider",
+      "checks": [
+        {
+          "name": "完成或等待一个用户回答",
+          "passed": true,
+          "actual": "completed"
+        },
+        {
+          "name": "未擅自确认安排",
+          "passed": true,
+          "actual": []
+        },
+        {
+          "name": "形成核验后草案",
+          "passed": true,
+          "actual": "trial_ready"
+        },
+        {
+          "name": "保留6000元预算与杭州出发",
+          "passed": true,
+          "actual": {
+            "dates": "2026-10-15 至 2026-10-16",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 2,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1,
+            "foodPreferences": [
+              "本地菜"
+            ]
+          }
+        },
+        {
+          "name": "覆盖两天",
+          "passed": true,
+          "actual": [
+            "2026-10-15",
+            "2026-10-16"
+          ]
+        }
+      ],
+      "turns": [
+        {
+          "runId": "run_0e59ca0e-3a4d-4a71-9028-5da83423d836",
+          "status": "completed",
+          "admissionMs": 13,
+          "totalMs": 42706,
+          "firstUsefulMs": 7345,
+          "brief": {
+            "dates": "2026-10-15 至 2026-10-16",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 2,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1,
+            "foodPreferences": [
+              "本地菜"
+            ]
+          },
+          "travelers": [
+            {
+              "role": "traveler",
+              "language": "zh-CN",
+              "careNeeds": {},
+              "travelerId": "traveler_1",
+              "displayName": "你",
+              "operability": {},
+              "relationship": null,
+              "hardConstraints": [],
+              "softPreferences": []
+            }
+          ],
+          "selected": [],
+          "trial": {
+            "schemaVersion": "itinerary-planning-trial-v1",
+            "status": "trial_ready",
+            "tripId": "trip_09d60d9f",
+            "revision": 0,
+            "committed": false,
+            "previewId": "itp_b25e5135ff3da04e339a8f28ac1ea16d",
+            "planningSource": "model_plan",
+            "planSummary": {
+              "objective": "为一个人 2026年10月15日至16日从杭州到上海的旅行，按“安静的室内活动 + 本地菜”偏好排出两天草案，覆盖抵达、行李寄存、入住、餐饮与室内活动；返程由用户自行安排，不含购票。",
+              "priorities": [
+                "安静的室内活动优先，避开热闹户外",
+                "本地菜就餐",
+                "一个人轻松节奏，午晚两餐固定",
+                "少换乘、少走路",
+                "总预算6000元内"
+              ],
+              "assumptions": [
+                "上海 10月15日至16日的天气预报目前还取不到，户外项目、步行换乘、住处衔接和餐饮动线都要等临近出发再核验一次。",
+                "城际班次尚未由你确认：草案暂按库存对照的早班车（杭州东上午出发、上海虹桥上午到达）弹性安排抵达起点；你自行购买车票后以实际到达站与时间为准。",
+                "住宿、餐饮和活动的价格都只是参考价，房态、可订情况、营业时间和排队时长需要在预订或出发前再核验。",
+                "返程由你自行安排，本草案不包含返程班次与购票。",
+                "第一天行李寄存、午餐和下午活动的具体时间会随你实际到达时间前后平移，草案只给出顺序与相对时间窗。"
+              ],
+              "needsContext": [],
+              "stopRationales": [
+                {
+                  "nodeId": "transport_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "intercity_arrival",
+                  "rationale": "以早班车到达上海为当天起点，先进入市区再安排安静室内活动和本地午餐。"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "bag_drop",
+                  "rationale": "先把行李放到住处，之后半天不用拖着箱子逛，室内活动和用餐都更轻松。"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "meal",
+                  "rationale": "把第一顿正餐放在本地菜候选，进门即吃、环境安静，符合一个人慢慢吃的节奏。"
+                },
+                {
+                  "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "activity",
+                  "rationale": "下午安排室内安静的体验项目，午饭后步行与换乘压力最小，也避开白天最热闹的户外时段。"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "stay_check_in",
+                  "rationale": "活动结束后回住处办理入住，路上按前一站的实际耗时留出缓冲，休息一段再出门吃晚饭。"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 1,
+                  "role": "meal",
+                  "rationale": "晚餐仍选本地菜候选，从住处过去动线短，吃完可以直接回住处休息。"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 2,
+                  "role": "stay_departure",
+                  "rationale": "先退房并寄存行李，上午的室内活动可以空手进行，返程前也方便取行李。"
+                },
+                {
+                  "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 2,
+                  "role": "activity",
+                  "rationale": "返程前安排上午的室内安静体验，时间可控、不受天气影响，之后衔接午餐和自行返程。"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "dayIndex": 2,
+                  "role": "meal",
+                  "rationale": "再吃一顿本地菜作为收尾正餐，吃完按你自己安排的返程时间离开，不走回头路。"
+                }
+              ]
+            },
+            "selectedNodes": [
+              {
+                "nodeId": "transport_0_5f895679ecb41e76532e7570_1",
+                "domain": "transport",
+                "title": "transport option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T09:00:00+08:00",
+                "location": {
+                  "name": "transport option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person_one_way",
+                  "checkedAt": "2026-09-21T05:05:17.311Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "arrivalAt": "2026-10-15T09:00:00+08:00",
+                  "checkedAt": "2026-09-21T05:05:17.311Z",
+                  "highSpeed": true,
+                  "departureAt": "2026-10-15T08:00:00+08:00",
+                  "sourceLabel": "decision_fixture",
+                  "arrivalPlace": {
+                    "label": "上海虹桥"
+                  },
+                  "mobilityRole": "intercity_inventory",
+                  "researchDepth": "provider_search",
+                  "routeVerified": false,
+                  "transportType": "TRAIN",
+                  "departurePlace": {
+                    "label": "杭州东"
+                  },
+                  "planningWindow": {
+                    "basis": "provider_schedule",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "label": "出发日 · 城际抵达",
+                    "startAt": "2026-10-15T08:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 1.95,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0,
+                    "candidateId": "transport_0"
+                  },
+                  "scheduleVerified": true,
+                  "inventoryVerified": true,
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                "domain": "stay",
+                "title": "stay option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T16:00:00+08:00",
+                "location": {
+                  "name": "stay option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_night_room",
+                  "checkedAt": "2026-09-21T05:05:17.311Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:17.311Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T18:00:00+08:00",
+                    "label": "第 1 天 16:00–18:00 · 抵达后入住",
+                    "startAt": "2026-10-15T16:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 2.11,
+                    "support": "supported",
+                    "eligible": false,
+                    "confidence": 0.11,
+                    "candidateId": "stay_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                "domain": "play",
+                "title": "play option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-16T10:00:00+08:00",
+                "location": {
+                  "name": "play option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:17.311Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:17.311Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-16T12:00:00+08:00",
+                    "label": "第 2 天 10:00–12:00 · 轻松体验",
+                    "startAt": "2026-10-16T10:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 1.94,
+                    "support": "supported",
+                    "eligible": false,
+                    "confidence": 0,
+                    "candidateId": "play_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              },
+              {
+                "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                "domain": "food",
+                "title": "food option 0",
+                "summary": "室内环境安静，有本地文化介绍",
+                "time": "2026-10-15T18:00:00+08:00",
+                "location": {
+                  "name": "food option 0",
+                  "address": "上海"
+                },
+                "media": [],
+                "cost": 100,
+                "price": {
+                  "amount": 100,
+                  "currency": "CNY",
+                  "quality": "reference",
+                  "basis": "per_person",
+                  "checkedAt": "2026-09-21T05:05:17.311Z"
+                },
+                "sourceStatus": "contract_fixture",
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-21T05:05:17.311Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T19:30:00+08:00",
+                    "label": "第 1 天 18:00–19:30 · 晚餐",
+                    "startAt": "2026-10-15T18:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "室内环境安静，有本地文化介绍",
+                  "decisionJudgment": {
+                    "fit": 1.49,
+                    "support": "unknown",
+                    "eligible": false,
+                    "confidence": 0.08,
+                    "candidateId": "food_0"
+                  },
+                  "requestedFacilityNeeds": []
+                }
+              }
+            ],
+            "mobility": {
+              "schemaVersion": "trip-mobility-v1",
+              "status": "completed",
+              "destination": "上海",
+              "source": "fixture",
+              "checkedAt": "2026-09-21T05:05:44.869Z",
+              "freshUntil": "2026-09-21T06:05:44.869Z",
+              "coverage": {
+                "routedNodeIds": [
+                  "transport_0_5f895679ecb41e76532e7570_1",
+                  "stay_0_5f895679ecb41e76532e7570_1",
+                  "food_0_5f895679ecb41e76532e7570_1",
+                  "play_0_5f895679ecb41e76532e7570_1"
+                ],
+                "unresolvedNodeIds": [],
+                "routedStopIds": [
+                  "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival",
+                  "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop",
+                  "food_0_5f895679ecb41e76532e7570_1:1:meal",
+                  "play_0_5f895679ecb41e76532e7570_1:1:activity",
+                  "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in",
+                  "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4",
+                  "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure",
+                  "play_0_5f895679ecb41e76532e7570_1:2:activity",
+                  "food_0_5f895679ecb41e76532e7570_1:2:meal"
+                ],
+                "unresolvedStopIds": [],
+                "unscheduled": false
+              },
+              "legs": [
+                {
+                  "legId": "fixture_leg_0",
+                  "origin": {
+                    "nodeId": "transport_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival",
+                    "label": "transport option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "startAt": "2026-10-15T01:00:00.000Z",
+                    "endAt": "2026-10-15T01:00:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T02:00:00.000Z",
+                    "endAt": "2026-10-15T02:30:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_1",
+                  "origin": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T02:00:00.000Z",
+                    "endAt": "2026-10-15T02:30:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T04:00:00.000Z",
+                    "endAt": "2026-10-15T05:00:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_2",
+                  "origin": {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T04:00:00.000Z",
+                    "endAt": "2026-10-15T05:00:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:1:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T06:00:00.000Z",
+                    "endAt": "2026-10-15T08:00:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_3",
+                  "origin": {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:1:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T06:00:00.000Z",
+                    "endAt": "2026-10-15T08:00:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T08:20:00.000Z",
+                    "endAt": "2026-10-15T09:20:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_4",
+                  "origin": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T08:20:00.000Z",
+                    "endAt": "2026-10-15T09:20:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T10:00:00.000Z",
+                    "endAt": "2026-10-15T11:30:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_5",
+                  "origin": {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T10:00:00.000Z",
+                    "endAt": "2026-10-15T11:30:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "stay_departure",
+                    "startAt": "2026-10-16T01:00:00.000Z",
+                    "endAt": "2026-10-16T01:30:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_6",
+                  "origin": {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure",
+                    "label": "stay option 0",
+                    "coordinates": null,
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "stay_departure",
+                    "startAt": "2026-10-16T01:00:00.000Z",
+                    "endAt": "2026-10-16T01:30:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:2:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "activity",
+                    "startAt": "2026-10-16T02:00:00.000Z",
+                    "endAt": "2026-10-16T04:00:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_7",
+                  "origin": {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:2:activity",
+                    "label": "play option 0",
+                    "coordinates": null,
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "activity",
+                    "startAt": "2026-10-16T02:00:00.000Z",
+                    "endAt": "2026-10-16T04:00:00.000Z"
+                  },
+                  "destination": {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:2:meal",
+                    "label": "food option 0",
+                    "coordinates": null,
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "meal",
+                    "startAt": "2026-10-16T04:30:00.000Z",
+                    "endAt": "2026-10-16T05:30:00.000Z"
+                  },
+                  "recommendedMode": "taxi",
+                  "rationale": "受控路线",
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "totalMinutes": 20,
+                      "distanceMeters": 3000,
+                      "walkingMeters": 0,
+                      "transfers": 0,
+                      "estimatedFareCny": 25,
+                      "scheduleBasis": "query_time_estimate",
+                      "realTimeArrival": false,
+                      "navigationUrl": null,
+                      "polyline": [],
+                      "steps": [],
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "hasRamp": false,
+                        "stepFreeContinuity": "not_verified",
+                        "realTimeStatus": false
+                      }
+                    }
+                  ],
+                  "recommendationAudit": null
+                }
+              ],
+              "itinerary": {
+                "schemaVersion": "trip-itinerary-v1",
+                "planningSource": "model_plan",
+                "tripDates": [
+                  "2026-10-15",
+                  "2026-10-16"
+                ],
+                "stops": [
+                  {
+                    "nodeId": "transport_0_5f895679ecb41e76532e7570_1",
+                    "domain": "transport",
+                    "title": "transport option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "startAt": "2026-10-15T09:00:00+08:00",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "timeSource": "provider_schedule",
+                    "fixed": true,
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "以早班车到达上海为当天起点，先进入市区再安排安静室内活动和本地午餐。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival"
+                  },
+                  {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "domain": "stay",
+                    "title": "stay option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "startAt": "2026-10-15T10:00:00+08:00",
+                    "endAt": "2026-10-15T10:30:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "先把行李放到住处，之后半天不用拖着箱子逛，室内活动和用餐都更轻松。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop"
+                  },
+                  {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "domain": "food",
+                    "title": "food option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T12:00:00+08:00",
+                    "endAt": "2026-10-15T13:00:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk"
+                    ],
+                    "rationale": "把第一顿正餐放在本地菜候选，进门即吃、环境安静，符合一个人慢慢吃的节奏。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal"
+                  },
+                  {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "domain": "play",
+                    "title": "play option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "startAt": "2026-10-15T14:00:00+08:00",
+                    "endAt": "2026-10-15T16:00:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "下午安排室内安静的体验项目，午饭后步行与换乘压力最小，也避开白天最热闹的户外时段。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:1:activity"
+                  },
+                  {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "domain": "stay",
+                    "title": "stay option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "startAt": "2026-10-15T16:20:00+08:00",
+                    "endAt": "2026-10-15T17:20:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "rationale": "活动结束后回住处办理入住，路上按前一站的实际耗时留出缓冲，休息一段再出门吃晚饭。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in"
+                  },
+                  {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "domain": "food",
+                    "title": "food option 0",
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "role": "meal",
+                    "startAt": "2026-10-15T18:00:00+08:00",
+                    "endAt": "2026-10-15T19:30:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk"
+                    ],
+                    "rationale": "晚餐仍选本地菜候选，从住处过去动线短，吃完可以直接回住处休息。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4"
+                  },
+                  {
+                    "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                    "domain": "stay",
+                    "title": "stay option 0",
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "stay_departure",
+                    "startAt": "2026-10-16T09:00:00+08:00",
+                    "endAt": "2026-10-16T09:30:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "rationale": "先退房并寄存行李，上午的室内活动可以空手进行，返程前也方便取行李。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure"
+                  },
+                  {
+                    "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                    "domain": "play",
+                    "title": "play option 0",
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "activity",
+                    "startAt": "2026-10-16T10:00:00+08:00",
+                    "endAt": "2026-10-16T12:00:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "返程前安排上午的室内安静体验，时间可控、不受天气影响，之后衔接午餐和自行返程。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "play_0_5f895679ecb41e76532e7570_1:2:activity"
+                  },
+                  {
+                    "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                    "domain": "food",
+                    "title": "food option 0",
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "role": "meal",
+                    "startAt": "2026-10-16T12:30:00+08:00",
+                    "endAt": "2026-10-16T13:30:00+08:00",
+                    "timeSource": "agent_suggested",
+                    "fixed": false,
+                    "preferredModes": [
+                      "walk"
+                    ],
+                    "rationale": "再吃一顿本地菜作为收尾正餐，吃完按你自己安排的返程时间离开，不走回头路。",
+                    "openingHours": "00:00-23:59",
+                    "stopId": "food_0_5f895679ecb41e76532e7570_1:2:meal"
+                  }
+                ],
+                "days": [
+                  {
+                    "dayIndex": 1,
+                    "date": "2026-10-15",
+                    "stopIds": [
+                      "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival",
+                      "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop",
+                      "food_0_5f895679ecb41e76532e7570_1:1:meal",
+                      "play_0_5f895679ecb41e76532e7570_1:1:activity",
+                      "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in",
+                      "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4"
+                    ]
+                  },
+                  {
+                    "dayIndex": 2,
+                    "date": "2026-10-16",
+                    "stopIds": [
+                      "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure",
+                      "play_0_5f895679ecb41e76532e7570_1:2:activity",
+                      "food_0_5f895679ecb41e76532e7570_1:2:meal"
+                    ]
+                  }
+                ]
+              },
+              "feasibility": {
+                "schemaVersion": "trip-feasibility-v1",
+                "canConfirm": true,
+                "status": "feasible",
+                "primaryBlocker": null,
+                "issues": [],
+                "checkedAt": "2026-09-21T05:05:44.869Z"
+              },
+              "travelerFit": {
+                "constrainedTravelerIds": [],
+                "maxContinuousWalkMeters": null,
+                "maxTransfers": null,
+                "planningWalkingTarget": null,
+                "planningTransferTarget": null,
+                "walkingTargetSource": null,
+                "transferTargetSource": null,
+                "stepFreeRequired": false,
+                "avoidStairs": false,
+                "accessibilityEvidence": "not_required",
+                "stayAnchorFits": []
+              },
+              "reason": null,
+              "caveats": [
+                "Controlled fixture, not a real route"
+              ],
+              "sourceDocumentation": null,
+              "fabricatedResults": false
+            },
+            "itinerary": {
+              "schemaVersion": "trip-itinerary-v1",
+              "planningSource": "model_plan",
+              "tripDates": [
+                "2026-10-15",
+                "2026-10-16"
+              ],
+              "stops": [
+                {
+                  "nodeId": "transport_0_5f895679ecb41e76532e7570_1",
+                  "domain": "transport",
+                  "title": "transport option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "intercity_arrival",
+                  "startAt": "2026-10-15T09:00:00+08:00",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "timeSource": "provider_schedule",
+                  "fixed": true,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "以早班车到达上海为当天起点，先进入市区再安排安静室内活动和本地午餐。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "domain": "stay",
+                  "title": "stay option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "startAt": "2026-10-15T10:00:00+08:00",
+                  "endAt": "2026-10-15T10:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "先把行李放到住处，之后半天不用拖着箱子逛，室内活动和用餐都更轻松。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "domain": "food",
+                  "title": "food option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "meal",
+                  "startAt": "2026-10-15T12:00:00+08:00",
+                  "endAt": "2026-10-15T13:00:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk"
+                  ],
+                  "rationale": "把第一顿正餐放在本地菜候选，进门即吃、环境安静，符合一个人慢慢吃的节奏。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal"
+                },
+                {
+                  "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                  "domain": "play",
+                  "title": "play option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T14:00:00+08:00",
+                  "endAt": "2026-10-15T16:00:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "下午安排室内安静的体验项目，午饭后步行与换乘压力最小，也避开白天最热闹的户外时段。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "play_0_5f895679ecb41e76532e7570_1:1:activity"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "domain": "stay",
+                  "title": "stay option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "startAt": "2026-10-15T16:20:00+08:00",
+                  "endAt": "2026-10-15T17:20:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit"
+                  ],
+                  "rationale": "活动结束后回住处办理入住，路上按前一站的实际耗时留出缓冲，休息一段再出门吃晚饭。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "domain": "food",
+                  "title": "food option 0",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "meal",
+                  "startAt": "2026-10-15T18:00:00+08:00",
+                  "endAt": "2026-10-15T19:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk"
+                  ],
+                  "rationale": "晚餐仍选本地菜候选，从住处过去动线短，吃完可以直接回住处休息。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4"
+                },
+                {
+                  "nodeId": "stay_0_5f895679ecb41e76532e7570_1",
+                  "domain": "stay",
+                  "title": "stay option 0",
+                  "dayIndex": 2,
+                  "date": "2026-10-16",
+                  "role": "stay_departure",
+                  "startAt": "2026-10-16T09:00:00+08:00",
+                  "endAt": "2026-10-16T09:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit"
+                  ],
+                  "rationale": "先退房并寄存行李，上午的室内活动可以空手进行，返程前也方便取行李。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure"
+                },
+                {
+                  "nodeId": "play_0_5f895679ecb41e76532e7570_1",
+                  "domain": "play",
+                  "title": "play option 0",
+                  "dayIndex": 2,
+                  "date": "2026-10-16",
+                  "role": "activity",
+                  "startAt": "2026-10-16T10:00:00+08:00",
+                  "endAt": "2026-10-16T12:00:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "返程前安排上午的室内安静体验，时间可控、不受天气影响，之后衔接午餐和自行返程。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "play_0_5f895679ecb41e76532e7570_1:2:activity"
+                },
+                {
+                  "nodeId": "food_0_5f895679ecb41e76532e7570_1",
+                  "domain": "food",
+                  "title": "food option 0",
+                  "dayIndex": 2,
+                  "date": "2026-10-16",
+                  "role": "meal",
+                  "startAt": "2026-10-16T12:30:00+08:00",
+                  "endAt": "2026-10-16T13:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk"
+                  ],
+                  "rationale": "再吃一顿本地菜作为收尾正餐，吃完按你自己安排的返程时间离开，不走回头路。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "food_0_5f895679ecb41e76532e7570_1:2:meal"
+                }
+              ],
+              "days": [
+                {
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "stopIds": [
+                    "transport_0_5f895679ecb41e76532e7570_1:1:intercity_arrival",
+                    "stay_0_5f895679ecb41e76532e7570_1:1:bag_drop",
+                    "food_0_5f895679ecb41e76532e7570_1:1:meal",
+                    "play_0_5f895679ecb41e76532e7570_1:1:activity",
+                    "stay_0_5f895679ecb41e76532e7570_1:1:stay_check_in",
+                    "food_0_5f895679ecb41e76532e7570_1:1:meal:visit_1_e7232bc4"
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "date": "2026-10-16",
+                  "stopIds": [
+                    "stay_0_5f895679ecb41e76532e7570_1:2:stay_departure",
+                    "play_0_5f895679ecb41e76532e7570_1:2:activity",
+                    "food_0_5f895679ecb41e76532e7570_1:2:meal"
+                  ]
+                }
+              ]
+            },
+            "feasibility": {
+              "schemaVersion": "trip-feasibility-v1",
+              "canConfirm": true,
+              "status": "feasible",
+              "primaryBlocker": null,
+              "issues": [],
+              "checkedAt": "2026-09-21T05:05:44.869Z"
+            },
+            "impact": {
+              "stopCount": 4,
+              "estimatedDecisionCostCny": 900,
+              "budget": {
+                "currency": "CNY",
+                "totalBudget": 6000,
+                "domains": {
+                  "stay": {
+                    "committed": 100,
+                    "estimated": 100,
+                    "quality": "reference",
+                    "basis": [
+                      "stay option 0：1 晚 × 1 间房，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "transport": {
+                    "committed": 100,
+                    "estimated": 100,
+                    "quality": "reference",
+                    "basis": [
+                      "transport option 0：1 人 × 单程票价，100 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "food": {
+                    "committed": 300,
+                    "estimated": 300,
+                    "quality": "estimate",
+                    "basis": [
+                      "food option 0：1 人 × 已排 3 餐，300 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "play": {
+                    "committed": 200,
+                    "estimated": 200,
+                    "quality": "estimate",
+                    "basis": [
+                      "play option 0：1 人 × 已排 2 次体验，200 元"
+                    ],
+                    "unknownCount": 0
+                  },
+                  "other": {
+                    "committed": 0,
+                    "estimated": 200,
+                    "quality": "estimate",
+                    "basis": [
+                      "已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验"
+                    ],
+                    "unknownCount": 0
+                  }
+                },
+                "committed": 700,
+                "estimated": 900,
+                "exceedsBudget": false
+              },
+              "budgetDelta": {
+                "committed": 700,
+                "estimated": 100,
+                "exceedsBudget": false
+              },
+              "route": {
+                "legCount": 8,
+                "totalMinutes": 160,
+                "walkingMeters": 0,
+                "transfers": 0,
+                "estimatedFareCny": 200
+              },
+              "baseline": {
+                "kind": "none",
+                "route": null
+              },
+              "deltaFromConfirmed": null,
+              "weather": null,
+              "stayAnchorFits": []
+            },
+            "caveats": [
+              "这是试选路线，不会修改已确认行程。",
+              "Controlled fixture, not a real route"
+            ],
+            "fabricatedResults": false,
+            "operationId": "planrun_078408fe:2",
+            "runId": "planrun_078408fe",
+            "baseRevision": 0,
+            "attempt": 2,
+            "proposalId": "itinerary_67ec3a793fd4416aa02a9ef1",
+            "selections": {
+              "transport": "transport_0_5f895679ecb41e76532e7570_1",
+              "stay": "stay_0_5f895679ecb41e76532e7570_1",
+              "food": "food_0_5f895679ecb41e76532e7570_1",
+              "play": "play_0_5f895679ecb41e76532e7570_1"
+            },
+            "issues": [],
+            "accept": {
+              "proposalId": "itinerary_67ec3a793fd4416aa02a9ef1",
+              "selections": {
+                "transport": "transport_0_5f895679ecb41e76532e7570_1",
+                "stay": "stay_0_5f895679ecb41e76532e7570_1",
+                "food": "food_0_5f895679ecb41e76532e7570_1",
+                "play": "play_0_5f895679ecb41e76532e7570_1"
+              },
+              "partial": true,
+              "previewId": "itp_b25e5135ff3da04e339a8f28ac1ea16d",
+              "baseRevision": 0
+            },
+            "checkedAt": "2026-09-21T05:05:44.869Z",
+            "providerCallCount": 1
+          },
+          "outcome": {
+            "status": "ready",
+            "missingDomains": [],
+            "incompleteAnalysis": [],
+            "planningStatus": "trial_ready"
+          },
+          "reply": "两天草案已经排好并通过路线与时间核验，但它仍然只是草案，需要你在方案区点采用才算确认，我没有做任何购买。\n\n候选情况：住宿、游玩、美食、市内交通四类各有 3 个候选。其中和你“安静室内”偏好一致的各只有 1 个，另外几个是白天热闹的户外类型，与你的偏好不符，暂不推荐。四个领域都不缺候选，缺的是天气资料。\n\n草案（2026年10月15日至16日，一人，住一晚）\n第一天 10月15日：早上班车抵达上海（库存对照：杭州东上午出发、虹桥上午到达）→ 10:00 前后先到住处寄存行李 → 12:00 午餐吃本地菜 → 14:00 至 16:00 安排室内安静的体验项目 → 16:20 回住处办理入住、休息 → 18:00 晚餐继续本地菜。\n第二天 10月16日：9:00 退房并寄存行李 → 10:00 至 12:00 再安排一次室内安静体验 → 12:30 午餐收尾，之后按你自行安排的返程离开。\n\n主要取舍\n先寄存行李再玩，换来半天不用拖箱子；代价是入住时间推到下午晚些。\n室内活动替代了户外选项，好处是不受天气和白天人流影响；代价是两天用的是同一个室内体验项目，因为与“安静室内”相符的候选目前只有这一个。如果你愿意接受一个白天较热闹的户外项目，我可以把第二天换掉。\n返程不纳入本草案，第二天下午之后的安排完全由你决定。\n\n预算（工具账本，均为参考价或估算，不是成交价）\n住宿 1 晚 1 间房 100 元（参考价）、城际单程 100 元（参考价）、3 餐共 300 元（估算）、室内体验 2 次共 200 元（估算）、市内接驳约 200 元（估算）。合计约 900 元，6000 元预算完全够用，余量可留给更安静或位置更好的住宿。\n\n仍需核验的部分\n上海 10月15日至16日的天气预报目前取不到，所以这版是“可先比较的暂定选择”，户外项目、步行换乘、住处与餐馆的衔接都要等临近出发再核验。\n试排给出市内接驳共 8 段、约 160 分钟、换乘 0 次；目前没有记录到步行里程，具体地点确定后要再核验一次，才能说清是否真的少走路。\n房态、可订情况、营业时间和排队时长都还没核验；价格只是参考价。\n\n下一步\n如果你已经买好去程车票，把到达车站和时间告诉我，我会把第一天的寄存、午餐和活动时间窗对齐实际到达点。\n如果你希望行中也能跨设备打开这版行程，需要登录保存本次旅行；确认具体地点后再刷新一次市内路线即可。\n确认或修改任何候选，请直接在方案区操作，我不会替你确认或下单。",
+          "userMessages": [
+            "2026年10月15日至16日，我一个人从杭州去上海玩两天，住一晚，总预算6000元。喜欢安静室内活动和本地菜，返程我自己解决。请查找候选并做完整的两天行程草案，不确认、不购买。"
+          ],
+          "candidateDomains": [
+            "play",
+            "food",
+            "stay",
+            "transport"
+          ],
+          "planningAvailability": {
+            "status": "available"
+          },
+          "providerReads": [
+            {
+              "tripId": "trip_09d60d9f",
+              "domains": [
+                "stay",
+                "play",
+                "food",
+                "transport"
+              ],
+              "destination": "上海",
+              "at": 1789967117311
+            }
+          ],
+          "accounting": [
+            {
+              "scope": "deepseek",
+              "calls": 5,
+              "input_tokens": "115846",
+              "output_tokens": "9429"
+            },
+            {
+              "scope": "typesafe_account",
+              "calls": 2,
+              "input_tokens": "5899",
+              "output_tokens": "730"
+            }
+          ],
+          "toolErrors": [],
+          "events": [
+            {
+              "type": "run_queued",
+              "status": "queued",
+              "sequence": 1,
+              "at": 1789967111350
+            },
+            {
+              "type": "run_started",
+              "status": "running",
+              "sequence": 2,
+              "at": 1789967111358
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_D5YSCuCbNDW5pjGu6qk96862",
+              "sequence": 3,
+              "at": 1789967117280
+            },
+            {
+              "type": "tool_finished",
+              "status": "saved",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_D5YSCuCbNDW5pjGu6qk96862",
+              "sequence": 4,
+              "at": 1789967117297
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_01_D3ZbBGYDWWLNQcZvXqgZ0927",
+              "sequence": 5,
+              "at": 1789967117303
+            },
+            {
+              "type": "tool_finished",
+              "status": "proposed",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_01_D3ZbBGYDWWLNQcZvXqgZ0927",
+              "sequence": 6,
+              "at": 1789967118695
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_mr5fbAJ00BiJnMezIeOB0774",
+              "sequence": 7,
+              "at": 1789967119365
+            },
+            {
+              "type": "tool_finished",
+              "status": "ready",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_mr5fbAJ00BiJnMezIeOB0774",
+              "sequence": 8,
+              "at": 1789967119409
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_19o6UR4TXokes577pbV14801",
+              "sequence": 9,
+              "at": 1789967137197
+            },
+            {
+              "type": "tool_finished",
+              "status": "needs_repair",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_19o6UR4TXokes577pbV14801",
+              "sequence": 10,
+              "at": 1789967137249
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_UocvBZuE37TZsKDwZtCk4346",
+              "sequence": 11,
+              "at": 1789967144832
+            },
+            {
+              "type": "tool_finished",
+              "status": "trial_ready",
+              "toolName": "plan_itinerary_trial",
+              "toolCallId": "call_00_UocvBZuE37TZsKDwZtCk4346",
+              "sequence": 12,
+              "at": 1789967144926
+            },
+            {
+              "type": "run_finished",
+              "status": "completed",
+              "sequence": 13,
+              "at": 1789967153886
+            }
+          ]
+        }
+      ],
+      "manualReview": "pending",
+      "automatedStatus": "passed"
+    },
+    {
+      "id": "T11",
+      "title": "其他游客不能读我的行程与运行记录",
+      "automatedStatus": "passed",
+      "checks": [
+        {
+          "name": "跨用户运行记录被拒绝",
+          "passed": true,
+          "actual": 403
+        },
+        {
+          "name": "跨用户计划被拒绝",
+          "passed": true,
+          "actual": 403
+        },
+        {
+          "name": "跨用户事件被拒绝",
+          "passed": true,
+          "actual": 403
+        }
+      ]
+    },
+    {
+      "id": "T12",
+      "title": "明确采用与保留已选安排",
+      "checks": [
+        {
+          "name": "明确采用已持久化",
+          "passed": true,
+          "actual": "committed"
+        },
+        {
+          "name": "重复采用不重复新增",
+          "passed": true,
+          "actual": 200
+        },
+        {
+          "name": "预算更新到3000",
+          "passed": true,
+          "actual": {
+            "dates": "2026-10-15",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 3000,
+            "durationDays": 1,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1
+          }
+        },
+        {
+          "name": "采用过的安排完整保留",
+          "passed": true
+        },
+        {
+          "name": "仅改预算保留已核验路线与站序",
+          "passed": true
+        },
+        {
+          "name": "仅改预算不把已排费用退回粗估",
+          "passed": true,
+          "actual": {
+            "before": 750,
+            "after": 750
+          }
+        }
+      ],
+      "turns": [
+        {
+          "runId": "run_30307011-c34c-4265-8242-4b445dc85346",
+          "status": "completed",
+          "admissionMs": 12,
+          "totalMs": 3913,
+          "firstUsefulMs": null,
+          "brief": {
+            "dates": "2026-10-15",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 3000,
+            "durationDays": 1,
+            "partyProfile": "一个人出行",
+            "lodgingNights": 1
+          },
+          "travelers": [
+            {
+              "role": "traveler",
+              "language": "zh-CN",
+              "careNeeds": {},
+              "travelerId": "traveler_1",
+              "displayName": "你",
+              "operability": {},
+              "relationship": null,
+              "hardConstraints": [],
+              "softPreferences": []
+            }
+          ],
+          "selected": [
+            {
+              "nodeId": "transport_0_452924229c813ff522a342a8_1",
+              "title": "transport option 0",
+              "lock": null
+            },
+            {
+              "nodeId": "stay_0_452924229c813ff522a342a8_1",
+              "title": "stay option 0",
+              "lock": null
+            },
+            {
+              "nodeId": "play_0_452924229c813ff522a342a8_1",
+              "title": "play option 0",
+              "lock": null
+            },
+            {
+              "nodeId": "food_0_452924229c813ff522a342a8_1",
+              "title": "food option 0",
+              "lock": null
+            },
+            {
+              "nodeId": "play_2_452924229c813ff522a342a8_3",
+              "title": "play option 2",
+              "lock": null
+            },
+            {
+              "nodeId": "food_2_452924229c813ff522a342a8_3",
+              "title": "food option 2",
+              "lock": null
+            }
+          ],
+          "outcome": {
+            "status": "ready",
+            "missingDomains": [],
+            "incompleteAnalysis": [],
+            "planningStatus": null
+          },
+          "reply": "预算已改为3000元，其他要求没动。\n\n这次只做了预算调整，没有重排行程：10月15日那天的草案（寄存行李—上午游览—午餐—下午游览—傍晚入住—晚餐）保持原样，日期、人数、住宿一晚、第二天自行返程都不变。\n\n现有草案里已排项目合计约600元，另有市内交通估算约150元，换算下来仍在3000元以内，所以预算下调不会迫使改动站序或更换候选。价格仍是参考价，房态和班次请在预订前再核一次。\n\n需要我按3000元的尺度重新对比住宿和餐饮候选，还是就先保留这版草案等你确认？",
+          "userMessages": [
+            "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。",
+            "2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。",
+            "把总预算改成3000元，已经采用的安排全部保留，只保存预算调整，不要重新排整个行程。"
+          ],
+          "candidateDomains": [],
+          "planningAvailability": {
+            "status": "available"
+          },
+          "providerReads": [
+            {
+              "tripId": "trip_9ac1c8d5",
+              "domains": [
+                "play",
+                "food",
+                "stay",
+                "transport"
+              ],
+              "destination": "上海",
+              "at": 1789967122388
+            }
+          ],
+          "accounting": [
+            {
+              "scope": "deepseek",
+              "calls": 2,
+              "input_tokens": "58533",
+              "output_tokens": "391"
+            }
+          ],
+          "toolErrors": [],
+          "events": [
+            {
+              "type": "run_queued",
+              "status": "queued",
+              "sequence": 1,
+              "at": 1789967154175
+            },
+            {
+              "type": "run_started",
+              "status": "running",
+              "sequence": 2,
+              "at": 1789967154181
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_KpaW4HF3xkEonPGFNoBP5569",
+              "sequence": 3,
+              "at": 1789967155973
+            },
+            {
+              "type": "tool_finished",
+              "status": "saved",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_KpaW4HF3xkEonPGFNoBP5569",
+              "sequence": 4,
+              "at": 1789967156001
+            },
+            {
+              "type": "run_finished",
+              "status": "completed",
+              "sequence": 5,
+              "at": 1789967157761
+            }
+          ]
+        }
+      ],
+      "manualReview": "pending",
+      "automatedStatus": "passed"
+    }
+  ],
+  "apiFinishedAt": "2026-09-21T05:05:58.082Z"
+}

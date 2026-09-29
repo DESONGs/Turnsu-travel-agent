@@ -6,6 +6,25 @@
 
 ## 1. 部署形态
 
+### Jev 接入与验收（2026-09-21）
+
+在服务端私有环境设置 `TYPESAFE_API_KEY`、`TRAVEL_AGENT_JEV_MODE=off|shadow|auto`；校准文件路径使用 `TRAVEL_AGENT_JEV_CALIBRATION_FILE`。不要将密钥放入 `VITE_*`、小程序或 Wiki。当前默认 `off`，真实小样本尚不构成自动上线校准。校准文件由服务端发布，结构为 `{ "travel-candidate-fit-v1": { "zh": { "model": "jev-1.13.0", "validatedLive": true, "datasetHash": "独立评估集的64位SHA256", "threshold": 0.95 } } }`；此处仅说明字段，**不是可以直接采用的阈值或校准证据**。
+
+多实例使用 `DATABASE_URL` 与 `TRAVEL_AGENT_WORKFLOW_EXECUTION_MODE=postgres_run`，API/Worker 共享数据库和账号预算。按真实 Parent/Child 账号权益配置 `TRAVEL_AGENT_MODEL_LIMITS`；生产缺少配额配置会拒绝模型调用。Jev 的固定额度不可用多个 API Key 绕过。本地 SQLite 仅用于开发和合同验证。
+
+复现命令：
+
+```bash
+node --import tsx --test tests/travel-jev.test.mjs tests/travel-decision-policy.test.mjs tests/travel-execution.test.mjs
+npm run evaluate:jev
+npm run evaluate:jev-product
+npm run smoke:execution-capacity
+npm run smoke:jev-capacity
+npm run check
+```
+
+真实评估显式设置 `TRAVEL_JEV_LIVE_EVAL=true`，可用 `TRAVEL_JEV_TEST_ENV_FILE` 在测试进程读取受控账户文件；输出由 `TRAVEL_JEV_EVAL_OUTPUT` 指定。产品三模式对照使用 `TRAVEL_JEV_PRODUCT_EVAL=true`、`TRAVEL_JEV_PRODUCT_OUTPUT` 和隔离数据库。负载测试要求 `TRAVEL_EXECUTION_TEST_DATABASE_URL` 指向本机独立 `/travel_execution_test` 数据库，只创建/删除本次随机 schema；`TRAVEL_EXECUTION_TEST_USERS` 默认 500，`TRAVEL_EXECUTION_TEST_DURATION_MS` 默认 1,800,000，输出为 `TRAVEL_EXECUTION_TEST_OUTPUT`。它调用受控模型与旅行 Provider，不能作为真实接口容量证据。测试凭据不可复用生产数据。多进程负载与数据库故障注入应独立运行，避免各测试的连接池之和超过测试库的 `max_connections`。
+
 ```text
 Web / PWA / iOS / Android / 微信小程序 / 支付宝小程序
                               │
@@ -131,7 +150,11 @@ DEEPSEEK_API_KEY=
 TRAVEL_AGENT_DEEPSEEK_SMOKE_STATUS=not_run
 ```
 
-`TRAVEL_AGENT_SESSION_SECRET` 与 `TRAVEL_AGENT_AUTH_STATE_SECRET` 不能相同。轮换 Session Secret 会让现有会话全部失效，应安排维护窗口。
+`TRAVEL_AGENT_SESSION_SECRET` 与 `TRAVEL_AGENT_AUTH_STATE_SECRET` 不能相同。当前会话改为数据库中的随机令牌摘要，轮换 Session Secret 不再撤销这些会话；应通过账号设备管理或数据库会话撤销操作退出设备。OAuth State Secret 轮换会使尚未完成的授权请求失效。
+
+账号、平台身份映射、会话撤销和桌面一次性 code 共用持久存储。生产必须设置 `DATABASE_URL`，多个 API 实例使用同一 PostgreSQL；本地未配置时使用 `TRAVEL_AGENT_DATA_DIR/auth.sqlite`（默认 `runtime-data/auth.sqlite`）。账号登录固定有效 14 天，游客 7 天，不自动无限续期。Web 使用 HttpOnly Cookie；桌面和小程序沿用 Bearer API。数据库仅保存会话令牌的 SHA-256 摘要。
+
+升级前注意：旧版签名 Cookie 不导入新会话库，以免重新激活旧版已撤销但只在内存中记录的会话。既有正式账号重新完成平台登录后沿用原 userId，保留旅行归属；旧版匿名 Guest Cookie 不会自动认领，部署前应让有待保存旅行的游客先登录。不同平台的已存在账号不会自动合并。
 
 ### 构建、迁移与启动
 
@@ -504,7 +527,7 @@ TRAVEL_AGENT_DESKTOP_API_ORIGIN=https://你的-api-域名
 TRAVEL_AGENT_CORS_ORIGINS=https://你的-web-域名,travelapp://app
 ```
 
-生产 OAuth 仍在各平台登记同一 HTTPS 回调：`https://你的-api-域名/api/auth/{provider}/callback`。Electron 只把系统浏览器成功结果转成 `zhuanshu-travel://auth/callback?code=...`；该 code 两分钟、只消费一次，不是 access token。运行 `npm run auth:check` 会同时显示 Web/小程序渠道与桌面 deep link 状态。
+生产 OAuth 仍在各平台登记同一 HTTPS 回调：`https://你的-api-域名/api/auth/{provider}/callback`。Electron 只把系统浏览器成功结果转成 `zhuanshu-travel://auth/callback?code=...`；该 code 在共享数据库中保存摘要，两分钟、只消费一次，不是 access token。Electron 主进程使用系统安全存储加密保存 Bearer，按 API Origin 隔离；可信 renderer 只在内存持有令牌，不写 localStorage。Linux `basic_text` 存储不启用持久保存；系统密钥库不可用时，账号页明确提示重启后重新登录。运行 `npm run auth:check` 会同时显示 Web/小程序渠道与桌面 deep link 状态。
 
 本地验证：
 

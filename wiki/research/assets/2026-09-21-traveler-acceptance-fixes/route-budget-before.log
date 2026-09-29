@@ -1,0 +1,29 @@
+(node:7437) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ local route fares are included in the same hard trip budget (41.923625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 581.174334
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:239:1
+✖ local route fares are included in the same hard trip budget (41.923625ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+
+  'trial_ready'
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:242:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'trial_ready',
+    expected: 'trial_ready',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

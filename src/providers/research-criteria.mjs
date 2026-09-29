@@ -157,6 +157,7 @@ export function buildTravelResearchCriteria({ brief = {}, travelers = [], questi
   byDomain.transport.namedEntities = byDomain.transport.namedEntities.filter((item) => /机场|航站楼|火车站|高铁站|客运站|地铁站|码头/u.test(item));
   byDomain.transport.keywords = byDomain.transport.keywords.filter((item) => !/酒店|宾馆|民宿|停车场|停车点/u.test(item));
   const shared = {
+    ...(brief.journeys ? { journeys: brief.journeys } : {}),
     schemaVersion: "travel-research-criteria-v1",
     origin: safeText(brief.origin) || null,
     destination,
@@ -178,7 +179,7 @@ export function buildTravelResearchCriteria({ brief = {}, travelers = [], questi
     budgetCny: shared.budgetCny,
     travelerConstraintHints: shared.travelerConstraintHints,
     criteria: byDomain[domain],
-    ...(domain === "transport" ? { intercityIntent: shared.intercityIntent, localMobilityIntent: shared.localMobilityIntent, arrival } : {}),
+    ...(domain === "transport" ? { journeys: brief.journeys ?? [], intercityIntent: shared.intercityIntent, localMobilityIntent: shared.localMobilityIntent, arrival } : {}),
     requested: requestedDomains.includes(domain),
   })]));
   const normalized = { ...shared, fingerprint: fingerprint({ ...shared, requestedDomains }), domainFingerprints };

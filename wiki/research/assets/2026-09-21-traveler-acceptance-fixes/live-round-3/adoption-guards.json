@@ -1,0 +1,531 @@
+{
+  "startedAt": "2026-09-21T04:16:35.806Z",
+  "expected": "Unknown mandatory accessibility and over-budget plans must fail adoption, independently of model wording.",
+  "scope": "Public TravelService adoption, isolated PostgreSQL and already generated fictional test trips; no external booking or purchase.",
+  "rows": [
+    {
+      "id": "T06",
+      "tripBudget": 6000,
+      "travelers": [
+        {
+          "role": "traveler",
+          "language": "zh-CN",
+          "careNeeds": {
+            "mobility": {
+              "avoidStairs": true,
+              "stepFreeRequired": true,
+              "wheelchairSpaceRequired": true
+            }
+          },
+          "travelerId": "traveler_1",
+          "displayName": "你",
+          "operability": {},
+          "relationship": "本人",
+          "hardConstraints": [],
+          "softPreferences": []
+        }
+      ],
+      "selectedBefore": 0,
+      "feasibilityBefore": {
+        "schemaVersion": "trip-feasibility-v1",
+        "canConfirm": false,
+        "status": "blocked",
+        "primaryBlocker": "同行人要求全程无台阶，但连续无台阶路线尚未核验，当前方案不能采用。",
+        "issues": [
+          {
+            "code": "traveler_step_free_route_unverified",
+            "message": "同行人要求全程无台阶，但连续无台阶路线尚未核验，当前方案不能采用。",
+            "severity": "blocking",
+            "stopIds": [],
+            "dayIndex": null
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "play option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "play_0_87e34bec80d9cb18939d95cd_1:1:activity"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T18:00:00+08:00",
+              "requestedStartAt": "2026-10-15T18:20:00+08:00",
+              "earliestStartAt": "2026-10-15T18:20:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.867Z"
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "food option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "food_0_87e34bec80d9cb18939d95cd_1:1:meal"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T20:20:00+08:00",
+              "requestedStartAt": "2026-10-15T20:40:00+08:00",
+              "earliestStartAt": "2026-10-15T20:40:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.867Z"
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "stay option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "stay_0_87e34bec80d9cb18939d95cd_1:1:stay_return"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T22:10:00+08:00",
+              "requestedStartAt": "2026-10-15T22:30:00+08:00",
+              "earliestStartAt": "2026-10-15T22:30:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.867Z"
+          }
+        ],
+        "checkedAt": "2026-09-21T04:16:35.867Z"
+      },
+      "adoption": {
+        "schemaVersion": "trip-commit-result-v1",
+        "status": "rejected",
+        "tripId": "trip_2286e5de",
+        "revision": 0,
+        "validation": {
+          "ok": false,
+          "reason": "itinerary_not_executable"
+        },
+        "feasibility": {
+          "issues": [
+            {
+              "code": "traveler_step_free_route_unverified",
+              "message": "同行人要求全程无台阶，但连续无台阶路线尚未核验，当前方案不能采用。",
+              "stopIds": [],
+              "dayIndex": null,
+              "severity": "blocking"
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "play option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "play_0_87e34bec80d9cb18939d95cd_1:1:activity"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T18:00:00+08:00",
+                "earliestStartAt": "2026-10-15T18:20:00+08:00",
+                "requestedStartAt": "2026-10-15T18:20:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.867Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "food option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "food_0_87e34bec80d9cb18939d95cd_1:1:meal"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T20:20:00+08:00",
+                "earliestStartAt": "2026-10-15T20:40:00+08:00",
+                "requestedStartAt": "2026-10-15T20:40:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.867Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "stay option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "stay_0_87e34bec80d9cb18939d95cd_1:1:stay_return"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T22:10:00+08:00",
+                "earliestStartAt": "2026-10-15T22:30:00+08:00",
+                "requestedStartAt": "2026-10-15T22:30:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.867Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            }
+          ],
+          "status": "blocked",
+          "checkedAt": "2026-09-21T04:16:35.867Z",
+          "canConfirm": false,
+          "schemaVersion": "trip-feasibility-v1",
+          "primaryBlocker": "同行人要求全程无台阶，但连续无台阶路线尚未核验，当前方案不能采用。"
+        },
+        "previewId": "itp_85e050772cbd170d55a6828144e0b3d1"
+      },
+      "selectedAfter": 0,
+      "stateUnchanged": true,
+      "status": "blocked_by_business_guard",
+      "qaAfter": {
+        "schemaVersion": "travel-qa-v1",
+        "status": "needs_fix",
+        "missingDomains": [
+          "play",
+          "food",
+          "stay",
+          "transport"
+        ],
+        "hardConstraintViolations": [],
+        "operabilityGaps": [
+          {
+            "travelerId": "traveler_1",
+            "domain": "transport",
+            "code": "traveler_step_free_route_unverified"
+          }
+        ],
+        "mobility": {
+          "status": "not_checked",
+          "checkedAt": null,
+          "legCount": 0
+        },
+        "weather": {
+          "status": "not_checked"
+        },
+        "budget": {
+          "currency": "CNY",
+          "totalBudget": 6000,
+          "domains": {
+            "stay": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 晚 × 1 间房"
+              ],
+              "unknownCount": 0
+            },
+            "transport": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 单程票价"
+              ],
+              "unknownCount": 0
+            },
+            "food": {
+              "committed": 0,
+              "estimated": 200,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 1 天 × 每天 2 餐"
+              ],
+              "unknownCount": 0
+            },
+            "play": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 1 天 × 每天 1 项付费体验"
+              ],
+              "unknownCount": 0
+            },
+            "other": {
+              "committed": 0,
+              "estimated": 0,
+              "quality": "unknown",
+              "basis": [],
+              "unknownCount": 0
+            }
+          },
+          "committed": 0,
+          "estimated": 500,
+          "exceedsBudget": false
+        }
+      }
+    },
+    {
+      "id": "T07",
+      "tripBudget": 100,
+      "travelers": [
+        {
+          "role": "traveler",
+          "language": "zh-CN",
+          "careNeeds": {},
+          "travelerId": "traveler_1",
+          "displayName": "你",
+          "operability": {},
+          "relationship": null,
+          "hardConstraints": [],
+          "softPreferences": []
+        }
+      ],
+      "selectedBefore": 0,
+      "feasibilityBefore": {
+        "schemaVersion": "trip-feasibility-v1",
+        "canConfirm": false,
+        "status": "blocked",
+        "primaryBlocker": "当前方案预计 500 元，超过已确认的 100 元预算；请先调整候选或明确修改预算。",
+        "issues": [
+          {
+            "code": "trip_budget_exceeded",
+            "message": "当前方案预计 500 元，超过已确认的 100 元预算；请先调整候选或明确修改预算。",
+            "severity": "blocking",
+            "stopIds": [],
+            "dayIndex": null
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "play option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "play_0_31234abe583b4ae56ef1debf_1:1:activity"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T18:00:00+08:00",
+              "requestedStartAt": "2026-10-15T18:20:00+08:00",
+              "earliestStartAt": "2026-10-15T18:20:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.942Z"
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "food option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "food_0_31234abe583b4ae56ef1debf_1:1:meal"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T20:20:00+08:00",
+              "requestedStartAt": "2026-10-15T20:40:00+08:00",
+              "earliestStartAt": "2026-10-15T20:40:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.942Z"
+          },
+          {
+            "code": "flexible_window_shifted",
+            "severity": "warning",
+            "message": "stay option 0已按前序路线耗时顺延。",
+            "stopIds": [
+              "stay_0_31234abe583b4ae56ef1debf_1:1:stay_return"
+            ],
+            "dayIndex": 1,
+            "observed": {
+              "previousEndAt": "2026-10-15T22:10:00+08:00",
+              "requestedStartAt": "2026-10-15T22:30:00+08:00",
+              "earliestStartAt": "2026-10-15T22:30:00+08:00",
+              "routeMinutes": 20,
+              "routeMode": "taxi"
+            },
+            "allowedRepairDirections": [
+              "shift_later"
+            ],
+            "checkedAt": "2026-09-21T04:16:35.942Z"
+          }
+        ],
+        "checkedAt": "2026-09-21T04:16:35.942Z"
+      },
+      "adoption": {
+        "schemaVersion": "trip-commit-result-v1",
+        "status": "rejected",
+        "tripId": "trip_49ac0ce9",
+        "revision": 0,
+        "validation": {
+          "ok": false,
+          "reason": "itinerary_not_executable"
+        },
+        "feasibility": {
+          "issues": [
+            {
+              "code": "trip_budget_exceeded",
+              "message": "当前方案预计 500 元，超过已确认的 100 元预算；请先调整候选或明确修改预算。",
+              "stopIds": [],
+              "dayIndex": null,
+              "severity": "blocking"
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "play option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "play_0_31234abe583b4ae56ef1debf_1:1:activity"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T18:00:00+08:00",
+                "earliestStartAt": "2026-10-15T18:20:00+08:00",
+                "requestedStartAt": "2026-10-15T18:20:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.942Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "food option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "food_0_31234abe583b4ae56ef1debf_1:1:meal"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T20:20:00+08:00",
+                "earliestStartAt": "2026-10-15T20:40:00+08:00",
+                "requestedStartAt": "2026-10-15T20:40:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.942Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            },
+            {
+              "code": "flexible_window_shifted",
+              "message": "stay option 0已按前序路线耗时顺延。",
+              "stopIds": [
+                "stay_0_31234abe583b4ae56ef1debf_1:1:stay_return"
+              ],
+              "dayIndex": 1,
+              "observed": {
+                "routeMode": "taxi",
+                "routeMinutes": 20,
+                "previousEndAt": "2026-10-15T22:10:00+08:00",
+                "earliestStartAt": "2026-10-15T22:30:00+08:00",
+                "requestedStartAt": "2026-10-15T22:30:00+08:00"
+              },
+              "severity": "warning",
+              "checkedAt": "2026-09-21T04:16:35.942Z",
+              "allowedRepairDirections": [
+                "shift_later"
+              ]
+            }
+          ],
+          "status": "blocked",
+          "checkedAt": "2026-09-21T04:16:35.942Z",
+          "canConfirm": false,
+          "schemaVersion": "trip-feasibility-v1",
+          "primaryBlocker": "当前方案预计 500 元，超过已确认的 100 元预算；请先调整候选或明确修改预算。"
+        },
+        "previewId": "itp_38c5b0f7a946a3e6a1619b1b681c6e9f"
+      },
+      "selectedAfter": 0,
+      "stateUnchanged": true,
+      "status": "blocked_by_business_guard",
+      "qaAfter": {
+        "schemaVersion": "travel-qa-v1",
+        "status": "needs_fix",
+        "missingDomains": [
+          "play",
+          "food",
+          "stay",
+          "transport"
+        ],
+        "hardConstraintViolations": [],
+        "operabilityGaps": [],
+        "mobility": {
+          "status": "not_checked",
+          "checkedAt": null,
+          "legCount": 0
+        },
+        "weather": {
+          "status": "not_checked"
+        },
+        "budget": {
+          "currency": "CNY",
+          "totalBudget": 100,
+          "domains": {
+            "stay": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 晚 × 1 间房"
+              ],
+              "unknownCount": 0
+            },
+            "transport": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 单程票价"
+              ],
+              "unknownCount": 0
+            },
+            "food": {
+              "committed": 0,
+              "estimated": 200,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 1 天 × 每天 2 餐"
+              ],
+              "unknownCount": 0
+            },
+            "play": {
+              "committed": 0,
+              "estimated": 100,
+              "quality": "estimate",
+              "basis": [
+                "1 人 × 1 天 × 每天 1 项付费体验"
+              ],
+              "unknownCount": 0
+            },
+            "other": {
+              "committed": 0,
+              "estimated": 0,
+              "quality": "unknown",
+              "basis": [],
+              "unknownCount": 0
+            }
+          },
+          "committed": 0,
+          "estimated": 500,
+          "exceedsBudget": true
+        }
+      }
+    }
+  ]
+}

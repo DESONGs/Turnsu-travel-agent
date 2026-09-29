@@ -1,0 +1,52 @@
+(node:58835) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ AMap checks the last visit of a multi-day itinerary as well as the first eight routes (30.712042ms)
+✔ AMap mobility turns selected places into bounded walking, transit and taxi alternatives without claiming real-time arrival (4.682167ms)
+✔ AMap transit preserves railway and segment geometry without synthesizing endpoint lines (2.229042ms)
+✔ AMap mobility rejects an otherwise short route with mapped stairs for a traveler who must avoid them (2.499875ms)
+✔ AMap mobility connects an intercity arrival airport to the selected hotel (1.053ms)
+✔ AMap taxi rationale audits walking and transfer thresholds without treating unknown accessibility as stairs (1.436375ms)
+✔ AMap mobility keeps account gates distinct from QPS and returns an honest unavailable state (0.270792ms)
+✔ mobility contract rejects arbitrary navigation URLs (0.261167ms)
+(node:58836) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a traveler cannot adopt a plan exceeding the saved budget even when every route is feasible (61.58275ms)
+✔ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (25.881ms)
+✔ adoption rechecks global constraints instead of trusting a cached canConfirm flag (14.576625ms)
+✔ an unavailable route service preserves a non-adoptable draft which can be checked after restoration (32.544125ms)
+✔ cancelling a planning request discards even a late successful route response (14.308458ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (39.070834ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (28.311833ms)
+✔ a complete day spanning lunch must not silently omit the meal (6.640042ms)
+✔ a two-day request cannot pass by submitting one day or a hotel-only second day (29.543084ms)
+✔ an over-budget draft remains reviewable and directs a same-budget candidate repair (17.060583ms)
+✔ targeted research can replace an expensive hotel in the same run without raising the budget (37.643167ms)
+✔ full planning respects a business trip without attractions (13.805875ms)
+✔ a multi-day itinerary keeps every returned route through checking, adoption and storage (30.6355ms)
+✔ an earlier visit's route cannot conceal missing evidence for later visits (16.52525ms)
+✔ lunch and dinner at one restaurant are separate visits, not a duplicate stop (13.745666ms)
+✔ a complete itinerary adopts two restaurants and charges each actual meal once (31.662916ms)
+✔ local route fares are included in the same hard trip budget (14.723ms)
+✔ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (49.526208ms)
+✔ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (191.887125ms)
+✔ a second failed repair stops without a third route request (31.159792ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (17.36075ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (29.718291ms)
+(node:58837) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (66.735916ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (75.626084ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (60.750792ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (7.556792ms)
+✔ a missing departure date is resolved before asking about arrival preferences (9.785333ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (9.835542ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (73.789542ms)
+✔ a budget-only answer states that adopted arrangements are retained even if model prose contradicts them (99.076791ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2142.028833

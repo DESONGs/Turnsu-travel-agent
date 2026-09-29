@@ -1,0 +1,8 @@
+{
+  "at": "2026-09-21T17:01:34.006Z",
+  "ms": 615,
+  "stopReason": "error",
+  "error": "402: {\"message\":\"Insufficient Balance\",\"type\":\"unknown_error\",\"param\":null,\"code\":\"invalid_request_error\"}",
+  "textLength": 0,
+  "ready": false
+}

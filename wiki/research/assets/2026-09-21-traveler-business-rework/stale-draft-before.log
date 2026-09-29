@@ -1,0 +1,159 @@
+(node:3231) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a saved draft stays visible when later candidate evidence invalidates its preview (63.3615ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 627.397125
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:495:1
+✖ a saved draft stays visible when later candidate evidence invalidates its preview (63.3615ms)
+  AssertionError [ERR_ASSERTION]: stale proof must not erase the user's draft
+  + actual - expected
+
+  + undefined
+  - {
+  -   days: [
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       stopIds: [
+  -         'arrival_pvg:1:intercity_arrival',
+  -         'stay_people_square:1:bag_drop',
+  -         'play_museum:1:activity',
+  -         'food_local:1:meal',
+  -         'stay_people_square:1:stay_check_in'
+  -       ]
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       stopIds: []
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       stopIds: []
+  -     }
+  -   ],
+  -   planningSource: 'model_plan',
+  -   schemaVersion: 'trip-itinerary-v1',
+  -   stops: [
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'transport',
+  -       endAt: '2026-10-15T09:00:00+08:00',
+  -       fixed: true,
+  -       nodeId: 'arrival_pvg',
+  -       openingHours: null,
+  -       preferredModes: [
+  -         'taxi'
+  -       ],
+  -       rationale: '保留已确认抵达',
+  -       role: 'intercity_arrival',
+  -       startAt: '2026-10-15T09:00:00+08:00',
+  -       stopId: 'arrival_pvg:1:intercity_arrival',
+  -       timeSource: 'provider_schedule',
+  -       title: '上海浦东国际机场 T2'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'stay',
+  -       endAt: '2026-10-15T10:15:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '先放下行李',
+  -       role: 'bag_drop',
+  -       startAt: '2026-10-15T10:00:00+08:00',
+  -       stopId: 'stay_people_square:1:bag_drop',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'play',
+  -       endAt: '2026-10-15T13:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'play_museum',
+  -       openingHours: '09:00-17:00',
+  -       preferredModes: [
+  -         'transit',
+  -         'taxi'
+  -       ],
+  -       rationale: '白天参观',
+  -       role: 'activity',
+  -       startAt: '2026-10-15T11:00:00+08:00',
+  -       stopId: 'play_museum:1:activity',
+  -       timeSource: 'agent_suggested',
+  -       title: '上海博物馆'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'food',
+  -       endAt: '2026-10-15T15:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'food_local',
+  -       openingHours: '11:00-21:00',
+  -       preferredModes: [
+  -         'taxi',
+  -         'walk'
+  -       ],
+  -       rationale: '就近用餐',
+  -       role: 'meal',
+  -       startAt: '2026-10-15T13:30:00+08:00',
+  -       stopId: 'food_local:1:meal',
+  -       timeSource: 'agent_suggested',
+  -       title: '本帮菜馆'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'stay',
+  -       endAt: '2026-10-15T16:30:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '活动后正式入住',
+  -       role: 'stay_check_in',
+  -       startAt: '2026-10-15T16:00:00+08:00',
+  -       stopId: 'stay_people_square:1:stay_check_in',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     }
+  -   ],
+  -   tripDates: [
+  -     '2026-10-15',
+  -     '2026-10-16',
+  -     '2026-10-17'
+  -   ]
+  - }
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:505:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { schemaVersion: 'trip-itinerary-v1', planningSource: 'model_plan', tripDates: [ '2026-10-15', '2026-10-16', '2026-10-17' ], stops: [ [Object], [Object], [Object], [Object], [Object] ], days: [ [Object], [Object], [Object] ] },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

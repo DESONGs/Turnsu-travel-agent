@@ -1,0 +1,63 @@
+[
+  {
+    "schemaVersion": "third-party-audit-v1",
+    "candidate": "earendil-works/pi",
+    "commit": "d981de1229ef899957bbe968bc8dcda02a21f477",
+    "version": "0.85.1",
+    "license": "MIT",
+    "maintenance": "active",
+    "installMode": "lockfile-ignore-scripts",
+    "outboundDomains": [
+      "configured model APIs"
+    ],
+    "credentials": "api-key",
+    "writeSurface": [
+      "isolated agent session directory",
+      "existing TravelService via bounded tools"
+    ],
+    "disabledPaths": [
+      "experimental pi-server/client/harness",
+      "0.85.0 experimental release"
+    ],
+    "staticReview": "passed",
+    "isolatedSmoke": "passed_read_only_isolated",
+    "adoption": "eligible",
+    "evidence": "Pi SDK module import without credentials/network/writes; existing consumer real Kimi Child passed; full project check passed"
+  },
+  {
+    "schemaVersion": "third-party-audit-v1",
+    "candidate": "arcboxlabs/linkcode",
+    "commit": "da9c0673f102a6cc6e1410b45044bb8e03e9afb8",
+    "version": "0.30.0",
+    "license": "BUSL-1.1",
+    "maintenance": "active",
+    "installMode": "lockfile-ignore-scripts",
+    "outboundDomains": [
+      "authenticated Travel API",
+      "configured model API"
+    ],
+    "credentials": "api-key",
+    "writeSurface": [
+      "separate host profile and Pi transcript",
+      "authenticated Travel API operations"
+    ],
+    "disabledPaths": [
+      "shell",
+      "arbitrary file access",
+      "browser tools",
+      "MCP",
+      "nested subagent extension",
+      "image/audio/resource inputs",
+      "approval bypass",
+      "production embedding"
+    ],
+    "staticReview": "passed",
+    "isolatedSmoke": "passed_read_only_isolated",
+    "adoption": "borrow-only",
+    "internalHostEvaluation": true,
+    "redistributedSource": false,
+    "archiveSha256": "cebac1fdb18111dc2055db5522fa419e58adf83eb64eb9facb72fc46c337ef42",
+    "isolatedDependencyLockSha256": "38fd52ac5fe648c896c2e1624d19ff4af348aea56b714236c714a119e9ced221",
+    "licenseBoundary": "Internal evaluation only. LinkCode and @linkcode/tunnel BUSL code remain outside product repository and production dependency graph. Commercial redistribution/embedding is not validated."
+  }
+]

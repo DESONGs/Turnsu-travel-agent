@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-09-15T09:13:49.812Z",
+  "sdk": "installed @earendil-works/pi-agent-core 0.84.1",
+  "scope": "Faux SDK hooks and request isolation only; not the proposed business handoff, token estimator, or commercial execution implementation.",
+  "modelRequestToolSets": [
+    [
+      "collect_probe"
+    ],
+    [
+      "check_probe"
+    ],
+    [
+      "check_probe"
+    ]
+  ],
+  "initialRequestUsesInitialState": true,
+  "prepareCalls": 3,
+  "transformCalls": 3,
+  "transformPrunesRequestButNotStoredAgentMessages": true,
+  "resultPostprocessingReachesNextModelRequest": true,
+  "blockedToolWasNotExecuted": true,
+  "independentAgentsDoNotReceiveEachOthersMessages": true,
+  "agentStateToolsAfterLoop": [
+    "collect_probe"
+  ]
+}

@@ -1,0 +1,635 @@
+{
+  "testedAt": "2026-09-20T10:23:22.422Z",
+  "model": "jev-1.13.0",
+  "template": "travel-candidate-fit-v1",
+  "datasetHash": "549d7f9fa18fe498d582b489ea32bfbbed8c2fc44688daa49c8f74461234793b",
+  "evidenceScope": "Real Jev over pre-labeled fictional Chinese travel evidence. Not a live travel Provider test, product A/B or 500-user acceptance.",
+  "automaticRollout": "disabled_pending_independent_validation",
+  "scopePassed": 16,
+  "scopeTotal": 16,
+  "supportCasesPassed": 9,
+  "supportCasesTotal": 10,
+  "usage": {
+    "calls": 16,
+    "input_tokens": 23988,
+    "output_tokens": 3224
+  },
+  "rows": [
+    {
+      "id": "quiet",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 1235,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0.55,
+          "fit": 2.55
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.97,
+          "fit": 0.03
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "local_food",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 588,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0,
+          "fit": 1.69
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.95,
+          "fit": 0
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "not_lively",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 345,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0.79,
+          "fit": 2.79
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.97,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "correction",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 428,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0,
+          "fit": 1.98
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.9,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "indoors",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 457,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0.61,
+          "fit": 2.61
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.99,
+          "fit": 0
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0.71,
+          "fit": 0.29
+        }
+      ]
+    },
+    {
+      "id": "low_spoiler",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 475,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "unknown",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": false,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0.1,
+          "fit": 2.1
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.72,
+          "fit": 0.03
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0,
+          "fit": 1.69
+        }
+      ]
+    },
+    {
+      "id": "quiet_holdout",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 343,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0,
+          "fit": 1.98
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.9,
+          "fit": 0.02
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "art_holdout",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 419,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0,
+          "fit": 1.95
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.99,
+          "fit": 0
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "food_holdout",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 457,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0,
+          "fit": 1.73
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.93,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "outdoors_holdout",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 353,
+      "expectedScope": "compare",
+      "scope": "compare",
+      "scopeCorrect": true,
+      "expected": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "actual": [
+        "supported",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": true,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "supported",
+          "confidence": 0.74,
+          "fit": 2.74
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.98,
+          "fit": 0
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "parent_route",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 386,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0,
+          "fit": 1.13
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.38,
+          "fit": 0.05
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0.99,
+          "fit": 0.01
+        }
+      ]
+    },
+    {
+      "id": "parent_budget",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 399,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "unknown",
+          "confidence": 0.77,
+          "fit": 0.23
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "parent_confirm",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 431,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0.74,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "unknown",
+          "confidence": 0.22,
+          "fit": 0.78
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0.97,
+          "fit": 0.01
+        }
+      ]
+    },
+    {
+      "id": "parent_dates",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 397,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0.99,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "unknown",
+          "confidence": 0.8,
+          "fit": 0.16
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0.98,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "parent_accessibility",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 439,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "conflict",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0.73,
+          "fit": 0.27
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "conflict",
+          "confidence": 0.95,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 1,
+          "fit": 0
+        }
+      ]
+    },
+    {
+      "id": "parent_lock",
+      "status": "evaluated",
+      "code": null,
+      "elapsedMs": 408,
+      "expectedScope": "planning",
+      "scope": "planning",
+      "scopeCorrect": true,
+      "expected": null,
+      "actual": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "supportCorrect": null,
+      "judgments": [
+        {
+          "candidateId": "candidate_0",
+          "support": "unknown",
+          "confidence": 0,
+          "fit": 1.15
+        },
+        {
+          "candidateId": "candidate_1",
+          "support": "unknown",
+          "confidence": 0.99,
+          "fit": 0.01
+        },
+        {
+          "candidateId": "candidate_2",
+          "support": "unknown",
+          "confidence": 0.99,
+          "fit": 0.01
+        }
+      ]
+    }
+  ]
+}

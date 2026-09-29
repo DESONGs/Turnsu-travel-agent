@@ -1,0 +1,47 @@
+[
+  {
+    "mode": "concurrent",
+    "results": [
+      {
+        "status": "fulfilled",
+        "entries": 0
+      },
+      {
+        "status": "rejected",
+        "code": "23505",
+        "message": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+      },
+      {
+        "status": "rejected",
+        "code": "23505",
+        "message": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+      },
+      {
+        "status": "rejected",
+        "code": "23505",
+        "message": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+      }
+    ]
+  },
+  {
+    "mode": "sequential",
+    "results": [
+      {
+        "status": "fulfilled",
+        "entries": 0
+      },
+      {
+        "status": "fulfilled",
+        "entries": 0
+      },
+      {
+        "status": "fulfilled",
+        "entries": 0
+      },
+      {
+        "status": "fulfilled",
+        "entries": 0
+      }
+    ]
+  }
+]

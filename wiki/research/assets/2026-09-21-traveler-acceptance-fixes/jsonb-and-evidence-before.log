@@ -1,0 +1,656 @@
+(node:17890) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a traveler cannot adopt a plan exceeding the saved budget even when every route is feasible (54.049375ms)
+✖ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (19.889584ms)
+✔ adoption rechecks global constraints instead of trusting a cached canConfirm flag (13.995ms)
+✔ an unavailable route service blocks without repair or writes, and the same plan can run after restoration (15.73325ms)
+✔ cancelling a planning request discards even a late successful route response (16.717666ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (32.926542ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (20.005333ms)
+✔ a complete day spanning lunch must not silently omit the meal (7.415917ms)
+✔ lunch and dinner at one restaurant are separate visits, not a duplicate stop (13.451792ms)
+✔ a complete itinerary adopts two restaurants and charges each actual meal once (27.1535ms)
+✔ local route fares are included in the same hard trip budget (10.634916ms)
+✔ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (44.574334ms)
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (148.418541ms)
+✔ a second failed repair stops without a third route request (20.716041ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (14.475333ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (28.049334ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 14
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1016.471
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:96:1
+✖ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (19.889584ms)
+  AssertionError [ERR_ASSERTION]: moving a stop cannot establish missing step-free evidence
+  + actual - expected
+
+  + 'needs_repair'
+  - 'blocked'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:105:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'needs_repair',
+    expected: 'blocked',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/itinerary-planning-harness.test.mjs:276:1
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (148.418541ms)
+  AssertionError [ERR_ASSERTION]: a JSONB key-order change is not a traveler requirement change
+  + actual - expected
+
+  + null
+  - {
+  -   caveats: [],
+  -   checkedAt: '2026-08-30T08:00:00.000Z',
+  -   coverage: {
+  -     routedNodeIds: [
+  -       'arrival_pvg',
+  -       'stay_people_square',
+  -       'play_museum',
+  -       'food_local'
+  -     ],
+  -     routedStopIds: [
+  -       'arrival_pvg:1:intercity_arrival',
+  -       'stay_people_square:1:bag_drop',
+  -       'play_museum:1:activity',
+  -       'food_local:1:meal',
+  -       'stay_people_square:1:stay_check_in'
+  -     ],
+  -     unresolvedNodeIds: [],
+  -     unresolvedStopIds: [],
+  -     unscheduled: false
+  -   },
+  -   destination: '上海',
+  -   fabricatedResults: false,
+  -   feasibility: {
+  -     canConfirm: true,
+  -     checkedAt: '2026-08-30T08:00:00.000Z',
+  -     issues: [
+  -       {
+  -         checkedAt: '2026-08-30T08:00:00.000Z',
+  -         code: 'stairs_evidence_unverified',
+  -         dayIndex: null,
+  -         message: '当前没有发现明确楼梯冲突，但电梯与连续无台阶状态仍需现场确认。',
+  -         severity: 'warning',
+  -         stopIds: []
+  -       },
+  -       {
+  -         checkedAt: '2026-08-30T08:00:00.000Z',
+  -         code: 'day_without_stops',
+  -         dayIndex: 2,
+  -         message: '第 2 天仍有待安排时段。',
+  -         severity: 'warning',
+  -         stopIds: []
+  -       },
+  -       {
+  -         checkedAt: '2026-08-30T08:00:00.000Z',
+  -         code: 'day_without_stops',
+  -         dayIndex: 3,
+  -         message: '第 3 天仍有待安排时段。',
+  -         severity: 'warning',
+  -         stopIds: []
+  -       }
+  -     ],
+  -     primaryBlocker: null,
+  -     schemaVersion: 'trip-feasibility-v1',
+  -     status: 'feasible'
+  -   },
+  -   freshUntil: '2026-08-30T11:00:00.000Z',
+  -   itinerary: {
+  -     days: [
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         stopIds: [
+  -           'arrival_pvg:1:intercity_arrival',
+  -           'stay_people_square:1:bag_drop',
+  -           'play_museum:1:activity',
+  -           'food_local:1:meal',
+  -           'stay_people_square:1:stay_check_in'
+  -         ]
+  -       },
+  -       {
+  -         date: '2026-10-16',
+  -         dayIndex: 2,
+  -         stopIds: []
+  -       },
+  -       {
+  -         date: '2026-10-17',
+  -         dayIndex: 3,
+  -         stopIds: []
+  -       }
+  -     ],
+  -     planningSource: 'model_plan',
+  -     schemaVersion: 'trip-itinerary-v1',
+  -     stops: [
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         domain: 'transport',
+  -         endAt: '2026-10-15T09:00:00+08:00',
+  -         fixed: true,
+  -         nodeId: 'arrival_pvg',
+  -         openingHours: null,
+  -         preferredModes: [
+  -           'taxi'
+  -         ],
+  -         rationale: '保留已确认抵达',
+  -         role: 'intercity_arrival',
+  -         startAt: '2026-10-15T09:00:00+08:00',
+  -         stopId: 'arrival_pvg:1:intercity_arrival',
+  -         timeSource: 'provider_schedule',
+  -         title: '上海浦东国际机场 T2'
+  -       },
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         domain: 'stay',
+  -         endAt: '2026-10-15T10:15:00+08:00',
+  -         fixed: false,
+  -         nodeId: 'stay_people_square',
+  -         openingHours: '00:00-23:59',
+  -         preferredModes: [
+  -           'taxi',
+  -           'transit'
+  -         ],
+  -         rationale: '先放下行李',
+  -         role: 'bag_drop',
+  -         startAt: '2026-10-15T10:00:00+08:00',
+  -         stopId: 'stay_people_square:1:bag_drop',
+  -         timeSource: 'agent_suggested',
+  -         title: '人民广场酒店'
+  -       },
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         domain: 'play',
+  -         endAt: '2026-10-15T13:00:00+08:00',
+  -         fixed: false,
+  -         nodeId: 'play_museum',
+  -         openingHours: '09:00-17:00',
+  -         preferredModes: [
+  -           'transit',
+  -           'taxi'
+  -         ],
+  -         rationale: '白天参观',
+  -         role: 'activity',
+  -         startAt: '2026-10-15T11:00:00+08:00',
+  -         stopId: 'play_museum:1:activity',
+  -         timeSource: 'agent_suggested',
+  -         title: '上海博物馆'
+  -       },
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         domain: 'food',
+  -         endAt: '2026-10-15T15:00:00+08:00',
+  -         fixed: false,
+  -         nodeId: 'food_local',
+  -         openingHours: '11:00-21:00',
+  -         preferredModes: [
+  -           'taxi',
+  -           'walk'
+  -         ],
+  -         rationale: '就近用餐',
+  -         role: 'meal',
+  -         startAt: '2026-10-15T13:30:00+08:00',
+  -         stopId: 'food_local:1:meal',
+  -         timeSource: 'agent_suggested',
+  -         title: '本帮菜馆'
+  -       },
+  -       {
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         domain: 'stay',
+  -         endAt: '2026-10-15T16:30:00+08:00',
+  -         fixed: false,
+  -         nodeId: 'stay_people_square',
+  -         openingHours: '00:00-23:59',
+  -         preferredModes: [
+  -           'taxi',
+  -           'transit'
+  -         ],
+  -         rationale: '活动后正式入住',
+  -         role: 'stay_check_in',
+  -         startAt: '2026-10-15T16:00:00+08:00',
+  -         stopId: 'stay_people_square:1:stay_check_in',
+  -         timeSource: 'agent_suggested',
+  -         title: '人民广场酒店'
+  -       }
+  -     ],
+  -     tripDates: [
+  -       '2026-10-15',
+  -       '2026-10-16',
+  -       '2026-10-17'
+  -     ]
+  -   },
+  -   legs: [
+  -     {
+  -       alternatives: [
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 4,
+  -           mode: 'transit',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 30,
+  -           transfers: 1,
+  -           walkingMeters: 300
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 35,
+  -           mode: 'taxi',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 20,
+  -           transfers: 0,
+  -           walkingMeters: 0
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 0,
+  -           mode: 'walk',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 70,
+  -           transfers: 0,
+  -           walkingMeters: 5000
+  -         }
+  -       ],
+  -       destination: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T02:15:00.000Z',
+  -         label: '人民广场酒店',
+  -         nodeId: 'stay_people_square',
+  -         role: 'bag_drop',
+  -         startAt: '2026-10-15T02:00:00.000Z',
+  -         stopId: 'stay_people_square:1:bag_drop'
+  -       },
+  -       legId: 'plan_leg_0',
+  -       origin: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T01:00:00.000Z',
+  -         label: '上海浦东国际机场 T2',
+  -         nodeId: 'arrival_pvg',
+  -         role: 'intercity_arrival',
+  -         startAt: '2026-10-15T01:00:00.000Z',
+  -         stopId: 'arrival_pvg:1:intercity_arrival'
+  -       },
+  -       rationale: 'fixture',
+  -       recommendationAudit: null,
+  -       recommendedMode: 'taxi'
+  -     },
+  -     {
+  -       alternatives: [
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 4,
+  -           mode: 'transit',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 30,
+  -           transfers: 1,
+  -           walkingMeters: 300
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 35,
+  -           mode: 'taxi',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 20,
+  -           transfers: 0,
+  -           walkingMeters: 0
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 0,
+  -           mode: 'walk',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 70,
+  -           transfers: 0,
+  -           walkingMeters: 5000
+  -         }
+  -       ],
+  -       destination: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T05:00:00.000Z',
+  -         label: '上海博物馆',
+  -         nodeId: 'play_museum',
+  -         role: 'activity',
+  -         startAt: '2026-10-15T03:00:00.000Z',
+  -         stopId: 'play_museum:1:activity'
+  -       },
+  -       legId: 'plan_leg_1',
+  -       origin: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T02:15:00.000Z',
+  -         label: '人民广场酒店',
+  -         nodeId: 'stay_people_square',
+  -         role: 'bag_drop',
+  -         startAt: '2026-10-15T02:00:00.000Z',
+  -         stopId: 'stay_people_square:1:bag_drop'
+  -       },
+  -       rationale: 'fixture',
+  -       recommendationAudit: null,
+  -       recommendedMode: 'taxi'
+  -     },
+  -     {
+  -       alternatives: [
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 4,
+  -           mode: 'transit',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 30,
+  -           transfers: 1,
+  -           walkingMeters: 300
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 35,
+  -           mode: 'taxi',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 20,
+  -           transfers: 0,
+  -           walkingMeters: 0
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 0,
+  -           mode: 'walk',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 70,
+  -           transfers: 0,
+  -           walkingMeters: 5000
+  -         }
+  -       ],
+  -       destination: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T07:00:00.000Z',
+  -         label: '本帮菜馆',
+  -         nodeId: 'food_local',
+  -         role: 'meal',
+  -         startAt: '2026-10-15T05:30:00.000Z',
+  -         stopId: 'food_local:1:meal'
+  -       },
+  -       legId: 'plan_leg_2',
+  -       origin: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T05:00:00.000Z',
+  -         label: '上海博物馆',
+  -         nodeId: 'play_museum',
+  -         role: 'activity',
+  -         startAt: '2026-10-15T03:00:00.000Z',
+  -         stopId: 'play_museum:1:activity'
+  -       },
+  -       rationale: 'fixture',
+  -       recommendationAudit: null,
+  -       recommendedMode: 'taxi'
+  -     },
+  -     {
+  -       alternatives: [
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 4,
+  -           mode: 'transit',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 30,
+  -           transfers: 1,
+  -           walkingMeters: 300
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 35,
+  -           mode: 'taxi',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 20,
+  -           transfers: 0,
+  -           walkingMeters: 0
+  -         },
+  -         {
+  -           accessibilityAssessment: {
+  -             hasElevator: false,
+  -             hasEscalator: false,
+  -             hasRamp: false,
+  -             hasStairs: false,
+  -             realTimeStatus: false,
+  -             stepFreeContinuity: 'not_verified'
+  -           },
+  -           accessibilityFeatures: [],
+  -           distanceMeters: 5000,
+  -           estimatedFareCny: 0,
+  -           mode: 'walk',
+  -           navigationUrl: null,
+  -           polyline: [],
+  -           realTimeArrival: false,
+  -           scheduleBasis: 'query_time_estimate',
+  -           steps: [],
+  -           totalMinutes: 70,
+  -           transfers: 0,
+  -           walkingMeters: 5000
+  -         }
+  -       ],
+  -       destination: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T08:30:00.000Z',
+  -         label: '人民广场酒店',
+  -         nodeId: 'stay_people_square',
+  -         role: 'stay_check_in',
+  -         startAt: '2026-10-15T08:00:00.000Z',
+  -         stopId: 'stay_people_square:1:stay_check_in'
+  -       },
+  -       legId: 'plan_leg_3',
+  -       origin: {
+  -         coordinates: null,
+  -         date: '2026-10-15',
+  -         dayIndex: 1,
+  -         endAt: '2026-10-15T07:00:00.000Z',
+  -         label: '本帮菜馆',
+  -         nodeId: 'food_local',
+  -         role: 'meal',
+  -         startAt: '2026-10-15T05:30:00.000Z',
+  -         stopId: 'food_local:1:meal'
+  -       },
+  -       rationale: 'fixture',
+  -       recommendationAudit: null,
+  -       recommendedMode: 'taxi'
+  -     }
+  -   ],
+  -   reason: null,
+  -   schemaVersion: 'trip-mobility-v1',
+  -   source: 'fixture',
+  -   sourceDocumentation: null,
+  -   status: 'completed',
+  -   travelerFit: {
+  -     accessibilityEvidence: 'unverified',
+  -     avoidStairs: true,
+  -     constrainedTravelerIds: [],
+  -     maxContinuousWalkMeters: 600,
+  -     maxTransfers: 1,
+  -     planningTransferTarget: null,
+  -     planningWalkingTarget: null,
+  -     stayAnchorFits: [],
+  -     stepFreeRequired: false,
+  -     transferTargetSource: null,
+  -     walkingTargetSource: null
+  -   }
+  - }
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:300:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: { legs: [ [Object], [Object], [Object], [Object] ], reason: null, source: 'fixture', status: 'completed', caveats: [], coverage: { unscheduled: false, routedNodeIds: [Array], routedStopIds: [Array], unresolvedNodeIds: [], unresolvedStopIds: [] }, checkedAt: '2026-08-30T08:00:00.000Z', itinerary: { days: [Array], stops: [Array], tripDates: [Array], schemaVersion: 'trip-itinerary-v1', planningSource: 'model_plan' }, freshUntil: '2026-08-30T11:00:00.000Z', destination: '上海', feasibility: { issues: [Array], status: 'feasible', checkedAt: '2026-08-30T08:00:00.000Z', canConfirm: true, schemaVersion: 'trip-feasibility-v1', primaryBlocker: null }, travelerFit: { avoidStairs: true, maxTransfers: 1, stayAnchorFits: [], stepFreeRequired: false, walkingTargetSource: null, transferTargetSource: null, accessibilityEvidence: 'unverified', planningWalkingTarget: null, constrainedTravelerIds: [], planningTransferTarget: null, maxContinuousWalkMeters: 600 }, schemaVersion: 'trip-mobility-v1', fabricatedResults: false, sourceDocumentation: null },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

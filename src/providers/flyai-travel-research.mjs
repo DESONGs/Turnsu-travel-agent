@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { promisify } from "node:util";
+import { journeyQueries, tagJourneyCandidate } from "../../travel-agent-pi-package/src/core/journey-execution.ts";
 
 const require = createRequire(import.meta.url);
 const execFileAsync = promisify(execFile);
@@ -272,7 +273,10 @@ function normalizeTransport(item, checkedAt, context = {}) {
   });
 }
 
-function limitDomainCandidates(domain, candidates) {
+function limitDomainCandidates(domain, candidates, groupJourneys = true) {
+  if (groupJourneys && domain === "transport" && candidates.some(item => item.operability?.journeyId)) {
+    return [...new Set(candidates.map(item => item.operability?.journeyId))].flatMap(id => limitDomainCandidates("transport", candidates.filter(item => item.operability?.journeyId === id), false));
+  }
   const unique = [...new Map(candidates.map((candidate) => [candidate.candidateId, candidate])).values()];
   if (domain !== "transport") return unique.slice(0, 6);
   const flights = unique.filter((candidate) => candidate.operability?.transportType === "FLIGHT").slice(0, 3);
@@ -343,9 +347,9 @@ export class FlyaiTravelResearchProvider {
     }
     if (requested.includes("play")) tasks.push({ domain: "play", command: "search-poi", args: ["--city-name", destination], normalize: normalizePoi });
     const origin = text(brief.origin, 120);
-    if (requested.includes("transport") && origin && dates.start) {
-      for (const mode of intercityModes(brief, question, criteria)) {
-        tasks.push({ domain: "transport", command: mode === "flight" ? "search-flight" : "search-train", args: ["--origin", origin, "--destination", destination, "--dep-date", dates.start], normalize: (item, checkedAt) => normalizeTransport(item, checkedAt, { origin, destination }) });
+    if (requested.includes("transport")) {
+      for (const journey of journeyQueries(brief)) for (const mode of journey.mode && journey.mode !== "flexible" ? [journey.mode] : intercityModes(brief, question, criteria)) {
+        tasks.push({ domain: "transport", command: mode === "flight" ? "search-flight" : "search-train", args: ["--origin", journey.origin, "--destination", journey.destination, "--dep-date", journey.date], normalize: (item, checkedAt) => tagJourneyCandidate(normalizeTransport(item, checkedAt, { origin: journey.origin, destination: journey.destination }), journey) });
       }
     }
     const byDomain = { play: [], food: [], stay: [], transport: [] };

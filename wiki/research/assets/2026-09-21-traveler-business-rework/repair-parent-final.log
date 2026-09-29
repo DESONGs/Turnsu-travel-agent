@@ -1,0 +1,21 @@
+(node:4588) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (91.02375ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (87.466959ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (66.842667ms)
+✔ fresh reads after a repair remain available and do not force a generic research completion (77.691583ms)
+✔ exhausting the total tool budget reports unfinished work instead of a successful fallback (29.152375ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (10.040792ms)
+✔ a missing departure date is resolved before asking about arrival preferences (10.042417ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (9.357209ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (79.374708ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (113.069083ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (127.899791ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1788.363959

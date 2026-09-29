@@ -1,6 +1,14 @@
 # Skills、数据、Provider 与 MCP
 
+## 2026-09-22 合同升级依据（待实现）
+
+本次按 [14](./14-continuous-planning-business-model.md) 分清查询、核验、修改草案和采用的写面；按 [15](./15-model-context-and-handoff.md) 为 Parent、Jev、Child 提供同源版本快照与可消费回执。Jev 从候选支持/排序扩展到具体问题的计划须先校准新模板，当前能力不能冒充已支持新合同。相关 Skill、工具 schema 和提示词随实现最小同步，既有只读与权限边界保留。
+
 ## Skill 目录
+
+2026-09-21 的判断接线按 `off / shadow / auto` 选择。`off` 使用既有 Parent/Child；`shadow` 把 Jev 结果记录在分析产物中，不交给 Parent 改变决定；`auto` 将结构化判断交给 Parent 并在精确模板/语言校准通过后允许可撤销的候选比较。Jev 固定 `jev-1.13.0`，通过服务端 `POST https://api.typesafe.ai/v1/systemone` 使用 Choice/Score，不作为聊天模型或工具执行器。
+
+同一事实快照上的独立问题合批，超过保守输入预算时按候选拆批；每批保留完整约束。不再每域只取两个候选，保留逐维未知和分歧。后续补查仍调用原 Provider；组合、试排、修复与提交仍调用原业务工具。研究内部通过持久步骤分成准备、判断和完成，不复制公开研究入口。新接入的静态审计及真实接口证据见[审计登记](../research/third-party-candidate-audits.md#jev-结构化判断-api2026-09-21)。
 
 项目内 Skill 的唯一来源位于 `plugins/travel-agent/skills/`。Web Parent Agent 会在每轮真实读取 1–2 个组合 Skill 并记录版本；Pi package 只向外部 Pi 宿主暴露四个组合入口。原有微型 Skill 内容保留在同一目录并被组合入口作为 references 引用，不再要求 Parent 或 Child 同时装载全部内容。
 
@@ -15,7 +23,9 @@ Provider 仍先以 `Promise.allSettled` 有界并行取数并归一化。只有�
 
 每个请求域同时返回来源状态：`completed_nonempty`、`empty_verified`、`provider_unavailable`、`rate_limited`、`auth_required` 或 `partial`。`empty_verified` 只表示适用于该域的已查询来源在本次条件下没有返回可核验结果，不表示市场不存在。高德机场、车站、停车场和出入口属于地图/市内移动证据，不能在航班或铁路库存为空时补位；飞猪、途牛等 OTA 不支持的餐饮/游玩域也不能被空数组误记为已核验为空。
 
-首次旅行研究由 Runtime 强制覆盖吃、住、行、玩四条任务链，即使模型只请求了其中一域；已有提案或已选方案后的局部调整才尊重受影响域子集。Provider 暂时无结果时保留缺失域，不用模型知识补齐。
+首次与后续研究都尊重用户委托的领域；只比较酒店时只查住宿，完整规划按保存的 `planningDomains` 联动。Provider 暂时无结果时保留缺口，不用模型知识补齐。`plan-trip` 要求 Parent 读完全部问题后一次修复：预算内优先替换候选；连续无台阶缺证据时补查设施和通路，不能以改为打车代替证明。
+
+Mobility 的完整路线证据不设展示用截断：Adapter 必须处理已排的全部地点和到访，合同归一化与 Runtime 存储必须保留全部已返回路段。来源失败仍受原有超时、取消与配额约束，显式返回覆盖缺口。移除了原来的 8 地点／16 到访／8 路段静默截断；18 到访适配器检查和跨 PostgreSQL 的 12 路段回归见[返工证据](../research/2026-09-21-traveler-business-rework.md)。这不代表真实高德接口已经在本轮通过。
 
 ## Provider 分层
 
@@ -59,6 +69,8 @@ submit_trip_feedback
 `submit_trip_feedback` 既保留原有分类反馈，也支持地点关联的匿名结构化到访记录。共享记录必须绑定已选地点及其稳定来源标识；跨旅行只返回聚合后的推荐、标签、花费、等待和待核验数量，不返回自由文字，也不把用户报告提升为官方事实。
 
 `save_trip_understanding` 是 Parent Agent 的对话工具名，底层首次调用 `create_trip`，后续调用 `update_trip_scope`。`research_trip_options` 会建立待确认提案，因此不是纯读接口。用户可在 Web 画布或聊天中明确点名一个已有候选；`accept_trip_change` 支持 `partial=true`，只提交指定 domain 并保留 residual proposal。已购票到达事实使用独立 user-confirmed arrival node，不以库存选择为前提。所有入口继续经过 revision、write set、锁定、新鲜度和跨域约束检查。
+
+上述逐域部分采用只适用于候选比较。带有 `itineraryPlan` 的试排行程按整份草案提交，`scope=complete_trip` 明确替换原选中集合并保留草案内所有到访；`selected_visits` 用于范围有限的站序优化。Parent 工具必须提供 `scope`，旧 HTTP 合同可继续省略但不能因此获得完整替换语义。Checker 的外部资料缺口通过 `resolution=provider_evidence` 和 `fetch_evidence` 交给 Parent，不能转成向用户索取设施证明的问题。
 
 `create_trip` 的 `travelers` 与 `update_trip_scope.travelerProfiles` 支持逐人称呼、关系与有界 `careNeeds`。`elicit-party-preferences` 负责把自然语言翻译成行动要求，`assess-traveler-operability` 与 `review-trip-coherence` 负责核验它们是否被路线、住宿、活动、餐饮和日程满足；这些 Skill 不能保存诊断或直接修改旅行状态。
 

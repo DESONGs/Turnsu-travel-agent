@@ -2,7 +2,7 @@ export function createTravelAnalysisRunCoordinator() {
   const runs = new Map();
   const activeByTrip = new Map();
 
-  function begin({ runId, tripId, baseRevision, criteriaFingerprint, requiredLanes, deadlineAt }) {
+  function begin({ runId, tripId, baseRevision, criteriaFingerprint, requiredLanes, deadlineAt, scopeFingerprint = null }) {
     const existing = runs.get(runId);
     if (existing) {
       if (existing.tripId !== tripId || existing.baseRevision !== baseRevision || existing.criteriaFingerprint !== criteriaFingerprint) {
@@ -22,6 +22,7 @@ export function createTravelAnalysisRunCoordinator() {
       tripId,
       baseRevision,
       criteriaFingerprint,
+      scopeFingerprint,
       requiredLanes: [...new Set(requiredLanes)],
       deadlineAt,
       status: "analyzing",
@@ -111,5 +112,16 @@ export function createTravelAnalysisRunCoordinator() {
     return runs.get(runId) ?? null;
   }
 
-  return { begin, isCurrent, recordLaneStarted, recordLaneCompletion, tryJoin, completeJoin, markStale, supersedeTrip, get };
+  function resumeRepair(runId, { criteriaFingerprint }) {
+    const run = runs.get(runId);
+    if (!run || activeByTrip.get(run.tripId) !== runId || run.lanes.has("itinerary_plan:2")
+      || !run.lanes.get("itinerary_plan:1")?.completedAt || Date.now() >= Date.parse(run.deadlineAt)
+      || (run.status !== "analyzing" && !(run.status === "superseded" && run.staleReason === "candidate_set_changed"))) return false;
+    run.criteriaFingerprint = criteriaFingerprint;
+    run.status = "analyzing";
+    run.abortController = new AbortController();
+    return true;
+  }
+
+  return { begin, isCurrent, recordLaneStarted, recordLaneCompletion, tryJoin, completeJoin, markStale, supersedeTrip, get, resumeRepair };
 }

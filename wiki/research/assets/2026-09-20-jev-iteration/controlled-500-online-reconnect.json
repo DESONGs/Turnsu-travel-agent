@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "travel-capacity-evidence-v1",
+  "testedAt": "2026-09-20T17:35:33.158Z",
+  "status": "capacity_reached_intake_latency_failed",
+  "users": 500,
+  "apiInstances": 2,
+  "workerInstances": 2,
+  "peakEventStreams": 1000,
+  "peakConcurrentNativeParents": 500,
+  "reconnectedClients": 500,
+  "completedRuns": 500,
+  "persistedTrips": 500,
+  "submitP95Ms": 3491,
+  "submitP99Ms": 3918,
+  "submitMaxMs": 3949,
+  "elapsedMs": 18928,
+  "processRssMiB": [
+    157,
+    167,
+    261,
+    286
+  ],
+  "evidenceScope": "Real HTTP auth, cross-process PostgreSQL queue, native Pi tool turns, SSE and product persistence. Model responses are controlled; no external model or travel Provider capacity is established.",
+  "intakeLatencyTargetMet": false
+}

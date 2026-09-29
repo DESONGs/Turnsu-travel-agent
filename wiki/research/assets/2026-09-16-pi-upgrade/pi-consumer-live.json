@@ -1,0 +1,24 @@
+{
+  "status": "passed_live_child_consumer",
+  "toolCount": 14,
+  "proposalId": "proposal_research_analysis_run_974cbd0f",
+  "candidateCounts": {
+    "play": 1,
+    "food": 1,
+    "stay": 1,
+    "transport": 1
+  },
+  "subagentContracts": 3,
+  "child": {
+    "agent": "zhuanshu-travel.inventory-budget",
+    "model": "moonshotai-cn/kimi-k2.6:minimal",
+    "skillIds": [
+      "plan-trip"
+    ],
+    "turns": 1,
+    "toolCalls": 0,
+    "toolSurface": "skill_injected_without_tool_call",
+    "durationMs": 12783,
+    "tripStateWrites": 0
+  }
+}

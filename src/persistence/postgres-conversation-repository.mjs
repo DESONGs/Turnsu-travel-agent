@@ -1,6 +1,7 @@
 import { Pool } from "pg";
+import { executionWrite } from "./execution-write.mjs";
 import { validateConversation } from "./conversation-repository.mjs";
-import { POSTGRES_MIGRATION_SQL } from "./postgres-trip-repository.mjs";
+import { migrateTravelDatabase } from "./postgres-trip-repository.mjs";
 
 function repositoryError(code, details = {}) {
   const error = new Error(code);
@@ -13,11 +14,12 @@ export class PostgresConversationRepository {
   constructor({ databaseUrl, pool } = {}) {
     if (!pool && !databaseUrl) throw repositoryError("database_url_required");
     this.pool = pool ?? new Pool({ connectionString: databaseUrl, max: 10, idleTimeoutMillis: 10_000 });
+    this.ownsPool = !pool;
     this.mode = "postgres";
   }
 
   async migrate() {
-    await this.pool.query(POSTGRES_MIGRATION_SQL);
+    await migrateTravelDatabase(this.pool);
   }
 
   async create(record) {
@@ -49,12 +51,12 @@ export class PostgresConversationRepository {
     const conversation = validateConversation(structuredClone(record));
     const nextVersion = Number(expectedStorageVersion) + 1;
     const persisted = { ...conversation, storageVersion: nextVersion };
-    const result = await this.pool.query(
+    const result = await executionWrite(this.pool, (db) => db.query(
       `UPDATE travel_conversations
        SET user_id = $3, trip_id = $4, storage_version = $5, record_json = $6::jsonb, updated_at = now()
        WHERE conversation_id = $1 AND storage_version = $2`,
       [persisted.conversationId, expectedStorageVersion, persisted.userId, persisted.tripId, nextVersion, JSON.stringify(persisted)],
-    );
+    ));
     if (!result.rowCount) {
       const exists = await this.pool.query("SELECT 1 FROM travel_conversations WHERE conversation_id = $1", [persisted.conversationId]);
       throw repositoryError(exists.rowCount ? "conversation_storage_conflict" : "conversation_not_found", { conversationId: persisted.conversationId });
@@ -74,6 +76,6 @@ export class PostgresConversationRepository {
   }
 
   async close() {
-    await this.pool.end();
+    if (this.ownsPool) await this.pool.end();
   }
 }

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "traveler-browser-observations-v1",
+  "capturedAt": "2026-09-20T18:10:59.713Z",
+  "tool": "Codex in-app browser through cua_repl",
+  "baseUrl": "http://127.0.0.1:18900",
+  "viewport": {
+    "desktop": "default",
+    "mobile": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "evidenceScope": "Real UI, real Parent/Jev, isolated PostgreSQL; explicitly fictional travel facts. No product code edits, purchases or real user data.",
+  "steps": [
+    {
+      "step": 1,
+      "action": "Guest entry; submit T05 prompt in Chinese.",
+      "observed": "No login required. Chinese entry screen became English after submission; manually switched to Chinese.",
+      "screenshot": "01-desktop-first-response.png"
+    },
+    {
+      "step": 2,
+      "action": "Wait for first necessary question.",
+      "observed": "Question asked departure date with impact explanation. Impact referred to complete two days, despite requested one day plus overnight.",
+      "screenshot": "02-desktop-date-question.png"
+    },
+    {
+      "step": 3,
+      "action": "Reload while awaiting answer.",
+      "observed": "Assistant closed; main page lacked prominent pending-question reminder. Reopening assistant restored the same question. Drawer closed again during initial answer attempt; reopened and entered successfully.",
+      "screenshot": "03-desktop-after-refresh.png"
+    },
+    {
+      "step": 4,
+      "action": "Answer departure date and explicitly exclude next-day planning; set 390x844 viewport.",
+      "input": "2026年10月15日出发。只安排15日这一天和当天住宿，16日我自行返程，不用安排行程。其他要求不变，请继续完成草案，不要确认。",
+      "observed": "Durable capacity wait visible, no manual continue required; later asks arrival mode/time and has a trial in the run result.",
+      "screenshot": "04-mobile-durable-wait.png"
+    },
+    {
+      "step": 5,
+      "action": "Click stable option 高铁，上午9点前后到.",
+      "observed": "Assistant says existing draft need not change. Discovery page has no candidates and asks to continue planning; itinerary view has no route. PostgreSQL independently confirms pendingProposals and selectedNodes both empty.",
+      "screenshot": "05-mobile-after-answer-empty.png"
+    },
+    {
+      "step": 6,
+      "action": "Reload after final response.",
+      "observed": "Budget, origin and dates restore, but no adoptable draft restores. Adoption and post-adoption reload cannot be executed on this flow.",
+      "screenshot": "06-mobile-after-refresh-empty.png"
+    },
+    {
+      "step": 7,
+      "action": "Open assistant and expand final reply.",
+      "observed": "Reply describes the supposedly retained draft and says grass draft can remain; conflicts with current empty workbench.",
+      "screenshot": "07-mobile-assistant-claims-draft.png"
+    }
+  ],
+  "results": {
+    "T13": "partial",
+    "T14": "failed"
+  },
+  "notExecuted": [
+    "Adoption on mobile after the failed continuation",
+    "Native mobile apps or miniapps"
+  ]
+}

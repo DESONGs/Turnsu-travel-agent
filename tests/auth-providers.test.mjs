@@ -24,7 +24,7 @@ function googleEnv(overrides = {}) {
   };
 }
 
-function signedGoogleToken({ privateKey, kid, nonce }) {
+function signedGoogleToken({ privateKey, kid, nonce, claims = {} }) {
   const header = Buffer.from(JSON.stringify({ alg: "RS256", kid, typ: "JWT" })).toString("base64url");
   const payload = Buffer.from(JSON.stringify({
     iss: "https://accounts.google.com",
@@ -34,6 +34,7 @@ function signedGoogleToken({ privateKey, kid, nonce }) {
     nonce,
     iat: Math.floor(fixedClock().getTime() / 1000),
     exp: Math.floor(fixedClock().getTime() / 1000) + 600,
+    ...claims,
   })).toString("base64url");
   const content = `${header}.${payload}`;
   return `${content}.${sign("RSA-SHA256", Buffer.from(content), privateKey).toString("base64url")}`;
@@ -182,6 +183,88 @@ test("signed production sessions survive store recreation and reject tampering o
   assert.equal(second.read(issued.opaqueToken), null);
 });
 
+test("all Mini Program exchanges reject a weak session secret before contacting a provider", async () => {
+  for (const provider of ["wechat", "alipay"]) {
+    const service = createAuthService({
+      env: googleEnv({ TRAVEL_AGENT_SESSION_SECRET: "short", WECHAT_MINIAPP_APP_ID: "app", WECHAT_MINIAPP_APP_SECRET: "secret", ALIPAY_APP_ID: "app", ALIPAY_PRIVATE_KEY_PATH: "/private", ALIPAY_PUBLIC_KEY_PATH: "/public" }),
+      fetchImpl: async () => assert.fail("must not exchange with insecure session configuration"),
+    });
+    await assert.rejects(service.exchangePlatform({ provider, authorizationCode: "code" }), { code: "auth_provider_not_configured" });
+  }
+});
+
+test("OIDC rejects signed tokens with missing or nonnumeric lifetime claims", async () => {
+  const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const jwk = { ...publicKey.export({ format: "jwk" }), kid: "lifetime-test" };
+  let idToken;
+  const service = createAuthService({ env: googleEnv(), clock: fixedClock, fetchImpl: async (url) => new Response(JSON.stringify(String(url).endsWith("/token") ? { id_token: idToken } : { keys: [jwk] })) });
+  const authorization = service.beginWeb({ provider: "google", origin: "http://localhost:8797" });
+  for (const claims of [{ exp: undefined }, { exp: "invalid" }, { iat: undefined }, { iat: "invalid" }]) {
+    idToken = signedGoogleToken({ privateKey, kid: jwk.kid, nonce: authorization.nonce, claims });
+    await assert.rejects(service.completeWeb({ provider: "google", code: "code", state: authorization.state, nonce: authorization.nonce }), { code: "auth_identity_token_invalid" });
+  }
+});
+
+test("Apple form_post rejoins the shared Web login with its guest session and verified OIDC identity", async () => {
+  const signing = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const client = generateKeyPairSync("ec", { namedCurve: "P-256" });
+  const jwk = { ...signing.publicKey.export({ format: "jwk" }), kid: "apple-test" };
+  const env = googleEnv({ TRAVEL_AGENT_PUBLIC_ORIGIN: "https://travel.example.com", APPLE_CLIENT_ID: "apple-client", APPLE_TEAM_ID: "team", APPLE_KEY_ID: "key", APPLE_PRIVATE_KEY_PATH: "/test/apple.p8" });
+  let idToken;
+  let exchanges = 0;
+  const authService = createAuthService({ env, clock: fixedClock,
+    readFileImpl: async () => client.privateKey.export({ type: "pkcs8", format: "pem" }),
+    fetchImpl: async (url) => {
+      if (String(url).endsWith("/token")) { exchanges += 1; return new Response(JSON.stringify({ id_token: idToken })); }
+      return new Response(JSON.stringify({ keys: [jwk] }));
+    },
+  });
+  const sessions = new SignedSessionStore({ secret: sessionSecret, clock: fixedClock });
+  const guest = sessions.issue({ userId: "usr_guest_apple", provider: "guest" });
+  const claims = [];
+  const service = new TravelService({ store: new TripStore() });
+  service.transferUserOwnership = async (value) => { claims.push(value); return { transferredTrips: 1 }; };
+  const app = createHttpApp({ travelService: service, sessionStore: sessions, authService, runtimeEnv: env, clock: fixedClock,
+    conversationRepository: { transferUserOwnership: async () => ({ transferredConversations: 1 }) },
+  });
+  const server = http.createServer(app);
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const start = await fetch(`${origin}/api/auth/apple/start`, { redirect: "manual" });
+    const authorization = new URL(start.headers.get("location"));
+    const cookies = start.headers.getSetCookie().map((cookie) => cookie.split(";")[0]).join("; ");
+    idToken = signedGoogleToken({ privateKey: signing.privateKey, kid: jwk.kid, nonce: authorization.searchParams.get("nonce"), claims: { iss: "https://appleid.apple.com", aud: "apple-client", sub: "apple-user" } });
+    const body = new URLSearchParams({ code: "apple-code", state: authorization.searchParams.get("state"), id_token: "must-not-leak", user: "private-profile" });
+    const form = await fetch(`${origin}/api/auth/apple/callback`, { method: "POST", headers: { origin: "https://appleid.apple.com", "content-type": "application/x-www-form-urlencoded", cookie: cookies }, body, redirect: "manual" });
+    assert.equal(form.status, 303);
+    assert.equal(form.headers.get("access-control-allow-origin"), null);
+    assert.equal(form.headers.get("referrer-policy"), "no-referrer");
+    const location = form.headers.get("location");
+    assert.ok(location.startsWith("/api/auth/apple/callback?"));
+    assert.equal(location.includes("must-not-leak"), false);
+    assert.equal(location.includes("private-profile"), false);
+    assert.equal(exchanges, 0);
+    // Simulate the browser's top-level GET carrying its existing Lax session.
+    const complete = await fetch(`${origin}${location}`, { headers: { cookie: `${cookies}; travel_session=${guest.opaqueToken}` }, redirect: "manual" });
+    assert.equal(complete.headers.get("location"), "/?auth=success");
+    assert.equal(exchanges, 1);
+    assert.deepEqual(claims, [{ fromUserId: "usr_guest_apple", toUserId: authenticatedUserId({ provider: "apple", subject: "apple-user" }) }]);
+    assert.equal(sessions.read(guest.opaqueToken), null);
+    assert.ok(complete.headers.getSetCookie().some((cookie) => cookie.startsWith("travel_session=") && cookie.includes("HttpOnly")));
+    const tampered = await fetch(`${origin}/api/auth/apple/callback?code=code&state=tampered`, { headers: { cookie: cookies }, redirect: "manual" });
+    assert.match(tampered.headers.get("location"), /auth_error=auth_state_invalid/);
+    assert.equal(exchanges, 1);
+    for (const [path, requestOrigin] of [["/api/auth/apple/callback", "https://attacker.example"], ["/api/auth/platform-exchange", "https://appleid.apple.com"]]) {
+      const denied = await fetch(`${origin}${path}`, { method: "POST", headers: { origin: requestOrigin, "content-type": "application/x-www-form-urlencoded" }, body, redirect: "manual" });
+      assert.equal(denied.status, 403);
+    }
+  } finally {
+    await new Promise((resolveClose) => server.close(resolveClose));
+  }
+});
+
 test("desktop OAuth codes are short-lived and consumed exactly once", () => {
   const store = new DesktopAuthCodeStore({ clock: fixedClock });
   const issued = store.issue({ identity: { provider: "google", subject: "desktop-subject", displayName: "Desktop User" }, returnTo: "/trip/1" });
@@ -189,6 +272,43 @@ test("desktop OAuth codes are short-lived and consumed exactly once", () => {
   assert.equal(consumed.identity.subject, "desktop-subject");
   assert.equal(consumed.returnTo, "/trip/1");
   assert.equal(store.consume(issued.code), null);
+});
+
+test("a failed guest claim preserves the old session; a successful Mini Program retry rotates it", async () => {
+  const sessions = new SignedSessionStore({ secret: sessionSecret, clock: fixedClock });
+  const guest = sessions.issue({ userId: "usr_guest_retry", provider: "guest" });
+  const service = new TravelService({ store: new TripStore() });
+  let failClaim = true;
+  service.transferUserOwnership = async () => {
+    if (failClaim) throw new Error("claim_unavailable");
+    return { transferredTrips: 1 };
+  };
+  const app = createHttpApp({ travelService: service, sessionStore: sessions, clock: fixedClock, runtimeEnv: { NODE_ENV: "test" },
+    authService: { exchangePlatform: async () => ({ provider: "wechat", subject: "retry-user" }) },
+    conversationRepository: { transferUserOwnership: async () => ({ transferredConversations: 1 }) },
+  });
+  const server = http.createServer(app);
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  const exchange = (authorizationCode) => fetch(`${origin}/api/auth/platform-exchange`, {
+    method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${guest.opaqueToken}` },
+    body: JSON.stringify({ provider: "wechat", authorizationCode }),
+  });
+  try {
+    const failed = await exchange("first-code");
+    assert.equal(failed.status, 500);
+    assert.ok(sessions.read(guest.opaqueToken));
+    failClaim = false;
+    const retry = await exchange("fresh-code");
+    assert.equal(retry.status, 201);
+    const session = await retry.json();
+    assert.deepEqual(session.claim, { transferredTrips: 1, transferredConversations: 1 });
+    assert.ok(sessions.read(session.accessToken));
+    assert.equal(sessions.read(guest.opaqueToken), null);
+  } finally {
+    await new Promise((resolveClose) => server.close(resolveClose));
+  }
 });
 
 test("HTTP auth routes expose providers, redirect to login, issue Web cookies and return Mini Program bearer sessions", async () => {
@@ -257,6 +377,7 @@ test("HTTP auth routes expose providers, redirect to login, issue Web cookies an
     assert.equal(exchange.status, 201);
     assert.equal(desktopSession.provider, "google");
     assert.ok(sessionStore.read(desktopSession.accessToken));
+    assert.equal(sessionStore.read(desktopGuest.accessToken), null);
     const replay = await fetch(`${origin}/api/auth/desktop-exchange`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-travel-client": "desktop" },

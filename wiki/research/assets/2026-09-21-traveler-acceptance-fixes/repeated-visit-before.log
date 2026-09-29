@@ -1,0 +1,32 @@
+(node:2985) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ lunch and dinner at one restaurant are separate visits, not a duplicate stop (44.262292ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 611.730792
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:207:1
+✖ lunch and dinner at one restaurant are separate visits, not a duplicate stop (44.262292ms)
+  AssertionError [ERR_ASSERTION]: [{"code":"duplicate_itinerary_stop","severity":"blocking","message":"本帮菜馆在同一天出现了重复行程节点。","stopIds":["food_local:1:meal"],"dayIndex":1,"allowedRepairDirections":["remove_optional_stop"],"checkedAt":"2026-08-30T08:00:00.000Z"},{"code":"stairs_evidence_unverified","severity":"warning","message":"当前没有发现明确楼梯冲突，但电梯与连续无台阶状态仍需现场确认。","stopIds":[],"dayIndex":null,"checkedAt":"2026-08-30T08:00:00.000Z"},{"code":"day_without_stops","severity":"warning","message":"第 2 天仍有待安排时段。","stopIds":[],"dayIndex":2,"checkedAt":"2026-08-30T08:00:00.000Z"},{"code":"day_without_stops","severity":"warning","message":"第 3 天仍有待安排时段。","stopIds":[],"dayIndex":3,"checkedAt":"2026-08-30T08:00:00.000Z"}]
+  + actual - expected
+
+  + 'needs_repair'
+  - 'trial_ready'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:213:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'needs_repair',
+    expected: 'trial_ready',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

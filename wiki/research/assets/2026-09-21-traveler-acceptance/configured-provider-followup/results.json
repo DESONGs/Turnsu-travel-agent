@@ -1,0 +1,262 @@
+{
+  "schemaVersion": "traveler-acceptance-results-v1",
+  "startedAt": "2026-09-20T18:03:35.578Z",
+  "datasetHash": "fc0cab034b0b224e1cbbfa29f40167b504a2c4f381bf4e7f17671f1d4ecb510d",
+  "node": "v26.7.0",
+  "evidenceScope": "Real native Pi Parent and Jev, authenticated HTTP and PostgreSQL. T08 uses configured travel Providers; other model scenarios use explicitly fictional reference travel facts. Browser scenarios are recorded separately. No purchases or third-party posts.",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "e6e9d2c62f8e411f6be0a8013744423bc9cedf537a1571991589568ed7a23147",
+    "src/agent/travel-execution-service.mjs": "6b0ca834c53e02c292ac4e900c240d9b5b5643304faded5fd97d7414cce06138",
+    "src/api/travel-service.mjs": "6d9d7ad77be39ca6d798a97cc9e2587aaeec0819256ea3b088c445e9ac431db4",
+    "src/persistence/execution-repository.mjs": "e5aab1e0c7c457994d30c0788ef70cec4eebdf943e1bf9eb66c5f910bcc5ced7",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "24dee49efd233699fc44059d51c335cb32307dad2734344acc588aaae587abea",
+    "tests/fixtures/traveler-acceptance-cases.mjs": "e98b73625fcc14e4e5e323813ffac327d6e8409e66fe5893f7e375f509411196"
+  },
+  "configured": {
+    "parent": true,
+    "child": true,
+    "jev": true,
+    "amap": false
+  },
+  "rows": [
+    {
+      "id": "T08",
+      "title": "真实旅行资料缺失时的恢复体验",
+      "travelFacts": "configured_real_providers",
+      "checks": [
+        {
+          "name": "完成或等待一个用户回答",
+          "passed": false,
+          "actual": "failed"
+        },
+        {
+          "name": "未擅自确认安排",
+          "passed": true,
+          "actual": []
+        },
+        {
+          "name": "用户目的地与预算已保存",
+          "passed": true,
+          "actual": {
+            "dates": "2026-10-15 至 2026-10-16",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 2
+          }
+        },
+        {
+          "name": "未使用测试Provider",
+          "passed": true
+        },
+        {
+          "name": "缺少路线时不伪报完整核验",
+          "passed": true
+        }
+      ],
+      "turns": [
+        {
+          "runId": "run_8b7d28d1-2013-442e-aba4-3f00ac9f9c49",
+          "status": "failed",
+          "code": "agent_tool_failed",
+          "admissionMs": 9,
+          "totalMs": 62864,
+          "firstUsefulMs": 29260,
+          "brief": {
+            "dates": "2026-10-15 至 2026-10-16",
+            "origin": "杭州",
+            "currency": "CNY",
+            "destination": "上海",
+            "totalBudget": 6000,
+            "durationDays": 2
+          },
+          "travelers": [
+            {
+              "role": "traveler",
+              "language": "zh-CN",
+              "careNeeds": {},
+              "travelerId": "traveler_1",
+              "displayName": "你",
+              "operability": {},
+              "relationship": null,
+              "hardConstraints": [],
+              "softPreferences": []
+            }
+          ],
+          "selected": [],
+          "reply": "抱歉，这次没有处理完成。你的原始需求已经保留，也没有擅自改动旅行方案；请稍后再试。",
+          "userMessages": [
+            "2026年10月15日我和家人从杭州到上海玩一天，预算6000元，晚上住一晚，第二天自行返回。请查询真实候选并排完整行程，不要使用示例景点或虚构路线。"
+          ],
+          "candidateDomains": [
+            "play",
+            "stay",
+            "transport"
+          ],
+          "planningAvailability": {
+            "status": "provider_unavailable",
+            "code": "route_provider_unavailable",
+            "message": "市内路线资料暂时不可用，无法核验每天的交通、步行量和衔接时间。已有候选可以继续比较；资料服务恢复后可从当前旅行继续，无需为此重新填写旅行要求。"
+          },
+          "providerReads": [],
+          "accounting": [
+            {
+              "scope": "deepseek",
+              "calls": 7,
+              "input_tokens": "105405",
+              "output_tokens": "9907"
+            },
+            {
+              "scope": "typesafe_account",
+              "calls": 4,
+              "input_tokens": "17587",
+              "output_tokens": "1445"
+            }
+          ],
+          "toolErrors": [],
+          "events": [
+            {
+              "type": "run_queued",
+              "status": "queued",
+              "sequence": 1,
+              "at": 1789927415709
+            },
+            {
+              "type": "run_started",
+              "status": "running",
+              "sequence": 2,
+              "at": 1789927415716
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_Sjch2rew3vnORtBYCgKB5772",
+              "sequence": 3,
+              "at": 1789927427243
+            },
+            {
+              "type": "tool_finished",
+              "status": "error",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_Sjch2rew3vnORtBYCgKB5772",
+              "sequence": 4,
+              "at": 1789927427253
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_01_3kketYnY9RSj2KqEi7Xe4869",
+              "sequence": 5,
+              "at": 1789927427286
+            },
+            {
+              "type": "tool_finished",
+              "status": "error",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_01_3kketYnY9RSj2KqEi7Xe4869",
+              "sequence": 6,
+              "at": 1789927427292
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_I3igSTZ2YLlhrzdutW4R0481",
+              "sequence": 7,
+              "at": 1789927430074
+            },
+            {
+              "type": "tool_finished",
+              "status": "saved",
+              "toolName": "save_trip_understanding",
+              "toolCallId": "call_00_I3igSTZ2YLlhrzdutW4R0481",
+              "sequence": 8,
+              "at": 1789927430113
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_00_Fj0hHtHiRBGkheZuPMc88560",
+              "sequence": 9,
+              "at": 1789927432040
+            },
+            {
+              "type": "tool_finished",
+              "status": "proposed",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_00_Fj0hHtHiRBGkheZuPMc88560",
+              "sequence": 10,
+              "at": 1789927444969
+            },
+            {
+              "type": "tool_rejected",
+              "status": "failed",
+              "toolName": "research_trip_options",
+              "toolCallId": "call_00_jyqVwTmCScdVqkCuCgkO5993",
+              "code": "agent_tool_failed",
+              "sequence": 11,
+              "at": 1789927455612
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_01_q3w8c8BdlEXu3jM4d5Uf1639",
+              "sequence": 12,
+              "at": 1789927455634
+            },
+            {
+              "type": "tool_finished",
+              "status": "blocked",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_01_q3w8c8BdlEXu3jM4d5Uf1639",
+              "sequence": 13,
+              "at": 1789927455653
+            },
+            {
+              "type": "compaction_start",
+              "status": "running",
+              "sequence": 14,
+              "at": 1789927469369
+            },
+            {
+              "type": "compaction_end",
+              "status": "completed",
+              "sequence": 15,
+              "at": 1789927476954
+            },
+            {
+              "type": "tool_started",
+              "status": "running",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_9stKuFTN87wF6dtRE6WY4316",
+              "sequence": 16,
+              "at": 1789927478080
+            },
+            {
+              "type": "tool_finished",
+              "status": "blocked",
+              "toolName": "get_trip_plan_view",
+              "toolCallId": "call_00_9stKuFTN87wF6dtRE6WY4316",
+              "sequence": 17,
+              "at": 1789927478106
+            },
+            {
+              "type": "run_finished",
+              "status": "failed",
+              "sequence": 18,
+              "at": 1789927478133
+            }
+          ]
+        }
+      ],
+      "manualReview": "pending",
+      "automatedStatus": "failed"
+    }
+  ],
+  "apiFinishedAt": "2026-09-20T18:04:38.572Z"
+}

@@ -1,0 +1,101 @@
+{
+  "evidence": "arithmetic_from_explicit_assumptions; not a benchmark or provider entitlement",
+  "assumptions": {
+    "kind": "planning_assumptions_not_measurements",
+    "date": "2026-09-15",
+    "onlineUsers": 500,
+    "devicesPerUser": 2,
+    "activePlanningTurns": 500,
+    "meanTurnSeconds": 120,
+    "meanModelCallsPerTurn": 10,
+    "meanModelRequestSeconds": 15,
+    "meanInputTokensPerCall": 8000,
+    "meanOutputTokensPerCallIncludingReasoning": 1000,
+    "childConcurrencyPerTurn": 2,
+    "headroomFraction": 0.3,
+    "providerCallsPerTurnScenarios": [
+      20,
+      60,
+      120
+    ],
+    "illustrativeWorkerSafeTurnSlots": 75,
+    "apiReplicas": 2,
+    "apiPoolMax": 12,
+    "workerPoolMax": 8,
+    "queuePoolMaxPerWorker": 2,
+    "notifyConnectionsPerProcess": 1,
+    "operationsConnectionsReserve": 10,
+    "meanRetainedBytesPerTurnExample": 262144
+  },
+  "steadyState": {
+    "turnsPerSecond": 4.167,
+    "turnsPerMinute": 250,
+    "modelRequestsPerMinute": 2500,
+    "meanConcurrentModelRequests": 625,
+    "synchronizedModelPeakAssumingParentReleasesSlotWhileWaiting": 1000,
+    "inputTokensPerMinute": 20000000,
+    "outputTokensPerMinute": 2500000,
+    "headroomModelRequestsPerMinute": 3250,
+    "headroomMeanModelSlots": 813,
+    "headroomSynchronizedModelSlots": 1300,
+    "headroomInputTokensPerMinute": 26000000,
+    "headroomOutputTokensPerMinute": 3250000
+  },
+  "oneBurstOf500": {
+    "modelCalls": 5000,
+    "inputTokens": 40000000,
+    "outputTokens": 5000000
+  },
+  "online": {
+    "clientConnections": 1000,
+    "statusRpsAtTwoSecondPolling": 500,
+    "statusRpsAtOneSecondPolling": 1000,
+    "slowSafetyRefreshRpsAtThirtySeconds": 33.333
+  },
+  "providerScenarios": [
+    {
+      "networkCallsPerTurn": 20,
+      "steadyQps": 83.333,
+      "headroomQps": 108.333
+    },
+    {
+      "networkCallsPerTurn": 60,
+      "steadyQps": 250,
+      "headroomQps": 325
+    },
+    {
+      "networkCallsPerTurn": 120,
+      "steadyQps": 500,
+      "headroomQps": 650
+    }
+  ],
+  "illustrativeDeploymentNotSizingEvidence": {
+    "workersForOneReplicaLoss": 8,
+    "activeSlotsAfterOneWorkerLoss": 525,
+    "connectionBudgetParts": {
+      "api": 24,
+      "workerBusiness": 64,
+      "workerQueue": 16,
+      "pinnedListeners": 10,
+      "operationsReserve": 10
+    },
+    "connectionBudgetTotal": 124
+  },
+  "sensitivity": {
+    "twiceTheMeanInputTokens": {
+      "inputTokensPerMinute": 40000000
+    },
+    "fourTimesTheMeanInputTokens": {
+      "inputTokensPerMinute": 80000000
+    },
+    "twiceTheTurnDurationWithSameArrivalRate": {
+      "activeTurnsNeeded": 1000
+    },
+    "threeParallelChildren": {
+      "synchronizedModelPeak": 1500,
+      "headroomModelSlots": 1950
+    },
+    "retainedGiBPerHourIfSustained": 3.662,
+    "retainedGiBPerDayIfSustained24Hours": 87.891
+  }
+}

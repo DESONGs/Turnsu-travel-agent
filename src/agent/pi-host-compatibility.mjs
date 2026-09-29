@@ -1,10 +1,12 @@
 import { readFileSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
-export const SUPPORTED_PI_HOST = Object.freeze({ minimum: "0.84.1", maximumExclusive: "0.85.0" });
+// Only the release exercised by the consumer and embedded-host checks is enabled.
+// In particular, 0.85.0 published experimental imports and must remain blocked.
+export const SUPPORTED_PI_HOST = Object.freeze({ minimum: "0.85.1", maximumExclusive: "0.85.2" });
 
 function tuple(value) {
-  const match = String(value ?? "").match(/^(\d+)\.(\d+)\.(\d+)/);
+  const match = String(value ?? "").match(/^(\d+)\.(\d+)\.(\d+)$/);
   return match ? match.slice(1).map(Number) : null;
 }
 
@@ -23,7 +25,7 @@ export function piHostCompatibility(version) {
 }
 
 export function detectPiHostVersion(entryPath = null) {
-  const candidates = [entryPath, process.argv[1], process.env._, process.env.PI_HOST_ENTRY].filter(Boolean);
+  const candidates = [entryPath, process.env.PI_HOST_ENTRY, process.argv[1], process.env._].filter(Boolean);
   for (const candidate of candidates) {
     let resolvedEntry;
     try { resolvedEntry = realpathSync(resolve(candidate)); } catch { resolvedEntry = resolve(candidate); }

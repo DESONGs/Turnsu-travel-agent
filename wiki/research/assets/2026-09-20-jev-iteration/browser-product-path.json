@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "travel-browser-evidence-v1",
+  "testedAt": "2026-09-20T17:23:00Z",
+  "entry": "http://127.0.0.1:18898",
+  "fixture": "tests/fixtures/browser-execution.mjs with planning profile",
+  "realLayers": ["browser rendering and interaction", "authenticated HTTP", "native Pi sessions", "PostgreSQL", "TravelService and Checker"],
+  "controlledLayers": ["model responses", "travel facts", "route evidence"],
+  "desktop": {
+    "observed": [
+      "Initial complete-planning request created candidates and one date question",
+      "Clicking the stable date option automatically continued research and itinerary checking",
+      "Existing confirmation button persisted four confirmed choices",
+      "Page displayed 4 个安排已确认"
+    ],
+    "issueFixed": "A new Trip previously collapsed the assistant and hid its necessary question"
+  },
+  "mobile": {
+    "viewport": { "width": 390, "height": 844 },
+    "observed": [
+      "Question, impact, date options and free input were visible",
+      "Reload restored the pending question",
+      "Answer automatically produced a checked trial",
+      "Review this itinerary button opened the route view with four choices and enabled confirmation",
+      "Confirming entered the saved Today itinerary and removed the pending trial"
+    ],
+    "issuesFixed": ["Legacy CSS hid the close assistant button", "An assistant itinerary incorrectly displayed a count of one instead of its four choices"]
+  },
+  "dependencyIncident": "Simultaneous independent test suites exceeded the isolated PostgreSQL instance's 100-connection budget. One reload failed; after other tests released their connections, reload restored the same conversation and question. The incident is not a successful availability result.",
+  "limitations": ["No real AMap locations or map geometry in this fixture", "No miniapp device or desktop native-shell acceptance", "Manual browser observations are not automated regression tests"]
+}

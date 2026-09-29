@@ -1,0 +1,137 @@
+{
+  "checkedAt": "2026-09-15T09:00:50.482Z",
+  "node": "v26.7.0",
+  "scope": "Pure entry-gate behavior only; not an end-to-end model, itinerary-quality, or production-capacity test.",
+  "sources": [
+    {
+      "path": "src/agent/travel-conversation-agent.mjs",
+      "sha256": "6f784bcadf3e37eb803c3f6e373ce040a4361adfa2693d4aae7f3a4fbb7c21ad"
+    },
+    {
+      "path": "src/agent/travel-skill-loader.mjs",
+      "sha256": "a4acccfb970598cff434903bf058b43143c1ea5c9bf1fc00aca86ed202c5797c"
+    }
+  ],
+  "results": [
+    {
+      "context": "new_conversation",
+      "input": "Plan a relaxed four-day trip to Shanghai for my parents. We arrive at Pudong at 15:00 and want to avoid long walks.",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "new_conversation",
+      "input": "帮我安排上海三天行程，带父母，少走路，预算八千。",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "new_conversation",
+      "input": "plan the itinerary",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": false
+    },
+    {
+      "context": "new_conversation",
+      "input": "优化路线",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_without_proposal",
+      "input": "Plan a relaxed four-day trip to Shanghai for my parents. We arrive at Pudong at 15:00 and want to avoid long walks.",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_without_proposal",
+      "input": "帮我安排上海三天行程，带父母，少走路，预算八千。",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_without_proposal",
+      "input": "plan the itinerary",
+      "skills": [
+        "understand-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_without_proposal",
+      "input": "优化路线",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": true
+    },
+    {
+      "context": "existing_trip_with_proposal",
+      "input": "Plan a relaxed four-day trip to Shanghai for my parents. We arrive at Pudong at 15:00 and want to avoid long walks.",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_with_proposal",
+      "input": "帮我安排上海三天行程，带父母，少走路，预算八千。",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": false,
+      "planningTurn": false
+    },
+    {
+      "context": "existing_trip_with_proposal",
+      "input": "plan the itinerary",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": true
+    },
+    {
+      "context": "existing_trip_with_proposal",
+      "input": "优化路线",
+      "skills": [
+        "plan-trip",
+        "research-trip"
+      ],
+      "itineraryPlanningIntent": true,
+      "planningTurn": true
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "travel-workbench-verification-v1",
+  "recordedAt": "2026-09-18T06:26:57.193Z",
+  "node": "v26.7.0",
+  "sourceState": "Local uncommitted workspace; existing user changes were preserved. No production deployment.",
+  "projectCheck": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "status": "passed",
+    "tests": {
+      "tests": 324,
+      "pass": 312,
+      "fail": 0,
+      "skipped": 12,
+      "cancelled": 0
+    },
+    "surfaces": [
+      "strict library TypeScript",
+      "desktop TypeScript",
+      "all project behavior tests",
+      "production Web build",
+      "WeChat and Alipay source contracts"
+    ],
+    "warning": "Existing Web chunks exceed the Vite 500 kB warning threshold. This is not a mobile-network performance acceptance."
+  },
+  "postgres": {
+    "command": "TRAVEL_EXECUTION_TEST_DATABASE_URL=<isolated-local-test-db> node --import tsx --test tests/travel-execution-postgres.test.mjs tests/itinerary-planning-harness.test.mjs",
+    "exitCode": 0,
+    "status": "passed",
+    "tests": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "scope": [
+      "independent database pools",
+      "cancel and expired lease fencing",
+      "account and run model budgets",
+      "same-trip serialization",
+      "no replay of uncertain writes",
+      "manual orphan-trip recovery",
+      "persisted checked route reuse across API instances",
+      "route capability unavailable then restored"
+    ]
+  },
+  "workerCrash": {
+    "command": "TRAVEL_EXECUTION_TEST_DATABASE_URL=<isolated-local-test-db> node --import tsx --test tests/travel-execution-process.test.mjs",
+    "exitCode": 0,
+    "status": "passed",
+    "recoveryMs": 30202,
+    "mechanism": "Actual SIGKILL of a test Worker process; another Worker resumes after lease expiry.",
+    "assertions": [
+      "one persisted Trip",
+      "one accepted user message",
+      "durable event replay",
+      "foreign-user access denied",
+      "unauthenticated access denied"
+    ]
+  },
+  "capacity": {
+    "artifact": "controlled-500.json",
+    "testedAt": "2026-09-18T06:11:43.119Z",
+    "status": "passed_controlled_load",
+    "users": 500,
+    "apiInstances": 2,
+    "workerInstances": 2,
+    "peakEventStreams": 1000,
+    "peakConcurrentNativeParents": 500,
+    "completedRuns": 500,
+    "submitP95Ms": 1988,
+    "submitP99Ms": 2405,
+    "elapsedMs": 16741,
+    "scope": "Real HTTP auth, cross-process PostgreSQL queue, native Pi tool turns, SSE and product persistence. Model responses are controlled; no external model or travel Provider capacity is established.",
+    "limitations": [
+      "short save-requirements workload",
+      "controlled model response",
+      "does not prove 500 complex plans",
+      "does not prove external provider capacity or 30-minute stability"
+    ]
+  },
+  "realModelAndProviders": {
+    "artifact": "live-single-trip.json",
+    "testedAt": "2026-09-18T06:17:59.579Z",
+    "exitCode": 1,
+    "status": "partial_acceptance_failed",
+    "runStatus": "completed",
+    "acceptance": {
+      "nativeAgentExecution": false,
+      "completePlanning": false
+    },
+    "outcome": {
+      "status": "partial",
+      "missingDomains": [
+        "food",
+        "stay"
+      ],
+      "incompleteAnalysis": [
+        "local_discovery"
+      ],
+      "planningStatus": "blocked"
+    },
+    "scope": "One real model/provider request through authenticated HTTP, PostgreSQL run ownership, native Pi sessions and product persistence. No purchase or confirmation. This does not establish 500-user external capacity.",
+    "configurationObservation": {
+      "localAmapWebServiceKeyConfigured": false
+    },
+    "changesAfterThisRun": [
+      "one bounded Child JSON-format correction with tools removed",
+      "raw handoff identity and nested candidate/evidence references validated before normalization"
+    ],
+    "postRunChangesValidation": "Behavior regression passed in npm run check; not rerun with real models."
+  },
+  "browser": {
+    "status": "passed_observed_interactions",
+    "evidence": "Observed through CUA in this task; no screenshot files are claimed.",
+    "environment": "Own isolated PostgreSQL/HTTP service with a controlled model; fixture content is not travel-quality evidence.",
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1365,
+        "height": 900
+      }
+    ],
+    "flows": [
+      "submit and see active progress",
+      "reload and recover the accepted run without duplicate submission",
+      "stop while retaining saved data",
+      "continue from the saved conversation",
+      "persisted question and choice answer",
+      "restore completed workbench after reload"
+    ],
+    "limitations": [
+      "not real-provider travel content acceptance",
+      "not native WeChat or Alipay device testing"
+    ]
+  },
+  "notAccepted": [
+    "complete real travel planning golden path",
+    "500 real complex plans concurrently",
+    "30-minute sustained load at the contracted arrival rate",
+    "global travel-provider quotas",
+    "commercial abuse/tenant cost/retention operations",
+    "production OAuth callbacks and native device acceptance"
+  ],
+  "sourceSha256": {
+    "src/agent/travel-execution-service.mjs": "0c348e7a82f97aafe87988152a8a22b2da40439030d09a85223c0e165f912311",
+    "src/agent/travel-conversation-agent.mjs": "61bc4237eecd900b9c017307651a93dd96382bfe6a73225bcd4bab3831bac1a1",
+    "src/agent/travel-analysis-fanout.mjs": "8e365757a49c8d8b810c9c2ee4ff6f096a00b6b5950ef2139ac8ec9faefb3094",
+    "src/agent/worker.mjs": "bab9e03ec77a74133e2b735c46f1e73f4100e9de1dd05b8e528b12345a8cfcd6",
+    "src/persistence/execution-repository.mjs": "48a6e590d2f25801e6b4f844b7beb5c9c93a8a88ef07758f585b659f3ee8756e",
+    "src/persistence/execution-write.mjs": "e5e2873edc6de91a89c2d481d0b61405257ff3f45ab63a50fbc6ef6448fcb732",
+    "src/persistence/postgres-trip-repository.mjs": "b71a9e6cd4af4fce4231a7dd3f6c96b291039c06e9c2b7f2f03e5126cd034656",
+    "src/persistence/postgres-conversation-repository.mjs": "64b912f748fb8bae27efde2e2369ca5bf5fee23f0fbd24a26cd2a1e991df2100",
+    "src/api/create-travel-service.mjs": "343a02740429cef4aad280d53c5ccc0f54aeaaa903b4e2b5db1812b2414e9ce3",
+    "src/api/travel-service.mjs": "8b1236482588b0cb2c58b75d98c3058a55b4045f6bbdffc7eda5a97862b2d937",
+    "src/http/app.mjs": "e42bc3f6d9ad7a58e9b072d9ef20113c4938a5ab62ca4009962c687624a32360",
+    "src/http/travel-execution-routes.mjs": "d96dff144dea2d6569e97ee1d123c86c2209dba382a2cad01eeb863a0028864d",
+    "travel-agent-pi-package/src/host/execution-contract.ts": "d0c634b4b4bbaf83f792c71c21e0420e3d621231751bc7b1031d6711e8ccbaff",
+    "travel-agent-pi-package/src/host/execution-context.ts": "3f8c98f5d1f9e84711bb133d5ef9cea473af60e17264c468f6524f4e22e20b48",
+    "travel-agent-pi-package/src/host/model-budget.ts": "0fdbf3461c6cd402ad906bb828c5049817aee9507123bd24b88a5373c7b93d58",
+    "travel-agent-pi-package/src/host/travel-agent-session.ts": "7f2a1fbe8aa1c6049a7eb4faa595e1fe8970dd5cb72ba725e2ada2dd0ec3d80a",
+    "travel-agent-pi-package/src/host/analysis-handoff.ts": "539325a2c4052d82b073270dc399ce022162105c2d83c130bcfb7acdd1ec4d1c",
+    "src/web/api-client.js": "f17ba532e88005ae27959e4ae51b6095845b5a9f0b3a67505e026877e0419228",
+    "src/web/travel-app.jsx": "5f35f61bd00e0bed15ad4068f5ec887ff3a1c8c04b924b26370efc5b9a2976ab",
+    "src/web/execution-progress.jsx": "7727e8f37ed26f8d76918efcd6a5cb161fffd1ad70c1924830981f06252db654",
+    "apps/miniapp/wechat/pages/index/index.js": "c22bdcd472ffdb18271183bf1e23aff97ce0a263571db594c42a5516f390be18",
+    "apps/miniapp/alipay/pages/index/index.js": "e5ea6014ff9bd85c2968f3ace3a311168a8fd72092f965306df5c05ace6a1d4d",
+    "tests/travel-native-children.test.mjs": "0cebfcfaee5de07b4e5e8703ca61df309a2bdf9170d3f16b1fe842e3b636a1a4",
+    "tests/travel-execution.test.mjs": "31410297ba97c04ee7cc3e1b6043133aaefac47d493078629f3339f7c76b7b41",
+    "tests/travel-execution-postgres.test.mjs": "136ea0d0ea9c1001c30f8665464364e2ba4041c2491e631cc713791d7cb794da",
+    "tests/travel-execution-process.test.mjs": "aa3c412c9c216403c4bccd487808d957ab0c90e30a563270889f3ea9f64ad76c",
+    "tests/itinerary-planning-harness.test.mjs": "ea45c4ac2bdb2ef378d7a440a2be97b1db6a11b30a8caba73051b54c9944362d",
+    "tests/travel-conversation-agent.test.mjs": "b8f65db5102d40dd91ed3245e829a397cdd3759b3bb0dd0d89cf885f0e56ac08",
+    "tests/travel-analysis-fanout.test.mjs": "12091a117ea376b75f915c781495d735bfa9bce85fdf743f5e02c518577dd2ff",
+    "tests/miniapp-route-map.test.mjs": "69649ef0186bffd064f298ea973aace89ef812b2bc3853067dd532016fa30136"
+  }
+}

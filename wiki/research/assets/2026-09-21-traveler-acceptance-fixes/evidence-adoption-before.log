@@ -1,0 +1,32 @@
+(node:15012) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (88.920208ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 595.648084
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:249:1
+✖ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (88.920208ms)
+  AssertionError [ERR_ASSERTION]: {"ok":false,"reason":"claim_decision_node_not_found"}
+  + actual - expected
+
+  + 'rejected'
+  - 'committed'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:268:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'rejected',
+    expected: 'committed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

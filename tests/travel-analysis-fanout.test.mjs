@@ -9,6 +9,7 @@ import { createTravelAnalysisRunCoordinator } from "../src/agent/travel-analysis
 import { TravelService } from "../src/api/travel-service.mjs";
 import { TravelAnalysisFanoutResultSchema } from "../travel-agent-pi-package/src/contracts/index.ts";
 import { TripStore } from "../travel-agent-pi-package/src/core/index.ts";
+import { withTravelExecution } from "../travel-agent-pi-package/src/host/execution-context.ts";
 
 const checkedAt = "2026-08-27T09:00:00.000Z";
 
@@ -69,6 +70,7 @@ function fixtureRunner(trace) {
       trace.active += 1;
       trace.maximumActive = Math.max(trace.maximumActive, trace.active);
       trace.prompts.push({ lane, prompt, startedAt });
+      if (trace.beforeComplete) await trace.beforeComplete(lane);
       await new Promise((resolve) => setTimeout(resolve, lane === "inventory_budget" ? 45 : 30));
       trace.active -= 1;
       trace.completed.push({ lane, completedAt: Date.now() });
@@ -92,7 +94,13 @@ function fixtureRunner(trace) {
 
 test("dynamic travel analysis runs distinct read-only lanes concurrently and joins once", async () => {
   const trace = { active: 0, maximumActive: 0, prompts: [], completed: [] };
-  const fanout = createTravelAnalysisFanout({}, { agentRunner: fixtureRunner(trace), engine: "fixture" });
+  let releaseFirst;
+  const thirdStarted = new Promise((resolve) => { releaseFirst = resolve; });
+  trace.beforeComplete = async (lane) => {
+    if (lane === "operability_schedule") releaseFirst();
+    if (lane === "inventory_budget") await thirdStarted;
+  };
+  const fanout = createTravelAnalysisFanout({}, { agentRunner: fixtureRunner(trace), engine: "fixture", agentTimeoutMs: 3000 });
   const result = await fanout({ tripId: "trip_fanout", baseRevision: 0, brief: { destination: "Shanghai" }, travelers: [{ travelerId: "traveler_1", careNeeds: {} }], providerResult: providerResult(), objective: "Compare the complete fixture trip" });
 
   assert.equal(result.status, "completed");
@@ -185,6 +193,82 @@ test("one failed semantic lane degrades without discarding sibling findings or m
   assert.equal(result.joinCount, 1);
 });
 
+for (const spoofed of [false, true]) test(`Child handoff ${spoofed ? "rejects a foreign run identity" : "discards non-contract fields"}`, async () => {
+  const trace = { active: 0, maximumActive: 0, prompts: [], completed: [] };
+  const delegate = fixtureRunner(trace);
+  const fanout = createTravelAnalysisFanout({}, { engine: "fixture", agentRunner: { async run(prompt) {
+    return { ...await delegate.run(prompt), ...(spoofed ? { runId: "spoofed_run" } : {}), extraComment: "non-contract model text", stateMutation: { commit: true } };
+  } } });
+  const result = await fanout({ runId: "trusted_parent_run", tripId: "trip_child_contract", baseRevision: 2, providerResult: providerResult() });
+  assert.equal(result.coverage, spoofed ? "failed" : "complete");
+  if (spoofed) assert.equal(result.lanes.length, 0, "foreign identity must not be rewritten into an accepted handoff");
+  for (const lane of result.lanes) {
+    assert.equal(lane.runId, "trusted_parent_run");
+    assert.equal(lane.extraComment, undefined);
+    assert.equal(lane.stateMutation, undefined);
+  }
+});
+
+test("missing source data does not trigger repeated research; invalid handoffs stay visibly failed", async () => {
+  const trace = { active: 0, maximumActive: 0, prompts: [], completed: [] };
+  const delegate = fixtureRunner(trace);
+  const events = [];
+  const fanout = createTravelAnalysisFanout({}, { agentRunner: { async run(prompt) {
+    const result = await delegate.run(prompt);
+    if (result.lane === "inventory_budget") result.findings[0].reasonCode = "";
+    result.needsContext = ["The source does not verify opening hours."];
+    return result;
+  } } });
+  const execution = { runId: "run_receipt", workerId: "worker", fence: 1, signal: new AbortController().signal, assertCurrent: async () => {}, emit: async (event) => { events.push(event); } };
+  const result = await withTravelExecution(execution, () => fanout({ tripId: "trip_invalid_child", baseRevision: 0, providerResult: providerResult() }));
+  assert.equal(result.coverage, "partial");
+  assert.equal(result.conditionRevision.status, "not_needed");
+  assert.equal(events.find((event) => event.type === "analysis_lane_completed" && event.lane === "inventory_budget").status, "failed");
+  assert.equal(events.some((event) => event.type === "analysis_handoff" && event.lane === "inventory_budget"), false);
+});
+
+test("Child handoff fills optional collections but rejects an empty or nested-fragment result", async () => {
+  const run = (value) => createTravelAnalysisFanout({}, { engine: "fixture", agentRunner: { async run() { return value; } } })({
+    tripId: "trip_minimal_child", baseRevision: 0, requiredLanes: ["inventory_budget"], providerResult: providerResult(),
+  });
+  const useful = await run({ findings: [{ summary: "The supplied reference prices still require fresh inventory verification.", reasonCode: "price_needs_verification" }] });
+  assert.equal(useful.coverage, "complete");
+  assert.deepEqual([...useful.lanes[0].recommendedCandidateIds], []);
+  const empty = await run({ findings: [] });
+  assert.equal(empty.coverage, "failed");
+  const fragment = await run({ summary: "A nested object must not be accepted as the whole Child response." });
+  assert.equal(fragment.coverage, "failed");
+});
+
+test("retrying identical research repairs incomplete Child analysis before reusing the proposal", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "travel-analysis-retry-"));
+  const trace = { active: 0, maximumActive: 0, prompts: [], completed: [] };
+  const delegate = fixtureRunner(trace);
+  let failLocal = true;
+  let providerCalls = 0;
+  const fanout = createTravelAnalysisFanout({}, { engine: "fixture", agentRunner: { async run(prompt) {
+    if (failLocal && prompt.includes('"lane":"local_discovery"')) throw new Error("fixture_child_failed");
+    return delegate.run(prompt);
+  } } });
+  const service = new TravelService({ store: new TripStore({ rootDir }),
+    researchProvider: { status: "configured", async research() { providerCalls++; return providerResult(); } },
+    analysisFanout: fanout, clock: () => new Date(checkedAt),
+  });
+  await service.createTrip({ tripId: "trip_retry_analysis", brief: { destination: "Shanghai" } });
+  const input = { tripId: "trip_retry_analysis", domains: ["play", "food", "stay", "transport"], question: "Complete linked travel research", signal: new AbortController().signal };
+  const first = await service.researchTripOptions(input);
+  assert.equal(first.analysis.coverage, "partial");
+  failLocal = false;
+  const second = await service.researchTripOptions(input);
+  assert.equal(second.analysis.coverage, "complete");
+  assert.notEqual(second.reusedPendingProposal, true);
+  assert.notEqual(first.analysis.runId, second.analysis.runId);
+  const replay = await service.researchTripOptions(input);
+  assert.equal(replay.reusedPendingProposal, true);
+  assert.equal(providerCalls, 2);
+  assert.equal((await service.getTripControlView(input.tripId)).pendingProposals.length, 1);
+});
+
 test("lane completions and Join are idempotent by run, lane and attempt", () => {
   const coordinator = createTravelAnalysisRunCoordinator();
   coordinator.begin({ runId: "run_idempotent", tripId: "trip_idempotent", baseRevision: 2, criteriaFingerprint: "fp_a", requiredLanes: ["inventory_budget"], deadlineAt: checkedAt });
@@ -216,11 +300,14 @@ test("a superseded run is stale-discarded before Join", async () => {
   assert.equal(coordinator.get("run_a").status, "stale_discarded");
 });
 
-test("unverified Kimi remains unavailable as a Child fallback", () => {
+test("only verified Kimi becomes the primary Child route, with the configured reasoning route as fallback", () => {
   const unavailable = childModelFallbackLedger({ MOONSHOT_API_KEY: "fixture", TRAVEL_AGENT_KIMI_CHILD_SMOKE_STATUS: "not_run", DEEPSEEK_API_KEY: "fixture" });
   assert.equal(unavailable.fallback.status, "fallback_unavailable");
-  const available = childModelFallbackLedger({ MOONSHOT_API_KEY: "fixture", TRAVEL_AGENT_KIMI_CHILD_SMOKE_STATUS: "passed_live_smoke", DEEPSEEK_API_KEY: "fixture" });
+  assert.notEqual(unavailable.primary.provider, "moonshotai-cn");
+  const available = childModelFallbackLedger({ MOONSHOT_API_KEY: "fixture", TRAVEL_AGENT_KIMI_CHILD_SMOKE_STATUS: "passed_live_smoke", DEEPSEEK_API_KEY: "fixture", TRAVEL_AGENT_MODEL_PROVIDER: "deepseek", TRAVEL_AGENT_MODEL: "deepseek-v4-flash" });
   assert.equal(available.fallback.status, "available");
+  assert.equal(available.primary.provider, "moonshotai-cn");
+  assert.equal(available.primary.model, "kimi-k2.6");
 });
 
 test("all Child timeouts produce failed coverage without an automatic unverified fallback", async () => {

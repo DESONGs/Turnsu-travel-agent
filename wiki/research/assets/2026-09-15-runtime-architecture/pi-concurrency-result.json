@@ -1,0 +1,7 @@
+{
+  "evidence": "local installed Pi 0.84.1 with faux model; no external API",
+  "default_tool_peak": 2,
+  "sequential_tool_peak": 1,
+  "independent_agent_peak": 2,
+  "same_agent_overlapping_prompt": "rejected as expected"
+}

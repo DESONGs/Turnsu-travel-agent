@@ -1,0 +1,26 @@
+(node:17987) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a traveler cannot adopt a plan exceeding the saved budget even when every route is feasible (59.869083ms)
+✔ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (20.130125ms)
+✔ adoption rechecks global constraints instead of trusting a cached canConfirm flag (13.992958ms)
+✔ an unavailable route service blocks without repair or writes, and the same plan can run after restoration (17.283166ms)
+✔ cancelling a planning request discards even a late successful route response (12.658917ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (33.2965ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (19.888334ms)
+✔ a complete day spanning lunch must not silently omit the meal (6.669209ms)
+✔ lunch and dinner at one restaurant are separate visits, not a duplicate stop (13.180333ms)
+✔ a complete itinerary adopts two restaurants and charges each actual meal once (26.791334ms)
+✔ local route fares are included in the same hard trip budget (10.739041ms)
+✔ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (43.212208ms)
+✔ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (139.909958ms)
+✔ a second failed repair stops without a third route request (20.709208ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (15.5815ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (29.574958ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1039.579333

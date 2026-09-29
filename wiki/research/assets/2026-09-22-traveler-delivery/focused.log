@@ -1,0 +1,53 @@
+(node:20496) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ user-facing agent copy translates internal planning enums before rendering (1.090833ms)
+✔ negative confirmation language never becomes a selection command (0.722708ms)
+✔ travel dates and route timestamps are not mistaken for payment cards (0.652375ms)
+✔ explicit itinerary optimization can use the focused planning path (0.586625ms)
+✔ budget explanation keeps candidate quote quality separate from trip-total estimation (7.585875ms)
+✔ Agent copy names missing analysis coverage and distinguishes empty inventory from unavailable sources (0.526709ms)
+✔ fixture: Pi conversation loop creates and reads a travel draft through bounded Parent Agent tools (50.442291ms)
+✔ Parent Agent runs Plan-Check-Repair from focused optimization (82.194625ms)
+✔ Parent Agent runs Plan-Check-Repair from ordinary itinerary request (66.118791ms)
+✔ Parent Agent runs Plan-Check-Repair from a request needing user input (58.903959ms)
+✔ a native multimodal Parent Agent sees the image and can build the trip with ordinary tools in the same turn (69.200458ms)
+✔ a conversation whose trip draft is missing rebuilds instead of retrying a dead trip id (27.556417ms)
+✔ the model saves understood trip facts and asks one useful question without inventing destination facts (14.54825ms)
+✔ an incomplete first tool call cannot persist a one-person trip when an explicit party was understood (31.267125ms)
+✔ a terse follow-up updates the existing trip and continues research instead of repeating the question (46.828458ms)
+✔ fixture: one Parent Agent turn creates the scoped trip and stages one linked four-domain proposal (31.480541ms)
+✔ natural conversation confirms arrival and only the named stay without lying about TripState (110.718625ms)
+✔ replaces model prose with an explicit no-result state when linked research is unavailable (17.467833ms)
+✔ missing route capability keeps candidates and ends with a service gap instead of an unanswerable question (53.459375ms)
+✔ a successful research retry wins over an earlier failure in the same Agent turn (28.286625ms)
+✔ explains an AMap account gate without mislabeling it as transient QPS limiting (16.905625ms)
+(node:20497) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Parent receives route source, query time and unknown accessibility alongside taxi estimates (1.898333ms)
+✔ unknown route measurements never become zero minutes, zero walking or free transport in the delivery (0.141417ms)
+✔ partial route coverage cannot be presented as the total for the whole itinerary (0.089ms)
+✔ a route with an unresolved recommended alternative does not silently disappear from the totals (0.06475ms)
+✔ a traveler asking why taxi is recommended sees unknown fares and walking, not invented zeroes (1.488041ms)
+✔ a missing model summary preserves unknown route measurements in the fallback receipt (0.425041ms)
+(node:20498) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (117.580625ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (97.413083ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (89.834709ms)
+✔ fresh reads after a repair remain available and do not force a generic research completion (152.974459ms)
+✔ exhausting the total tool budget reports unfinished work instead of a successful fallback (44.656125ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (9.617209ms)
+✔ a missing departure date is resolved before asking about arrival preferences (14.565917ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (16.320834ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (104.621417ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (137.368541ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (127.7055ms)
+✔ a budget decision uses the whole-trip ledger rather than model-authored subtotals (65.447042ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3511.357916

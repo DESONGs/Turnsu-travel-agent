@@ -1,0 +1,19 @@
+{
+  "status": "passed_live_native_host_create_read",
+  "failure": null,
+  "model": "deepseek/deepseek-v4-flash",
+  "linkcode": "0.30.0",
+  "pi": "0.85.1",
+  "tripId": "trip_1fc990f9",
+  "brief": {
+    "destination": "杭州",
+    "currency": "CNY",
+    "totalBudget": 6000
+  },
+  "permissionRequests": 1,
+  "tools": [
+    "travel_read_skill",
+    "create_trip"
+  ],
+  "externalProviderResearch": false
+}

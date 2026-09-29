@@ -1,0 +1,31 @@
+(node:7045) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ complete planning continues from ordinary Chinese requests while preserving negation (1.118417ms)
+✔ confidence cannot authorize a locked change or turn missing evidence into a fact (0.32275ms)
+✔ provider evidence gaps stay with Parent while personal facts and real budget tradeoffs can be asked (0.199875ms)
+✔ short interactions and continuations share slots 2:1, borrow idle capacity, and age fairly (8.924084ms)
+✔ stable questions reject stale facts and invalid options; text remains an answer rather than authorization (1.026167ms)
+✔ ranking preserves every candidate and retains current order for unresolved or tied judgments (1.091375ms)
+✔ planning context retains locked and named choices beyond its ordinary budget and keeps domain coverage (0.474292ms)
+(node:7046) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (74.321667ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (83.312667ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (64.972125ms)
+✔ fresh reads after a repair remain available and do not force a generic research completion (71.307875ms)
+✔ exhausting the total tool budget reports unfinished work instead of a successful fallback (25.16725ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (9.193458ms)
+✔ a missing departure date is resolved before asking about arrival preferences (9.253334ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (8.845959ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (73.151708ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (105.343ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (121.368833ms)
+✔ a budget decision uses the whole-trip ledger rather than model-authored subtotals (58.94575ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2228.041792

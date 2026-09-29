@@ -153,6 +153,7 @@ export interface ResearchTripOptionsInput {
   question?: string;
   domains?: TravelDomain[];
   criteria?: ResearchCriteriaInput;
+  signal?: AbortSignal;
 }
 
 export interface ItineraryPlanningTrial {
@@ -203,7 +204,7 @@ export interface TravelServicePort {
     fabricatedResults: false;
     [key: string]: unknown;
   }>;
-  planItineraryTrial(input: { tripId: string; plan: ItineraryPlan; baselinePreviewId?: string | null }): Promise<ItineraryPlanningTrial>;
+  planItineraryTrial(input: { tripId: string; plan: ItineraryPlan; baselinePreviewId?: string | null; signal?: AbortSignal }): Promise<ItineraryPlanningTrial>;
   refreshTripMobility(input: { tripId: string }): Promise<{ schemaVersion: "trip-mobility-refresh-result-v1"; status: MobilityObservation["status"]; tripId: string; revision: number; mobility: MobilityObservation; qa: TripQa; fabricatedResults: false }>;
   getOpenDecisions(tripId: string): Promise<OpenDecisionsView>;
   researchTripOptions(input: ResearchTripOptionsInput): Promise<ResearchTripOptionsResult>;

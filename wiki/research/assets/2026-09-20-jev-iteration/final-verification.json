@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "travel-jev-iteration-verification-v1",
+  "verifiedAt": "2026-09-20T17:38:40.901Z",
+  "node": "v26.7.0",
+  "commercialAcceptance": "not_passed",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "e6e9d2c62f8e411f6be0a8013744423bc9cedf537a1571991589568ed7a23147",
+    "src/agent/travel-execution-service.mjs": "6b0ca834c53e02c292ac4e900c240d9b5b5643304faded5fd97d7414cce06138",
+    "src/persistence/execution-repository.mjs": "e5aab1e0c7c457994d30c0788ef70cec4eebdf943e1bf9eb66c5f910bcc5ced7",
+    "src/api/travel-service.mjs": "6d9d7ad77be39ca6d798a97cc9e2587aaeec0819256ea3b088c445e9ac431db4",
+    "src/http/travel-execution-routes.mjs": "d96dff144dea2d6569e97ee1d123c86c2209dba382a2cad01eeb863a0028864d",
+    "src/web/api-client.js": "8d9c0b4be1170367d01406e2b9026acc7f41ac15e806a2ad40ba73b1322a3a2d",
+    "src/web/travel-app.jsx": "b4128cb69b188838e5c4fe9583fdaa4d442d578097a551d807d716d87126230d",
+    "src/web/execution-progress.jsx": "1a60a8cdb977d43b3d8fe1e4ca16c44eb993162eb3d6f83fc657de76e2566c90",
+    "travel-agent-pi-package/src/host/travel-decision-policy.ts": "1240658d9976a9243d68dd29ea2f119ebf516783dbd2de1f0e16bb67b6735ff7",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "24dee49efd233699fc44059d51c335cb32307dad2734344acc588aaae587abea",
+    "travel-agent-pi-package/src/host/jev-client.ts": "cfcb75a4a9015d00f139fdf6f25979de26e3bcafab2b27056b7bf4ab56b4c3b0",
+    "travel-agent-pi-package/src/host/execution-scheduling.ts": "f306aa31d72c26d6fc5aa60fa13ecff4e11708247e6b07ac2bf1061fa3b77a5f",
+    "apps/miniapp/wechat/pages/index/index.js": "2b2fdaf10ec2fb46e80145e86e1360e122466c2350c5ecaff4a4f7359de64752",
+    "apps/miniapp/alipay/pages/index/index.js": "85a448ade4be75322c0db19633ef703d415c9fbd638d11598d7edd90dd2c6df3",
+    "scripts/smoke-jev-capacity.mjs": "fcadec5f44852f7435e8354f16d5eb2552e2ef7397ecaa9167fbd4dafc0abace",
+    "scripts/smoke-execution-capacity.mjs": "96900422bc6772a10325104d07f3a8b15a5dcbecced955d22375641563afc6d6",
+    "scripts/evaluate-travel-jev.mjs": "e46919ef2c60f3f96be5a7b7dbc611cb86133bb3ab86ddf3ba78e1e1eecb49b6",
+    "scripts/evaluate-travel-jev-product.mjs": "24c737e4cbf0463088f7c16aedd855838bca85f905a194c060ee8ddc56c61afb"
+  },
+  "checks": [
+    {
+      "command": "npm run check",
+      "environment": "TRAVEL_EXECUTION_TEST_DATABASE_URL set to isolated local PostgreSQL 16 database",
+      "exitCode": 0,
+      "tests": {
+        "tests": 341,
+        "pass": 337,
+        "fail": 0,
+        "skipped": 4
+      },
+      "includes": [
+        "strict TypeScript",
+        "desktop TypeScript",
+        "npm test",
+        "Web build",
+        "WeChat and Alipay project contract checks"
+      ],
+      "log": "final-check.log",
+      "workerCrashRecoveryMs": 30262,
+      "skippedScope": "4 unrelated PostgreSQL account/journal tests require their own isolated database flags"
+    },
+    {
+      "command": "npm run smoke:jev-capacity",
+      "durationMs": 1817712,
+      "evidence": "controlled-500-planning-30min-r3.json",
+      "exitCode": 0,
+      "changesAfterStart": [
+        "src/agent/travel-conversation-agent.mjs",
+        "travel-agent-pi-package/src/host/travel-judgment.ts"
+      ],
+      "scope": "Native Pi/HTTP/PostgreSQL are real; model responses and travel Providers are controlled. Later source changes have final single-wave coverage, not another 30-minute run."
+    },
+    {
+      "command": "npm run smoke:jev-capacity",
+      "evidence": "controlled-500-planning-final.json",
+      "exitCode": 0,
+      "scope": "500 final-code requests; 475 checked drafts and 25 cancellations"
+    },
+    {
+      "command": "npm run smoke:execution-capacity",
+      "evidence": "controlled-500-online-reconnect.json",
+      "exitCode": 1,
+      "scope": "500 users, 1000 streams, 500 cross-API cursor reconnects and persisted Trips succeeded; intake P95/P99 latency target failed"
+    }
+  ],
+  "realModelEvidence": [
+    "chinese-live-evaluation.json",
+    "live-product-modes.json"
+  ],
+  "browserEvidence": "browser-product-path.json",
+  "thirdPartyAudit": "jev-third-party-audit.json",
+  "remaining": [
+    "Independent Chinese calibration before enabling automatic semantic branches",
+    "Strict Parent/Child vs Jev judgments vs Jev plus automatic advancement comparison with independently checked travel facts",
+    "Intake latency target and real 500-request production model/Provider capacity",
+    "Account billing/product terms/SLA checks",
+    "Miniapp devices, production OAuth and desktop release validation"
+  ],
+  "failuresRetained": [
+    "Earlier capacity fixture failures",
+    "Numeric candidate IDs falsely classified as card numbers: fixed with token boundaries and regression",
+    "One overloaded full-suite Worker fixture startup timeout; final standalone full check passed",
+    "Overlapping local load suites exhausted PostgreSQL connections; later capacity suites ran sequentially"
+  ],
+  "cleanup": {
+    "isolatedPostgresContainer": "travel-jev-verification",
+    "removed": true,
+    "credentialsCopiedToRepository": false
+  }
+}

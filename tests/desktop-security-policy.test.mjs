@@ -24,6 +24,9 @@ test("desktop OAuth opens only a fixed provider path and returns a one-time code
   assert.equal(start.pathname, "/api/auth/google/start");
   assert.equal(start.searchParams.get("client"), "desktop");
   assert.equal(oauthStartUrl("https://travel.example.com", "unknown", "/"), null);
+  const link = "a".repeat(43);
+  assert.equal(new URL(oauthStartUrl("https://travel.example.com", "wechat", "/?account=connections", link)).searchParams.get("link"), link);
+  assert.equal(oauthStartUrl("https://travel.example.com", "wechat", "/", "bad-link"), null);
   const callback = parseDesktopAuthCallback("zhuanshu-travel://auth/callback?code=single-use&returnTo=%2Ftrip%2F1");
   assert.deepEqual(callback, { code: "single-use", returnTo: "/trip/1" });
   assert.equal(parseDesktopAuthCallback("zhuanshu-travel://auth/callback?code=one&auth_error=two"), null);

@@ -18,6 +18,11 @@
     "check": "npm run typecheck && npm run desktop:typecheck && npm test && npm run web:build && npm run miniapp:check",
     "mcp": "node --import tsx src/mcp/server.mjs",
     "api": "node --import tsx src/http/server.mjs",
+    "worker": "node --import tsx src/agent/worker.mjs",
+    "smoke:execution-capacity": "node --import tsx scripts/smoke-execution-capacity.mjs",
+    "smoke:jev-capacity": "node --import tsx scripts/smoke-jev-capacity.mjs",
+    "evaluate:jev": "node --import tsx scripts/evaluate-travel-jev.mjs",
+    "evaluate:jev-product": "node --import tsx scripts/evaluate-travel-jev-product.mjs",
     "auth:setup": "node scripts/setup-auth-runtime.mjs",
     "auth:check": "node --import tsx scripts/check-auth-configuration.mjs",
     "smoke:models": "node --import tsx scripts/smoke-model-providers.mjs",
@@ -31,6 +36,7 @@
     "smoke:service-fusion": "node --import tsx scripts/smoke-shanghai-family-provider-fusion.mjs",
     "smoke:pi-consumer": "node --import tsx scripts/smoke-pi-package-consumer.mjs",
     "smoke:analysis": "node --import tsx scripts/smoke-travel-analysis-fanout.mjs",
+    "host:linkcode": "node --import tsx scripts/run-linkcode-travel-host.mjs",
     "smoke:pi-hosts": "node --import tsx scripts/check-pi-host-compatibility.mjs",
     "smoke:analysis:kimi": "node --import tsx scripts/smoke-kimi-child-analysis.mjs",
     "web:dev": "vite --host 127.0.0.1",
@@ -49,10 +55,10 @@
   },
   "devDependencies": {
     "@capacitor/cli": "7.6.8",
-    "@earendil-works/pi-agent-core": "0.84.1",
-    "@earendil-works/pi-ai": "0.84.1",
-    "@earendil-works/pi-coding-agent": "0.84.1",
-    "@earendil-works/pi-tui": "0.84.1",
+    "@earendil-works/pi-agent-core": "0.85.1",
+    "@earendil-works/pi-ai": "0.85.1",
+    "@earendil-works/pi-coding-agent": "0.85.1",
+    "@earendil-works/pi-tui": "0.85.1",
     "@electron/packager": "20.3.0",
     "@quintinshaw/pi-dynamic-workflows": "3.5.1",
     "@types/node": "24.12.4",
@@ -65,6 +71,7 @@
     "vite": "^7.3.6"
   },
   "dependencies": {
+    "@base-ui/react": "1.7.0",
     "@capacitor/android": "7.4.1",
     "@capacitor/core": "7.4.1",
     "@capacitor/ios": "7.4.1",
@@ -77,6 +84,7 @@
     "pg": "8.16.3",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "three": "0.180.0",
     "zod": "4.4.3"
   }
 }

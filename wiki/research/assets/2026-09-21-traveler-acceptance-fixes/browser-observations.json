@@ -1,0 +1,34 @@
+{
+  "scope": "Real in-app browser and isolated PostgreSQL; fictional travel candidates and route facts. No booking or purchase.",
+  "browserUrl": "http://127.0.0.1:18903/?lang=zh-CN",
+  "mobileViewport": {
+    "width": 390,
+    "height": 844
+  },
+  "steps": [
+    "Enter a solo Hangzhou-to-Shanghai day trip plus overnight stay, date unknown, explicitly do not adopt.",
+    "One date question appeared; refresh restored the same wording and impact, with the assistant open.",
+    "Answer 2026-10-15; automatic research and trial finished without another Continue action.",
+    "Open the itinerary and explicitly click Confirm into trip.",
+    "Six selected nodes persisted; refresh retained the adopted state.",
+    "Full itinerary initially navigated to candidate comparison. Rewired to the existing confirmed route view, rebuilt and verified by actual click.",
+    "Expand route details to see the adopted stop order and costs; verified in mobile and default desktop view."
+  ],
+  "adoption": "passed",
+  "refreshPersistence": "passed",
+  "fullItineraryNavigation": "passed_after_fix",
+  "language": "Explicit zh-CN setting retained through guest initialization, question, adoption and refresh. No claim about every system-locale default.",
+  "knownLimitations": [
+    "The model draft still called final hotel selection an unknown despite already selecting a reversible hotel draft. This unnecessary interaction hint remains a content-quality issue.",
+    "No coordinates in the reference data, so map shows a truthful missing-data state.",
+    "Rebuilding while the old page was open invalidated a lazy-loaded chunk; completed the build and reloaded before final checks."
+  ],
+  "evidence": [
+    "mobile-final-question.png",
+    "mobile-final-draft.png",
+    "mobile-adopted-refreshed.png",
+    "desktop-adopted-refreshed.png",
+    "browser-persistence.json",
+    "browser-final-accessibility.txt"
+  ]
+}

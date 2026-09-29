@@ -1,5 +1,7 @@
-import { app, BaseWindow, ipcMain, protocol, session, shell, WebContentsView, webContents, type IpcMainInvokeEvent, type Session } from "electron";
+import { app, BaseWindow, ipcMain, protocol, safeStorage, session, shell, WebContentsView, webContents, type IpcMainInvokeEvent, type Session } from "electron";
+import { SessionVault } from "./session-vault.js";
 import { readFile } from "node:fs/promises";
+import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { extname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,6 +26,7 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 const WEB_ROOT = resolve(HERE, "../../../dist");
 const PRELOAD_PATH = resolve(HERE, "trusted-preload.cjs");
 const DESKTOP_SMOKE = process.env.TRAVEL_AGENT_DESKTOP_SMOKE === "1";
+if (DESKTOP_SMOKE && process.env.TRAVEL_AGENT_DESKTOP_SMOKE_DATA_DIR) app.setPath("userData", process.env.TRAVEL_AGENT_DESKTOP_SMOKE_DATA_DIR);
 function packagedRuntimeConfig(): { apiOrigin?: string; deepLinkScheme?: string } {
   try {
     return JSON.parse(readFileSync(resolve(app.getAppPath(), "desktop-runtime.json"), "utf8"));
@@ -182,10 +185,23 @@ function dispatchAuthCallback(value: string): boolean {
 }
 
 function installIpc(): void {
-  ipcMain.handle("desktop:oauth-begin", async (event, input: { provider?: string; returnTo?: string }) => {
+  const vault = API_ORIGIN ? new SessionVault(resolve(app.getPath("userData"), "accounts"), API_ORIGIN, safeStorage) : null;
+  ipcMain.handle("desktop:session-restore", (event) => {
+    assertTrustedSender(event);
+    return vault?.restore() ?? { accessToken: null, persistent: false };
+  });
+  ipcMain.handle("desktop:session-save", (event, token: unknown) => {
+    assertTrustedSender(event);
+    return vault?.save(token) ?? { persistent: false };
+  });
+  ipcMain.handle("desktop:session-clear", (event) => {
+    assertTrustedSender(event);
+    return vault?.clear();
+  });
+  ipcMain.handle("desktop:oauth-begin", async (event, input: { provider?: string; returnTo?: string; link?: string }) => {
     assertTrustedSender(event);
     if (!API_ORIGIN) throw new Error("desktop_api_origin_not_configured");
-    const url = oauthStartUrl(API_ORIGIN, String(input?.provider ?? ""), String(input?.returnTo ?? "/"));
+    const url = oauthStartUrl(API_ORIGIN, String(input?.provider ?? ""), String(input?.returnTo ?? "/"), input?.link);
     if (!url) throw new Error("desktop_oauth_request_blocked");
     await shell.openExternal(url);
     return { status: "opened_system_browser" };
@@ -242,6 +258,18 @@ async function createWindow(): Promise<void> {
 
 async function runSmoke(): Promise<void> {
   if (!mainWindow || !trustedView) throw new Error("desktop_smoke_window_missing");
+  const vault = new SessionVault(resolve(app.getPath("userData"), "vault-smoke"), "https://vault-smoke.example", safeStorage);
+  const testToken = randomBytes(32).toString("base64url");
+  const saved = await vault.save(testToken);
+  let vaultStatus = "os_storage_unavailable_memory_fallback";
+  if (saved.persistent) {
+    const reopened = new SessionVault(resolve(app.getPath("userData"), "vault-smoke"), "https://vault-smoke.example", safeStorage);
+    const restored = await reopened.restore();
+    const encrypted = !(await readFile(vault.filename)).includes(testToken);
+    await reopened.clear();
+    const cleared = !(await vault.restore()).accessToken;
+    vaultStatus = restored.accessToken === testToken && encrypted && cleared ? "passed_os_encryption_restore_and_clear" : "failed";
+  }
   const baselineCount = webContents.getAllWebContents().length;
   for (let index = 0; index < 20; index += 1) {
     await createEvidenceView(`https://www.xiaohongshu.com/explore/smoke-${index}`);
@@ -255,7 +283,8 @@ async function runSmoke(): Promise<void> {
   pendingAuthCallback = null;
   const result = {
     schemaVersion: "travel-desktop-electron-smoke-v1",
-    status: baselineCount === finalCount && blockedNavigationCount >= 20 && deepLinkAccepted && pendingAuthShape ? "passed_security_smoke" : "failed",
+    status: baselineCount === finalCount && blockedNavigationCount >= 20 && deepLinkAccepted && pendingAuthShape && vaultStatus !== "failed" ? "passed_security_smoke" : "failed",
+    sessionVault: vaultStatus,
     electronVersion: process.versions.electron,
     trustedProtocolLoaded: trustedView.webContents.getURL().startsWith(TRUSTED_APP_ORIGIN),
     nodeIntegration: false,

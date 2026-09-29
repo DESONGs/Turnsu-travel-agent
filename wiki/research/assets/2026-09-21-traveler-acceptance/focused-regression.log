@@ -1,0 +1,51 @@
+(node:85176) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ an unavailable route service blocks without repair or writes, and the same plan can run after restoration (65.346709ms)
+✔ cancelling a planning request discards even a late successful route response (19.717125ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (48.737ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (21.683625ms)
+﹣ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (0.108542ms) # SKIP
+✔ a second failed repair stops without a third route request (23.686542ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (17.21725ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (31.820708ms)
+(node:85177) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ complete planning continues from ordinary Chinese requests while preserving negation (1.758375ms)
+✔ confidence cannot authorize a locked change or turn missing evidence into a fact (0.163958ms)
+✔ short interactions and continuations share slots 2:1, borrow idle capacity, and age fairly (8.8525ms)
+✔ stable questions reject stale facts and invalid options; text remains an answer rather than authorization (0.995875ms)
+✔ ranking preserves every candidate and retains current order for unresolved or tied judgments (0.347667ms)
+✔ planning context retains locked and named choices beyond its ordinary budget and keeps domain coverage (0.345541ms)
+(node:85178) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a retried command runs one native Parent; its tool receipts and checkpoint survive repository reopening (133.768125ms)
+✔ two workers serialize one conversation and continue with native history plus current travel facts (169.075958ms)
+✔ a cancellation blocks a late tool mutation at the persistence boundary (6.630125ms)
+✔ negative confirmation language preserves planning tools and cannot trigger a confirmation (107.324542ms)
+✔ a rejected save tool cannot be reported as a completed run even when model prose claims success (115.64875ms)
+✔ a saved question releases its worker and the next turn sees the question and answer (217.892ms)
+✔ image admission is bounded, retries remain idempotent, and raw image bytes never enter durable input or native history (121.690208ms)
+✔ lease expiration exposes an interruption and fences the old worker instead of replaying an uncertain tool (2.177416ms)
+✔ API-only mode preserves ordinary queue waits and expires only the saved total deadline (1.245917ms)
+✔ question option IDs are consumed once across clients and a stale card cannot update new facts (332.652875ms)
+✔ Parent capacity wait releases the Worker and resumes native history without repeating a saved mutation (1136.273792ms)
+✔ native checkpoints omit images and thinking and never restore half a tool transaction (0.512417ms)
+✔ native compaction preserves a recoverable summary and its fact revision, then resumes (7.856ms)
+(node:85179) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a changed candidate recomputes its batch while unrelated completed judgments remain reusable (10.368167ms)
+✔ a calibrated local comparison preserves facts, caches identical evidence and delegates changed hard requirements (69.389167ms)
+✔ native product path reaches a checked draft and adoption without a question (1250.409166ms)
+✔ native product path reaches a checked draft and adoption after one answer (656.987417ms)
+✔ HTTP contract rejects incomplete or invented answers; batches retain every candidate and hard requirement (1.371666ms)
+✔ one account smooths starts, records unknown usage, isolates trips and enforces rolling normal/retry budgets (26.894375ms)
+✔ Jev refuses calls outside durable accounting and a new template cannot auto-advance on confidence alone (1.344125ms)
+✔ native Parent resumes a deferred Jev step after restart, reuses Provider facts and continues the same question (1158.4285ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 5291.41825

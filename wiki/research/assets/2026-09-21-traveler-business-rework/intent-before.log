@@ -1,0 +1,38 @@
+(node:55848) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Planning fixture failed: Error: planning_context_missing: {"status":"error","code":"trip_not_created","fabricatedResults":false}
+    at response (file:///Users/chenge/Desktop/travel-agent/tests/fixtures/jev-planning.mjs:61:43)
+    at planningResponse (file:///Users/chenge/Desktop/travel-agent/tests/fixtures/jev-planning.mjs:34:16)
+    at file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:66:48
+    at resolveResponse (/Users/chenge/Desktop/travel-agent/node_modules/@earendil-works/pi-ai/src/providers/faux.ts:494:55)
+    at <anonymous> (/Users/chenge/Desktop/travel-agent/node_modules/@earendil-works/pi-ai/src/providers/faux.ts:552:27)
+✖ asking the assistant to choose suitable draft candidates does not become a confirmation command (55.060791ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2250.893583
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:61:1
+✖ asking the assistant to choose suitable draft candidates does not become a confirmation command (55.060791ms)
+  AssertionError [ERR_ASSERTION]: {"schemaVersion":"travel-conversation-turn-v1","status":"agent_failed","code":"agent_model_response_incomplete","conversation":{"schemaVersion":"travel-conversation-view-v1","conversationId":"conversation_f4b6af5b","tripId":null,"modelId":"deepseek-v4-flash","messages":[{"messageId":"message_3773b0fb","role":"user","text":"你比较并选择合适的酒店、两顿饭、游玩和高铁，排好完整草案。不要确认或购买。","kind":null,"modelId":null,"createdAt":"2026-09-21T05:15:22.475Z"},{"messageId":"message_0e1bf88c","role":"status","text":"抱歉，这次没有处理完成。你的原始需求已经保留，也没有擅自改动旅行方案；请稍后再试。","kind":"agent_turn_failed","modelId":null,"createdAt":"2026-09-21T05:15:22.505Z"}],"updatedAt":"2026-09-21T05:15:22.505Z","deletedAt":null},"activities":[{"toolName":"save_trip_understanding","status":"failed"},{"toolName":"research_trip_options","status":"failed"},{"toolName":"get_trip_plan_view","status":"error"}]}
+  + actual - expected
+
+  + undefined
+  - 'trial_ready'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:69:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'trial_ready',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
