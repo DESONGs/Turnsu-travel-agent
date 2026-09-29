@@ -1,0 +1,53 @@
+{
+  "scope": "Real configured Parent and product tools, fictional travel sources, isolated file persistence. No Jev, HTTP, PostgreSQL, browser, real route or capacity acceptance.",
+  "startedAt": "2026-09-21T16:36:20.762Z",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "f7439e68924eb1a328df173ccfbfc47fbbc87a0ec79dffcc75917adb78e330f2",
+    "travel-agent-pi-package/src/host/travel-planning-delivery.ts": "0095281bbf6b289052323fe29270d4ad10f81ef20179d4f21957bb0715890f8d",
+    "tests/fixtures/traveler-business-cases.mjs": "c4c0b77a1f3b26945face3e725bb43683cff61f5ac99064a1bfd5ac5202a7615"
+  },
+  "rows": [
+    {
+      "id": "B04",
+      "input": "2026年10月15日我一个人从杭州到上海玩一天，住一晚，预算3000元，第二天自行返程。请做完整的一天行程草案，暂不确认。",
+      "adjustment": "从已经查到的候选里，把酒店换成另一家、晚餐换成另一家餐厅；午餐、高铁和其他游玩安排保持原样。预算还是3000，不要重新研究不受影响的内容。请先做完整调整草案，不要替我采用。",
+      "turns": [
+        {
+          "status": "agent_failed",
+          "code": "agent_model_response_incomplete",
+          "elapsedMs": 971,
+          "reply": "抱歉，这次没有处理完成。你的原始需求已经保留，也没有擅自改动旅行方案；请稍后再试。",
+          "trial": null,
+          "question": null,
+          "trace": null,
+          "activities": []
+        }
+      ],
+      "checks": [],
+      "manualReview": "pending",
+      "error": "ERR_ASSERTION",
+      "automatedStatus": "failed"
+    },
+    {
+      "id": "B03",
+      "input": "2026年10月15日我一个人从杭州到上海玩一天，住一晚，预算3000元，第二天自行返程。请做完整的一天行程草案，暂不确认。",
+      "adjustment": "我补充一个重要条件：我使用轮椅，全程无台阶是硬要求，可以打车。请针对这份已采用行程补查无障碍证据，并生成相应的完整调整草案；保留现有安排作对照，不要替我采用，也不要放宽条件。",
+      "turns": [
+        {
+          "status": "agent_failed",
+          "code": "agent_model_response_incomplete",
+          "elapsedMs": 10,
+          "reply": "抱歉，这次没有处理完成。你的原始需求已经保留，也没有擅自改动旅行方案；请稍后再试。",
+          "trial": null,
+          "question": null,
+          "trace": null,
+          "activities": []
+        }
+      ],
+      "checks": [],
+      "manualReview": "pending",
+      "error": "ERR_ASSERTION",
+      "automatedStatus": "failed"
+    }
+  ]
+}

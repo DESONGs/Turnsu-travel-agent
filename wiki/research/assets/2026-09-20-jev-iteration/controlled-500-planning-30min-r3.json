@@ -1,0 +1,227 @@
+{
+  "testedAt": "2026-09-20T17:02:17.981Z",
+  "schemaVersion": "travel-jev-capacity-v1",
+  "users": 500,
+  "durationMs": 1800000,
+  "evidenceScope": "Controlled models and fictional travel Providers through real authenticated HTTP, native Pi, two API/two Worker processes and PostgreSQL. Not external model capacity or commercial travel quality.",
+  "modelLimits": {
+    "Jev": {
+      "normalRpm": 1080,
+      "retryRpm": 60,
+      "hardRpm": 1200,
+      "tps": 250000
+    },
+    "Parent": {
+      "concurrent": 64,
+      "rpm": 10000,
+      "tpm": 100000000,
+      "controlled": true
+    }
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 115062,
+      "failures": []
+    },
+    {
+      "wave": 2,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 110845,
+      "failures": []
+    },
+    {
+      "wave": 3,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 24,
+      "completedBeforeCancellation": 1,
+      "elapsedMs": 153475,
+      "failures": []
+    },
+    {
+      "wave": 4,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 99221,
+      "failures": []
+    },
+    {
+      "wave": 5,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 104774,
+      "failures": []
+    },
+    {
+      "wave": 6,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 105679,
+      "failures": []
+    },
+    {
+      "wave": 7,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 114046,
+      "failures": []
+    },
+    {
+      "wave": 8,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 121949,
+      "failures": []
+    },
+    {
+      "wave": 9,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 111897,
+      "failures": []
+    },
+    {
+      "wave": 10,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 130900,
+      "failures": []
+    },
+    {
+      "wave": 11,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 138859,
+      "failures": []
+    },
+    {
+      "wave": 12,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 147165,
+      "failures": []
+    },
+    {
+      "wave": 13,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 160017,
+      "failures": []
+    },
+    {
+      "wave": 14,
+      "submitted": 500,
+      "checkedDrafts": 475,
+      "expected": 475,
+      "cancelled": 25,
+      "completedBeforeCancellation": 0,
+      "elapsedMs": 197215,
+      "failures": []
+    }
+  ],
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "0f072b1ee7f9aa56f8c2253965495b5401490519303f8eca4938c4ae21014966",
+    "src/agent/travel-execution-service.mjs": "6b0ca834c53e02c292ac4e900c240d9b5b5643304faded5fd97d7414cce06138",
+    "src/persistence/execution-repository.mjs": "e5aab1e0c7c457994d30c0788ef70cec4eebdf943e1bf9eb66c5f910bcc5ced7",
+    "src/api/travel-service.mjs": "6d9d7ad77be39ca6d798a97cc9e2587aaeec0819256ea3b088c445e9ac431db4",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "a1f1f1f7c0e25f6cc49a88cf1be7558674c084d04b8b7428c54904274f9ad2c0",
+    "travel-agent-pi-package/src/host/jev-client.ts": "cfcb75a4a9015d00f139fdf6f25979de26e3bcafab2b27056b7bf4ab56b4c3b0",
+    "tests/fixtures/jev-planning.mjs": "9ee33500be38756b687fff76f802f423def9712dccaafd6a356843fc7e5a7560"
+  },
+  "elapsedMs": 1817712,
+  "status": "passed_controlled_planning",
+  "sustained30Minutes": true,
+  "requests": 13730,
+  "maxRolling60s": 851,
+  "maxNormal60s": 851,
+  "maxRetry60s": 0,
+  "completionP50Ms": 76014,
+  "completionP95Ms": 145987,
+  "completionP99Ms": 183178,
+  "firstDispatchP95Ms": 89375,
+  "processMetrics": [
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 0,
+      "routeCalls": 0,
+      "judgmentCalls": 0,
+      "activeRuns": 0,
+      "rss": 171229184
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 0,
+      "routeCalls": 0,
+      "judgmentCalls": 0,
+      "activeRuns": 0,
+      "rss": 146014208
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 3931,
+      "routeCalls": 3332,
+      "judgmentCalls": 6824,
+      "activeRuns": 0,
+      "dispatchError": null,
+      "rss": 158810112
+    },
+    {
+      "started": 0,
+      "activeModels": 0,
+      "peakModels": 0,
+      "researchCalls": 3938,
+      "routeCalls": 3323,
+      "judgmentCalls": 6906,
+      "activeRuns": 0,
+      "dispatchError": null,
+      "rss": 111673344
+    }
+  ]
+}

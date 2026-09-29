@@ -1,0 +1,383 @@
+{
+  "testedAt": "2026-09-18T06:17:59.579Z",
+  "status": "completed",
+  "code": null,
+  "elapsedMs": 49694,
+  "activities": [
+    {
+      "toolName": "save_trip_understanding",
+      "status": "saved"
+    },
+    {
+      "toolName": "research_trip_options",
+      "status": "proposed"
+    },
+    {
+      "toolName": "get_trip_plan_view",
+      "status": "blocked"
+    }
+  ],
+  "planningStatus": "blocked",
+  "planningAvailability": {
+    "status": "provider_unavailable",
+    "code": "route_provider_unavailable",
+    "message": "市内路线资料暂时不可用，无法核验每天的交通、步行量和衔接时间。已有候选可以继续比较；资料服务恢复后可从当前旅行继续，无需为此重新填写旅行要求。"
+  },
+  "analysis": {
+    "coverage": "partial",
+    "completedLanes": [
+      "inventory_budget",
+      "operability_schedule"
+    ],
+    "failedLanes": [
+      "local_discovery"
+    ],
+    "joinCount": 1
+  },
+  "candidateCounts": {
+    "play": 6,
+    "food": 0,
+    "stay": 0,
+    "transport": 3
+  },
+  "accounting": [
+    {
+      "scope": "moonshotai-cn",
+      "calls": 6,
+      "reserved_tokens": "71105",
+      "input_tokens": "11718",
+      "output_tokens": "2018"
+    },
+    {
+      "scope": "deepseek",
+      "calls": 2,
+      "reserved_tokens": "116535",
+      "input_tokens": "27911",
+      "output_tokens": "1722"
+    }
+  ],
+  "evidenceScope": "One real model/provider request through authenticated HTTP, PostgreSQL run ownership, native Pi sessions and product persistence. No purchase or confirmation. This does not establish 500-user external capacity.",
+  "acceptance": {
+    "nativeAgentExecution": false,
+    "completePlanning": false
+  },
+  "toolErrors": [],
+  "outcome": {
+    "status": "partial",
+    "missingDomains": [
+      "food",
+      "stay"
+    ],
+    "incompleteAnalysis": [
+      "local_discovery"
+    ],
+    "planningStatus": "blocked"
+  },
+  "question": null,
+  "trialIssues": [],
+  "proposals": [
+    {
+      "candidateCounts": {
+        "play": 6,
+        "food": 0,
+        "stay": 0,
+        "transport": 3
+      },
+      "domainStatuses": {
+        "food": {
+          "count": 0,
+          "status": "provider_unavailable",
+          "providers": []
+        },
+        "play": {
+          "count": 6,
+          "status": "completed_nonempty",
+          "providers": [
+            {
+              "count": 6,
+              "status": "completed_nonempty",
+              "provider": "fliggy_flyai",
+              "checkedAt": "2026-09-18T06:17:18.187Z"
+            }
+          ]
+        },
+        "stay": {
+          "count": 12,
+          "status": "completed_nonempty",
+          "providers": [
+            {
+              "count": 6,
+              "status": "completed_nonempty",
+              "provider": "fliggy_flyai",
+              "checkedAt": "2026-09-18T06:17:18.187Z"
+            },
+            {
+              "count": 6,
+              "status": "completed_nonempty",
+              "provider": "tuniu_official_mcp",
+              "checkedAt": "2026-09-18T06:17:18.188Z"
+            }
+          ]
+        },
+        "transport": {
+          "count": 6,
+          "status": "completed_nonempty",
+          "providers": [
+            {
+              "count": 3,
+              "status": "completed_nonempty",
+              "provider": "fliggy_flyai",
+              "checkedAt": "2026-09-18T06:17:18.187Z"
+            },
+            {
+              "count": 3,
+              "status": "completed_nonempty",
+              "provider": "tuniu_official_mcp",
+              "checkedAt": "2026-09-18T06:17:18.188Z"
+            }
+          ]
+        }
+      },
+      "analysis": {
+        "coverage": "partial",
+        "degradedReasons": [
+          "local_discovery_failed"
+        ],
+        "events": [
+          {
+            "at": "2026-09-18T06:17:20.893Z",
+            "lane": "inventory_budget",
+            "type": "analysis_lane_started",
+            "attempt": 1,
+            "queuedAt": "2026-09-18T06:17:20.884Z",
+            "queueDurationMs": 9
+          },
+          {
+            "at": "2026-09-18T06:17:20.893Z",
+            "lane": "local_discovery",
+            "type": "analysis_lane_started",
+            "attempt": 1,
+            "queuedAt": "2026-09-18T06:17:20.884Z",
+            "queueDurationMs": 9
+          },
+          {
+            "at": "2026-09-18T06:17:38.043Z",
+            "lane": "inventory_budget",
+            "type": "analysis_lane_completed",
+            "error": null,
+            "model": "moonshotai-cn/kimi-k2.6",
+            "attempt": 1,
+            "executionDurationMs": 17150
+          },
+          {
+            "at": "2026-09-18T06:17:38.046Z",
+            "lane": "operability_schedule",
+            "type": "analysis_lane_started",
+            "attempt": 1,
+            "queuedAt": "2026-09-18T06:17:20.884Z",
+            "queueDurationMs": 17162
+          },
+          {
+            "at": "2026-09-18T06:17:45.498Z",
+            "lane": "local_discovery",
+            "type": "analysis_lane_completed",
+            "error": "normalized_schema_invalid:child_result_shape",
+            "model": "moonshotai-cn/kimi-k2.6",
+            "attempt": 1,
+            "executionDurationMs": 24605
+          },
+          {
+            "at": "2026-09-18T06:17:57.448Z",
+            "lane": "operability_schedule",
+            "type": "analysis_lane_completed",
+            "error": null,
+            "model": "moonshotai-cn/kimi-k2.6",
+            "attempt": 1,
+            "executionDurationMs": 19402
+          }
+        ],
+        "conditionRevision": {
+          "status": "not_needed",
+          "reasonCodes": [
+            "analysis_found_no_material_criteria_revision"
+          ]
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "run_queued",
+      "status": "queued",
+      "sequence": 1,
+      "at": 1789712229987
+    },
+    {
+      "type": "run_started",
+      "status": "running",
+      "sequence": 2,
+      "at": 1789712229992
+    },
+    {
+      "type": "tool_started",
+      "status": "running",
+      "toolName": "save_trip_understanding",
+      "toolCallId": "call_00_ECGJrNZBCGcFZur4llMK7502",
+      "sequence": 3,
+      "at": 1789712238134
+    },
+    {
+      "type": "tool_finished",
+      "status": "saved",
+      "toolName": "save_trip_understanding",
+      "toolCallId": "call_00_ECGJrNZBCGcFZur4llMK7502",
+      "sequence": 4,
+      "at": 1789712238165
+    },
+    {
+      "type": "tool_started",
+      "status": "running",
+      "toolName": "research_trip_options",
+      "toolCallId": "call_01_QDG3o2nWnaVUCyWtgz8T6482",
+      "sequence": 5,
+      "at": 1789712238173
+    },
+    {
+      "type": "analysis_lane_started",
+      "status": "running",
+      "lane": "inventory_budget",
+      "attempt": 1,
+      "sequence": 6,
+      "at": 1789712240904
+    },
+    {
+      "type": "analysis_lane_started",
+      "status": "running",
+      "lane": "local_discovery",
+      "attempt": 1,
+      "sequence": 7,
+      "at": 1789712240908
+    },
+    {
+      "type": "child_tool_started",
+      "status": "running",
+      "toolName": "read_analysis_context",
+      "lane": "inventory_budget",
+      "sequence": 8,
+      "at": 1789712243237
+    },
+    {
+      "type": "child_tool_started",
+      "status": "running",
+      "toolName": "read_analysis_evidence",
+      "lane": "local_discovery",
+      "sequence": 9,
+      "at": 1789712243245
+    },
+    {
+      "type": "child_tool_started",
+      "status": "running",
+      "toolName": "read_analysis_evidence",
+      "lane": "inventory_budget",
+      "sequence": 10,
+      "at": 1789712243253
+    },
+    {
+      "type": "child_tool_started",
+      "status": "running",
+      "toolName": "read_analysis_context",
+      "lane": "local_discovery",
+      "sequence": 11,
+      "at": 1789712243264
+    },
+    {
+      "type": "analysis_lane_started",
+      "status": "running",
+      "lane": "operability_schedule",
+      "attempt": 1,
+      "sequence": 12,
+      "at": 1789712258057
+    },
+    {
+      "type": "analysis_lane_completed",
+      "status": "completed",
+      "lane": "inventory_budget",
+      "attempt": 1,
+      "sequence": 13,
+      "at": 1789712258065
+    },
+    {
+      "type": "child_tool_started",
+      "status": "running",
+      "toolName": "read_analysis_evidence",
+      "lane": "operability_schedule",
+      "sequence": 14,
+      "at": 1789712260230
+    },
+    {
+      "type": "analysis_lane_completed",
+      "status": "failed",
+      "lane": "local_discovery",
+      "attempt": 1,
+      "sequence": 15,
+      "at": 1789712265503
+    },
+    {
+      "type": "analysis_lane_completed",
+      "status": "completed",
+      "lane": "operability_schedule",
+      "attempt": 1,
+      "sequence": 16,
+      "at": 1789712277454
+    },
+    {
+      "type": "analysis_handoff",
+      "status": "accepted",
+      "lane": "inventory_budget",
+      "runId": "analysis_run_e358c48f",
+      "revision": 0,
+      "sequence": 17,
+      "at": 1789712277466
+    },
+    {
+      "type": "analysis_handoff",
+      "status": "accepted",
+      "lane": "operability_schedule",
+      "runId": "analysis_run_e358c48f",
+      "revision": 0,
+      "sequence": 18,
+      "at": 1789712277470
+    },
+    {
+      "type": "tool_finished",
+      "status": "proposed",
+      "toolName": "research_trip_options",
+      "toolCallId": "call_01_QDG3o2nWnaVUCyWtgz8T6482",
+      "sequence": 19,
+      "at": 1789712277516
+    },
+    {
+      "type": "tool_started",
+      "status": "running",
+      "toolName": "get_trip_plan_view",
+      "toolCallId": "call_00_E7MLEQGYZQguQyrytjcW2872",
+      "sequence": 20,
+      "at": 1789712278876
+    },
+    {
+      "type": "tool_finished",
+      "status": "blocked",
+      "toolName": "get_trip_plan_view",
+      "toolCallId": "call_00_E7MLEQGYZQguQyrytjcW2872",
+      "sequence": 21,
+      "at": 1789712278898
+    },
+    {
+      "type": "run_finished",
+      "status": "completed",
+      "sequence": 22,
+      "at": 1789712278933
+    }
+  ],
+  "reply": "实时资料已经返回，补充比较只完成了一部分。游玩、交通候选已经放入方案区。当地体验与来源尚未完成，因此当前不能当作完整规划。你可以先比较已有候选，稍后说“继续补充分析”重试缺失部分。 餐饮：资料来源当前不可用。你可以先比较，不会自动写入行程。市内路线资料暂时不可用，无法核验每天的交通、步行量和衔接时间。已有候选可以继续比较；资料服务恢复后可从当前旅行继续，无需为此重新填写旅行要求。"
+}

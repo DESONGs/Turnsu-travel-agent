@@ -1,0 +1,37 @@
+(node:82573) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (126.535333ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 689.774334
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:379:1
+✖ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (126.535333ms)
+  AssertionError [ERR_ASSERTION]: adoption replaces exactly the reviewed hotel and meal; it must not keep charging for the old ones or remove the retained lunch
+  + actual - expected
+
+    [
+  -   'food_0_21489a6f_1',
+      'food_2_21489a6f_3',
+      'play_0_21489a6f_1',
+      'stay_1_21489a6f_2',
+      'transport_0_21489a6f_1'
+    ]
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:421:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'food_2_21489a6f_3', 'play_0_21489a6f_1', 'stay_1_21489a6f_2', 'transport_0_21489a6f_1' ],
+    expected: [ 'food_0_21489a6f_1', 'food_2_21489a6f_3', 'play_0_21489a6f_1', 'stay_1_21489a6f_2', 'transport_0_21489a6f_1' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

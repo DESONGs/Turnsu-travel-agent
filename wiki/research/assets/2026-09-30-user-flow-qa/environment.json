@@ -1,0 +1,10 @@
+{
+  "startedAt": "2026-09-29T18:18:17.219Z",
+  "base": "http://127.0.0.1:18930",
+  "schema": "qa_0f0242c0bdbf4bc6b0927f2007338ba8",
+  "node": "v26.7.0",
+  "model": "configured real Parent",
+  "Jev": "off: no project credential",
+  "provider": "explicit simulated travel and routes",
+  "persistence": "isolated PostgreSQL"
+}

@@ -1,0 +1,37 @@
+(node:86627) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a retried command runs one native Parent; its tool receipts and checkpoint survive repository reopening (135.681709ms)
+✔ two workers serialize one conversation and continue with native history plus current travel facts (163.923959ms)
+✔ a cancellation blocks a late tool mutation at the persistence boundary (7.323625ms)
+✔ negative confirmation language preserves planning tools and cannot trigger a confirmation (107.628583ms)
+✔ a rejected save tool cannot be reported as a completed run even when model prose claims success (107.341542ms)
+✔ a saved question releases its worker and the next turn sees the question and answer (214.488584ms)
+✔ image admission is bounded, retries remain idempotent, and raw image bytes never enter durable input or native history (125.257416ms)
+✔ lease expiration exposes an interruption and fences the old worker instead of replaying an uncertain tool (2.582417ms)
+✔ API-only mode preserves ordinary queue waits and expires only the saved total deadline (1.287041ms)
+✔ question option IDs are consumed once across clients and a stale card cannot update new facts (338.00275ms)
+✔ Parent capacity wait releases the Worker and resumes native history without repeating a saved mutation (1142.3805ms)
+✔ native checkpoints omit images and thinking and never restore half a tool transaction (0.317416ms)
+✔ native compaction preserves a recoverable summary and its fact revision, then resumes (5.365584ms)
+✔ a new request carries the travel objective without replaying large historical tool reports (3.836417ms)
+✔ a capacity wait during context handoff does not consume the new user request (26.29975ms)
+✔ a later planning snapshot supersedes old payloads in model context while both receipts remain recoverable (4.279708ms)
+(node:86628) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (76.698833ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (75.773666ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (66.542584ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (7.661625ms)
+✔ a missing departure date is resolved before asking about arrival preferences (10.342666ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (10.352792ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (81.0265ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (100.176709ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (112.468542ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4214.273

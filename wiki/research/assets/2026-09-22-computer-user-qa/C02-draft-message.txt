@@ -1,0 +1,185 @@
+- main:
+  - link:
+    - /url: /
+    - generic: Travel Agent.
+  - button:
+  - button:
+    - text: 中
+  - button:
+  - paragraph: 我的下一段旅程
+  - heading [level=1]:
+    - text: 上海
+    - generic: 1 日
+  - button:
+    - text: 10/15
+  - button:
+    - text: 1 人同行
+  - button:
+    - text: ¥6,000
+  - navigation:
+    - button: 发现与比较
+    - button:
+      - text: 行程与路线
+      - generic: "6"
+    - button: 旅行手账
+  - region:
+    - tablist:
+      - tab:
+        - generic: 抵达交通
+        - generic: "3"
+      - tab [selected]:
+        - generic: 住宿选择
+        - generic: "3"
+      - tab:
+        - generic: 餐饮安排
+        - generic: "3"
+      - tab:
+        - generic: 游玩体验
+        - generic: "3"
+    - tabpanel:
+      - heading [level=2]: 住在哪里，决定怎么玩。
+      - paragraph: 决定每天往返距离和休息质量 · 可以先试排，确认后才加入行程
+      - button:
+        - text: 调整偏好
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 0
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 室内环境安静，有本地文化介绍
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 1
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 户外活动，白天环境热闹
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 2
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 户外活动，白天环境热闹
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - paragraph:
+        - text: 价格与可用性以来源的最新核验为准，不代表已预订。 · Explicit decision fixture
+    - complementary:
+      - strong: 6 项试排
+      - generic: 还没改动行程
+      - generic: 助手优化的路线
+      - button: 清空
+      - button:
+        - text: 查看路线
+    - text: 旅行准备与资料状态
+  - dialog "旅行助手":
+    - heading "和旅行助手对话" [level=2]
+    - button "关闭旅行助手":
+      - generic: 关闭
+    - log:
+      - article:
+        - generic: 你
+        - generic: 从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。
+        - time: 你的需求 · 00:50
+      - article:
+        - generic: 你打算哪天从杭州出发去上海？
+        - time: Travel Agent · 00:50
+      - article:
+        - generic: 你
+        - generic: 2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。
+        - time: 你的需求 · 00:51
+      - article:
+        - generic: 出发日期已按 2026 年 10 月 15 日记下，其余要求不变。当天完整行程已经排好并通过路线与预算核验，草案留在方案区里可以查看和采用；我没有替你确认，它仍然只是一个可撤销草案。你之前没有已采用的安排，所以没有旧计划被替换。
+        - strong: 10 月 15 日（周四）当天安排
+        - generic: "| 时间 | 安排 | 说明 |"
+        - generic: "|---|---|---|"
+        - generic: "| 09:00 | 城际抵达（transport option 0，固定锚点） | 按上午到沪起排，白天整块留给游览 |"
+        - generic: "| 09:45–10:15 | stay option 0 · 先寄存行李 | 轻装出门，晚上回到同一家正式入住 |"
+        - generic: "| 12:00–13:00 | food option 0 · 午餐 | 室内环境，一人用餐方便，顺带歇脚 |"
+        - generic: "| 13:30–15:30 | play option 0 · 主活动 | 室内、安静、带本地文化介绍，天气有变也不受影响 |"
+        - generic: "| 15:50–17:20 | play option 2 · 下午活动 | 户外、白天热闹，10 月中下旬正当季 |"
+        - generic: "| 18:00–19:15 | food option 1 · 晚餐 | 与午餐换一处，吃完就近回住宿 |"
+        - generic: "| 19:45–20:15 | stay option 0 · 正式入住 | 第二天从这里自行返程，返程段不在本次规划范围内 |"
+        - strong: 这次的主要取舍
+        - text: ：当天的支撑性活动我选了室内那处（play option 0），把户外那处（play option 2）放在下午——因为 10 月 15 日的上海天气资料这次取不到，户外安排属于可调整项；如果当天是雨天，可以把下午整体换成室内。午餐、晚餐各一处，两餐都保留了，没有因为晚上住店而砍掉晚餐。
+        - strong: 预算是够的
+        - text: ：这一版的参考价合计约 600 元（城际交通 100、住宿 100、两餐共 200、两处体验共 200），另加市内交通的估算约 150 元，总计约 750 元，离 6000 元有大量余量，我没有据此升级消费。
+        - strong: 几处要如实说明的地方
+        - text: ：
+        - generic: "- 这次的候选与价格来自资料测试数据，不是实际出行查询结果，班次时刻、票价、房态、餐厅营业与排队情况都需要在临出发前再核验。"
+        - generic: "- 只有上午 9:00 抵达这一个时间是按可供对照的班次区间固定的；你的具体车次未定，抵达时间确定后整条时间线可以整体平移。"
+        - generic: "- 核验给出的市内移动方式实际返回的是出租车，而不是我原本设想的步行加地铁；行程中“步行／地铁为主”的偏好没有落地，我可以按你确认的时间重新按公共交通核验这一段。另外路线结果没有计入步行距离，这不代表从车站、餐厅到入口全程不用走路。"
+        - generic: "- 各处通行是否为全程无台阶、电梯是否可用，这条资料里没有核验到，暂时只能标记为未知，我没有据此说哪段更省力。"
+        - generic: 草案已保留在方案区，你可以直接看按天时间线；需要我调整抵达时间或把市内移动改成公共交通，说一声就行。
+        - button "收起说明" [active]:
+          - text: 收起说明
+        - time: Travel Agent · 00:51
+      - region "本轮处理记录":
+        - strong: 本轮处理情况
+        - generic: 只显示实际完成或明确失败的步骤
+        - list:
+          - strong: 已记住旅行要求
+          - generic: 已完成
+          - strong: 已核验吃住行玩候选，可以在方案中比较
+          - generic: 已完成
+          - strong: 已读取当前方案
+          - generic: 已完成
+          - strong: 路线、时间与同行人限制已核验，可比较优化试排
+          - generic: 已完成
+    - button "回到最新消息"
+    - generic "快捷调整旅行要求":
+      - button "少走路"
+      - button "位置优先"
+      - button "控制预算"
+    - region "规划进度":
+      - status:
+        - strong: 本轮已完成
+      - list:
+        - generic: 记住旅行要求
+        - generic: 已结束
+        - generic: 核验资料与查找候选
+        - generic: 已结束
+        - generic: 查看当前方案
+        - generic: 已结束
+        - generic: 核验按天路线
+        - generic: 已结束
+      - paragraph:
+        - button "查看这版行程"
+    - generic: 说说这趟旅行
+    - textbox "说说这趟旅行":
+      - /placeholder: 例如：和父母去大理 5 天，轻松一点，住得方便，想吃本地菜。
+    - button "Choose File"
+    - button "上传旅行截图或图片":
+    - button "粘贴旅行分享链接":
+    - button "开始语音输入":
+    - generic: 由你确认后再发送
+    - button "发送旅行需求" [disabled]:
+      - generic: 开始规划
+  - navigation:
+    - button:
+      - text: 发现
+    - button:
+      - text: 行程
+      - generic: "6"
+    - button:
+      - text: 手账
+    - button:
+      - text: 助手

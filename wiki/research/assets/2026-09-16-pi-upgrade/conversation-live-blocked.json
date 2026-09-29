@@ -1,0 +1,63 @@
+{
+  "status": "blocked_live_golden_path",
+  "mode": "real_model_and_live_read_only_providers",
+  "firstRunAnalysisCoverage": "failed",
+  "domainStatuses": {
+    "stay": {
+      "status": "completed_nonempty",
+      "count": 12,
+      "providers": [
+        {
+          "provider": "fliggy_flyai",
+          "status": "completed_nonempty",
+          "count": 6,
+          "checkedAt": "2026-09-16T12:21:57.841Z"
+        },
+        {
+          "provider": "tuniu_official_mcp",
+          "status": "completed_nonempty",
+          "count": 6,
+          "checkedAt": "2026-09-16T12:21:57.841Z"
+        }
+      ]
+    },
+    "play": {
+      "status": "completed_nonempty",
+      "count": 6,
+      "providers": [
+        {
+          "provider": "fliggy_flyai",
+          "status": "completed_nonempty",
+          "count": 6,
+          "checkedAt": "2026-09-16T12:21:57.841Z"
+        }
+      ]
+    },
+    "food": {
+      "status": "provider_unavailable",
+      "count": 0,
+      "providers": []
+    },
+    "transport": {
+      "status": "completed_nonempty",
+      "count": 6,
+      "providers": [
+        {
+          "provider": "fliggy_flyai",
+          "status": "completed_nonempty",
+          "count": 3,
+          "checkedAt": "2026-09-16T12:21:57.841Z"
+        },
+        {
+          "provider": "tuniu_official_mcp",
+          "status": "completed_nonempty",
+          "count": 3,
+          "checkedAt": "2026-09-16T12:21:57.841Z"
+        }
+      ]
+    }
+  },
+  "confirmationResult": "rejected",
+  "committedPlan": false,
+  "subsequentVerification": "Analysis fixes passed on captured evidence; full provider requery, planning validation and user confirmation not revalidated."
+}

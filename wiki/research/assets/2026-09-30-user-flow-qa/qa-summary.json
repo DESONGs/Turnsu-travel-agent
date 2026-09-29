@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "travel-user-flow-qa-summary-v1",
+  "date": "2026-09-30",
+  "timezone": "Asia/Hong_Kong",
+  "status": "incomplete_with_failures",
+  "stopReason": "用户要求先研究参考项目并形成后续迭代，剩余案例留待主线程修复后验收。",
+  "sourceManifest": {
+    "path": "manifest.json",
+    "sha256": "2eb20bb2ebd1511c81bf9630ac832d3c93aeffbcb931735d48ed93bd58b3b836",
+    "head": "d676c3138259db170ce8435bbb27f0e896842493",
+    "dirtyWorktree": true,
+    "note": "原 manifest 的 pending 是执行前状态，未改写测试输入。"
+  },
+  "environment": {
+    "startedAt": "2026-09-29T18:18:17.219Z",
+    "base": "http://127.0.0.1:18930",
+    "schema": "qa_0f0242c0bdbf4bc6b0927f2007338ba8",
+    "node": "v26.7.0",
+    "model": "configured real Parent",
+    "Jev": "off: no project credential",
+    "provider": "explicit simulated travel and routes",
+    "persistence": "isolated PostgreSQL"
+  },
+  "evidenceBoundary": {
+    "real": [
+      "Parent/Child model calls",
+      "HTTP",
+      "isolated PostgreSQL",
+      "browser interaction"
+    ],
+    "simulated": [
+      "travel candidates",
+      "mobility times and fees",
+      "secondary fixture schematic polylines"
+    ],
+    "notEvaluated": [
+      "Jev",
+      "real AMap navigation",
+      "real-world transportation feasibility",
+      "500-user capacity",
+      "cloud CI",
+      "production deployment"
+    ]
+  },
+  "cases": [
+    {
+      "id": "U01",
+      "status": "passed_simulated_sources",
+      "elapsedMs": 94969,
+      "observed": "首次草案包含 8 次到访、6 个地点、两餐和酒店多次到访。",
+      "evidence": [
+        "U01-expanded.txt",
+        "U01-assistant.txt"
+      ],
+      "limits": [
+        "候选、路线时长与费用为显式模拟，不证明真实交通可行。"
+      ]
+    },
+    {
+      "id": "U02",
+      "status": "passed_simulated_sources",
+      "observed": "浏览器采用后刷新，时间线与已采用状态保留。",
+      "evidence": [
+        "U02-adopted.json",
+        "U02-refreshed-itinerary.txt"
+      ]
+    },
+    {
+      "id": "U03",
+      "status": "failed",
+      "elapsedMs": 37698,
+      "observed": "要求预算 6000 改 8000 且不要重排，预算仍是 6000，并生成多余草案；助手明确承认未保存。",
+      "evidence": [
+        "U03-after-budget.json",
+        "U03-budget-reply.txt",
+        "U03-recovery.txt"
+      ],
+      "recovery": {
+        "status": "workaround_only",
+        "elapsedMs": 45303,
+        "observed": "肯定句重述预算后保存成功，但发生额外核验/试排，原案例仍失败。"
+      }
+    },
+    {
+      "id": "U04",
+      "status": "partial",
+      "elapsedMs": 86513,
+      "observed": "新酒店草案生成，三次酒店到访换为新地点，其他四次到访身份和时间保留，原采用版未被覆盖。",
+      "evidence": [
+        "U04-local-hotel.json"
+      ],
+      "notExecuted": [
+        "新酒店草案最终采用及采用后刷新。"
+      ]
+    },
+    {
+      "id": "U05",
+      "status": "passed_simulated_sources",
+      "questionElapsedMs": 80179,
+      "resumeElapsedMs": 61460,
+      "observed": "缺日期先提问，回答日期/到达方式后自动接续生成草案并采用。",
+      "evidence": [
+        "U05-question.txt",
+        "U05-resumed.txt",
+        "U04-local-hotel.json"
+      ],
+      "limits": [
+        "单组实测时延，不是 SLA。"
+      ]
+    },
+    {
+      "id": "U06",
+      "status": "not_run",
+      "scenario": "极低预算"
+    },
+    {
+      "id": "U07",
+      "status": "not_run",
+      "scenario": "新增轮椅硬要求"
+    },
+    {
+      "id": "U08",
+      "status": "not_run",
+      "scenario": "取消后重试"
+    },
+    {
+      "id": "U09",
+      "status": "partial",
+      "elapsedMs": 97858,
+      "observed": "餐饮两次查询为空，未编造餐厅；部分草案可见，采用禁用，餐次缺口明确。",
+      "evidence": [
+        "partial/U09-missing-food.json",
+        "partial/provider-reads.jsonl"
+      ],
+      "notExecuted": [
+        "来源恢复后补查、重新核验和采用。"
+      ]
+    },
+    {
+      "id": "U10",
+      "status": "partial",
+      "observed": "另一页旧回答被拒绝且未覆盖已回答结果；旧选项文字仍留在输入框。",
+      "evidence": [
+        "U10-stale-answer.txt"
+      ],
+      "notExecuted": [
+        "主动跨端同步时延。"
+      ]
+    },
+    {
+      "id": "U11",
+      "status": "not_run",
+      "scenario": "浏览器两日完整规划；另有独立自动化 13 次到访 PostgreSQL 失败，见 gates。"
+    },
+    {
+      "id": "U12",
+      "status": "not_run",
+      "scenario": "模型故障后恢复"
+    }
+  ],
+  "gates": [
+    {
+      "id": "check-sandbox",
+      "command": "npm run check",
+      "status": "failed",
+      "counts": {
+        "tests": 393,
+        "pass": 358,
+        "fail": 22,
+        "skipped": 13,
+        "duration_ms": 21436.81875
+      },
+      "note": "typecheck 与 desktop:typecheck 先通过；测试包含端口监听 EPERM 等环境失败，随后另跑测试。"
+    },
+    {
+      "id": "tests-postgres",
+      "command": "npm test",
+      "status": "failed",
+      "exitCode": 1,
+      "counts": {
+        "tests": 393,
+        "pass": 386,
+        "fail": 3,
+        "skipped": 4,
+        "duration_ms": 62863.271
+      },
+      "failures": [
+        "只改预算：预期 8000，实际 6000",
+        "13 次到访的预算更新后 PostgreSQL JSONB 回读失败：问题 stopIds 上限 8",
+        "工具 schema 48635 字符超过既有 48000 字符门槛"
+      ],
+      "evidence": [
+        "gate-results.json",
+        "tool-sizes.json"
+      ]
+    },
+    {
+      "id": "auth-journal-postgres",
+      "status": "failed",
+      "exitCode": 1,
+      "counts": {
+        "tests": 13,
+        "pass": 12,
+        "fail": 1,
+        "skipped": 0,
+        "duration_ms": 2158.963625
+      },
+      "note": "与全量测试有重叠，不累加总通过数；Journal 冷库并发初始化 23505。",
+      "evidence": [
+        "auth-journal-gate.json"
+      ]
+    },
+    {
+      "id": "journal-cold-start",
+      "status": "failure_reproduced",
+      "observed": "并发 4 实例 1 成功 3 失败，串行 4 次全部成功。",
+      "evidence": [
+        "journal-cold-start-repro.mjs",
+        "journal-cold-start-results.json"
+      ]
+    },
+    {
+      "id": "web-build",
+      "command": "npx vite build --outDir /private/tmp/travel-user-qa-20260930/web",
+      "status": "passed",
+      "note": "独立临时输出，存在大 chunk 警告；不等于完整 check 通过。"
+    },
+    {
+      "id": "miniapps",
+      "status": "passed",
+      "exitCode": 0,
+      "note": "微信/支付宝原生合同检查；不等于真机验收。",
+      "evidence": [
+        "gate-results.json"
+      ]
+    }
+  ],
+  "logs": [
+    {
+      "path": "check.log",
+      "sha256": "63dfc2b8e69ed39764c4eff12cae735e8c51e5cf26a3a0a3df647c5a8ceecb55",
+      "localOnlyIgnoredLog": true,
+      "counts": {
+        "tests": 393,
+        "pass": 358,
+        "fail": 22,
+        "skipped": 13,
+        "duration_ms": 21436.81875
+      }
+    },
+    {
+      "path": "tests-postgres.log",
+      "sha256": "ffb6e8808f06e58b736c83d116549754bf0a9ee07868718052d39ad23901edbf",
+      "localOnlyIgnoredLog": true,
+      "counts": {
+        "tests": 393,
+        "pass": 386,
+        "fail": 3,
+        "skipped": 4,
+        "duration_ms": 62863.271
+      }
+    },
+    {
+      "path": "auth-journal-postgres.log",
+      "sha256": "e9c7b60e658dcd347ab70867012bb3acbedb322cb13566b6aea493069c4ed826",
+      "localOnlyIgnoredLog": true,
+      "counts": {
+        "tests": 13,
+        "pass": 12,
+        "fail": 1,
+        "skipped": 0,
+        "duration_ms": 2158.963625
+      }
+    },
+    {
+      "path": "web-build.log",
+      "sha256": "ec1c2352bcf3a9a6a2083eeb85a32c5202e8fb25a54f04eaae9b71cb449af0da",
+      "localOnlyIgnoredLog": true,
+      "counts": {}
+    },
+    {
+      "path": "miniapps.log",
+      "sha256": "181e5ce4f0c8361b7a7330a3ecb64e6ff2b85db675e4faff9513d257693ff2b1",
+      "localOnlyIgnoredLog": true,
+      "counts": {}
+    }
+  ],
+  "cleanup": {
+    "temporaryApiServers": "stopped",
+    "postgresContainerStartedForQa": "returned_to_stopped",
+    "isolatedEvidenceAndSchemas": "retained",
+    "productCodeChangedForQa": false
+  },
+  "reproductionLimit": "浏览器临时启动器尚未成为仓库内可复用测试包；现有聚焦测试与 Journal 复现脚本见研究报告。日志未强行取消忽略，散列仅用于核对本地原件。",
+  "researchReport": "../../2026-09-30-transport-itinerary-reference-research.md",
+  "iterationDocument": "../../../current/16-executable-itinerary-and-transport-iteration.md"
+}

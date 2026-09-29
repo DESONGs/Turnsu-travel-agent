@@ -1,0 +1,123 @@
+{
+  "testedAt": "2026-09-20T16:54:52.614Z",
+  "datasetHash": "ab0f3743ae7d15095bd3332d886bc696b2470968f75e163a1eed95a03ee92787",
+  "text": "2026年10月15日，我一个人从杭州去上海玩一天，总预算6000元，喜欢安静的室内活动和本地菜。请查找吃住行玩并做完整行程草案，保留未知项，不能确认或购买。",
+  "expected": {
+    "destination": "上海",
+    "totalBudget": 6000,
+    "confirmedNodes": 0,
+    "allStopReferencesKnown": true,
+    "maxRepairAttempts": 2
+  },
+  "evidenceScope": "Real Parent/Child/Jev through authenticated HTTP and PostgreSQL; travel facts and routes are explicitly controlled fixtures. These mode comparisons do not isolate every causal effect, calibrate auto decisions or establish real travel-provider quality.",
+  "automaticCalibration": "not_enabled",
+  "billingUsd": null,
+  "billingNote": "Record measured calls and tokens; account billing and prices not verified by this script.",
+  "rows": [
+    {
+      "mode": "off",
+      "status": "completed",
+      "code": null,
+      "firstUsefulMs": 63399,
+      "totalMs": 90022,
+      "draftStatus": "trial_ready",
+      "checks": {
+        "briefPreserved": true,
+        "noUnrequestedCommit": true,
+        "knownStops": true
+      },
+      "questions": 0,
+      "question": null,
+      "providerCalls": 1,
+      "routeCalls": 1,
+      "accounting": [
+        {
+          "scope": "deepseek",
+          "calls": 4,
+          "input_tokens": "65050",
+          "output_tokens": "5647"
+        },
+        {
+          "scope": "moonshotai-cn",
+          "calls": 6,
+          "input_tokens": "11048",
+          "output_tokens": "1975"
+        }
+      ],
+      "toolErrors": [],
+      "reply": "我已经按安静的室内活动优先、本地菜/上海本帮菜生成并核验了一份可撤销试排：共 3 段移动，约 60 分钟，步行约 0 米，0 次换乘，市内交通估算约 ¥75。地图和按天时间轴已切换到优化试排；它还没有写入行程，你可以采用、保持当前或继续调整。"
+    },
+    {
+      "mode": "shadow",
+      "status": "awaiting_input",
+      "code": null,
+      "firstUsefulMs": 52759,
+      "totalMs": 117603,
+      "draftStatus": "trial_ready",
+      "checks": {
+        "briefPreserved": true,
+        "noUnrequestedCommit": true,
+        "knownStops": true
+      },
+      "questions": 1,
+      "question": "10月15日当天是当晚回杭州，还是在上海住一晚？",
+      "providerCalls": 1,
+      "routeCalls": 1,
+      "accounting": [
+        {
+          "scope": "deepseek",
+          "calls": 8,
+          "input_tokens": "106316",
+          "output_tokens": "13868"
+        },
+        {
+          "scope": "moonshotai-cn",
+          "calls": 6,
+          "input_tokens": "11129",
+          "output_tokens": "2091"
+        },
+        {
+          "scope": "typesafe_account",
+          "calls": 2,
+          "input_tokens": "5560",
+          "output_tokens": "729"
+        }
+      ],
+      "toolErrors": [],
+      "reply": "10月15日当天是当晚回杭州，还是在上海住一晚？"
+    },
+    {
+      "mode": "auto",
+      "status": "completed",
+      "code": null,
+      "firstUsefulMs": 12056,
+      "totalMs": 33009,
+      "draftStatus": "trial_ready",
+      "checks": {
+        "briefPreserved": true,
+        "noUnrequestedCommit": true,
+        "knownStops": true
+      },
+      "questions": 0,
+      "question": null,
+      "providerCalls": 1,
+      "routeCalls": 1,
+      "accounting": [
+        {
+          "scope": "deepseek",
+          "calls": 5,
+          "input_tokens": "75157",
+          "output_tokens": "4671"
+        },
+        {
+          "scope": "typesafe_account",
+          "calls": 2,
+          "input_tokens": "5526",
+          "output_tokens": "728"
+        }
+      ],
+      "toolErrors": [],
+      "reply": "我已经按安静室内活动优先、本地菜就餐生成并核验了一份可撤销试排：共 2 段移动，约 40 分钟，步行约 0 米，0 次换乘，市内交通估算约 ¥50。地图和按天时间轴已切换到优化试排；它还没有写入行程，你可以采用、保持当前或继续调整。"
+    }
+  ]
+}

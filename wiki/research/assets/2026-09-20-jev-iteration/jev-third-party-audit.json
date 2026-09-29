@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "third-party-audit-v1",
+  "candidate": "TypeSafe Jev hosted HTTP API",
+  "model": "jev-1.13.0",
+  "commit": null,
+  "commitScope": "No vendor source or SDK imported; remote model ID is pinned",
+  "adapter": {
+    "path": "travel-agent-pi-package/src/host/jev-client.ts",
+    "sha256": "cfcb75a4a9015d00f139fdf6f25979de26e3bcafab2b27056b7bf4ab56b4c3b0"
+  },
+  "reviewedAt": "2026-09-20T16:51:11.133Z",
+  "license": "Hosted API product agreement; no third-party code incorporated",
+  "maintenance": "active_official_documentation_and_live_response",
+  "installMode": "none_native_fetch",
+  "outboundDomains": [
+    "api.typesafe.ai"
+  ],
+  "credentials": "server-api-key",
+  "writeSurface": [
+    "bounded billable model request",
+    "local execution accounting"
+  ],
+  "disabledPaths": [
+    "arbitrary endpoint",
+    "provider tools",
+    "business commit",
+    "browser access",
+    "purchase"
+  ],
+  "staticReview": "passed",
+  "isolatedSmoke": "passed_read_only_isolated",
+  "adoption": "blocked",
+  "adoptionScope": "Local integration and evaluation authorized; production automatic rollout remains gated",
+  "sources": [
+    "https://docs.typesafe.ai/models",
+    "https://docs.typesafe.ai/api",
+    "https://docs.typesafe.ai/confidence",
+    "https://typesafe.ai/legal/terms"
+  ],
+  "evidence": "chinese-live-evaluation.json",
+  "remaining": [
+    "independent Chinese calibration",
+    "production account product agreement and SLA",
+    "real complete-planning comparison",
+    "commercial capacity acceptance"
+  ]
+}

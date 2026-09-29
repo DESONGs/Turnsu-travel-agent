@@ -1,0 +1,51 @@
+{
+  "recordedAt": "2026-09-16T12:47:03.443009+00:00",
+  "scope": "Pi upgrade and internal native LinkCode adapter host; not production or capacity approval",
+  "node": "26.7.0",
+  "versions": {
+    "projectPi": "0.85.1",
+    "linkcode": "0.30.0",
+    "piSubagents": "0.46.0",
+    "dynamicWorkflows": "3.5.1",
+    "globalPi": "0.74.0",
+    "globalPiCompatible": false
+  },
+  "fullCheck": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "tests": 289,
+    "passed": 285,
+    "failed": 0,
+    "skipped": 4,
+    "skipReason": "PostgreSQL conditional integration checks",
+    "coreTypecheck": true,
+    "desktopTypecheck": true,
+    "webBuild": true,
+    "miniappContractCheck": true
+  },
+  "liveEvidence": {
+    "piConsumer": "pi-consumer-live.json",
+    "smallFanout": "small-fanout-live.json",
+    "nativeHostLive": "linkcode-native-host-live.json",
+    "nativeHostFixture": "linkcode-native-host-fixture.json",
+    "capturedProviderEvidenceRealChildren": "child-real-evidence-replay.json",
+    "fullConversationBlocked": "conversation-live-blocked.json"
+  },
+  "executionMode": "single_process",
+  "pending": [
+    "real full provider-to-confirmation golden path",
+    "Web UI actual operation; Mac locked at verification",
+    "PostgreSQL integration",
+    "durable turn ownership and recovery",
+    "multi-instance execution",
+    "global model and provider quotas",
+    "500 online users submitting together",
+    "500 simultaneously executing planning turns",
+    "fault injection and operational acceptance",
+    "commercial LinkCode licensing assessment"
+  ],
+  "noProductionDeployment": true,
+  "noPush": true,
+  "globalPiAndNodeUnchanged": true,
+  "capacityClaim": "not_validated"
+}

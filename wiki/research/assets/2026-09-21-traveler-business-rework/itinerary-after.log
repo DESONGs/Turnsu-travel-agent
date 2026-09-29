@@ -1,0 +1,34 @@
+(node:68255) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a traveler cannot adopt a plan exceeding the saved budget even when every route is feasible (60.476125ms)
+✔ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (24.327542ms)
+✔ adoption rechecks global constraints instead of trusting a cached canConfirm flag (13.03625ms)
+✔ an unavailable route service preserves a non-adoptable draft which can be checked after restoration (28.39875ms)
+✔ cancelling a planning request discards even a late successful route response (12.921333ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (38.713125ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (27.832834ms)
+✔ a complete day spanning lunch must not silently omit the meal (8.132542ms)
+✔ a two-day request cannot pass by submitting one day or a hotel-only second day (30.824417ms)
+✔ an over-budget draft remains reviewable and directs a same-budget candidate repair (16.089125ms)
+✔ targeted research can replace an expensive hotel in the same run without raising the budget (37.760375ms)
+✔ full planning respects a business trip without attractions (11.776583ms)
+✔ a multi-day itinerary keeps every returned route through checking, adoption and storage (28.481292ms)
+✔ a week-long plan accepted by the planning contract is not rejected by a smaller display contract (49.102167ms)
+✔ an earlier visit's route cannot conceal missing evidence for later visits (15.685375ms)
+✔ lunch and dinner at one restaurant are separate visits, not a duplicate stop (12.175667ms)
+✔ compact start-time and duration plans still require dinner for an overnight stay (11.197292ms)
+✔ a complete itinerary adopts two restaurants and charges each actual meal once (24.943125ms)
+✔ local route fares are included in the same hard trip budget (11.346625ms)
+✔ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (41.806292ms)
+﹣ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (0.091458ms) # SKIP
+✔ a second failed repair stops without a third route request (24.8395ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (16.79325ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (30.834625ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 1055.596083

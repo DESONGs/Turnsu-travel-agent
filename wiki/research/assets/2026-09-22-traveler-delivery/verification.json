@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-09-21T16:39:51.271Z",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "06f58f816ca975798e8b7f536b6e3bb1fe87d4dff64be980289483f388c695e0",
+    "travel-agent-pi-package/src/host/travel-planning-delivery.ts": "0095281bbf6b289052323fe29270d4ad10f81ef20179d4f21957bb0715890f8d",
+    "tests/travel-planning-delivery.test.mjs": "80b01fe1152474fe2b00272669aa73870c80763bf6fdeac408a2c62aaebf7462",
+    "tests/traveler-acceptance-regression.test.mjs": "7321b95cadcb0c86cfb82106872734da4dfbcc3abc13894dc0a194159b8a6bcb",
+    "scripts/evaluate-traveler-delivery.mjs": "2f7353a243995af26ef002b01518ff4f15054efa8641a02dbef024b11456a3e4"
+  },
+  "focused": {
+    "passed": 39,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "build": "passed_with_existing_chunk_warning",
+  "fullCheck": {
+    "status": "not_passed",
+    "passed": 350,
+    "failed": 20,
+    "skipped": 13,
+    "reason": "HTTP listen EPERM; ran before final direct-route-copy adjustment, subsequently covered by focused checks"
+  },
+  "liveParent": {
+    "status": "blocked",
+    "cases": [
+      "B03",
+      "B04"
+    ],
+    "modelReplyAvailable": false,
+    "networkProbe": {
+      "reachable": false,
+      "causeCode": "EPERM"
+    }
+  },
+  "realAmap": {
+    "status": "blocked",
+    "reason": "AMAP_API_KEY_not_configured"
+  },
+  "languageAcceptance": "not_verified",
+  "productionAcceptance": "not_verified"
+}

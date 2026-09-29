@@ -1,6 +1,24 @@
 # 跨端交付、数据与登录
 
+## 2026-09-22 持续规划视图（待实现）
+
+各端按 [14](./14-continuous-planning-business-model.md) 共用已采用版/工作草案、核验状态和执行进度；模型输入与用户视图按 [15](./15-model-context-and-handoff.md) 取自同一业务版本。预览过期或任务失败不能清空计划，候选默认时段不能冒充已确认日程，工具结束不能显示为核验通过。必要问题继续使用稳定 answerTo，回答保存后续接原事项。本文下方前序修复记录只代表其当时已测试路径；本轮新增验收见[交接](../research/2026-09-22-continuous-planning-redesign-handoff.md)。
+
 ## 一个内核，六个入口
+
+### 自动接续与单问题协议（2026-09-21）
+
+Web/桌面共用客户端，微信/支付宝源码均使用既有 `POST /api/conversations/:id/runs`。回答可附 `answerTo: { runId, questionId, optionId? }`；选项用稳定 ID，自由回答继续使用 `text`。服务端解析选项文字并校验归属、依赖版本和消费状态；相同答案重复点击返回同一任务，冲突答案或陈旧答案被拒绝。原规划目标随回答继续传递。
+
+`queued` 可带 `waitReason`、`nextEligibleAt` 与固定 `expiresAt`，前端保持方案并自动跟随；`awaiting_input` 呈现一个带影响说明的问题。问题状态为 `open / answered / stale`；等待期间客户端每 5 秒核对跨端状态，后台页面停止额外轮询。其他端修改事实后撤下失效选项，服务端仍是最终校验点。断线从已有 run 与事件游标恢复，不重复提交。
+
+新问题直接展开助手，问题整体 `impact` 和可选 `options[].impact` 分别说明为何需要回答及选项影响；重复轮询不会重新打开用户主动收起的助手。可采用草案显示“查看这版行程”。采用和撤回继续使用原入口。图片仅属于当前请求，发生无法保留图片的中断时需重新附图。小程序合同检查不代表微信/支付宝真机或生产 OAuth 验收。
+
+用户验收修复：刷新后恢复的待回答问题同样自动展开；Guest 初始化与正式编辑页使用同一个语言上下文。手机端回答后可查看草案、明确采用并刷新保留；“完整行程”打开已确认站序与路线，不再跳回候选比较。条件性草案在核验摘要中列出未知项；预算或硬条件失败不会显示采用成功。浏览器与 PostgreSQL 的证据见[复测报告](../research/2026-09-21-traveler-acceptance-fixes.md)，真实地图、设备及生产身份验收保持独立。
+
+业务返工：Web／共用 Web 的桌面不再只渲染 `trial_ready`，不可采用的已排草案也能查看并从持久预览恢复；界面显示尚待解决的问题，只有最新核验允许且采用参数有效时才能提交。失败草案不挤掉已采用行程。共享 API 向各端提供同一份结果；本轮具体浏览器证据与未实测端见[返工报告](../research/2026-09-21-traveler-business-rework.md)，不把手机视口当作小程序或原生真机验收。
+
+调整草案的路线差异为零是“耗时、步行、换乘和估算费用与当前行程一致”，不能显示成等待核验；没有路线数据时才保持待核验。已采用站序在新同行人要求后仍可查看，日期未取得时显示未知，不渲染 `undefined`。完整草案采用复用服务端整体提交结果，不在客户端逐领域取消旧选择。
 
 | 入口 | 工程 | 共享能力 | 当前可验证边界 |
 | --- | --- | --- | --- |
@@ -52,7 +70,7 @@ Web 首次价值不要求登录。`POST /api/auth/guest-session` 签发随机 Gu
 
 需要保存、跨端、分享或行中恢复时，Web 以 Google 为海外主入口，另提供微信扫码、支付宝扫码和 Apple 登录。`/api/auth/providers` 只返回各渠道是否可用；`/api/auth/:provider/start` 生成带短期签名 state 的官方授权地址，回调校验 OAuth state、OIDC 身份令牌或支付宝 RSA2 响应签名后，才签发本站会话。微信和支付宝小程序继续使用 `/api/auth/platform-exchange`，并向平台交换一次性授权码。
 
-Electron 不复制 OAuth SDK：它在系统浏览器打开同一 `/api/auth/:provider/start?client=desktop`，服务端回调到固定 `zhuanshu-travel://auth/callback`，只携带一次性 code；`POST /api/auth/desktop-exchange` 消费一次后签发 Bearer。桌面 Guest 同样先获得价值，登录时由服务端归并 Guest Trip/Conversation。Bearer 仅存可信 renderer 内存，不写 URL、localStorage、Prompt 或日志。
+Electron 不复制 OAuth SDK：它在系统浏览器打开同一 `/api/auth/:provider/start?client=desktop`，服务端回调到固定 `zhuanshu-travel://auth/callback`，只携带一次性 code；`POST /api/auth/desktop-exchange` 消费一次后签发 Bearer。桌面 Guest 同样先获得价值，登录时由服务端归并 Guest Trip/Conversation。Bearer 在可信 renderer 中仅存内存，主进程通过 Electron safeStorage 使用系统密钥库加密保存，并按 API Origin 隔离；不写 URL、localStorage、Prompt 或日志。系统安全存储不可用时仅维持本次应用会话，并在账号页提示。服务端账号与会话使用 PostgreSQL（本地开发为 SQLite），退出和一次性 code 的消费不会因重启失效。
 
 运行 `npm run auth:setup` 可生成本站会话/state 密钥并补齐本地 ENV 模板，`npm run auth:check` 会分别检查 Google Web、微信 Web、微信小程序、支付宝 Web、支付宝小程序与 Apple Web 的字段、回调、私钥文件权限和 live smoke。支付宝 Web 与小程序允许使用独立 AppID 和密钥；微信网站应用与小程序应绑定到相同开放平台主体，避免同一用户因缺少 UnionID 被拆成两个账号。平台控制台、生产部署和真实验收步骤统一见[部署与配置指南](./09-account-configuration-guide.md)。
 

@@ -1,0 +1,45 @@
+(node:81111) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ complete planning continues from ordinary Chinese requests while preserving negation (1.109834ms)
+✔ confidence cannot authorize a locked change or turn missing evidence into a fact (0.12175ms)
+✔ provider evidence gaps stay with Parent while personal facts and real budget tradeoffs can be asked (0.097666ms)
+✔ short interactions and continuations share slots 2:1, borrow idle capacity, and age fairly (7.864083ms)
+✔ stable questions reject stale facts and invalid options; text remains an answer rather than authorization (0.7905ms)
+✔ ranking preserves every candidate and retains current order for unresolved or tied judgments (0.310792ms)
+✔ planning context retains locked and named choices beyond its ordinary budget and keeps domain coverage (0.269792ms)
+(node:81112) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a retried command runs one native Parent; its tool receipts and checkpoint survive repository reopening (126.200458ms)
+✔ two workers serialize one conversation and continue with native history plus current travel facts (168.968834ms)
+✔ a cancellation blocks a late tool mutation at the persistence boundary (7.519792ms)
+✔ negative confirmation language preserves planning tools and cannot trigger a confirmation (109.63075ms)
+✔ a rejected save tool cannot be reported as a completed run even when model prose claims success (109.194958ms)
+✔ a saved question releases its worker and the next turn sees the question and answer (219.221417ms)
+✔ image admission is bounded, retries remain idempotent, and raw image bytes never enter durable input or native history (127.54275ms)
+✔ lease expiration exposes an interruption and fences the old worker instead of replaying an uncertain tool (2.31325ms)
+✔ API-only mode preserves ordinary queue waits and expires only the saved total deadline (1.306584ms)
+✔ question option IDs are consumed once across clients and a stale card cannot update new facts (333.642709ms)
+✔ Parent capacity wait releases the Worker and resumes native history without repeating a saved mutation (1167.076959ms)
+✔ native checkpoints omit images and thinking and never restore half a tool transaction (1.186125ms)
+✔ native compaction preserves a recoverable summary and its fact revision, then resumes (12.959666ms)
+✔ a new request carries the travel objective without replaying large historical tool reports (7.138334ms)
+✔ a capacity wait during context handoff does not consume the new user request (36.216292ms)
+(node:81113) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (75.647958ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (74.289083ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (65.215292ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (6.638042ms)
+✔ a missing departure date is resolved before asking about arrival preferences (10.12475ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (9.128125ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (77.669917ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (96.964375ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (106.772083ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4299.856292

@@ -1,0 +1,151 @@
+- main:
+  - link:
+    - /url: /
+    - generic: Travel Agent.
+  - button:
+    - generic: 我的旅行
+  - button:
+    - generic: 旅行助手
+    - generic: ⌘ K
+  - button:
+    - text: 中
+  - button:
+    - generic: 登录
+  - paragraph: 我的下一段旅程
+  - heading [level=1]:
+    - text: 上海
+    - generic: 旅行计划
+  - button:
+    - text: 10/15
+  - button:
+    - text: 1 人同行
+  - button:
+    - text: ¥3,000
+  - strong: 好旅行，从一个好选择开始。
+  - paragraph: 先挑喜欢的，再看怎么串起来。
+  - button:
+    - text: 打开行程路线
+  - navigation:
+    - button:
+      - text: 发现与比较
+    - button:
+      - text: 行程与路线
+    - button:
+      - text: 旅行手账
+  - region:
+    - tablist:
+      - tab:
+        - generic: 抵达交通
+        - generic: —
+      - tab [selected]:
+        - generic: 住宿选择
+        - generic: "3"
+      - tab:
+        - generic: 餐饮安排
+        - generic: —
+      - tab:
+        - generic: 游玩体验
+        - generic: —
+    - tabpanel:
+      - heading [level=2]: 住在哪里，决定怎么玩。
+      - paragraph: 决定每天往返距离和休息质量 · 可以先试排，确认后才加入行程
+      - button:
+        - text: 调整偏好
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 0
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 室内环境安静，有本地文化介绍
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 1
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 户外活动，白天环境热闹
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - article:
+        - generic: 暂无地点图片
+        - generic: 住
+        - button:
+          - heading [level=3]: stay option 2
+        - strong: ≈¥100
+        - generic: 参考 · 每间每晚
+        - paragraph: 户外活动，白天环境热闹
+        - generic: 上海
+        - text: 资料依据与待核验项
+        - button: 详情与记录
+        - button:
+          - text: 加入试排
+      - paragraph:
+        - text: 价格与可用性以来源的最新核验为准，不代表已预订。 · Explicit decision fixture
+    - text: 旅行准备与资料状态
+  - dialog "旅行助手":
+    - heading "和旅行助手对话" [level=2]
+    - button "关闭旅行助手":
+      - generic: 关闭
+    - log:
+      - article:
+        - generic: 你
+        - generic: 2026年10月15日我一个人在上海住一晚，整趟预算3000元。现在只比较安静的酒店候选，先不要餐厅、景点或完整行程，也不要确认。
+        - time: 你的需求 · 00:56
+      - article:
+        - generic: 本轮只做了住宿比较，其他域没动：餐厅、景点、完整行程都没有涉及，也没有确认或预订任何东西。
+        - generic: 目前拿到 3 个住宿候选，价格都是每人每晚 100 元参考价（三者同价，无法用价格区分；这是参考价，不是实际报价，房态未核验）：
+        - generic: "- stay option 0：室内环境安静，有本地文化介绍。与你要的“安静”相符。"
+        - generic: "- stay option 1：户外活动为主，白天环境热闹。与安静偏好冲突。"
+        - generic: "- stay option 2：同样偏户外、白天热闹。与安静偏好冲突。"
+        - generic: 两个重要保留：
+        - generic: 一是这批候选来自测试资料，不是真实可订房源的查询结果，所以它只能当作比较框架，不能拿去选酒店或据此下单。
+        - generic: 二是候选没有给出可核验的名称、片区或地址，所以“离哪近、通勤要多久、实际隔音如何”都无法判断；加上 2026年10月15日的天气目前查不到，户外动线、换乘缓冲和住宿衔接也还没经过天气核验。因此 stay option 0 只是这版暂定候选里唯一方向对得上的一个，不是已经核验过的安静酒店。
+        - generic: 要把比较推进到能真正做决定的程度，需要一批真实房源数据；到那时你打算住哪个片区、是否要贴近抵达点，会直接决定候选范围和安静程度，这个信息会同时影响住宿与后续动线。
+        - button "收起说明" [active]:
+          - text: 收起说明
+        - time: Travel Agent · 00:57
+      - region "本轮处理记录":
+        - strong: 本轮处理情况
+        - generic: 只显示实际完成或明确失败的步骤
+        - list:
+          - strong: 已记住旅行要求
+          - generic: 已完成
+          - strong: 已核验吃住行玩候选，可以在方案中比较
+          - generic: 已完成
+    - button "回到最新消息"
+    - generic "快捷调整旅行要求":
+      - button "补充出发地"
+      - button "暂不安排城际"
+      - button "优先少换乘"
+    - region "规划进度":
+      - status:
+        - strong: 本轮已完成
+      - list:
+        - generic: 记住旅行要求
+        - generic: 已结束
+        - generic: 核验资料与查找候选
+        - generic: 已结束
+    - generic: 说说这趟旅行
+    - generic: Enter 发送，Shift + Enter 换行
+    - textbox "说说这趟旅行":
+      - /placeholder: 例如：和父母去大理 5 天，轻松一点，住得方便，想吃本地菜。
+    - button "Choose File"
+    - button "上传旅行截图或图片":
+      - generic: 图片
+    - button "粘贴旅行分享链接":
+      - generic: 链接
+    - button "开始语音输入":
+    - generic: 由你确认后再发送
+    - button "发送旅行需求" [disabled]:
+      - generic: 开始规划

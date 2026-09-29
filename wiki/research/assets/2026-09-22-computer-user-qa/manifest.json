@@ -1,0 +1,78 @@
+{
+  "frozenAt": "2026-09-21T16:45:50.248Z",
+  "node": "v26.7.0",
+  "scope": "Browser-first Computer Use; real Parent/Jev/HTTP/PostgreSQL; C08 configured providers, other travel facts explicitly fictional reference provider; no production account or purchase",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "06f58f816ca975798e8b7f536b6e3bb1fe87d4dff64be980289483f388c695e0",
+    "src/agent/travel-execution-service.mjs": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3",
+    "src/api/travel-service.mjs": "5b1ebf299266852c5e356ae65f2d53a578975ddf2907abc08d29121ff528ec7e",
+    "src/web/travel-app.jsx": "a23393b8011c7db7b10f731c02ca71cb5f15efd16a19fa325cef8b264c6fe2e9",
+    "travel-agent-pi-package/src/host/travel-planning-delivery.ts": "0095281bbf6b289052323fe29270d4ad10f81ef20179d4f21957bb0715890f8d",
+    "travel-agent-pi-package/src/core/trip-feasibility.ts": "b8b5d5765f14c5c75521197cd9cecf6d995ff31981758e073ef85f7d12b1e6bc",
+    "travel-agent-pi-package/src/core/itinerary-proposal.ts": "8861e068fa19cab9514b421490e4b4fec9ffc932727f9bf0cd2f5b4b0484a27c",
+    "scripts/test-traveler-scenarios.mjs": "1e342f34eed926a7ae18f153ac46bf8c9d7025b5a5770b68b9eefeb98ebb68ee",
+    "dist/index.html": "326443c5b7609bff5f54edf1c7cf6d2d5f19da0a411a0fe303c59628e0cb040c"
+  },
+  "cases": [
+    {
+      "id": "C01",
+      "title": "初次使用模糊需求",
+      "input": "想出去玩几天，帮我安排一下。",
+      "expected": "只问一个能回答的必要问题，不编造目的地与时间；刷新保留问题"
+    },
+    {
+      "id": "C02",
+      "title": "手机补日期并自动接续",
+      "input": "从杭州去上海玩一天，一个人，预算6000元，晚上在上海住一晚，第二天自行返程。帮我做完整行程，但出发日期还没定。",
+      "answer": "2026年10月15日出发，其他要求不变，继续把当天完整行程排好，不要确认。",
+      "expected": "追问日期，回答后保留完整目标自动排草案，核验与采用操作可达"
+    },
+    {
+      "id": "C03",
+      "title": "采用、刷新、只改预算",
+      "input": "把总预算改成3000元，已经采用的安排全部保留，只保存预算调整，不要重新排整个行程。",
+      "expected": "采用确实持久化；预算变为3000，原行程和费用不丢失"
+    },
+    {
+      "id": "C04",
+      "title": "已采用后局部换酒店晚餐",
+      "input": "从已经查到的候选里，把酒店换成另一家、晚餐换成另一家餐厅；午餐、高铁和其他游玩安排保持原样。预算还是3000，不要重新研究不受影响的内容。请先做完整调整草案，不要替我采用。",
+      "expected": "仅替换指定地点；完整对照草案，解释实际变化，无内部控制术语"
+    },
+    {
+      "id": "C05",
+      "title": "补充硬性无障碍条件",
+      "input": "我补充一个重要条件：我使用轮椅，全程无台阶是硬要求，可以打车。请针对这份已采用行程补查无障碍证据，并生成相应的完整调整草案；保留现有安排作对照，不要替我采用，也不要放宽条件。",
+      "expected": "自动查证；未知不能变为已核实，不让用户替代供应方验证；保留旧行程，不提供违规采用"
+    },
+    {
+      "id": "C06",
+      "title": "只查酒店",
+      "input": "2026年10月15日我一个人在上海住一晚，整趟预算3000元。现在只比较安静的酒店候选，先不要餐厅、景点或完整行程，也不要确认。",
+      "expected": "只出现住宿候选，无整趟试排或强制确认；安静程度有依据或说明未知"
+    },
+    {
+      "id": "C07",
+      "title": "严格预算冲突后回答",
+      "input": "2026年10月15日我从杭州到上海玩一天，总预算只有100元，必须包含高铁、当天吃饭、一个收费景点和一晚酒店。请安排完整行程，预算不能增加，也不能默默删掉要求。",
+      "expected": "先比较可用资料，再说明真实冲突；只给必要取舍；回答后自动继续，不产生超预算可采用草案"
+    },
+    {
+      "id": "C08",
+      "title": "真实数据源不可用",
+      "input": "2026年10月15日我和一位家人共2人从杭州到上海玩一天，预算6000元，晚上住一晚，第二天自行返回。请查询真实候选并排完整行程，不要使用示例景点或虚构路线。",
+      "expected": "展示真实来源和缺口，不用夹具或虚构候选冒充可用结果；保存要求并给出合理恢复"
+    },
+    {
+      "id": "C09",
+      "title": "生成中取消",
+      "input": "2026年10月15日至16日我一个人从杭州去上海两天，预算6000元，请生成完整行程。",
+      "expected": "停止操作可达，取消后不追加迟到草案，刷新状态一致"
+    }
+  ],
+  "harnessRestart": {
+    "at": "2026-09-21T16:48:59.261Z",
+    "reason": "QA-only random port Origin registration; product unchanged",
+    "harnessSha256": "151c10ad0230748c6bbdeb14c2cb1bba9770925984acad65c137128b6a438fa1"
+  }
+}

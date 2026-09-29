@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "traveler-manual-adjudication-v1",
+  "reviewedAt": "2026-09-20T18:10:59.705Z",
+  "datasetHash": "fc0cab034b0b224e1cbbfa29f40167b504a2c4f381bf4e7f17671f1d4ecb510d",
+  "criteria": "Frozen user scenarios plus visible goal completion; automated collection kept unchanged. This is not a production acceptance or load-test verdict.",
+  "counts": {
+    "passed": 5,
+    "partial": 3,
+    "failed": 7
+  },
+  "rows": [
+    {
+      "id": "T01",
+      "status": "failed",
+      "reason": "单个问题卡片实际包含目的地、日期、人数三个决策。"
+    },
+    {
+      "id": "T02",
+      "status": "passed",
+      "reason": "口语纠正按顺序持久化，没有超出只保存的范围。"
+    },
+    {
+      "id": "T03",
+      "status": "failed",
+      "reason": "住宿限定被扩成四域，回复与实际研究范围不一致。"
+    },
+    {
+      "id": "T04",
+      "status": "partial",
+      "reason": "两天试排、路线核验和未擅自采用通过；首日午餐等仍缺，候选重复使用，完整性不足。"
+    },
+    {
+      "id": "T05",
+      "status": "failed",
+      "reason": "回答去重和接续通过，但缺日期时优先问到达方式，两轮约232秒。"
+    },
+    {
+      "id": "T06",
+      "status": "failed",
+      "reason": "硬性无台阶证据未核验，仍可采用并写入4项。"
+    },
+    {
+      "id": "T07",
+      "status": "failed",
+      "reason": "100元预算下500元估算仍可采用并写入4项。"
+    },
+    {
+      "id": "T08",
+      "status": "failed",
+      "reason": "真实Provider路径未伪造成功，但最终通用失败语没有具体恢复办法。"
+    },
+    {
+      "id": "T09",
+      "status": "passed",
+      "reason": "跨API恢复、旧问题失效、409拒绝和新预算保留均通过；日期问题断言不是冻结预期。"
+    },
+    {
+      "id": "T10",
+      "status": "passed",
+      "reason": "模型执行中取消、资源释放、观察窗口无迟到写入。"
+    },
+    {
+      "id": "T11",
+      "status": "passed",
+      "reason": "另一个游客访问计划、运行和事件均为403。"
+    },
+    {
+      "id": "T12",
+      "status": "partial",
+      "reason": "采用持久化、幂等和保留已选通过；后续文字错误宣称没有确认或写入。"
+    },
+    {
+      "id": "T13",
+      "status": "partial",
+      "reason": "免登录、问题恢复、回答触发接续通过；待答问题隐藏、语言切换体验有缺口。"
+    },
+    {
+      "id": "T14",
+      "status": "failed",
+      "reason": "回答到达方式后草案消失，刷新仍空，无法执行采用后刷新。"
+    },
+    {
+      "id": "T15",
+      "status": "passed",
+      "reason": "真实延后在同一任务接续、完成回执不重复；Worker释放和重启由受控测试验证。"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+Browser tab: 4, Title: "Travel Agent", URL: "http://127.0.0.1:18903/?lang=zh-CN".
+1 AXWebArea Travel Agent, URL: 127.0.0.1:18903/?lang=zh-CN
+	2 container
+		3 link Description: Travel Agent, Value: 127.0.0.1:18903/
+		4 button
+			5 image
+		6 button Switch to English
+			7 image
+			10 text 中
+		8 button 登录保存旅行
+			9 image
+		11 container trip-plan-canvas
+			12 container
+				13 text 我的下一段旅程
+				14 heading 上海 2 日, Value: 1
+					15 text 上海 2 日
+				16 button 10/15–10/16
+					17 image
+					18 text 10/15–10/16
+					19 image
+				20 button 1 人同行
+					21 image
+					22 text 1 人同行
+					23 image
+				24 button ¥6,000
+					25 image
+					26 text ¥6,000
+					27 image
+			28 container 旅行视图
+				29 button 发现与比较
+				30 button 行程与路线
+				31 button 旅行手账
+			137 container
+				138 heading 你的行程，放到路上看。, Value: 2
+					139 text 你的行程，放到路上看。
+				140 text 这里只显示已经确认的安排。
+				141 button 继续挑选
+					142 text 继续挑选
+					143 image
+				144 button 返回现在与下一步
+				145 container 已确认的完整行程
+					146 container
+						147 container 机场、住宿、游玩与餐饮的多点路线
+							148 container
+								149 image
+								150 text 这些候选暂时没有可展示的地图 仍可查看地址与高德导航；取得坐标后会自动出现在这里。
+							151 container
+								152 text 地图待补 地图与路线均只展示具名来源返回的资料。
+						153 tab group 选择地图日期
+							154 tab (selected, settable, boolean) 第 1 天, Value: 1
+							155 tab (selectable, settable, boolean) 第 2 天, Value: 0
+							156 tab (selectable, settable, boolean) 全程, Value: 0
+					157 container
+						158 button (expanded) 6 段移动 · 120 分钟 · 0 m · ¥150, Secondary Actions: Collapse
+							159 text 6
+							160 text 段移动
+							161 text  ·
+							162 text 120 分钟
+							163 text  ·
+							164 text 0 m
+							165 text  ·
+							166 text ¥150
+							167 image
+						168 container
+							169 button (collapsed) Secondary Actions: Expand
+								170 image
+								171 image
+							172 container
+								173 button
+									174 image
+							175 content list
+								176 container
+									177 button
+										178 image
+									179 button
+										180 image
+									181 checkbox 1
+									182 checkbox 1
+								183 container
+									184 button
+										185 image
+									186 button
+										187 image
+									188 checkbox 0
+									189 checkbox 1
+								190 container
+									191 button
+										192 image
+									193 button
+										194 image
+									195 checkbox 0
+									196 checkbox 1
+								197 container
+									198 button
+										199 image
+									200 button
+										201 image
+									202 checkbox 0
+									203 checkbox 1
+								204 container
+									205 button
+										206 image
+									207 button
+										208 image
+									209 checkbox 0
+									210 checkbox 1
+								211 container
+									212 button
+										213 image
+									214 button
+										215 image
+									216 checkbox 0
+									217 checkbox 1
+								218 container
+									219 button
+										220 image
+									221 button
+										222 image
+							223 button
+								224 image
+								225 image
+		124 container 旅行导航
+			125 button 发现
+				126 image
+				127 text 发现
+			128 button 行程
+				129 image
+				130 text 行程
+			131 button 手账
+				132 image
+				133 text 手账
+			134 button 助手
+				135 image
+				136 text 助手
+
+The focused UI element is 158 button (expanded) 6 段移动 · 120 分钟 · 0 m · ¥150, Secondary Actions: Collapse

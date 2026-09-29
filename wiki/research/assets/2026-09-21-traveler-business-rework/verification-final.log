@@ -1,0 +1,563 @@
+
+> travel-agent-v1@0.1.0 check
+> npm run typecheck && npm run desktop:typecheck && npm test && npm run web:build && npm run miniapp:check
+
+
+> travel-agent-v1@0.1.0 typecheck
+> npm run library:typecheck
+
+
+> travel-agent-v1@0.1.0 library:typecheck
+> npm run typecheck --workspace zhuanshu-travel-agent
+
+
+> zhuanshu-travel-agent@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> travel-agent-v1@0.1.0 desktop:typecheck
+> tsc -p apps/desktop/tsconfig.json --noEmit
+
+
+> travel-agent-v1@0.1.0 test
+> node --import tsx --test travel-agent-pi-package/tests/*.test.mjs tests/*.test.mjs
+
+(node:7457) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ AMap security proxy uses fixed official upstreams and replaces client jscode (0.669334ms)
+✔ renderer status exposes only the browser key and never the security code (1.063333ms)
+(node:7458) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ AMap checks the last visit of a multi-day itinerary as well as the first eight routes (47.924875ms)
+✔ AMap mobility turns selected places into bounded walking, transit and taxi alternatives without claiming real-time arrival (15.016292ms)
+✔ AMap transit preserves railway and segment geometry without synthesizing endpoint lines (7.287459ms)
+✔ AMap mobility rejects an otherwise short route with mapped stairs for a traveler who must avoid them (4.148833ms)
+✔ AMap mobility connects an intercity arrival airport to the selected hotel (1.513709ms)
+✔ AMap taxi rationale audits walking and transfer thresholds without treating unknown accessibility as stairs (1.144084ms)
+✔ AMap mobility keeps account gates distinct from QPS and returns an honest unavailable state (0.248625ms)
+✔ mobility contract rejects arbitrary navigation URLs (0.7145ms)
+(node:7459) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ AMap requests add a deterministic signature only when a Web Service private key is configured (9.839709ms)
+✔ the application provider remains disabled until the complete AMap live smoke passes (0.193375ms)
+✔ AMap provider runs one bounded four-domain pass and never includes its key in normalized evidence (6.757125ms)
+✔ AMap uses named places and target areas instead of repeating the same broad request (4.607583ms)
+✔ AMap keeps successful named-place results when a sibling query fails (1.292667ms)
+✔ AMap classifies CUQPS limit responses as retryable rate limiting (0.388083ms)
+✔ AMap retries one transient CUQPS response and then returns verified candidates (0.814209ms)
+✔ AMap distinguishes account-level 10044 from retryable QPS limiting (2.603875ms)
+✔ AMap falls back to POI v3 only when the v5 interface permission is unavailable (4.967333ms)
+✔ AMap does not multiply requests by downgrading an account-wide 10044 gate (1.026958ms)
+✔ AMap reuses a fresh forecast for same-trip local refinements (1.764875ms)
+✔ AMap surfaces JSON errors returned by the static map endpoint (0.3115ms)
+✔ provider-backed research stages selectable linked candidates and promotes evidence only after acceptance (190.991542ms)
+✔ verified forecast is persisted before choice and shapes play candidates across the proposal (13.36175ms)
+(node:7460) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ auth provider summary exposes usable login choices without exposing credentials (15.894875ms)
+✔ Google authorization uses signed state and verifies the returned identity token (122.147375ms)
+✔ WeChat Website QR login uses signed state and exchanges the callback code server-side (0.598875ms)
+✔ WeChat Mini Program authorization code is exchanged server-side (0.394167ms)
+✔ Alipay Web and Mini Program codes use RSA2 request signing and verified provider responses (117.184542ms)
+✔ signed production sessions survive store recreation and reject tampering or logout reuse (0.545666ms)
+✔ all Mini Program exchanges reject a weak session secret before contacting a provider (0.192541ms)
+✔ OIDC rejects signed tokens with missing or nonnumeric lifetime claims (106.038167ms)
+✔ Apple form_post rejoins the shared Web login with its guest session and verified OIDC identity (161.353959ms)
+✔ desktop OAuth codes are short-lived and consumed exactly once (0.835958ms)
+✔ a failed guest claim preserves the old session; a successful Mini Program retry rotates it (15.991709ms)
+✔ HTTP auth routes expose providers, redirect to login, issue Web cookies and return Mini Program bearer sessions (189.386459ms)
+(node:7461) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ auth setup creates private independent app secrets without printing their values and remains idempotent (132.705709ms)
+✔ auth configuration check reports exact callbacks only when every channel has passed live smoke (445.905583ms)
+(node:7462) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ capability registry keeps static requirements separate from current Provider status (7.493958ms)
+(node:7463) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ desktop evidence view reuses the fixed social host policy and blocks arbitrary navigation (0.50175ms)
+✔ desktop OAuth opens only a fixed provider path and returns a one-time code shape (0.716208ms)
+✔ trusted renderer and system browser destinations are explicit allowlists (0.111ms)
+(node:7467) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ desktop vault persists encrypted sessions across instances, separates origins, and clears after queued saves (12.02775ms)
+(node:7468) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ destination camera playback schedules beats and clears pending timers on stop (1.23225ms)
+✔ reduced motion applies one still camera without scheduling animation (0.132042ms)
+(node:7471) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ DestinationExperienceScene is a read-only projection from existing node, media, evidence and mobility (2.2725ms)
+✔ DestinationExperienceScene reports missing coordinates and does not create fake photos or route facts (0.736ms)
+✔ destination render policy degrades honestly for motion, data saver, missing coordinates and AMap failure (0.260208ms)
+✔ illustration themes follow available place clues without turning nearby landscapes into hotel facts (0.8395ms)
+✔ photo and fact hotspots refer only to accepted source material and keep the trial selection contract (0.229167ms)
+✔ sketch WebGL does not need coordinates or an AMap key; reduced motion preserves manual 3D controls (0.082334ms)
+(node:7472) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ six scene themes are real finite 3D meshes, within the small-world geometry budget (74.177125ms)
+✔ sketch strokes are deterministic and all geometries, materials and the shared texture dispose once (9.572916ms)
+✔ solid, ink and point views share the model geometry and release point resources (4.411042ms)
+✔ the render loop sleeps at rest, pauses when hidden and ignores late callbacks after disposal (0.183ms)
+✔ the user-triggered 7.2-second tour visits chapters and stops immediately on interruption or disposal (0.311792ms)
+(node:7474) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ node evidence builds a canonical cached presentation without changing TripState (82.969875ms)
+✔ translation creates a sidecar projection while retaining the original text and TripState (60.106083ms)
+✔ a public share link remains a source-only sidecar and never becomes a TripState fact (30.65ms)
+✔ public share adapter enforces SSRF and redirect boundaries before parsing visible HTML (21.989583ms)
+✔ expired evidence projections are removed instead of being treated as current (18.112542ms)
+(node:7475) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ FlyAI provider exposes only an allowlisted child-process environment and normalizes handoff links (11.015375ms)
+✔ FlyAI strips non-allowlisted media and handoff URLs (3.144625ms)
+✔ FlyAI uses the current flight question instead of silently defaulting to train (2.740375ms)
+✔ FlyAI compares flight and train when no intercity mode was specified (1.273125ms)
+(node:7476) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ HTTP API authenticates development sessions, enforces trip membership, and serves accepted transit details (316.007792ms)
+✔ HTTP conversation entrypoint preserves the user request but never fabricates an Agent reply without a configured model (157.507417ms)
+✔ conversation management soft-deletes and restores a conversation without deleting its linked trip (49.896375ms)
+✔ HTTP natural conversation keeps stay-only confirmation, TripState and route explanation consistent (519.657333ms)
+✔ HTTP API does not issue a development session when provider callbacks are not configured (8.922416ms)
+✔ default file repositories keep trips and conversations under the configured data root (20.092375ms)
+✔ HTTP API permits a local development Web origin but rejects an unknown origin (6.936792ms)
+✔ provider status exposes configuration readiness without exposing keys (6.971708ms)
+✔ visual evidence endpoint rejects unsupported media before any model request (9.432417ms)
+✔ conversation message HTTP contract forwards image and text into one Agent turn (272.060542ms)
+✔ guest travelers can plan before login and claim trips and conversations after authentication (49.087541ms)
+(node:7477) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a traveler cannot adopt a plan exceeding the saved budget even when every route is feasible (237.5685ms)
+✔ mandatory step-free travel is blocked by unknown route evidence even if the provider omits traveler flags (53.585917ms)
+✔ adoption rechecks global constraints instead of trusting a cached canConfirm flag (30.331375ms)
+✔ an unavailable route service preserves a non-adoptable draft which can be checked after restoration (65.147209ms)
+✔ cancelling a planning request discards even a late successful route response (51.405792ms)
+✔ a model plan becomes one reversible Trial and confirmation reuses it with selected route modes (82.430792ms)
+✔ a fixed conflict yields structured repair evidence and one repaired attempt succeeds (39.380042ms)
+✔ a complete day spanning lunch must not silently omit the meal (25.06175ms)
+✔ a two-day request cannot pass by submitting one day or a hotel-only second day (45.067208ms)
+✔ an over-budget draft remains reviewable and directs a same-budget candidate repair (24.613ms)
+✔ targeted research can replace an expensive hotel in the same run without raising the budget (54.174125ms)
+✔ full planning respects a business trip without attractions (19.015333ms)
+✔ a multi-day itinerary keeps every returned route through checking, adoption and storage (45.273584ms)
+✔ a week-long plan accepted by the planning contract is not rejected by a smaller display contract (82.315667ms)
+✔ an earlier visit's route cannot conceal missing evidence for later visits (23.490958ms)
+✔ lunch and dinner at one restaurant are separate visits, not a duplicate stop (24.335083ms)
+✔ compact start-time and duration plans still require dinner for an overnight stay (35.695917ms)
+✔ a complete itinerary adopts two restaurants and charges each actual meal once (58.740375ms)
+✔ local route fares are included in the same hard trip budget (22.063375ms)
+✔ adopting a researched multi-restaurant itinerary keeps only its selected evidence and retains alternatives (134.456125ms)
+✔ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (323.604209ms)
+✔ a second failed repair stops without a third route request (176.146834ms)
+✔ invalid repair references can be corrected without consuming the one business repair (63.787333ms)
+✔ a saved draft stays visible when later candidate evidence invalidates its preview (155.270833ms)
+✔ keeping the current plan discards only the itinerary Trial and preserves candidate choices (62.428541ms)
+✔ invalid nodes, replay, and a superseded late run cannot create competing Trials (49.930125ms)
+(node:7478) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ an acknowledged action stays delivered when its follow-up read fails (1.53525ms)
+✔ rejected writes are not acknowledged or refreshed (0.270458ms)
+✔ successful action synchronizes once and returns its receipt (0.081959ms)
+✔ Chinese IME confirmation is not interpreted as sending the trip request (0.061333ms)
+✔ composer retains explicit send and multiline keyboard behavior (0.147875ms)
+✔ a first draft can be cancelled before anything is confirmed (0.071458ms)
+✔ trying another candidate replaces only the UI choice, and remains reversible (0.213584ms)
+✔ missing route evidence never becomes a zero-minute trip (0.415125ms)
+✔ map footprint is compact only when both places and route endpoints lack valid points (0.123209ms)
+(node:7479) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ converts mainland GCJ-02 points for an OpenStreetMap display without changing the source state (1.677583ms)
+✔ preserves WGS-84 and out-of-mainland coordinates (0.112958ms)
+(node:7480) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ real stdio MCP server exposes and executes the Travel V1 business contract (3962.062333ms)
+(node:7481) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ wechat reconnects an accepted task without resending and preserves a draft written during the wait (6.508542ms)
+✔ wechat an uncertain submission reuses its idempotency key and cancellation does not resend (2.138708ms)
+✔ wechat only reviews on explicit request, and review never commits the trip (3.225333ms)
+✔ wechat failed review retains the choice and blocks confirmation (1.05975ms)
+✔ wechat redesigned native template has balanced elements and implemented event handlers (2.26075ms)
+✔ wechat does not mistake a noncommitted HTTP result for confirmation (0.736167ms)
+✔ wechat does not draw corrupt coordinates or connect across missing route points (0.824ms)
+✔ wechat cancels a first draft and clears the previous route preview (1.017292ms)
+✔ wechat failed send preserves newly typed text and offers the original draft (0.829416ms)
+✔ wechat sent message followed by a failed plan read is not offered for resend (1.03725ms)
+✔ wechat commit success followed by a read failure cannot trigger a duplicate confirmation (0.742417ms)
+✔ wechat blocks selection and confirmation during route recomputation (1.042209ms)
+✔ wechat preserves an unsent draft when history requests a new trip (0.911583ms)
+✔ alipay reconnects an accepted task without resending and preserves a draft written during the wait (2.851959ms)
+✔ alipay an uncertain submission reuses its idempotency key and cancellation does not resend (1.218375ms)
+✔ alipay only reviews on explicit request, and review never commits the trip (2.960625ms)
+✔ alipay failed review retains the choice and blocks confirmation (1.186667ms)
+✔ alipay redesigned native template has balanced elements and implemented event handlers (1.448084ms)
+✔ alipay does not mistake a noncommitted HTTP result for confirmation (0.836125ms)
+✔ alipay does not draw corrupt coordinates or connect across missing route points (0.831958ms)
+✔ alipay cancels a first draft and clears the previous route preview (1.059375ms)
+✔ alipay failed send preserves newly typed text and offers the original draft (0.698542ms)
+✔ alipay sent message followed by a failed plan read is not offered for resend (0.703375ms)
+✔ alipay commit success followed by a read failure cannot trigger a duplicate confirmation (2.223084ms)
+✔ alipay blocks selection and confirmation during route recomputation (0.96575ms)
+✔ alipay preserves an unsent draft when history requests a new trip (0.648875ms)
+✔ wechat opens a lightweight place preview and only stages selection locally (1.327875ms)
+✔ wechat projects a real current-day polyline and updates it only after a checked mode preview (1.067792ms)
+✔ alipay opens a lightweight place preview and only stages selection locally (1.124958ms)
+✔ alipay projects a real current-day polyline and updates it only after a checked mode preview (2.22475ms)
+✔ a blocked miniapp mode switch preserves the previous drawn route (4.281167ms)
+✔ wechat does not confirm a route preview while the displayed day has missing geometry (1.719125ms)
+✔ alipay does not confirm a route preview while the displayed day has missing geometry (1.798292ms)
+(node:7482) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ mobile navigation stays visible for responsive scaling without a text-entry focus (0.492875ms)
+✔ mobile navigation hides only while a real soft-keyboard-sized viewport occlusion is active (0.086083ms)
+✔ desktop navigation state is never treated as a mobile soft keyboard (0.058375ms)
+(node:7484) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Pi model routing derives from the current Web model resolver instead of static JSON (1.352291ms)
+(node:7485) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ conversation model selection resolves only the approved parent-agent models (0.564792ms)
+✔ new and legacy conversations normalize to DeepSeek V4 Flash and persist a valid choice (1.560125ms)
+(node:7493) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Open-Meteo fallback returns attributable date-covered weather without a key in local evaluation (3.721542ms)
+✔ Open-Meteo production route stays blocked without a commercial API key (0.098125ms)
+(node:7494) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ sqlite: sessions and revocations survive recreation and are shared by independent instances (24.26875ms)
+✔ sqlite: linking preserves one account, cannot steal identities, and keeps a usable login method (8.803792ms)
+﹣ postgres: sessions and revocations survive recreation and are shared by independent instances (0.113375ms) # SKIP
+﹣ postgres: linking preserves one account, cannot steal identities, and keeps a usable login method (0.0345ms) # SKIP
+✔ sqlite HTTP account: persistent login, profile, device revocation, binding and session-bound callback (95.499208ms)
+﹣ postgres HTTP account: persistent login, profile, device revocation, binding and session-bound callback (0.13125ms) # SKIP
+(node:7495) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only scenery and architecture may create a versioned, bounded local relief (1.608125ms)
+✔ the photograph produces an actual non-flat bounded mesh, with deterministic geometry and valid UVs (21.833334ms)
+✔ portrait and wide photos stay bounded; ink uses source colours without changing the original (20.327333ms)
+✔ ink keeps a smooth sky gradient instead of introducing hard posterization bands (0.93925ms)
+✔ Three.js geometry is finite and disposable; remote photos are not fetched by the renderer (9.43575ms)
+✔ the real journal consumer connects draft and saved-photo previews, and preserves explicit food exclusion (8.379584ms)
+(node:7496) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Pi host compatibility enables the verified 0.85.1 release only (0.641625ms)
+(node:7497) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Pi HTTP tools share API ownership and state, reject cross-trip access and require real confirmation (187.1585ms)
+✔ cancelling an HTTP research discards provider results before a proposal is persisted (34.992375ms)
+✔ host transport fails closed on missing auth, unsafe origins, redirects and oversized output (2.457333ms)
+(node:7498) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Pi loads the complete product tool surface from source without dist or raw-state commit tools (3573.2875ms)
+(node:7499) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a stale passed-smoke flag cannot make a missing credential appear available (0.946791ms)
+✔ provider status exposes active model choices without exposing endpoint credentials (0.483584ms)
+✔ provider status reports DeepSeek visual readiness independently from text-model smoke (0.137583ms)
+✔ Kimi Child fallback remains unavailable until its dedicated structured Skill smoke passes (0.1515ms)
+✔ user model choices prioritize DeepSeek V4 Flash, then Pro, then Kimi K3 (0.130208ms)
+✔ channel status is derived from the implemented auth contract without exposing legacy credentials (0.100542ms)
+✔ social worker status advances only through explicit audit, terms, account and isolated-smoke gates (0.840208ms)
+✔ configured login adapters remain pending until a real account smoke passes (0.21075ms)
+✔ login channel status promotes Web and Mini Program routes only after their own live smokes (0.2395ms)
+✔ inventory status distinguishes audited FlyAI trial access from production authorization (0.21475ms)
+✔ Tuniu MCP remains blocked until key and isolated smoke are both present (0.149084ms)
+(node:7500) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ research criteria preserve target areas, named places, arrival anchor and traveler constraints (38.9495ms)
+✔ arrival becomes authoritative only after the traveler explicitly confirms it (6.245375ms)
+✔ keeps high-speed rail intent distinct from generic train inventory (3.82875ms)
+✔ domain fingerprints change only for affected research semantics (2.427709ms)
+(node:7501) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ RouteMapScene defaults to the first day and keeps each drawable leg attributable (1.078958ms)
+✔ RouteMapScene changes only the selected mode and never draws a missing geometry fallback (0.1655ms)
+✔ RouteMapScene all-day totals are derived without mutating Mobility (0.241542ms)
+✔ map scene keeps repeated visits to the same hotel visible on one marker (0.304959ms)
+(node:7504) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ runtime env loader accepts only explicit Travel Agent keys and preserves key values out of its public surface (0.63225ms)
+✔ runtime env defaults image turns to DeepSeek Vision while preserving the Kimi credential for subagents (3.217125ms)
+✔ runtime env loads an ignored local file on Windows without interpreting POSIX mode bits (23.7405ms)
+✔ runtime env keeps Kimi as the visual route when it is the only configured image-capable provider (0.982ms)
+✔ runtime env does not map legacy meeting and Kimi alias keys into Travel Agent roles (0.944292ms)
+✔ runtime env preserves an explicitly selected international Kimi provider (0.646334ms)
+✔ visual helper options use the provider-supported reasoning mode (1.413334ms)
+(node:7507) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ social worker exposes only bounded read operations and treats source text as untrusted data (1.147791ms)
+✔ social worker keeps account search, arbitrary URLs and execution fields fail closed (0.194ms)
+✔ social worker preserves challenge and rate-limit error semantics (0.234375ms)
+(node:7509) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ stored transit contract rehydrates normalized optional fields (2.561208ms)
+(node:7536) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ dynamic travel analysis runs distinct read-only lanes concurrently and joins once (96.636458ms)
+✔ one required lane is executed instead of being mislabeled complete without analysis (77.456166ms)
+✔ one Provider pass feeds the fanout and only one parent-owned proposal is staged (121.821292ms)
+✔ one failed semantic lane degrades without discarding sibling findings or mutating accepted state (84.197208ms)
+✔ Child handoff discards non-contract fields (64.453458ms)
+✔ Child handoff rejects a foreign run identity (65.566ms)
+✔ missing source data does not trigger repeated research; invalid handoffs stay visibly failed (68.134959ms)
+✔ Child handoff fills optional collections but rejects an empty or nested-fragment result (12.020417ms)
+✔ retrying identical research repairs incomplete Child analysis before reusing the proposal (199.82225ms)
+✔ lane completions and Join are idempotent by run, lane and attempt (0.667125ms)
+✔ a superseded run is stale-discarded before Join (47.404583ms)
+✔ only verified Kimi becomes the primary Child route, with the configured reasoning route as fallback (0.232208ms)
+✔ all Child timeouts produce failed coverage without an automatic unverified fallback (2.650209ms)
+✔ a newer trip scope prevents a late Provider and analysis result from staging a proposal (41.975416ms)
+(node:7679) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ user-facing agent copy translates internal planning enums before rendering (1.358834ms)
+✔ negative confirmation language never becomes a selection command (0.901875ms)
+✔ travel dates and route timestamps are not mistaken for payment cards (0.5785ms)
+✔ explicit itinerary optimization can use the focused planning path (1.136917ms)
+✔ budget explanation keeps candidate quote quality separate from trip-total estimation (10.928166ms)
+✔ Agent copy names missing analysis coverage and distinguishes empty inventory from unavailable sources (0.255542ms)
+✔ fixture: Pi conversation loop creates and reads a travel draft through bounded Parent Agent tools (102.35175ms)
+✔ Parent Agent runs Plan-Check-Repair from focused optimization (99.229417ms)
+✔ Parent Agent runs Plan-Check-Repair from ordinary itinerary request (103.136208ms)
+✔ Parent Agent runs Plan-Check-Repair from a request needing user input (120.680208ms)
+✔ a native multimodal Parent Agent sees the image and can build the trip with ordinary tools in the same turn (68.607458ms)
+✔ a conversation whose trip draft is missing rebuilds instead of retrying a dead trip id (34.310458ms)
+✔ the model saves understood trip facts and asks one useful question without inventing destination facts (27.9995ms)
+✔ an incomplete first tool call cannot persist a one-person trip when an explicit party was understood (44.18525ms)
+✔ a terse follow-up updates the existing trip and continues research instead of repeating the question (135.024875ms)
+✔ fixture: one Parent Agent turn creates the scoped trip and stages one linked four-domain proposal (76.648958ms)
+✔ natural conversation confirms arrival and only the named stay without lying about TripState (238.208ms)
+✔ replaces model prose with an explicit no-result state when linked research is unavailable (69.080625ms)
+✔ missing route capability keeps candidates and ends with a service gap instead of an unanswerable question (130.872333ms)
+✔ a successful research retry wins over an earlier failure in the same Agent turn (70.059917ms)
+✔ explains an AMap account gate without mislabeling it as transient QPS limiting (66.117208ms)
+(node:7758) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ complete planning continues from ordinary Chinese requests while preserving negation (1.299584ms)
+✔ confidence cannot authorize a locked change or turn missing evidence into a fact (0.141375ms)
+✔ provider evidence gaps stay with Parent while personal facts and real budget tradeoffs can be asked (0.099375ms)
+✔ short interactions and continuations share slots 2:1, borrow idle capacity, and age fairly (11.168084ms)
+✔ stable questions reject stale facts and invalid options; text remains an answer rather than authorization (0.937875ms)
+✔ ranking preserves every candidate and retains current order for unresolved or tied judgments (0.569084ms)
+✔ planning context retains locked and named choices beyond its ordinary budget and keeps domain coverage (0.332167ms)
+(node:7759) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ trying a place preserves other choices and never navigates away from comparison (2.146583ms)
+✔ route confirmation needs current positive feasibility and is not submitted while busy (0.487709ms)
+✔ candidate analysis topics are not promoted to verified budget, route or independent-source claims (2.016583ms)
+✔ web send failure keeps text and attachment added during the wait (1.243708ms)
+✔ web delivered message stays delivered through a failed read and read-only retry (0.742292ms)
+✔ an acknowledged run survives a disconnected view without becoming a new unsent draft (0.618375ms)
+✔ a lost initial response reuses the same command after a new conversation was created (0.942208ms)
+✔ web confirmation remains committed after plan read failure and cannot be repeated (0.748708ms)
+✔ web noncommitted response is never shown as a saved confirmation (0.614ms)
+✔ web route refresh failure still reloads the committed plan (0.622625ms)
+(node:7760) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ PostgreSQL: independent workers share Jev starts, cooldown and a persisted deferred step (281.677ms)
+✔ PostgreSQL: two independent pools admit one command, preserve cancellation and reject a fenced writer (121.908542ms)
+✔ PostgreSQL: expired ownership cannot publish success even before a replacement Worker polls (150.017583ms)
+✔ PostgreSQL: Parent, Child and compaction share account capacity and a durable run budget (195.632917ms)
+✔ PostgreSQL: conversations on one trip serialize; a read-only expired run is recovered once with a new fence (175.661041ms)
+✔ PostgreSQL: an uncertain write is never automatically replayed (132.619959ms)
+✔ PostgreSQL: a new user command recovers a committed Trip after a crash before conversation linking (381.306042ms)
+(node:7762) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a killed Worker is replaced within 60s without duplicating the user message; another user cannot replay its events (39442.219083ms)
+ℹ Actual Worker kill: native Pi recovered in 30276 ms; exactly one trip and one accepted user message persisted.
+(node:7765) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a retried command runs one native Parent; its tool receipts and checkpoint survive repository reopening (272.806667ms)
+✔ two workers serialize one conversation and continue with native history plus current travel facts (189.859667ms)
+✔ a cancellation blocks a late tool mutation at the persistence boundary (29.11825ms)
+✔ negative confirmation language preserves planning tools and cannot trigger a confirmation (113.425375ms)
+✔ a rejected save tool cannot be reported as a completed run even when model prose claims success (111.931875ms)
+✔ a saved question releases its worker and the next turn sees the question and answer (220.962416ms)
+✔ image admission is bounded, retries remain idempotent, and raw image bytes never enter durable input or native history (132.130958ms)
+✔ lease expiration exposes an interruption and fences the old worker instead of replaying an uncertain tool (1.879083ms)
+✔ API-only mode preserves ordinary queue waits and expires only the saved total deadline (1.0875ms)
+✔ question option IDs are consumed once across clients and a stale card cannot update new facts (347.955917ms)
+✔ Parent capacity wait releases the Worker and resumes native history without repeating a saved mutation (1180.67575ms)
+✔ native checkpoints omit images and thinking and never restore half a tool transaction (0.8065ms)
+✔ native compaction preserves a recoverable summary and its fact revision, then resumes (14.905833ms)
+✔ a new request carries the travel objective without replaying large historical tool reports (5.843ms)
+✔ a capacity wait during context handoff does not consume the new user request (45.678958ms)
+✔ a later planning snapshot supersedes old payloads in model context while both receipts remain recoverable (6.189333ms)
+✔ native compaction between tool rounds leaves room to deliver without repeating completed reads (11.256917ms)
+(node:7767) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a changed candidate recomputes its batch while unrelated completed judgments remain reusable (43.3625ms)
+✔ a calibrated local comparison preserves facts, caches identical evidence and delegates changed hard requirements (179.441459ms)
+✔ native product path reaches a checked draft and adoption without a question (1386.136167ms)
+✔ native product path reaches a checked draft and adoption after one answer (677.890584ms)
+✔ HTTP contract rejects incomplete or invented answers; batches retain every candidate and hard requirement (2.385166ms)
+✔ one account smooths starts, records unknown usage, isolates trips and enforces rolling normal/retry budgets (29.762416ms)
+✔ Jev refuses calls outside durable accounting and a new template cannot auto-advance on confidence alone (1.645334ms)
+✔ native Parent resumes a deferred Jev step after restart, reuses Provider facts and continues the same question (1204.095166ms)
+(node:7769) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ landscape records persist local photo-relief recipes; food cannot enable modelling (2.915292ms)
+✔ journal JPEG boundary removes metadata and trailing bytes; rejects unsafe formats and dimensions (0.688542ms)
+✔ file: journal persists, retries idempotently, isolates trips, and deletes (16.753833ms)
+﹣ postgres: journal persists, retries idempotently, isolates trips, and deletes (0.122375ms) # SKIP
+✔ journal route handler preserves a pending candidate memory after rejection (no HTTP transport) (85.99125ms)
+✔ real HTTP journal: pending place supports private memories without accepting travel decisions (138.3335ms)
+✔ real HTTP journal: accepted place supports private memories without accepting travel decisions (68.867458ms)
+(node:7771) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ known model usage frees unused token reservation for the next planning step (20.446833ms)
+✔ quota wait points to window expiry and unknown usage is never refunded (15.834583ms)
+(node:7772) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ the fixed Pi provider catalog gains only the DeepSeek native vision model metadata (1.980916ms)
+(node:7773) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a Child's foreign references or identity are rejected before normalization, including nested findings (0.845042ms)
+✔ a native Child gets one bounded handoff correction and returns valid evidence (19.88075ms)
+✔ a native Child gets one bounded handoff correction and fails if still invalid (8.076ms)
+✔ a native Child reads its scoped evidence with tools and cannot read a sibling's candidates (6.372375ms)
+(node:7774) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ composite research merges official sources, deduplicates titles and keeps one valid documentation URL (5.55625ms)
+✔ place candidates remain provisional when the mandatory weather gate is unavailable (0.520458ms)
+✔ cached weather is not reused after the requested trip dates change (0.155541ms)
+✔ composite research keeps other sources usable but exposes an AMap account gate (0.501792ms)
+✔ composite research preserves a known AMap account gate when only weather returns (0.34175ms)
+✔ composite research merges the same flight across providers without losing fares or evidence (1.101167ms)
+✔ AMap stations cannot displace a requested intercity flight returned by a later provider (2.27725ms)
+✔ criteria fusion filters hotel entities from food and unrelated areas or attractions (10.720625ms)
+✔ long-tail food ranking demotes low-rated commercial food halls (3.3865ms)
+✔ transport source status distinguishes verified empty, unavailable and rate limited (0.520917ms)
+✔ AMap transport facilities never turn verified-empty intercity inventory into a completed source (0.263625ms)
+✔ a Provider partial response stays partial instead of being collapsed into unavailable (0.153625ms)
+(node:7776) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ golden path persists a staged four-domain proposal and commits only after parent acceptance (78.684875ms)
+✔ confirmation gate rejects an incomplete route without changing TripState (19.674375ms)
+✔ a current feasible preview is reused once during confirmation (23.653ms)
+✔ research proposal is visibly provisional when place evidence succeeds but weather is unavailable (12.827875ms)
+✔ a date range expands every day so Day 2 is not mistaken for the trip end date (8.495ms)
+✔ a pending proposal is not reused for a missing domain or a narrower follow-up search (23.774333ms)
+✔ changed research criteria supersede the affected candidate while identical criteria reuse it (43.370333ms)
+✔ a failed targeted refresh removes stale matches but keeps unaffected domain candidates (123.677542ms)
+✔ user-confirmed arrival plus a stay-only acceptance preserves other choices and enables the airport transfer (192.626875ms)
+✔ intercity inventory keeps its verified schedule semantics and is not downgraded into an unverified city route (10.173584ms)
+✔ a bounded intercity comparison keeps all relevant flight and rail options when the traveler did not choose a mode (6.194917ms)
+✔ unavailable ordinary trains never substitute for a requested high-speed option (6.319667ms)
+✔ AMap transport-facility POIs never substitute for missing flexible intercity inventory (4.102167ms)
+✔ a persisted disruption requeues only the impacted stay and food neighborhood (29.947875ms)
+✔ rejects concurrent stale storage writes, stale proposals, and nested sensitive fields (8.557166ms)
+✔ records feedback as reviewable evidence without promoting it to public memory (5.088958ms)
+✔ shares only structured trip-linked visit evidence with a later traveler (33.216916ms)
+✔ prepares a user-confirmed external handoff and locks only after confirmation is recorded (34.457875ms)
+(node:7779) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ only-hotel comparison produces only hotel candidates on a new trip (123.613875ms)
+✔ Parent receives the checked draft and delivers the actual business tradeoff instead of being terminated (114.889583ms)
+✔ asking the assistant to choose suitable draft candidates does not become a confirmation command (104.621417ms)
+✔ fresh reads after a repair remain available and do not force a generic research completion (110.799375ms)
+✔ exhausting the total tool budget reports unfinished work instead of a successful fallback (37.380791ms)
+✔ an undecided traveler is asked one destination question instead of three bundled facts (17.442875ms)
+✔ a missing departure date is resolved before asking about arrival preferences (15.308167ms)
+✔ unknown family size does not discard the destination, dates or budget already provided (15.802ms)
+✔ answering a planning question continues to a checked draft even if the model stops after saving (102.949417ms)
+✔ a budget-only update gives Parent adopted facts and preserves its explanation of the remaining budget (139.682375ms)
+✔ unknown accessibility evidence is handled by Parent rather than a mandatory user question (142.105708ms)
+✔ a budget decision uses the whole-trip ledger rather than model-authored subtotals (86.217208ms)
+(node:7781) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ trip persistence keeps localized destination names in state rather than using them as filesystem identifiers (0.869333ms)
+✔ trip persistence encodes portable filenames while preserving the logical trip id (14.313292ms)
+(node:7782) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Tuniu client calls only fixed official endpoints and does not expose its key in results (2.348125ms)
+✔ Tuniu client blocks booking and unknown tools before network access (0.317166ms)
+✔ Tuniu client unwraps services that return business JSON inside a result string (0.126625ms)
+(node:7783) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ Tuniu research normalizes official hotel and train inventory into shared candidates (11.796458ms)
+✔ Tuniu research chooses the flight read tool only when the traveler requested air travel (1.620375ms)
+✔ Tuniu research follows an explicit flight question even when the saved arrival mode is still unknown (0.501083ms)
+✔ Tuniu compares both flight and train when the traveler asks only for transportation (0.37575ms)
+(node:7784) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ single-process workflow mode fails closed for uncoordinated multi-worker deployment (24.449083ms)
+✔ multi-worker semantic analysis requires the PostgreSQL run owner, not a coordinator label (0.563209ms)
+✔ an uncoordinated multi-worker research request exposes failed semantic coverage instead of claiming full planning (18.042333ms)
+(node:7789) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ keeps the full business-level MCP surface and its confirmation boundary (0.866083ms)
+✔ loads composite Travel Skills into bounded Agent context while retaining the micro-Skill guidance (8.677541ms)
+(node:7790) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ builds a day-aware destination itinerary from arrivalAt instead of departureAt (25.477459ms)
+✔ shifts flexible stops by real route duration and blocks missing route coverage (6.92875ms)
+✔ a model-authored bag-drop-first order is preserved and only times are normalized (2.307958ms)
+✔ a fixed-time conflict returns observed facts and bounded repair directions (2.130625ms)
+✔ the same candidates support fatigue-first and late-arrival orders chosen by the model (3.416375ms)
+(node:7791) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ allows only bounded social reads and blocks credentials, writes, and arbitrary URLs (0.724875ms)
+✔ sanitizes Worker output and preserves injection boundary (0.5185ms)
+(node:7793) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ updates only explicitly understood trip facts and keeps omitted facts (7.916ms)
+✔ keeps source price quality while deterministically estimating the whole-trip budget (5.4345ms)
+✔ updates preparation signals without invalidating a pending travel decision (1.958209ms)
+✔ normalizes common Chinese date ranges before weather research (6.782541ms)
+✔ binds humane travel needs to one traveler and invalidates only mobility when those needs change (2.019625ms)
+✔ traveler state accepts operational needs but rejects diagnosis-shaped fields (0.270333ms)
+✔ builds a decision-scoped context pack with traveler and evidence slices (10.093208ms)
+✔ verified weather becomes shared context and dirties all linked task chains when it changes (7.945208ms)
+✔ changing destination or dates invalidates the previous WeatherEnvelope before new planning (2.52325ms)
+✔ commits a proposal then replans only the impacted stay and food chains (7.336916ms)
+✔ rejects stale revision, locked mutation, out-of-contract operation, and stale offer (11.433542ms)
+✔ requires verified foreign-guest lodging instead of hiding inbound operability (10.219208ms)
+✔ coherence review keeps per-traveler walking and accessibility needs visible (4.537083ms)
+(node:7795) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ persisted trip-control-state-v1 snapshots hydrate additive fields without changing decisions (14.835916ms)
+✔ hydration rejects malformed persisted collections instead of silently replacing user data (1.158042ms)
+ℹ tests 379
+ℹ suites 0
+ℹ pass 375
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 4
+ℹ todo 0
+ℹ duration_ms 47611.850041
+
+> travel-agent-v1@0.1.0 web:build
+> vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 4782 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                            0.71 kB │ gzip:   0.45 kB
+dist/assets/travel-photo-journal-C4akel0R.css              3.18 kB │ gzip:   1.09 kB
+dist/assets/destination-experience-preview-DtyuvY93.css   12.19 kB │ gzip:   3.09 kB
+dist/assets/trip-map-explorer-CIGW-MKW.css                15.61 kB │ gzip:   6.46 kB
+dist/assets/index-C1Qas7gC.css                           246.11 kB │ gzip:  44.85 kB
+dist/assets/photo-relief-renderer-BJaRQn8W.js              6.91 kB │ gzip:   3.25 kB │ map:    25.13 kB
+dist/assets/Play.es-DziOuXUV.js                            7.15 kB │ gzip:   1.75 kB │ map:    13.98 kB
+dist/assets/destination-experience-scene-DDnOc9ma.js      10.40 kB │ gzip:   4.63 kB │ map:    26.62 kB
+dist/assets/destination-sketch-renderer-BGPg497O.js       18.47 kB │ gzip:   7.65 kB │ map:    94.77 kB
+dist/assets/destination-experience-preview-BqOjOreA.js    19.02 kB │ gzip:   7.70 kB │ map:    37.42 kB
+dist/assets/travel-photo-journal-hPkphPOk.js              29.94 kB │ gzip:  11.71 kB │ map:    63.17 kB
+dist/assets/trip-map-explorer-Cai1G5Jp.js                184.60 kB │ gzip:  59.29 kB │ map:   773.98 kB
+dist/assets/destination-sketch-motion-CgrMd6Sd.js        536.87 kB │ gzip: 137.11 kB │ map: 2,823.36 kB
+dist/assets/index-DJxYHnqM.js                            576.74 kB │ gzip: 179.40 kB │ map: 1,989.50 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.25s
+
+> travel-agent-v1@0.1.0 miniapp:check
+> node scripts/check-miniapps.mjs
+
+wechat: native project contract valid
+alipay: native project contract valid

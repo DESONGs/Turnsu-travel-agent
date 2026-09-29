@@ -2,6 +2,10 @@
 
 ## 已配置的模型角色
 
+2026-09-21：新增可选 Jev 结构化判断角色，固定 `jev-1.13.0`，服务端变量为 `TYPESAFE_API_KEY`。它不替换 Pi Parent、不生成地点事实、不执行工具。默认 `TRAVEL_AGENT_JEV_MODE=off`；`shadow` 仅记录，`auto` 接入决策链。自动语义调整还必须匹配模板、目标语言、模型、独立数据集哈希及校准阈值；缺少校准只交给 Parent。不得把返回的 confidence 当成正确率。
+
+账号限额固定为 1,200 RPM / 250,000 输入 TPS，重试也计数。超过本地预算持久延后；账号鉴权失败、合同不合法或重试耗尽明确记录为不可用，由 Parent 根据现有事实处理。Parent/Child/压缩仍使用自己的账号预算，Jev 的额度不能证明整条链路能承载 500 复杂规划。真实中文结果和未通过门槛见[本轮证据](../research/2026-09-21-jev-automatic-planning-implementation.md)。
+
 | 任务 | 首选模型 | 何时调用 | 当前证据 |
 | --- | --- | --- | --- |
 | 意图理解、追问、约束推理、取舍解释、受限工具调用 | 默认 DeepSeek `deepseek-v4-flash`；用户可切 `deepseek-v4-pro` 或 Kimi `kimi-k3` | 用户按对话选择父 Agent 模型，选择持久化并从下一轮生效 | V4 Flash 完成两轮工具调用黄金路径；V4 Pro 与 K3 分别完成真实旅行草案创建。 |

@@ -1,0 +1,143 @@
+- main:
+  - link "Travel Agent":
+    - /url: /
+    - generic: Travel Agent.
+  - button:
+  - button "Switch to English":
+    - text: 中
+  - button "登录保存旅行":
+  - paragraph: 我的下一段旅程
+  - heading "上海 1 日" [level=1]:
+    - text: 上海
+    - generic: 1 日
+  - button "10/15":
+    - text: 10/15
+  - button "1 人同行":
+    - text: 1 人同行
+  - button "¥6,000":
+    - text: ¥6,000
+  - navigation "旅行视图":
+    - button "发现与比较"
+    - button "行程与路线 6":
+      - text: 行程与路线
+      - generic: "6"
+    - button "旅行手账"
+  - heading "这些地方，能顺路吗？" [level=2]
+  - paragraph: 这是试排。核对时间、步行和预算后，再确认加入。
+  - button "继续挑选":
+    - text: 继续挑选
+  - complementary "试选路线与影响":
+    - region "机场、住宿、游玩与餐饮的多点路线":
+      - strong: 这些候选暂时没有可展示的地图
+      - generic: 仍可查看地址与高德导航；取得坐标后会自动出现在这里。
+      - generic: 地图待补
+      - generic: 地图与路线均只展示具名来源返回的资料。
+    - tablist "选择地图日期":
+      - tab "第 1 天" [selected]
+    - strong: 首次试排
+    - generic: 试排路线
+    - strong: 试排影响
+    - generic: 首次试排：120 分钟 · 约 ¥150
+    - strong: 已核验这版草案，可查看后采用
+    - generic: 2026年10月15日一个人从杭州去上海玩一天，当晚在上海住一晚，第二天自行返程，总预算6000元。
+    - emphasis: 先按上午抵达安排，先寄存行李再游览，避免拖着行李走一天 · 白天以步行加地铁串联市区游览，晚上回到同一家住宿休息 · 午餐和晚餐各安排一处，避免行程中间断档
+    - generic "6 段移动 · 120 分钟 · 0 m · ¥150" [active]:
+      - generic: 6 段移动 · 120 分钟 · 0 m · ¥150
+    - generic "整趟预算 ~¥750 / ¥6,000 本次试排 +¥250":
+      - strong: 整趟预算 ~¥750 / ¥6,000
+      - generic: 本次试排 +¥250
+    - region "按时间看每一站":
+      - strong: 按时间看每一站
+      - generic: 建议时间可在确认前继续调整
+      - button "AI 优化当前路线":
+        - text: AI 优化当前路线
+      - list:
+        - button "1 第 1 天 · 10月15日 09:00 · 抵达 transport option 0":
+          - generic: "1"
+          - generic: 第 1 天 · 10月15日 09:00 · 抵达
+          - strong: transport option 0
+        - button "查看transport option 0详情":
+        - button "transport option 0 → stay option 0 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25" [pressed]:
+          - strong: transport option 0 → stay option 0
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "2 第 1 天 · 10月15日 09:45 · 寄存行李 stay option 0":
+          - generic: "2"
+          - generic: 第 1 天 · 10月15日 09:45 · 寄存行李
+          - strong: stay option 0
+        - button "查看stay option 0详情":
+        - button "stay option 0 → food option 0 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25":
+          - strong: stay option 0 → food option 0
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "3 第 1 天 · 10月15日 12:00 · 用餐 food option 0":
+          - generic: "3"
+          - generic: 第 1 天 · 10月15日 12:00 · 用餐
+          - strong: food option 0
+        - button "查看food option 0详情":
+        - button "food option 0 → play option 0 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25":
+          - strong: food option 0 → play option 0
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "4 第 1 天 · 10月15日 13:30 · 游玩 play option 0":
+          - generic: "4"
+          - generic: 第 1 天 · 10月15日 13:30 · 游玩
+          - strong: play option 0
+        - button "查看play option 0详情":
+        - button "play option 0 → play option 2 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25":
+          - strong: play option 0 → play option 2
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "5 第 1 天 · 10月15日 15:50 · 游玩 play option 2":
+          - generic: "5"
+          - generic: 第 1 天 · 10月15日 15:50 · 游玩
+          - strong: play option 2
+        - button "查看play option 2详情":
+        - button "play option 2 → food option 1 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25":
+          - strong: play option 2 → food option 1
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "6 第 1 天 · 10月15日 18:00 · 用餐 food option 1":
+          - generic: "6"
+          - generic: 第 1 天 · 10月15日 18:00 · 用餐
+          - strong: food option 1
+        - button "查看food option 1详情":
+        - button "food option 1 → stay option 0 打车 · 20 分钟 步行 0 m · 0 次换乘 · 约 ¥25":
+          - strong: food option 1 → stay option 0
+          - generic: 打车 · 20 分钟
+          - generic: 步行 0 m · 0 次换乘 · 约 ¥25
+        - generic "比较这段路的交通方式":
+          - button "打车" [pressed]
+        - button "7 第 1 天 · 10月15日 19:45 · 入住 stay option 0":
+          - generic: "7"
+          - generic: 第 1 天 · 10月15日 19:45 · 入住
+          - strong: stay option 0
+        - button "查看stay option 0详情":
+    - button "日期明确后核验天气天气会影响户外体验、移动缓冲和餐饮动线":
+      - strong: 日期明确后核验天气
+      - text: 天气会影响户外体验、移动缓冲和餐饮动线
+  - strong: 6 项待确认
+  - generic: 不产生预订或付款
+  - button "放弃试排"
+  - button "确认加入行程":
+    - text: 确认加入行程
+  - navigation "旅行导航":
+    - button "发现":
+      - text: 发现
+    - button "行程 6":
+      - text: 行程
+      - generic: "6"
+    - button "手账":
+      - text: 手账
+    - button "助手":
+      - text: 助手

@@ -1,0 +1,4 @@
+The following is a diff from the previous accessibility tree for Window: "Travel Agent" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 626
+~					454 标签 (settable, boolean) 4.904 | NEARUSDT U本位永续合约图表 | 币安合约, Value: off
+The focused UI element is 560 按钮 收起说明

@@ -1,0 +1,25 @@
+(node:78318) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✔ a retried command runs one native Parent; its tool receipts and checkpoint survive repository reopening (128.228916ms)
+✔ two workers serialize one conversation and continue with native history plus current travel facts (168.812417ms)
+✔ a cancellation blocks a late tool mutation at the persistence boundary (7.985833ms)
+✔ negative confirmation language preserves planning tools and cannot trigger a confirmation (110.272791ms)
+✔ a rejected save tool cannot be reported as a completed run even when model prose claims success (113.164166ms)
+✔ a saved question releases its worker and the next turn sees the question and answer (217.291334ms)
+✔ image admission is bounded, retries remain idempotent, and raw image bytes never enter durable input or native history (123.036917ms)
+✔ lease expiration exposes an interruption and fences the old worker instead of replaying an uncertain tool (2.122083ms)
+✔ API-only mode preserves ordinary queue waits and expires only the saved total deadline (1.173667ms)
+✔ question option IDs are consumed once across clients and a stale card cannot update new facts (334.2495ms)
+✔ Parent capacity wait releases the Worker and resumes native history without repeating a saved mutation (1054.656708ms)
+✔ native checkpoints omit images and thinking and never restore half a tool transaction (0.390042ms)
+✔ native compaction preserves a recoverable summary and its fact revision, then resumes (8.239458ms)
+✔ a new request carries the travel objective without replaying large historical tool reports (5.295375ms)
+✔ a capacity wait during context handoff does not consume the new user request (33.556542ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3747.839875

@@ -1,0 +1,25 @@
+(node:2077) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a complete day spanning lunch must not silently omit the meal (17.25125ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 589.619167
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:197:1
+✖ a complete day spanning lunch must not silently omit the meal (17.25125ms)
+  TypeError [ERR_INVALID_ARG_TYPE]: The "message" argument must be one of type string or function. Received undefined
+      at innerFail (node:internal/assert/utils:135:11)
+      at innerOk (node:internal/assert/utils:169:5)
+      at strict.ok (node:assert:197:3)
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:203:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'ERR_INVALID_ARG_TYPE'
+  }

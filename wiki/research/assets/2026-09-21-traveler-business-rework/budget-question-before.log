@@ -1,0 +1,30 @@
+(node:6729) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a budget decision uses the whole-trip ledger rather than model-authored subtotals (129.175542ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1784.464625
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:238:1
+✖ a budget decision uses the whole-trip ledger rather than model-authored subtotals (129.175542ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /600/. Input:
+
+  '四人只需400元，你要加预算吗？'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:250:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '四人只需400元，你要加预算吗？',
+    expected: /600/,
+    operator: 'match',
+    diff: 'simple'
+  }

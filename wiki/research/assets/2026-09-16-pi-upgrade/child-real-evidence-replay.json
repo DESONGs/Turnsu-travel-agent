@@ -1,0 +1,102 @@
+{
+  "status": "passed_live_children_on_captured_provider_evidence",
+  "providerMode": "captured_live_evidence_no_provider_requery",
+  "coverage": "complete",
+  "shapes": [
+    {
+      "keys": [
+        "schemaVersion",
+        "analysisId",
+        "lane",
+        "findings",
+        "recommendedCandidateIds",
+        "rejectedCandidateIds",
+        "reasonCodes",
+        "unknowns",
+        "needsContext",
+        "evidenceRefs",
+        "skillId",
+        "skillVersion",
+        "__runtime"
+      ],
+      "findingsIsArray": true,
+      "findingCount": 4
+    },
+    {
+      "keys": [
+        "schemaVersion",
+        "analysisId",
+        "lane",
+        "findings",
+        "recommendedCandidateIds",
+        "rejectedCandidateIds",
+        "reasonCodes",
+        "unknowns",
+        "needsContext",
+        "evidenceRefs",
+        "skillId",
+        "skillVersion",
+        "__runtime"
+      ],
+      "findingsIsArray": true,
+      "findingCount": 4
+    },
+    {
+      "keys": [
+        "schemaVersion",
+        "analysisId",
+        "lane",
+        "findings",
+        "recommendedCandidateIds",
+        "rejectedCandidateIds",
+        "reasonCodes",
+        "unknowns",
+        "needsContext",
+        "evidenceRefs",
+        "skillId",
+        "skillVersion",
+        "__runtime"
+      ],
+      "findingsIsArray": true,
+      "findingCount": 4
+    }
+  ],
+  "completed": [
+    "inventory_budget",
+    "local_discovery",
+    "operability_schedule"
+  ],
+  "failed": [],
+  "errors": [],
+  "joinCount": 1,
+  "durationMs": 35645,
+  "usage": [
+    {
+      "lane": "inventory_budget",
+      "model": "moonshotai-cn/kimi-k2.6",
+      "tokenUsage": {
+        "input": 1729,
+        "output": 649,
+        "total": 2378
+      }
+    },
+    {
+      "lane": "local_discovery",
+      "model": "moonshotai-cn/kimi-k2.6",
+      "tokenUsage": {
+        "input": 866,
+        "output": 975,
+        "total": 2097
+      }
+    },
+    {
+      "lane": "operability_schedule",
+      "model": "moonshotai-cn/kimi-k2.6",
+      "tokenUsage": {
+        "input": 1710,
+        "output": 733,
+        "total": 2443
+      }
+    }
+  ]
+}

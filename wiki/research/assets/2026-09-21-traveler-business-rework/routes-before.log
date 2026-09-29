@@ -1,0 +1,30 @@
+(node:56917) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a multi-day itinerary keeps every returned route through checking, adoption and storage (51.982625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 590.091084
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:280:1
+✖ a multi-day itinerary keeps every returned route through checking, adoption and storage (51.982625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  8 !== 12
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:291:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 8,
+    expected: 12,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

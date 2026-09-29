@@ -1,0 +1,62 @@
+- main:
+  - link "Travel Agent":
+    - /url: /
+    - generic: Travel Agent.
+  - button "我的旅行":
+    - generic: 我的旅行
+  - button "旅行助手 ⌘ K":
+    - generic: 旅行助手
+    - generic: ⌘ K
+  - button "Switch to English":
+    - text: 中
+  - button "登录保存旅行":
+    - generic: 登录
+  - paragraph: 我的下一段旅程
+  - heading "上海 1 日" [level=1]:
+    - text: 上海
+    - generic: 1 日
+  - button "10/15":
+    - text: 10/15
+  - button "1 人同行":
+    - text: 1 人同行
+  - button "¥3,000":
+    - text: ¥3,000
+  - strong: 6 个安排已确认
+  - paragraph: 先挑喜欢的，再看怎么串起来。
+  - button "继续挑选地点":
+    - text: 继续挑选地点
+  - navigation "旅行视图":
+    - button "发现与比较":
+      - text: 发现与比较
+    - button "行程与路线 6":
+      - text: 行程与路线
+      - generic: "6"
+    - button "旅行手账":
+      - text: 旅行手账
+  - heading "这些地方，能顺路吗？" [level=2]
+  - paragraph: 这是试排。核对时间、步行和预算后，再确认加入。
+  - button "继续挑选":
+    - text: 继续挑选
+  - complementary "试选路线与影响":
+    - region "机场、住宿、游玩与餐饮的多点路线":
+      - strong: 这些候选暂时没有可展示的地图
+      - generic: 仍可查看地址与高德导航；取得坐标后会自动出现在这里。
+      - generic: 地图待补
+      - generic: 地图与路线均只展示具名来源返回的资料。
+    - tablist "选择地图日期":
+      - tab "第 1 天" [selected]
+    - strong: 对比：当前 vs 试排
+    - generic: 试排路线
+    - generic: 当前路线
+    - strong: 试排影响
+    - generic: 耗时、步行、换乘和估算费用与当前行程一致
+    - strong: 已核验这版草案，可查看后采用
+    - generic: 2026年10月15日一人从杭州到上海玩一天、住一晚，预算3000元不变；在现有草案基础上把住宿换成 stay option 2，两顿餐饮、城际交通与两处游玩及原有时间窗全部保持不动。
+    - emphasis: 只替换住宿为 stay option 2，其余站点与时间窗保持原样 · 行李在白天寄存、晚上回住处，动线少折返 · 住与吃靠近当天游玩动线
+    - generic "7 段移动 · 140 分钟 · 0 m · ¥175" [active]:
+      - generic: 7 段移动 · 140 分钟 · 0 m · ¥175
+  - strong: 6 项待确认
+  - generic: 不产生预订或付款
+  - button "放弃试排"
+  - button "确认加入行程":
+    - text: 确认加入行程

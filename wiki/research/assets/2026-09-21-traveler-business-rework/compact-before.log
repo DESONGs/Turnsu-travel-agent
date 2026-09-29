@@ -1,0 +1,43 @@
+(node:62122) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ compact start-time and duration plans still require dinner for an overnight stay (56.776042ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 833.8175
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:328:1
+✖ compact start-time and duration plans still require dinner for an overnight stay (56.776042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + {
+  +   baseRevision: 0,
+  +   partial: true,
+  +   previewId: 'itp_d27d85e71a029092b5b0030e3373cd53',
+  +   proposalId: 'itinerary_ada88c02363837ff7df2cba5',
+  +   selections: {
+  +     food: 'food_local',
+  +     play: 'play_museum',
+  +     stay: 'stay_people_square',
+  +     transport: 'arrival_pvg'
+  +   }
+  + }
+  - null
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:333:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { proposalId: 'itinerary_ada88c02363837ff7df2cba5', selections: { transport: 'arrival_pvg', stay: 'stay_people_square', play: 'play_museum', food: 'food_local' }, partial: true, previewId: 'itp_d27d85e71a029092b5b0030e3373cd53', baseRevision: 0 },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

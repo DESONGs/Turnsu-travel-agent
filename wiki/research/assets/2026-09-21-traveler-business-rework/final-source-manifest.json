@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-09-21T06:29:42.413Z",
+  "node": "v26.7.0",
+  "originalDatasetHash": "fc0cab034b0b224e1cbbfa29f40167b504a2c4f381bf4e7f17671f1d4ecb510d",
+  "sourceHashes": {
+    "src/agent/travel-conversation-agent.mjs": "fabc5b95376052d6a66101b4f076408e04645808ece92cc231b2fc2bf78e9ead",
+    "src/agent/travel-execution-service.mjs": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3",
+    "src/api/travel-service.mjs": "5b1ebf299266852c5e356ae65f2d53a578975ddf2907abc08d29121ff528ec7e",
+    "src/persistence/execution-repository.mjs": "87ebde1259d53a0051b38b9395cb080cd9d1049b0351a6392d8f1e9769943276",
+    "travel-agent-pi-package/src/host/travel-judgment.ts": "24dee49efd233699fc44059d51c335cb32307dad2734344acc588aaae587abea",
+    "tests/fixtures/traveler-acceptance-cases.mjs": "e98b73625fcc14e4e5e323813ffac327d6e8409e66fe5893f7e375f509411196",
+    "tests/fixtures/traveler-business-cases.mjs": "c4c0b77a1f3b26945face3e725bb43683cff61f5ac99064a1bfd5ac5202a7615",
+    "scripts/test-traveler-scenarios.mjs": "1e342f34eed926a7ae18f153ac46bf8c9d7025b5a5770b68b9eefeb98ebb68ee",
+    "travel-agent-pi-package/src/contracts/index.ts": "105aab50d827a77f127adfe294c2ef14f27749bf4291d0b824998ea64d6f1dc1",
+    "travel-agent-pi-package/src/core/trip-feasibility.ts": "b8b5d5765f14c5c75521197cd9cecf6d995ff31981758e073ef85f7d12b1e6bc",
+    "travel-agent-pi-package/src/core/itinerary-proposal.ts": "8861e068fa19cab9514b421490e4b4fec9ffc932727f9bf0cd2f5b4b0484a27c",
+    "travel-agent-pi-package/src/core/itinerary-schedule.ts": "ab7a78f9c19e0b532476a5264e5110ebc59bcfb714478206c5949cf777c95aad",
+    "travel-agent-pi-package/src/runtime/trip-runtime-implementation.ts": "bab6970a54007e8b3016feb330648a4fb15ef612ef39e3baa6b7207fa359af18",
+    "travel-agent-pi-package/src/host/travel-agent-session.ts": "afbbe530d2975192bb5fca3f5dbcebc515735275280ac6cd47fa2d5c9fc2f151",
+    "travel-agent-pi-package/src/host/travel-decision-policy.ts": "cb713232998e64dc5388ffd64ab29bf4501bce9942513d2607250d27682364ac",
+    "plugins/travel-agent/skills/plan-trip/SKILL.md": "a2034e343083ef47a55728f8e933d459318b4d4267def4aa3fc57a06bbaafcda",
+    "src/web/travel-app.jsx": "a23393b8011c7db7b10f731c02ca71cb5f15efd16a19fa325cef8b264c6fe2e9",
+    "tests/traveler-acceptance-regression.test.mjs": "95cb0177cc34445ad7cafbb6d01c5f7e61f8053f7f53a85f74b46b1f56dcaff7",
+    "tests/itinerary-planning-harness.test.mjs": "144d92407edfa75aff2dcd2947c1000ca41117c6c7f8210a10f9f549bec839d5",
+    "tests/travel-execution.test.mjs": "0041d5312f51b63c8229bdec70a9c4a9df15c3b067d17b110eaaa7a2a69ad15c",
+    "src/providers/amap-travel-research.mjs": "ea7cf97c3721b5723019c838eebf72ae992f87c4545d2e9fc5ea7ede21910f76",
+    "travel-agent-pi-package/src/contracts/mobility.ts": "370e1639c97d83f0b8b614605c3a512faf47f2d4109c8eef4c8fe0461a52a5b5"
+  },
+  "checks": {
+    "command": "npm run check",
+    "total": 379,
+    "passed": 375,
+    "skipped": 4,
+    "failed": 0
+  },
+  "evidenceLayers": {
+    "budgetQuestion": "live-budget-final",
+    "providerOwnershipAndRecovery": "live-business-9",
+    "completeAdjustmentAdoption": "live-business-7",
+    "browserBackend": "live-business-7",
+    "browserFrontend": "final web build"
+  },
+  "limitations": [
+    "Fictional travel sources except T08",
+    "No production deployment",
+    "No new 500-user or real-device acceptance"
+  ]
+}

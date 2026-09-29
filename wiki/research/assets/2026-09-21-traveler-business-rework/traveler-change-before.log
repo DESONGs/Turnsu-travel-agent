@@ -1,0 +1,336 @@
+(node:69345) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (241.05325ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 839.16625
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:406:1
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (241.05325ms)
+  AssertionError [ERR_ASSERTION]: new traveler needs invalidate route proof, not the already adopted timeline
+  + actual - expected
+
+  + undefined
+  - {
+  -   days: [
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       stopIds: [
+  -         'arrival_pvg:1:intercity_arrival',
+  -         'stay_people_square:1:bag_drop',
+  -         'play_museum:1:activity',
+  -         'food_local:1:meal',
+  -         'stay_people_square:1:stay_check_in'
+  -       ]
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       stopIds: [
+  -         'stay_people_square:2:stay_departure',
+  -         'play_museum:2:activity',
+  -         'food_local:2:meal',
+  -         'stay_people_square:2:stay_check_in'
+  -       ]
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       stopIds: [
+  -         'stay_people_square:3:stay_departure',
+  -         'play_museum:3:activity',
+  -         'food_local:3:meal',
+  -         'stay_people_square:3:stay_check_in'
+  -       ]
+  -     }
+  -   ],
+  -   planningSource: 'model_plan',
+  -   schemaVersion: 'trip-itinerary-v1',
+  -   stops: [
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'transport',
+  -       endAt: '2026-10-15T09:00:00+08:00',
+  -       fixed: true,
+  -       nodeId: 'arrival_pvg',
+  -       openingHours: null,
+  -       preferredModes: [
+  -         'taxi'
+  -       ],
+  -       rationale: '保留已确认抵达',
+  -       role: 'intercity_arrival',
+  -       startAt: '2026-10-15T09:00:00+08:00',
+  -       stopId: 'arrival_pvg:1:intercity_arrival',
+  -       timeSource: 'provider_schedule',
+  -       title: '上海浦东国际机场 T2'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'stay',
+  -       endAt: '2026-10-15T10:15:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '先放下行李',
+  -       role: 'bag_drop',
+  -       startAt: '2026-10-15T10:00:00+08:00',
+  -       stopId: 'stay_people_square:1:bag_drop',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'play',
+  -       endAt: '2026-10-15T13:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'play_museum',
+  -       openingHours: '09:00-17:00',
+  -       preferredModes: [
+  -         'transit',
+  -         'taxi'
+  -       ],
+  -       rationale: '白天参观',
+  -       role: 'activity',
+  -       startAt: '2026-10-15T11:00:00+08:00',
+  -       stopId: 'play_museum:1:activity',
+  -       timeSource: 'agent_suggested',
+  -       title: '上海博物馆'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'food',
+  -       endAt: '2026-10-15T15:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'food_local',
+  -       openingHours: '11:00-21:00',
+  -       preferredModes: [
+  -         'taxi',
+  -         'walk'
+  -       ],
+  -       rationale: '就近用餐',
+  -       role: 'meal',
+  -       startAt: '2026-10-15T13:30:00+08:00',
+  -       stopId: 'food_local:1:meal',
+  -       timeSource: 'agent_suggested',
+  -       title: '本帮菜馆'
+  -     },
+  -     {
+  -       date: '2026-10-15',
+  -       dayIndex: 1,
+  -       domain: 'stay',
+  -       endAt: '2026-10-15T16:30:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '活动后正式入住',
+  -       role: 'stay_check_in',
+  -       startAt: '2026-10-15T16:00:00+08:00',
+  -       stopId: 'stay_people_square:1:stay_check_in',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       domain: 'stay',
+  -       endAt: '2026-10-16T10:15:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '先放下行李',
+  -       role: 'stay_departure',
+  -       startAt: '2026-10-16T10:00:00+08:00',
+  -       stopId: 'stay_people_square:2:stay_departure',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       domain: 'play',
+  -       endAt: '2026-10-16T13:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'play_museum',
+  -       openingHours: '09:00-17:00',
+  -       preferredModes: [
+  -         'transit',
+  -         'taxi'
+  -       ],
+  -       rationale: '白天参观',
+  -       role: 'activity',
+  -       startAt: '2026-10-16T11:00:00+08:00',
+  -       stopId: 'play_museum:2:activity',
+  -       timeSource: 'agent_suggested',
+  -       title: '上海博物馆'
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       domain: 'food',
+  -       endAt: '2026-10-16T15:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'food_local',
+  -       openingHours: '11:00-21:00',
+  -       preferredModes: [
+  -         'taxi',
+  -         'walk'
+  -       ],
+  -       rationale: '就近用餐',
+  -       role: 'meal',
+  -       startAt: '2026-10-16T13:30:00+08:00',
+  -       stopId: 'food_local:2:meal',
+  -       timeSource: 'agent_suggested',
+  -       title: '本帮菜馆'
+  -     },
+  -     {
+  -       date: '2026-10-16',
+  -       dayIndex: 2,
+  -       domain: 'stay',
+  -       endAt: '2026-10-16T16:30:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '活动后正式入住',
+  -       role: 'stay_check_in',
+  -       startAt: '2026-10-16T16:00:00+08:00',
+  -       stopId: 'stay_people_square:2:stay_check_in',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       domain: 'stay',
+  -       endAt: '2026-10-17T10:15:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '先放下行李',
+  -       role: 'stay_departure',
+  -       startAt: '2026-10-17T10:00:00+08:00',
+  -       stopId: 'stay_people_square:3:stay_departure',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       domain: 'play',
+  -       endAt: '2026-10-17T13:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'play_museum',
+  -       openingHours: '09:00-17:00',
+  -       preferredModes: [
+  -         'transit',
+  -         'taxi'
+  -       ],
+  -       rationale: '白天参观',
+  -       role: 'activity',
+  -       startAt: '2026-10-17T11:00:00+08:00',
+  -       stopId: 'play_museum:3:activity',
+  -       timeSource: 'agent_suggested',
+  -       title: '上海博物馆'
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       domain: 'food',
+  -       endAt: '2026-10-17T15:00:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'food_local',
+  -       openingHours: '11:00-21:00',
+  -       preferredModes: [
+  -         'taxi',
+  -         'walk'
+  -       ],
+  -       rationale: '就近用餐',
+  -       role: 'meal',
+  -       startAt: '2026-10-17T13:30:00+08:00',
+  -       stopId: 'food_local:3:meal',
+  -       timeSource: 'agent_suggested',
+  -       title: '本帮菜馆'
+  -     },
+  -     {
+  -       date: '2026-10-17',
+  -       dayIndex: 3,
+  -       domain: 'stay',
+  -       endAt: '2026-10-17T16:30:00+08:00',
+  -       fixed: false,
+  -       nodeId: 'stay_people_square',
+  -       openingHours: '00:00-23:59',
+  -       preferredModes: [
+  -         'taxi',
+  -         'transit'
+  -       ],
+  -       rationale: '活动后正式入住',
+  -       role: 'stay_check_in',
+  -       startAt: '2026-10-17T16:00:00+08:00',
+  -       stopId: 'stay_people_square:3:stay_check_in',
+  -       timeSource: 'agent_suggested',
+  -       title: '人民广场酒店'
+  -     }
+  -   ],
+  -   tripDates: [
+  -     '2026-10-15',
+  -     '2026-10-16',
+  -     '2026-10-17'
+  -   ]
+  - }
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:438:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: {
+      days: [ [Object], [Object], [Object] ],
+      stops: [
+        [Object], [Object],
+        [Object], [Object],
+        [Object], [Object],
+        [Object], [Object],
+        [Object], [Object],
+        [Object], [Object],
+        [Object]
+      ],
+      tripDates: [ '2026-10-15', '2026-10-16', '2026-10-17' ],
+      schemaVersion: 'trip-itinerary-v1',
+      planningSource: 'model_plan'
+    },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

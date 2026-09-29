@@ -1,0 +1,149 @@
+{
+  "changes": [
+    {
+      "event": "trip_scope_updated",
+      "changeId": "change_1_22defcb7",
+      "revision": 1,
+      "committedAt": "2026-09-21T16:51:29.354Z",
+      "baseRevision": 0,
+      "changedNodeIds": [],
+      "environmentInvalidated": [
+        "weather",
+        "mobility"
+      ]
+    },
+    {
+      "qa": {
+        "budget": {
+          "domains": {
+            "food": {
+              "basis": [
+                "food option 0：1 人 × 1 天 × 每天 2 餐，200 元",
+                "food option 1：1 人 × 1 天 × 每天 2 餐，200 元"
+              ],
+              "quality": "estimate",
+              "committed": 400,
+              "estimated": 400,
+              "unknownCount": 0
+            },
+            "play": {
+              "basis": [
+                "play option 0：1 人 × 1 天 × 每天 1 项付费体验，100 元",
+                "play option 2：1 人 × 1 天 × 每天 1 项付费体验，100 元"
+              ],
+              "quality": "reference",
+              "committed": 200,
+              "estimated": 200,
+              "unknownCount": 0
+            },
+            "stay": {
+              "basis": [
+                "stay option 0：1 晚 × 1 间房，100 元"
+              ],
+              "quality": "reference",
+              "committed": 100,
+              "estimated": 100,
+              "unknownCount": 0
+            },
+            "other": {
+              "basis": [],
+              "quality": "unknown",
+              "committed": 0,
+              "estimated": 0,
+              "unknownCount": 0
+            },
+            "transport": {
+              "basis": [
+                "transport option 0：1 人 × 单程票价，100 元"
+              ],
+              "quality": "reference",
+              "committed": 100,
+              "estimated": 100,
+              "unknownCount": 0
+            }
+          },
+          "currency": "CNY",
+          "committed": 800,
+          "estimated": 800,
+          "totalBudget": 6000,
+          "exceedsBudget": false
+        },
+        "status": "needs_fix",
+        "weather": {
+          "status": "not_checked"
+        },
+        "mobility": {
+          "status": "not_checked",
+          "legCount": 0,
+          "checkedAt": null
+        },
+        "schemaVersion": "travel-qa-v1",
+        "missingDomains": [],
+        "operabilityGaps": [
+          {
+            "code": "city_mobility_unverified",
+            "domain": "transport"
+          }
+        ],
+        "hardConstraintViolations": []
+      },
+      "changeId": "change_2_62459f61",
+      "dirtySet": [
+        "transport_0_ae9c2b87f9567c0bc69594b7_1",
+        "stay_0_ae9c2b87f9567c0bc69594b7_1",
+        "food_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_2_ae9c2b87f9567c0bc69594b7_3",
+        "food_1_ae9c2b87f9567c0bc69594b7_2"
+      ],
+      "revision": 2,
+      "proposalId": "itinerary_e322277adc40d543cf06f05b",
+      "committedAt": "2026-09-21T16:52:49.886Z",
+      "baseRevision": 1,
+      "changedNodeIds": [
+        "transport_0_ae9c2b87f9567c0bc69594b7_1",
+        "stay_0_ae9c2b87f9567c0bc69594b7_1",
+        "food_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_2_ae9c2b87f9567c0bc69594b7_3",
+        "food_1_ae9c2b87f9567c0bc69594b7_2"
+      ]
+    },
+    {
+      "event": "trip_scope_updated",
+      "changeId": "change_3_479ffec2",
+      "revision": 3,
+      "committedAt": "2026-09-21T16:53:08.609Z",
+      "baseRevision": 2,
+      "changedNodeIds": [
+        "transport_0_ae9c2b87f9567c0bc69594b7_1",
+        "stay_0_ae9c2b87f9567c0bc69594b7_1",
+        "food_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_2_ae9c2b87f9567c0bc69594b7_3",
+        "food_1_ae9c2b87f9567c0bc69594b7_2"
+      ],
+      "environmentInvalidated": []
+    },
+    {
+      "event": "trip_scope_updated",
+      "changeId": "change_4_668a3291",
+      "revision": 4,
+      "committedAt": "2026-09-21T16:55:12.180Z",
+      "baseRevision": 3,
+      "changedNodeIds": [
+        "transport_0_ae9c2b87f9567c0bc69594b7_1",
+        "stay_0_ae9c2b87f9567c0bc69594b7_1",
+        "food_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_0_ae9c2b87f9567c0bc69594b7_1",
+        "play_2_ae9c2b87f9567c0bc69594b7_3",
+        "food_1_ae9c2b87f9567c0bc69594b7_2"
+      ],
+      "environmentInvalidated": [
+        "mobility"
+      ]
+    }
+  ],
+  "invalidated_at": "2026-09-21T16:55:12.180Z",
+  "invalidated_by": "traveler_needs_change"
+}

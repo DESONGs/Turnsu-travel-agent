@@ -1,0 +1,4834 @@
+{
+  "at": "2026-09-29T18:32:22.684Z",
+  "trips": [
+    {
+      "tripId": "trip_84b2f3ca",
+      "read": "ok",
+      "revision": 0,
+      "brief": {
+        "pace": "安静、室内文化体验为主，节奏舒缓",
+        "dates": "2026-10-15",
+        "origin": "杭州",
+        "currency": "CNY",
+        "arrivalMode": "高铁",
+        "destination": "上海",
+        "totalBudget": 6000,
+        "durationDays": 1,
+        "partyProfile": "两位成人",
+        "lodgingNights": 1,
+        "planningDomains": [
+          "play",
+          "food",
+          "stay",
+          "transport"
+        ],
+        "lodgingPreference": "两位成人一间房"
+      },
+      "travelers": [
+        {
+          "role": "traveler",
+          "language": "zh-CN",
+          "careNeeds": {
+            "sensory": {
+              "avoidCrowds": true
+            }
+          },
+          "travelerId": "traveler_1",
+          "displayName": "你",
+          "operability": {},
+          "relationship": "本人",
+          "hardConstraints": [],
+          "softPreferences": []
+        },
+        {
+          "role": "traveler",
+          "language": "zh-CN",
+          "careNeeds": {
+            "sensory": {
+              "avoidCrowds": true
+            }
+          },
+          "travelerId": "traveler_2",
+          "displayName": "同行成人",
+          "operability": {},
+          "relationship": "同行",
+          "hardConstraints": [],
+          "softPreferences": []
+        }
+      ],
+      "nodes": [],
+      "proposals": [
+        {
+          "proposalId": "proposal_research_analysis_run_2d4f55311386381153204adb",
+          "isItinerary": false,
+          "nodes": [
+            {
+              "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+              "title": "模拟·早班高铁",
+              "domain": "transport"
+            },
+            {
+              "nodeId": "transport_1_270c490d6774d3b58652323e_2",
+              "title": "模拟·上午高铁",
+              "domain": "transport"
+            },
+            {
+              "nodeId": "transport_2_270c490d6774d3b58652323e_3",
+              "title": "模拟·午间高铁",
+              "domain": "transport"
+            },
+            {
+              "nodeId": "play_0_270c490d6774d3b58652323e_1",
+              "title": "模拟·城市历史馆",
+              "domain": "play"
+            },
+            {
+              "nodeId": "play_1_270c490d6774d3b58652323e_2",
+              "title": "模拟·室内艺术馆",
+              "domain": "play"
+            },
+            {
+              "nodeId": "play_2_270c490d6774d3b58652323e_3",
+              "title": "模拟·滨江公园",
+              "domain": "play"
+            },
+            {
+              "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+              "title": "模拟·庭院安静酒店",
+              "domain": "stay"
+            },
+            {
+              "nodeId": "stay_0_270c490d6774d3b58652323e_2",
+              "title": "模拟·梧桐安静酒店",
+              "domain": "stay"
+            },
+            {
+              "nodeId": "stay_2_270c490d6774d3b58652323e_3",
+              "title": "模拟·街区酒店",
+              "domain": "stay"
+            }
+          ]
+        },
+        {
+          "proposalId": "itinerary_6034556e586673403c6af1fa",
+          "isItinerary": true,
+          "nodes": [
+            {
+              "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+              "title": "模拟·早班高铁",
+              "domain": "transport"
+            },
+            {
+              "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+              "title": "模拟·庭院安静酒店",
+              "domain": "stay"
+            },
+            {
+              "nodeId": "play_0_270c490d6774d3b58652323e_1",
+              "title": "模拟·城市历史馆",
+              "domain": "play"
+            },
+            {
+              "nodeId": "play_1_270c490d6774d3b58652323e_2",
+              "title": "模拟·室内艺术馆",
+              "domain": "play"
+            }
+          ],
+          "plan": {
+            "days": [
+              {
+                "date": "2026-10-15",
+                "stops": [
+                  {
+                    "role": "intercity_arrival",
+                    "fixed": true,
+                    "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_arrival",
+                    "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                    "timeWindow": {
+                      "endAt": "2026-10-15T09:00:00+08:00",
+                      "startAt": "2026-10-15T09:00:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "durationMinutes": 0
+                  },
+                  {
+                    "role": "bag_drop",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_bagdrop",
+                    "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T09:45:00+08:00"
+                    },
+                    "preferredModes": [
+                      "taxi",
+                      "transit"
+                    ],
+                    "durationMinutes": 30
+                  },
+                  {
+                    "role": "activity",
+                    "fixed": false,
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_play0",
+                    "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T10:35:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "durationMinutes": 90
+                  },
+                  {
+                    "role": "activity",
+                    "fixed": false,
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "stopId": "s_play1",
+                    "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T14:00:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "durationMinutes": 90
+                  },
+                  {
+                    "role": "stay_check_in",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_checkin",
+                    "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T16:15:00+08:00"
+                    },
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "durationMinutes": 30
+                  },
+                  {
+                    "role": "stay_return",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_return",
+                    "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T20:30:00+08:00"
+                    },
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "durationMinutes": 15
+                  }
+                ],
+                "dayIndex": 1
+              }
+            ],
+            "runId": "planrun_c90f1586",
+            "scope": "complete_trip",
+            "tripId": "trip_84b2f3ca",
+            "attempt": 2,
+            "objective": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+            "priorities": [
+              "室内文化体验优先",
+              "避开拥挤、节奏舒缓",
+              "两位成人一间房",
+              "换乘与步行尽量少"
+            ],
+            "assumptions": [
+              "车次与到站时间按“上午抵沪、约09:00 到站”的弹性假设排，未按已购车票核验；若实际到站更晚，下午与晚间站点整体顺延。",
+              "餐饮来源两次检索均无候选，午餐与晚餐的地点、营业时间与参考人均价格无法排入站点；草案保留12:00–14:00 与18:00–20:00 的用餐时间窗，待有可用餐饮资料后再补。",
+              "2026-10-15 上海天气资料不可用，户外与步行安排未按天气校准。",
+              "当地交通（酒店到场馆、晚间返回）尚无候选来源，仅给出偏好方式，未核验实际路线与耗时。",
+              "所有价格为测试来源的参考价，非实际出行查询结果，房态、开放时间与无障碍连续性均未核验。"
+            ],
+            "baseRevision": 0,
+            "evidenceRefs": [
+              "source_transport_0",
+              "source_stay_1",
+              "source_play_0",
+              "source_play_1"
+            ],
+            "fixedAnchors": [
+              {
+                "kind": "arrival",
+                "endAt": "2026-10-15T09:00:00+08:00",
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "startAt": "2026-10-15T09:00:00+08:00"
+              }
+            ],
+            "needsContext": [],
+            "lockedNodeIds": [],
+            "schemaVersion": "itinerary-plan-v1"
+          }
+        }
+      ],
+      "planning": {
+        "draft": {
+          "plan": {
+            "days": [
+              {
+                "date": "2026-10-15",
+                "stops": [
+                  {
+                    "role": "intercity_arrival",
+                    "fixed": true,
+                    "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_arrival",
+                    "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                    "timeWindow": {
+                      "endAt": "2026-10-15T09:00:00+08:00",
+                      "startAt": "2026-10-15T09:00:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "durationMinutes": 0
+                  },
+                  {
+                    "role": "bag_drop",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_bagdrop",
+                    "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T09:45:00+08:00"
+                    },
+                    "preferredModes": [
+                      "taxi",
+                      "transit"
+                    ],
+                    "durationMinutes": 30
+                  },
+                  {
+                    "role": "activity",
+                    "fixed": false,
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_play0",
+                    "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T10:35:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "durationMinutes": 90
+                  },
+                  {
+                    "role": "activity",
+                    "fixed": false,
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "stopId": "s_play1",
+                    "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T14:00:00+08:00"
+                    },
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "durationMinutes": 90
+                  },
+                  {
+                    "role": "stay_check_in",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_checkin",
+                    "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T16:15:00+08:00"
+                    },
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "durationMinutes": 30
+                  },
+                  {
+                    "role": "stay_return",
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_return",
+                    "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T20:30:00+08:00"
+                    },
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "durationMinutes": 15
+                  }
+                ],
+                "dayIndex": 1
+              }
+            ],
+            "runId": "planrun_c90f1586",
+            "scope": "complete_trip",
+            "tripId": "trip_84b2f3ca",
+            "attempt": 2,
+            "objective": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+            "priorities": [
+              "室内文化体验优先",
+              "避开拥挤、节奏舒缓",
+              "两位成人一间房",
+              "换乘与步行尽量少"
+            ],
+            "assumptions": [
+              "车次与到站时间按“上午抵沪、约09:00 到站”的弹性假设排，未按已购车票核验；若实际到站更晚，下午与晚间站点整体顺延。",
+              "餐饮来源两次检索均无候选，午餐与晚餐的地点、营业时间与参考人均价格无法排入站点；草案保留12:00–14:00 与18:00–20:00 的用餐时间窗，待有可用餐饮资料后再补。",
+              "2026-10-15 上海天气资料不可用，户外与步行安排未按天气校准。",
+              "当地交通（酒店到场馆、晚间返回）尚无候选来源，仅给出偏好方式，未核验实际路线与耗时。",
+              "所有价格为测试来源的参考价，非实际出行查询结果，房态、开放时间与无障碍连续性均未核验。"
+            ],
+            "baseRevision": 0,
+            "evidenceRefs": [
+              "source_transport_0",
+              "source_stay_1",
+              "source_play_0",
+              "source_play_1"
+            ],
+            "fixedAnchors": [
+              {
+                "kind": "arrival",
+                "endAt": "2026-10-15T09:00:00+08:00",
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "startAt": "2026-10-15T09:00:00+08:00"
+              }
+            ],
+            "needsContext": [],
+            "lockedNodeIds": [],
+            "schemaVersion": "itinerary-plan-v1"
+          },
+          "planId": "plan_ddfba2d616234d34bf4e907de14fe4ce",
+          "version": 2,
+          "createdAt": "2026-09-29T18:31:44.369Z",
+          "itinerary": {
+            "days": [
+              {
+                "date": "2026-10-15",
+                "stopIds": [
+                  "s_arrival",
+                  "s_bagdrop",
+                  "s_play0",
+                  "s_play1",
+                  "s_checkin",
+                  "s_return"
+                ],
+                "dayIndex": 1
+              }
+            ],
+            "stops": [
+              {
+                "date": "2026-10-15",
+                "role": "intercity_arrival",
+                "endAt": "2026-10-15T09:00:00+08:00",
+                "fixed": true,
+                "title": "模拟·早班高铁",
+                "domain": "transport",
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "stopId": "s_arrival",
+                "startAt": "2026-10-15T09:00:00+08:00",
+                "dayIndex": 1,
+                "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                "timeSource": "provider_schedule",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "transit"
+                ]
+              },
+              {
+                "date": "2026-10-15",
+                "role": "bag_drop",
+                "endAt": "2026-10-15T10:15:00+08:00",
+                "fixed": false,
+                "title": "模拟·庭院安静酒店",
+                "domain": "stay",
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "stopId": "s_bagdrop",
+                "startAt": "2026-10-15T09:45:00+08:00",
+                "dayIndex": 1,
+                "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                "timeSource": "agent_suggested",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "taxi",
+                  "transit"
+                ]
+              },
+              {
+                "date": "2026-10-15",
+                "role": "activity",
+                "endAt": "2026-10-15T12:05:00+08:00",
+                "fixed": false,
+                "title": "模拟·城市历史馆",
+                "domain": "play",
+                "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                "stopId": "s_play0",
+                "startAt": "2026-10-15T10:35:00+08:00",
+                "dayIndex": 1,
+                "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                "timeSource": "agent_suggested",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "transit",
+                  "taxi"
+                ]
+              },
+              {
+                "date": "2026-10-15",
+                "role": "activity",
+                "endAt": "2026-10-15T15:30:00+08:00",
+                "fixed": false,
+                "title": "模拟·室内艺术馆",
+                "domain": "play",
+                "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                "stopId": "s_play1",
+                "startAt": "2026-10-15T14:00:00+08:00",
+                "dayIndex": 1,
+                "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                "timeSource": "agent_suggested",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "transit",
+                  "taxi"
+                ]
+              },
+              {
+                "date": "2026-10-15",
+                "role": "stay_check_in",
+                "endAt": "2026-10-15T16:45:00+08:00",
+                "fixed": false,
+                "title": "模拟·庭院安静酒店",
+                "domain": "stay",
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "stopId": "s_checkin",
+                "startAt": "2026-10-15T16:15:00+08:00",
+                "dayIndex": 1,
+                "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                "timeSource": "agent_suggested",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "walk",
+                  "taxi"
+                ]
+              },
+              {
+                "date": "2026-10-15",
+                "role": "stay_return",
+                "endAt": "2026-10-15T20:45:00+08:00",
+                "fixed": false,
+                "title": "模拟·庭院安静酒店",
+                "domain": "stay",
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "stopId": "s_return",
+                "startAt": "2026-10-15T20:30:00+08:00",
+                "dayIndex": 1,
+                "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                "timeSource": "agent_suggested",
+                "openingHours": "00:00-23:59",
+                "preferredModes": [
+                  "walk",
+                  "taxi"
+                ]
+              }
+            ],
+            "tripDates": [
+              "2026-10-15"
+            ],
+            "schemaVersion": "trip-itinerary-v1",
+            "planningSource": "model_plan"
+          },
+          "lifecycle": "draft",
+          "previewId": "itp_286397957672b2fcc6a1681e6b01812d",
+          "updatedAt": "2026-09-29T18:31:56.328Z",
+          "candidates": [
+            {
+              "cost": 78,
+              "time": "2026-10-15T09:00:00+08:00",
+              "media": [],
+              "price": {
+                "basis": "per_person_one_way",
+                "amount": 78,
+                "quality": "reference",
+                "currency": "CNY",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "title": "模拟·早班高铁",
+              "domain": "transport",
+              "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+              "status": "candidate",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "location": {
+                "name": "模拟·早班高铁",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.22,
+                  "longitude": 121.46
+                }
+              },
+              "selected": false,
+              "claimRefs": [
+                "claim_transport_0_270c490d6774d3b58652323e_1_1"
+              ],
+              "sourceRefs": [
+                "source_transport_0"
+              ],
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "arrivalAt": "2026-10-15T09:00:00+08:00",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "highSpeed": true,
+                "departureAt": "2026-10-15T08:00:00+08:00",
+                "sourceLabel": "decision_fixture",
+                "arrivalPlace": {
+                  "label": "上海虹桥"
+                },
+                "mobilityRole": "intercity_inventory",
+                "researchDepth": "provider_search",
+                "routeVerified": false,
+                "transportType": "TRAIN",
+                "departurePlace": {
+                  "label": "杭州东"
+                },
+                "planningWindow": {
+                  "basis": "provider_schedule",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "label": "出发日 · 城际抵达",
+                  "startAt": "2026-10-15T08:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "scheduleVerified": true,
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "所有高铁候选(transport_0/transport_1/transport_2)成本均为78元/人，但全部标注相同的出发与到达时间(08:00-09:00)，且transport_2摘要描述为户外热闹，与其余两项不同，时间信息可能为占位数据。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2"
+                      ]
+                    },
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2",
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    },
+                    {
+                      "lane": "operability_schedule",
+                      "summary": "transport_0 高铁班次可运行：杭州东08:00出发，上海虹桥09:00抵达，库存与时刻已核验，成本78元。",
+                      "reasonCode": "operable",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "inventoryVerified": true,
+                "requestedFacilityNeeds": []
+              },
+              "sourceStatus": "contract_fixture",
+              "spoilerLevel": "low",
+              "impactsNodeIds": [],
+              "foreignGuestEligible": null
+            },
+            {
+              "cost": 80,
+              "time": "2026-10-15T10:00:00+08:00",
+              "media": [],
+              "price": {
+                "basis": "per_person",
+                "amount": 80,
+                "quality": "reference",
+                "currency": "CNY",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "title": "模拟·城市历史馆",
+              "domain": "play",
+              "nodeId": "play_0_270c490d6774d3b58652323e_1",
+              "status": "candidate",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "location": {
+                "name": "模拟·城市历史馆",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.22,
+                  "longitude": 121.46
+                }
+              },
+              "selected": false,
+              "claimRefs": [
+                "claim_play_0_270c490d6774d3b58652323e_1_1"
+              ],
+              "sourceRefs": [
+                "source_play_0"
+              ],
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T12:00:00+08:00",
+                  "label": "第 1 天 10:00–12:00 · 轻松体验",
+                  "startAt": "2026-10-15T10:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "local_discovery",
+                      "summary": "play_0 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                      "reasonCode": "match_preference",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0"
+                      ]
+                    },
+                    {
+                      "lane": "local_discovery",
+                      "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                      "reasonCode": "unverified_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0",
+                        "source_play_1",
+                        "claim_play_1",
+                        "source_play_2",
+                        "claim_play_2"
+                      ]
+                    },
+                    {
+                      "lane": "operability_schedule",
+                      "summary": "play_0 为室内文化类候选（城市历史馆），与安静/室内文化偏好方向一致，但缺少开放时间、游览时长建议、当日预约/库存状态、无障碍连续性及真实库存核验。",
+                      "reasonCode": "partial_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              },
+              "sourceStatus": "contract_fixture",
+              "spoilerLevel": "low",
+              "impactsNodeIds": [],
+              "foreignGuestEligible": null
+            },
+            {
+              "cost": 30,
+              "time": "2026-10-15T10:00:00+08:00",
+              "media": [],
+              "price": {
+                "basis": "per_person",
+                "amount": 30,
+                "quality": "reference",
+                "currency": "CNY",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "title": "模拟·室内艺术馆",
+              "domain": "play",
+              "nodeId": "play_1_270c490d6774d3b58652323e_2",
+              "status": "candidate",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "location": {
+                "name": "模拟·室内艺术馆",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.224999999999998,
+                  "longitude": 121.47
+                }
+              },
+              "selected": false,
+              "claimRefs": [
+                "claim_play_1_270c490d6774d3b58652323e_2_1"
+              ],
+              "sourceRefs": [
+                "source_play_1"
+              ],
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T12:00:00+08:00",
+                  "label": "第 1 天 10:00–12:00 · 轻松体验",
+                  "startAt": "2026-10-15T10:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "local_discovery",
+                      "summary": "play_1 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                      "reasonCode": "match_preference",
+                      "evidenceRefs": [
+                        "source_play_1",
+                        "claim_play_1"
+                      ]
+                    },
+                    {
+                      "lane": "local_discovery",
+                      "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                      "reasonCode": "unverified_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0",
+                        "source_play_1",
+                        "claim_play_1",
+                        "source_play_2",
+                        "claim_play_2"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              },
+              "sourceStatus": "contract_fixture",
+              "spoilerLevel": "low",
+              "impactsNodeIds": [],
+              "foreignGuestEligible": null
+            },
+            {
+              "cost": 250,
+              "time": "2026-10-15T16:00:00+08:00",
+              "media": [],
+              "price": {
+                "basis": "per_night_room",
+                "amount": 250,
+                "quality": "reference",
+                "currency": "CNY",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "title": "模拟·庭院安静酒店",
+              "domain": "stay",
+              "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+              "status": "candidate",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "location": {
+                "name": "模拟·庭院安静酒店",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.224999999999998,
+                  "longitude": 121.47
+                }
+              },
+              "selected": false,
+              "claimRefs": [
+                "claim_stay_1_270c490d6774d3b58652323e_1_1"
+              ],
+              "sourceRefs": [
+                "source_stay_1"
+              ],
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T18:00:00+08:00",
+                  "label": "第 1 天 16:00–18:00 · 抵达后入住",
+                  "startAt": "2026-10-15T16:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "stay_0(400元)与stay_1(250元)均描述室内安静、少步行、本地文化体验，更贴合安静与室内文化偏好；stay_2(180元)描述户外热闹、较多步行，与偏好冲突。stay_1在更低成本下提供与stay_0相似的安静属性，性价比更优。",
+                      "reasonCode": "preference_match",
+                      "evidenceRefs": [
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    },
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2",
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              },
+              "sourceStatus": "contract_fixture",
+              "spoilerLevel": "low",
+              "impactsNodeIds": [],
+              "foreignGuestEligible": null
+            }
+          ],
+          "proposalId": "itinerary_6034556e586673403c6af1fa",
+          "validation": {
+            "status": "unknown",
+            "mobility": {
+              "legs": [
+                {
+                  "legId": "fixture_leg_0",
+                  "origin": {
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "endAt": "2026-10-15T01:00:00.000Z",
+                    "label": "模拟·早班高铁",
+                    "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_arrival",
+                    "startAt": "2026-10-15T01:00:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.226,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "rationale": "受控路线",
+                  "destination": {
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "endAt": "2026-10-15T02:15:00.000Z",
+                    "label": "模拟·庭院安静酒店",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_bagdrop",
+                    "startAt": "2026-10-15T01:45:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.21,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "steps": [],
+                      "polyline": [
+                        {
+                          "latitude": 31.226,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        },
+                        {
+                          "latitude": 31.21,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        }
+                      ],
+                      "transfers": 0,
+                      "totalMinutes": 20,
+                      "navigationUrl": null,
+                      "scheduleBasis": "query_time_estimate",
+                      "walkingMeters": 0,
+                      "distanceMeters": 3000,
+                      "realTimeArrival": false,
+                      "estimatedFareCny": 25,
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasRamp": false,
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "realTimeStatus": false,
+                        "stepFreeContinuity": "not_verified"
+                      }
+                    }
+                  ],
+                  "recommendedMode": "taxi",
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_1",
+                  "origin": {
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "endAt": "2026-10-15T02:15:00.000Z",
+                    "label": "模拟·庭院安静酒店",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_bagdrop",
+                    "startAt": "2026-10-15T01:45:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.21,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "rationale": "受控路线",
+                  "destination": {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T04:05:00.000Z",
+                    "label": "模拟·城市历史馆",
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_play0",
+                    "startAt": "2026-10-15T02:35:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.218,
+                      "longitude": 121.46600000000001,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "steps": [],
+                      "polyline": [
+                        {
+                          "latitude": 31.21,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        },
+                        {
+                          "latitude": 31.218,
+                          "longitude": 121.46600000000001,
+                          "coordinateSystem": "GCJ-02"
+                        }
+                      ],
+                      "transfers": 0,
+                      "totalMinutes": 20,
+                      "navigationUrl": null,
+                      "scheduleBasis": "query_time_estimate",
+                      "walkingMeters": 0,
+                      "distanceMeters": 3000,
+                      "realTimeArrival": false,
+                      "estimatedFareCny": 25,
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasRamp": false,
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "realTimeStatus": false,
+                        "stepFreeContinuity": "not_verified"
+                      }
+                    }
+                  ],
+                  "recommendedMode": "taxi",
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_2",
+                  "origin": {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T04:05:00.000Z",
+                    "label": "模拟·城市历史馆",
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_play0",
+                    "startAt": "2026-10-15T02:35:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.218,
+                      "longitude": 121.46600000000001,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "rationale": "受控路线",
+                  "destination": {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T07:30:00.000Z",
+                    "label": "模拟·室内艺术馆",
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "stopId": "s_play1",
+                    "startAt": "2026-10-15T06:00:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.218,
+                      "longitude": 121.474,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "steps": [],
+                      "polyline": [
+                        {
+                          "latitude": 31.218,
+                          "longitude": 121.46600000000001,
+                          "coordinateSystem": "GCJ-02"
+                        },
+                        {
+                          "latitude": 31.218,
+                          "longitude": 121.474,
+                          "coordinateSystem": "GCJ-02"
+                        }
+                      ],
+                      "transfers": 0,
+                      "totalMinutes": 20,
+                      "navigationUrl": null,
+                      "scheduleBasis": "query_time_estimate",
+                      "walkingMeters": 0,
+                      "distanceMeters": 3000,
+                      "realTimeArrival": false,
+                      "estimatedFareCny": 25,
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasRamp": false,
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "realTimeStatus": false,
+                        "stepFreeContinuity": "not_verified"
+                      }
+                    }
+                  ],
+                  "recommendedMode": "taxi",
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_3",
+                  "origin": {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T07:30:00.000Z",
+                    "label": "模拟·室内艺术馆",
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "stopId": "s_play1",
+                    "startAt": "2026-10-15T06:00:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.218,
+                      "longitude": 121.474,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "rationale": "受控路线",
+                  "destination": {
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "endAt": "2026-10-15T08:45:00.000Z",
+                    "label": "模拟·庭院安静酒店",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_checkin",
+                    "startAt": "2026-10-15T08:15:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.21,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "steps": [],
+                      "polyline": [
+                        {
+                          "latitude": 31.218,
+                          "longitude": 121.474,
+                          "coordinateSystem": "GCJ-02"
+                        },
+                        {
+                          "latitude": 31.21,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        }
+                      ],
+                      "transfers": 0,
+                      "totalMinutes": 20,
+                      "navigationUrl": null,
+                      "scheduleBasis": "query_time_estimate",
+                      "walkingMeters": 0,
+                      "distanceMeters": 3000,
+                      "realTimeArrival": false,
+                      "estimatedFareCny": 25,
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasRamp": false,
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "realTimeStatus": false,
+                        "stepFreeContinuity": "not_verified"
+                      }
+                    }
+                  ],
+                  "recommendedMode": "taxi",
+                  "recommendationAudit": null
+                },
+                {
+                  "legId": "fixture_leg_4",
+                  "origin": {
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "endAt": "2026-10-15T08:45:00.000Z",
+                    "label": "模拟·庭院安静酒店",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_checkin",
+                    "startAt": "2026-10-15T08:15:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.21,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "rationale": "受控路线",
+                  "destination": {
+                    "date": "2026-10-15",
+                    "role": "stay_return",
+                    "endAt": "2026-10-15T12:45:00.000Z",
+                    "label": "模拟·庭院安静酒店",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_return",
+                    "startAt": "2026-10-15T12:30:00.000Z",
+                    "dayIndex": 1,
+                    "coordinates": {
+                      "latitude": 31.21,
+                      "longitude": 121.458,
+                      "coordinateSystem": "GCJ-02"
+                    }
+                  },
+                  "alternatives": [
+                    {
+                      "mode": "taxi",
+                      "steps": [],
+                      "polyline": [
+                        {
+                          "latitude": 31.21,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        },
+                        {
+                          "latitude": 31.21,
+                          "longitude": 121.458,
+                          "coordinateSystem": "GCJ-02"
+                        }
+                      ],
+                      "transfers": 0,
+                      "totalMinutes": 20,
+                      "navigationUrl": null,
+                      "scheduleBasis": "query_time_estimate",
+                      "walkingMeters": 0,
+                      "distanceMeters": 3000,
+                      "realTimeArrival": false,
+                      "estimatedFareCny": 25,
+                      "accessibilityFeatures": [],
+                      "accessibilityAssessment": {
+                        "hasRamp": false,
+                        "hasStairs": false,
+                        "hasElevator": false,
+                        "hasEscalator": false,
+                        "realTimeStatus": false,
+                        "stepFreeContinuity": "not_verified"
+                      }
+                    }
+                  ],
+                  "recommendedMode": "taxi",
+                  "recommendationAudit": null
+                }
+              ],
+              "reason": null,
+              "source": "fixture",
+              "status": "completed",
+              "caveats": [
+                "QA 模拟路线与示意折线，仅供交互验证，不可实际导航。"
+              ],
+              "coverage": {
+                "unscheduled": false,
+                "routedNodeIds": [
+                  "transport_0_270c490d6774d3b58652323e_1",
+                  "stay_1_270c490d6774d3b58652323e_1",
+                  "play_0_270c490d6774d3b58652323e_1",
+                  "play_1_270c490d6774d3b58652323e_2"
+                ],
+                "routedStopIds": [
+                  "s_arrival",
+                  "s_bagdrop",
+                  "s_play0",
+                  "s_play1",
+                  "s_checkin",
+                  "s_return"
+                ],
+                "unresolvedNodeIds": [],
+                "unresolvedStopIds": []
+              },
+              "checkedAt": "2026-09-29T18:31:56.295Z",
+              "itinerary": {
+                "days": [
+                  {
+                    "date": "2026-10-15",
+                    "stopIds": [
+                      "s_arrival",
+                      "s_bagdrop",
+                      "s_play0",
+                      "s_play1",
+                      "s_checkin",
+                      "s_return"
+                    ],
+                    "dayIndex": 1
+                  }
+                ],
+                "stops": [
+                  {
+                    "date": "2026-10-15",
+                    "role": "intercity_arrival",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "fixed": true,
+                    "title": "模拟·早班高铁",
+                    "domain": "transport",
+                    "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_arrival",
+                    "startAt": "2026-10-15T09:00:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                    "timeSource": "provider_schedule",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "transit"
+                    ]
+                  },
+                  {
+                    "date": "2026-10-15",
+                    "role": "bag_drop",
+                    "endAt": "2026-10-15T10:15:00+08:00",
+                    "fixed": false,
+                    "title": "模拟·庭院安静酒店",
+                    "domain": "stay",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_bagdrop",
+                    "startAt": "2026-10-15T09:45:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                    "timeSource": "agent_suggested",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "taxi",
+                      "transit"
+                    ]
+                  },
+                  {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T12:05:00+08:00",
+                    "fixed": false,
+                    "title": "模拟·城市历史馆",
+                    "domain": "play",
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "stopId": "s_play0",
+                    "startAt": "2026-10-15T10:35:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                    "timeSource": "agent_suggested",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ]
+                  },
+                  {
+                    "date": "2026-10-15",
+                    "role": "activity",
+                    "endAt": "2026-10-15T15:30:00+08:00",
+                    "fixed": false,
+                    "title": "模拟·室内艺术馆",
+                    "domain": "play",
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "stopId": "s_play1",
+                    "startAt": "2026-10-15T14:00:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                    "timeSource": "agent_suggested",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ]
+                  },
+                  {
+                    "date": "2026-10-15",
+                    "role": "stay_check_in",
+                    "endAt": "2026-10-15T16:45:00+08:00",
+                    "fixed": false,
+                    "title": "模拟·庭院安静酒店",
+                    "domain": "stay",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_checkin",
+                    "startAt": "2026-10-15T16:15:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                    "timeSource": "agent_suggested",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ]
+                  },
+                  {
+                    "date": "2026-10-15",
+                    "role": "stay_return",
+                    "endAt": "2026-10-15T20:45:00+08:00",
+                    "fixed": false,
+                    "title": "模拟·庭院安静酒店",
+                    "domain": "stay",
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "stopId": "s_return",
+                    "startAt": "2026-10-15T20:30:00+08:00",
+                    "dayIndex": 1,
+                    "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                    "timeSource": "agent_suggested",
+                    "openingHours": "00:00-23:59",
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ]
+                  }
+                ],
+                "tripDates": [
+                  "2026-10-15"
+                ],
+                "schemaVersion": "trip-itinerary-v1",
+                "planningSource": "model_plan"
+              },
+              "freshUntil": "2026-09-29T19:31:56.295Z",
+              "destination": "上海",
+              "feasibility": {
+                "issues": [
+                  {
+                    "code": "meal_window_missing",
+                    "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                    "stopIds": [],
+                    "dayIndex": 1,
+                    "severity": "blocking",
+                    "allowedRepairDirections": [
+                      "reorder_flexible_stop",
+                      "replace_candidate"
+                    ]
+                  },
+                  {
+                    "code": "meal_window_missing",
+                    "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                    "stopIds": [],
+                    "dayIndex": 1,
+                    "severity": "blocking",
+                    "allowedRepairDirections": [
+                      "reorder_flexible_stop",
+                      "replace_candidate"
+                    ]
+                  }
+                ],
+                "status": "blocked",
+                "checkedAt": "2026-09-29T18:31:56.295Z",
+                "canConfirm": false,
+                "schemaVersion": "trip-feasibility-v1",
+                "primaryBlocker": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。"
+              },
+              "travelerFit": {
+                "avoidStairs": false,
+                "maxTransfers": null,
+                "stayAnchorFits": [],
+                "stepFreeRequired": false,
+                "walkingTargetSource": null,
+                "transferTargetSource": null,
+                "accessibilityEvidence": "not_required",
+                "planningWalkingTarget": null,
+                "constrainedTravelerIds": [],
+                "planningTransferTarget": null,
+                "maxContinuousWalkMeters": null
+              },
+              "schemaVersion": "trip-mobility-v1",
+              "fabricatedResults": false,
+              "sourceDocumentation": null
+            },
+            "checkedAt": "2026-09-29T18:31:56.295Z",
+            "freshUntil": "2026-09-29T19:31:56.295Z",
+            "feasibility": {
+              "issues": [
+                {
+                  "code": "meal_window_missing",
+                  "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                  "stopIds": [],
+                  "dayIndex": 1,
+                  "severity": "blocking",
+                  "allowedRepairDirections": [
+                    "reorder_flexible_stop",
+                    "replace_candidate"
+                  ]
+                },
+                {
+                  "code": "meal_window_missing",
+                  "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                  "stopIds": [],
+                  "dayIndex": 1,
+                  "severity": "blocking",
+                  "allowedRepairDirections": [
+                    "reorder_flexible_stop",
+                    "replace_candidate"
+                  ]
+                }
+              ],
+              "status": "blocked",
+              "checkedAt": "2026-09-29T18:31:56.295Z",
+              "canConfirm": false,
+              "schemaVersion": "trip-feasibility-v1",
+              "primaryBlocker": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。"
+            },
+            "invalidatedBy": [],
+            "dependencyFingerprint": "55e9691c15dcf9a7c61cbbda2e66f4a3c16ca580ecfcfae938f2dd10c99a45ab"
+          },
+          "userRequest": "10月15日两位成人从杭州坐高铁上午到上海，游玩一天住一晚，一间房，返程自行安排，总预算6000元，喜欢安静和室内文化体验。请安排完整吃住行玩草案。如果某类资料暂缺，保留查到的其他选择和已排好的部分，说明缺口，别编造。先给草案，不要采用。",
+          "lastEstimate": 751,
+          "previousPlanId": null,
+          "requireCompletePlan": true
+        },
+        "adopted": null,
+        "history": [
+          {
+            "plan": {
+              "days": [
+                {
+                  "date": "2026-10-15",
+                  "stops": [
+                    {
+                      "role": "intercity_arrival",
+                      "fixed": true,
+                      "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_arrival",
+                      "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                      "timeWindow": {
+                        "endAt": "2026-10-15T09:00:00+08:00",
+                        "startAt": "2026-10-15T09:00:00+08:00"
+                      },
+                      "preferredModes": [
+                        "transit"
+                      ],
+                      "durationMinutes": 0
+                    },
+                    {
+                      "role": "bag_drop",
+                      "fixed": false,
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_bagdrop",
+                      "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                      "timeWindow": {
+                        "startAt": "2026-10-15T09:45:00+08:00"
+                      },
+                      "preferredModes": [
+                        "taxi",
+                        "transit"
+                      ],
+                      "durationMinutes": 30
+                    },
+                    {
+                      "role": "activity",
+                      "fixed": false,
+                      "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_play0",
+                      "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                      "timeWindow": {
+                        "startAt": "2026-10-15T10:30:00+08:00"
+                      },
+                      "preferredModes": [
+                        "transit",
+                        "taxi"
+                      ],
+                      "durationMinutes": 90
+                    },
+                    {
+                      "role": "activity",
+                      "fixed": false,
+                      "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                      "stopId": "s_play1",
+                      "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                      "timeWindow": {
+                        "startAt": "2026-10-15T14:00:00+08:00"
+                      },
+                      "preferredModes": [
+                        "transit",
+                        "taxi"
+                      ],
+                      "durationMinutes": 90
+                    },
+                    {
+                      "role": "stay_check_in",
+                      "fixed": false,
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_checkin",
+                      "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                      "timeWindow": {
+                        "startAt": "2026-10-15T16:15:00+08:00"
+                      },
+                      "preferredModes": [
+                        "walk",
+                        "taxi"
+                      ],
+                      "durationMinutes": 30
+                    },
+                    {
+                      "role": "stay_return",
+                      "fixed": false,
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_return",
+                      "rationale": "晚间用完餐后回到同一家酒店休息，第二天返程自理。",
+                      "timeWindow": {
+                        "startAt": "2026-10-15T20:30:00+08:00"
+                      },
+                      "preferredModes": [
+                        "walk",
+                        "taxi"
+                      ],
+                      "durationMinutes": 15
+                    }
+                  ],
+                  "dayIndex": 1
+                }
+              ],
+              "runId": "planrun_c90f1586",
+              "scope": "complete_trip",
+              "tripId": "trip_84b2f3ca",
+              "attempt": 1,
+              "objective": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+              "priorities": [
+                "室内文化体验优先",
+                "避开拥挤、节奏舒缓",
+                "两位成人一间房",
+                "换乘与步行尽量少"
+              ],
+              "assumptions": [
+                "车次与到站时间按“上午抵沪、约09:00 到站”的弹性假设排，未按已购车票核验。",
+                "餐饮资料两次检索均无候选，午餐与晚餐地点、营业时间与参考人均价格无法排入站点；草案在12:00–14:00 与18:00–20:00 预留用餐时间窗。",
+                "2026-10-15 上海天气资料不可用，户外与步行安排未按天气校准。",
+                "当地交通（酒店到场馆、晚间返回）尚无候选来源，仅给出偏好方式，未核验实际路线与耗时。",
+                "所有价格为测试来源的参考价，非实际出行查询结果，房态、开放时间与无障碍连续性均未核验。"
+              ],
+              "baseRevision": 0,
+              "evidenceRefs": [
+                "source_transport_0",
+                "source_stay_1",
+                "source_play_0",
+                "source_play_1"
+              ],
+              "fixedAnchors": [
+                {
+                  "kind": "arrival",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                  "startAt": "2026-10-15T09:00:00+08:00"
+                }
+              ],
+              "needsContext": [
+                "具体高铁车次与到站时间（用户侧信息），用于把上午抵达窗口从假设改为确定"
+              ],
+              "lockedNodeIds": [],
+              "schemaVersion": "itinerary-plan-v1"
+            },
+            "planId": "plan_ddfba2d616234d34bf4e907de14fe4ce",
+            "version": 1,
+            "createdAt": "2026-09-29T18:31:44.369Z",
+            "itinerary": {
+              "days": [
+                {
+                  "date": "2026-10-15",
+                  "stopIds": [
+                    "s_arrival",
+                    "s_bagdrop",
+                    "s_play0",
+                    "s_play1",
+                    "s_checkin",
+                    "s_return"
+                  ],
+                  "dayIndex": 1
+                }
+              ],
+              "stops": [
+                {
+                  "date": "2026-10-15",
+                  "role": "intercity_arrival",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "fixed": true,
+                  "title": "模拟·早班高铁",
+                  "domain": "transport",
+                  "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                  "stopId": "s_arrival",
+                  "startAt": "2026-10-15T09:00:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                  "timeSource": "provider_schedule",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "transit"
+                  ]
+                },
+                {
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "endAt": "2026-10-15T10:15:00+08:00",
+                  "fixed": false,
+                  "title": "模拟·庭院安静酒店",
+                  "domain": "stay",
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_bagdrop",
+                  "startAt": "2026-10-15T09:45:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                  "timeSource": "agent_suggested",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "taxi",
+                    "transit"
+                  ]
+                },
+                {
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "endAt": "2026-10-15T12:05:00+08:00",
+                  "fixed": false,
+                  "title": "模拟·城市历史馆",
+                  "domain": "play",
+                  "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                  "stopId": "s_play0",
+                  "startAt": "2026-10-15T10:35:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                  "timeSource": "agent_suggested",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ]
+                },
+                {
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "endAt": "2026-10-15T15:30:00+08:00",
+                  "fixed": false,
+                  "title": "模拟·室内艺术馆",
+                  "domain": "play",
+                  "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                  "stopId": "s_play1",
+                  "startAt": "2026-10-15T14:00:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                  "timeSource": "agent_suggested",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ]
+                },
+                {
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "endAt": "2026-10-15T16:45:00+08:00",
+                  "fixed": false,
+                  "title": "模拟·庭院安静酒店",
+                  "domain": "stay",
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_checkin",
+                  "startAt": "2026-10-15T16:15:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                  "timeSource": "agent_suggested",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "walk",
+                    "taxi"
+                  ]
+                },
+                {
+                  "date": "2026-10-15",
+                  "role": "stay_return",
+                  "endAt": "2026-10-15T20:45:00+08:00",
+                  "fixed": false,
+                  "title": "模拟·庭院安静酒店",
+                  "domain": "stay",
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_return",
+                  "startAt": "2026-10-15T20:30:00+08:00",
+                  "dayIndex": 1,
+                  "rationale": "晚间用完餐后回到同一家酒店休息，第二天返程自理。",
+                  "timeSource": "agent_suggested",
+                  "openingHours": "00:00-23:59",
+                  "preferredModes": [
+                    "walk",
+                    "taxi"
+                  ]
+                }
+              ],
+              "tripDates": [
+                "2026-10-15"
+              ],
+              "schemaVersion": "trip-itinerary-v1",
+              "planningSource": "model_plan"
+            },
+            "lifecycle": "superseded",
+            "previewId": "itp_8de771ff0151c7c318a59f246ceac1c9",
+            "updatedAt": "2026-09-29T18:31:44.369Z",
+            "candidates": [
+              {
+                "cost": 78,
+                "time": "2026-10-15T09:00:00+08:00",
+                "media": [],
+                "price": {
+                  "basis": "per_person_one_way",
+                  "amount": 78,
+                  "quality": "reference",
+                  "currency": "CNY",
+                  "checkedAt": "2026-09-29T18:30:40.762Z"
+                },
+                "title": "模拟·早班高铁",
+                "domain": "transport",
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "status": "candidate",
+                "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+                "location": {
+                  "name": "模拟·早班高铁",
+                  "address": "上海",
+                  "coordinates": {
+                    "latitude": 31.22,
+                    "longitude": 121.46
+                  }
+                },
+                "selected": false,
+                "claimRefs": [
+                  "claim_transport_0_270c490d6774d3b58652323e_1_1"
+                ],
+                "sourceRefs": [
+                  "source_transport_0"
+                ],
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "arrivalAt": "2026-10-15T09:00:00+08:00",
+                  "checkedAt": "2026-09-29T18:30:40.762Z",
+                  "highSpeed": true,
+                  "departureAt": "2026-10-15T08:00:00+08:00",
+                  "sourceLabel": "decision_fixture",
+                  "arrivalPlace": {
+                    "label": "上海虹桥"
+                  },
+                  "mobilityRole": "intercity_inventory",
+                  "researchDepth": "provider_search",
+                  "routeVerified": false,
+                  "transportType": "TRAIN",
+                  "departurePlace": {
+                    "label": "杭州东"
+                  },
+                  "planningWindow": {
+                    "basis": "provider_schedule",
+                    "endAt": "2026-10-15T09:00:00+08:00",
+                    "label": "出发日 · 城际抵达",
+                    "startAt": "2026-10-15T08:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                  "scheduleVerified": true,
+                  "semanticAnalysis": {
+                    "reasons": [
+                      {
+                        "lane": "inventory_budget",
+                        "summary": "所有高铁候选(transport_0/transport_1/transport_2)成本均为78元/人，但全部标注相同的出发与到达时间(08:00-09:00)，且transport_2摘要描述为户外热闹，与其余两项不同，时间信息可能为占位数据。",
+                        "reasonCode": "insufficient_evidence",
+                        "evidenceRefs": [
+                          "source_transport_0",
+                          "claim_transport_0",
+                          "source_transport_1",
+                          "claim_transport_1",
+                          "source_transport_2",
+                          "claim_transport_2"
+                        ]
+                      },
+                      {
+                        "lane": "inventory_budget",
+                        "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                        "reasonCode": "insufficient_evidence",
+                        "evidenceRefs": [
+                          "source_transport_0",
+                          "claim_transport_0",
+                          "source_transport_1",
+                          "claim_transport_1",
+                          "source_transport_2",
+                          "claim_transport_2",
+                          "source_stay_0",
+                          "claim_stay_0",
+                          "source_stay_1",
+                          "claim_stay_1",
+                          "source_stay_2",
+                          "claim_stay_2"
+                        ]
+                      },
+                      {
+                        "lane": "operability_schedule",
+                        "summary": "transport_0 高铁班次可运行：杭州东08:00出发，上海虹桥09:00抵达，库存与时刻已核验，成本78元。",
+                        "reasonCode": "operable",
+                        "evidenceRefs": [
+                          "source_transport_0",
+                          "claim_transport_0"
+                        ]
+                      }
+                    ],
+                    "disputed": false,
+                    "rejected": false,
+                    "recommended": true
+                  },
+                  "inventoryVerified": true,
+                  "requestedFacilityNeeds": []
+                },
+                "sourceStatus": "contract_fixture",
+                "spoilerLevel": "low",
+                "impactsNodeIds": [],
+                "foreignGuestEligible": null
+              },
+              {
+                "cost": 80,
+                "time": "2026-10-15T10:00:00+08:00",
+                "media": [],
+                "price": {
+                  "basis": "per_person",
+                  "amount": 80,
+                  "quality": "reference",
+                  "currency": "CNY",
+                  "checkedAt": "2026-09-29T18:30:40.762Z"
+                },
+                "title": "模拟·城市历史馆",
+                "domain": "play",
+                "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                "status": "candidate",
+                "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+                "location": {
+                  "name": "模拟·城市历史馆",
+                  "address": "上海",
+                  "coordinates": {
+                    "latitude": 31.22,
+                    "longitude": 121.46
+                  }
+                },
+                "selected": false,
+                "claimRefs": [
+                  "claim_play_0_270c490d6774d3b58652323e_1_1"
+                ],
+                "sourceRefs": [
+                  "source_play_0"
+                ],
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-29T18:30:40.762Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T12:00:00+08:00",
+                    "label": "第 1 天 10:00–12:00 · 轻松体验",
+                    "startAt": "2026-10-15T10:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                  "semanticAnalysis": {
+                    "reasons": [
+                      {
+                        "lane": "local_discovery",
+                        "summary": "play_0 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                        "reasonCode": "match_preference",
+                        "evidenceRefs": [
+                          "source_play_0",
+                          "claim_play_0"
+                        ]
+                      },
+                      {
+                        "lane": "local_discovery",
+                        "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                        "reasonCode": "unverified_evidence",
+                        "evidenceRefs": [
+                          "source_play_0",
+                          "claim_play_0",
+                          "source_play_1",
+                          "claim_play_1",
+                          "source_play_2",
+                          "claim_play_2"
+                        ]
+                      },
+                      {
+                        "lane": "operability_schedule",
+                        "summary": "play_0 为室内文化类候选（城市历史馆），与安静/室内文化偏好方向一致，但缺少开放时间、游览时长建议、当日预约/库存状态、无障碍连续性及真实库存核验。",
+                        "reasonCode": "partial_evidence",
+                        "evidenceRefs": [
+                          "source_play_0",
+                          "claim_play_0"
+                        ]
+                      }
+                    ],
+                    "disputed": false,
+                    "rejected": false,
+                    "recommended": true
+                  },
+                  "requestedFacilityNeeds": []
+                },
+                "sourceStatus": "contract_fixture",
+                "spoilerLevel": "low",
+                "impactsNodeIds": [],
+                "foreignGuestEligible": null
+              },
+              {
+                "cost": 30,
+                "time": "2026-10-15T10:00:00+08:00",
+                "media": [],
+                "price": {
+                  "basis": "per_person",
+                  "amount": 30,
+                  "quality": "reference",
+                  "currency": "CNY",
+                  "checkedAt": "2026-09-29T18:30:40.762Z"
+                },
+                "title": "模拟·室内艺术馆",
+                "domain": "play",
+                "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                "status": "candidate",
+                "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+                "location": {
+                  "name": "模拟·室内艺术馆",
+                  "address": "上海",
+                  "coordinates": {
+                    "latitude": 31.224999999999998,
+                    "longitude": 121.47
+                  }
+                },
+                "selected": false,
+                "claimRefs": [
+                  "claim_play_1_270c490d6774d3b58652323e_2_1"
+                ],
+                "sourceRefs": [
+                  "source_play_1"
+                ],
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-29T18:30:40.762Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T12:00:00+08:00",
+                    "label": "第 1 天 10:00–12:00 · 轻松体验",
+                    "startAt": "2026-10-15T10:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                  "semanticAnalysis": {
+                    "reasons": [
+                      {
+                        "lane": "local_discovery",
+                        "summary": "play_1 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                        "reasonCode": "match_preference",
+                        "evidenceRefs": [
+                          "source_play_1",
+                          "claim_play_1"
+                        ]
+                      },
+                      {
+                        "lane": "local_discovery",
+                        "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                        "reasonCode": "unverified_evidence",
+                        "evidenceRefs": [
+                          "source_play_0",
+                          "claim_play_0",
+                          "source_play_1",
+                          "claim_play_1",
+                          "source_play_2",
+                          "claim_play_2"
+                        ]
+                      }
+                    ],
+                    "disputed": false,
+                    "rejected": false,
+                    "recommended": true
+                  },
+                  "requestedFacilityNeeds": []
+                },
+                "sourceStatus": "contract_fixture",
+                "spoilerLevel": "low",
+                "impactsNodeIds": [],
+                "foreignGuestEligible": null
+              },
+              {
+                "cost": 250,
+                "time": "2026-10-15T16:00:00+08:00",
+                "media": [],
+                "price": {
+                  "basis": "per_night_room",
+                  "amount": 250,
+                  "quality": "reference",
+                  "currency": "CNY",
+                  "checkedAt": "2026-09-29T18:30:40.762Z"
+                },
+                "title": "模拟·庭院安静酒店",
+                "domain": "stay",
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "status": "candidate",
+                "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+                "location": {
+                  "name": "模拟·庭院安静酒店",
+                  "address": "上海",
+                  "coordinates": {
+                    "latitude": 31.224999999999998,
+                    "longitude": 121.47
+                  }
+                },
+                "selected": false,
+                "claimRefs": [
+                  "claim_stay_1_270c490d6774d3b58652323e_1_1"
+                ],
+                "sourceRefs": [
+                  "source_stay_1"
+                ],
+                "operability": {
+                  "openWeek": "00:00-23:59",
+                  "provider": "decision_fixture",
+                  "checkedAt": "2026-09-29T18:30:40.762Z",
+                  "sourceLabel": "decision_fixture",
+                  "researchDepth": "provider_search",
+                  "planningWindow": {
+                    "basis": "agent_suggested_window",
+                    "endAt": "2026-10-15T18:00:00+08:00",
+                    "label": "第 1 天 16:00–18:00 · 抵达后入住",
+                    "startAt": "2026-10-15T16:00:00+08:00",
+                    "confirmed": false
+                  },
+                  "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                  "semanticAnalysis": {
+                    "reasons": [
+                      {
+                        "lane": "inventory_budget",
+                        "summary": "stay_0(400元)与stay_1(250元)均描述室内安静、少步行、本地文化体验，更贴合安静与室内文化偏好；stay_2(180元)描述户外热闹、较多步行，与偏好冲突。stay_1在更低成本下提供与stay_0相似的安静属性，性价比更优。",
+                        "reasonCode": "preference_match",
+                        "evidenceRefs": [
+                          "source_stay_0",
+                          "claim_stay_0",
+                          "source_stay_1",
+                          "claim_stay_1",
+                          "source_stay_2",
+                          "claim_stay_2"
+                        ]
+                      },
+                      {
+                        "lane": "inventory_budget",
+                        "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                        "reasonCode": "insufficient_evidence",
+                        "evidenceRefs": [
+                          "source_transport_0",
+                          "claim_transport_0",
+                          "source_transport_1",
+                          "claim_transport_1",
+                          "source_transport_2",
+                          "claim_transport_2",
+                          "source_stay_0",
+                          "claim_stay_0",
+                          "source_stay_1",
+                          "claim_stay_1",
+                          "source_stay_2",
+                          "claim_stay_2"
+                        ]
+                      }
+                    ],
+                    "disputed": false,
+                    "rejected": false,
+                    "recommended": true
+                  },
+                  "requestedFacilityNeeds": []
+                },
+                "sourceStatus": "contract_fixture",
+                "spoilerLevel": "low",
+                "impactsNodeIds": [],
+                "foreignGuestEligible": null
+              }
+            ],
+            "proposalId": "itinerary_6034556e586673403c6af1fa",
+            "validation": {
+              "status": "unknown",
+              "mobility": {
+                "legs": [
+                  {
+                    "legId": "fixture_leg_0",
+                    "origin": {
+                      "date": "2026-10-15",
+                      "role": "intercity_arrival",
+                      "endAt": "2026-10-15T01:00:00.000Z",
+                      "label": "模拟·早班高铁",
+                      "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_arrival",
+                      "startAt": "2026-10-15T01:00:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.226,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "rationale": "受控路线",
+                    "destination": {
+                      "date": "2026-10-15",
+                      "role": "bag_drop",
+                      "endAt": "2026-10-15T02:15:00.000Z",
+                      "label": "模拟·庭院安静酒店",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_bagdrop",
+                      "startAt": "2026-10-15T01:45:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.21,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "alternatives": [
+                      {
+                        "mode": "taxi",
+                        "steps": [],
+                        "polyline": [
+                          {
+                            "latitude": 31.226,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          },
+                          {
+                            "latitude": 31.21,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          }
+                        ],
+                        "transfers": 0,
+                        "totalMinutes": 20,
+                        "navigationUrl": null,
+                        "scheduleBasis": "query_time_estimate",
+                        "walkingMeters": 0,
+                        "distanceMeters": 3000,
+                        "realTimeArrival": false,
+                        "estimatedFareCny": 25,
+                        "accessibilityFeatures": [],
+                        "accessibilityAssessment": {
+                          "hasRamp": false,
+                          "hasStairs": false,
+                          "hasElevator": false,
+                          "hasEscalator": false,
+                          "realTimeStatus": false,
+                          "stepFreeContinuity": "not_verified"
+                        }
+                      }
+                    ],
+                    "recommendedMode": "taxi",
+                    "recommendationAudit": null
+                  },
+                  {
+                    "legId": "fixture_leg_1",
+                    "origin": {
+                      "date": "2026-10-15",
+                      "role": "bag_drop",
+                      "endAt": "2026-10-15T02:15:00.000Z",
+                      "label": "模拟·庭院安静酒店",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_bagdrop",
+                      "startAt": "2026-10-15T01:45:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.21,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "rationale": "受控路线",
+                    "destination": {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T04:00:00.000Z",
+                      "label": "模拟·城市历史馆",
+                      "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_play0",
+                      "startAt": "2026-10-15T02:30:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.218,
+                        "longitude": 121.46600000000001,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "alternatives": [
+                      {
+                        "mode": "taxi",
+                        "steps": [],
+                        "polyline": [
+                          {
+                            "latitude": 31.21,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          },
+                          {
+                            "latitude": 31.218,
+                            "longitude": 121.46600000000001,
+                            "coordinateSystem": "GCJ-02"
+                          }
+                        ],
+                        "transfers": 0,
+                        "totalMinutes": 20,
+                        "navigationUrl": null,
+                        "scheduleBasis": "query_time_estimate",
+                        "walkingMeters": 0,
+                        "distanceMeters": 3000,
+                        "realTimeArrival": false,
+                        "estimatedFareCny": 25,
+                        "accessibilityFeatures": [],
+                        "accessibilityAssessment": {
+                          "hasRamp": false,
+                          "hasStairs": false,
+                          "hasElevator": false,
+                          "hasEscalator": false,
+                          "realTimeStatus": false,
+                          "stepFreeContinuity": "not_verified"
+                        }
+                      }
+                    ],
+                    "recommendedMode": "taxi",
+                    "recommendationAudit": null
+                  },
+                  {
+                    "legId": "fixture_leg_2",
+                    "origin": {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T04:00:00.000Z",
+                      "label": "模拟·城市历史馆",
+                      "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_play0",
+                      "startAt": "2026-10-15T02:30:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.218,
+                        "longitude": 121.46600000000001,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "rationale": "受控路线",
+                    "destination": {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T07:30:00.000Z",
+                      "label": "模拟·室内艺术馆",
+                      "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                      "stopId": "s_play1",
+                      "startAt": "2026-10-15T06:00:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.218,
+                        "longitude": 121.474,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "alternatives": [
+                      {
+                        "mode": "taxi",
+                        "steps": [],
+                        "polyline": [
+                          {
+                            "latitude": 31.218,
+                            "longitude": 121.46600000000001,
+                            "coordinateSystem": "GCJ-02"
+                          },
+                          {
+                            "latitude": 31.218,
+                            "longitude": 121.474,
+                            "coordinateSystem": "GCJ-02"
+                          }
+                        ],
+                        "transfers": 0,
+                        "totalMinutes": 20,
+                        "navigationUrl": null,
+                        "scheduleBasis": "query_time_estimate",
+                        "walkingMeters": 0,
+                        "distanceMeters": 3000,
+                        "realTimeArrival": false,
+                        "estimatedFareCny": 25,
+                        "accessibilityFeatures": [],
+                        "accessibilityAssessment": {
+                          "hasRamp": false,
+                          "hasStairs": false,
+                          "hasElevator": false,
+                          "hasEscalator": false,
+                          "realTimeStatus": false,
+                          "stepFreeContinuity": "not_verified"
+                        }
+                      }
+                    ],
+                    "recommendedMode": "taxi",
+                    "recommendationAudit": null
+                  },
+                  {
+                    "legId": "fixture_leg_3",
+                    "origin": {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T07:30:00.000Z",
+                      "label": "模拟·室内艺术馆",
+                      "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                      "stopId": "s_play1",
+                      "startAt": "2026-10-15T06:00:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.218,
+                        "longitude": 121.474,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "rationale": "受控路线",
+                    "destination": {
+                      "date": "2026-10-15",
+                      "role": "stay_check_in",
+                      "endAt": "2026-10-15T08:45:00.000Z",
+                      "label": "模拟·庭院安静酒店",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_checkin",
+                      "startAt": "2026-10-15T08:15:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.21,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "alternatives": [
+                      {
+                        "mode": "taxi",
+                        "steps": [],
+                        "polyline": [
+                          {
+                            "latitude": 31.218,
+                            "longitude": 121.474,
+                            "coordinateSystem": "GCJ-02"
+                          },
+                          {
+                            "latitude": 31.21,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          }
+                        ],
+                        "transfers": 0,
+                        "totalMinutes": 20,
+                        "navigationUrl": null,
+                        "scheduleBasis": "query_time_estimate",
+                        "walkingMeters": 0,
+                        "distanceMeters": 3000,
+                        "realTimeArrival": false,
+                        "estimatedFareCny": 25,
+                        "accessibilityFeatures": [],
+                        "accessibilityAssessment": {
+                          "hasRamp": false,
+                          "hasStairs": false,
+                          "hasElevator": false,
+                          "hasEscalator": false,
+                          "realTimeStatus": false,
+                          "stepFreeContinuity": "not_verified"
+                        }
+                      }
+                    ],
+                    "recommendedMode": "taxi",
+                    "recommendationAudit": null
+                  },
+                  {
+                    "legId": "fixture_leg_4",
+                    "origin": {
+                      "date": "2026-10-15",
+                      "role": "stay_check_in",
+                      "endAt": "2026-10-15T08:45:00.000Z",
+                      "label": "模拟·庭院安静酒店",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_checkin",
+                      "startAt": "2026-10-15T08:15:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.21,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "rationale": "受控路线",
+                    "destination": {
+                      "date": "2026-10-15",
+                      "role": "stay_return",
+                      "endAt": "2026-10-15T12:45:00.000Z",
+                      "label": "模拟·庭院安静酒店",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_return",
+                      "startAt": "2026-10-15T12:30:00.000Z",
+                      "dayIndex": 1,
+                      "coordinates": {
+                        "latitude": 31.21,
+                        "longitude": 121.458,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    },
+                    "alternatives": [
+                      {
+                        "mode": "taxi",
+                        "steps": [],
+                        "polyline": [
+                          {
+                            "latitude": 31.21,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          },
+                          {
+                            "latitude": 31.21,
+                            "longitude": 121.458,
+                            "coordinateSystem": "GCJ-02"
+                          }
+                        ],
+                        "transfers": 0,
+                        "totalMinutes": 20,
+                        "navigationUrl": null,
+                        "scheduleBasis": "query_time_estimate",
+                        "walkingMeters": 0,
+                        "distanceMeters": 3000,
+                        "realTimeArrival": false,
+                        "estimatedFareCny": 25,
+                        "accessibilityFeatures": [],
+                        "accessibilityAssessment": {
+                          "hasRamp": false,
+                          "hasStairs": false,
+                          "hasElevator": false,
+                          "hasEscalator": false,
+                          "realTimeStatus": false,
+                          "stepFreeContinuity": "not_verified"
+                        }
+                      }
+                    ],
+                    "recommendedMode": "taxi",
+                    "recommendationAudit": null
+                  }
+                ],
+                "reason": null,
+                "source": "fixture",
+                "status": "completed",
+                "caveats": [
+                  "QA 模拟路线与示意折线，仅供交互验证，不可实际导航。"
+                ],
+                "coverage": {
+                  "unscheduled": false,
+                  "routedNodeIds": [
+                    "transport_0_270c490d6774d3b58652323e_1",
+                    "stay_1_270c490d6774d3b58652323e_1",
+                    "play_0_270c490d6774d3b58652323e_1",
+                    "play_1_270c490d6774d3b58652323e_2"
+                  ],
+                  "routedStopIds": [
+                    "s_arrival",
+                    "s_bagdrop",
+                    "s_play0",
+                    "s_play1",
+                    "s_checkin",
+                    "s_return"
+                  ],
+                  "unresolvedNodeIds": [],
+                  "unresolvedStopIds": []
+                },
+                "checkedAt": "2026-09-29T18:31:44.337Z",
+                "itinerary": {
+                  "days": [
+                    {
+                      "date": "2026-10-15",
+                      "stopIds": [
+                        "s_arrival",
+                        "s_bagdrop",
+                        "s_play0",
+                        "s_play1",
+                        "s_checkin",
+                        "s_return"
+                      ],
+                      "dayIndex": 1
+                    }
+                  ],
+                  "stops": [
+                    {
+                      "date": "2026-10-15",
+                      "role": "intercity_arrival",
+                      "endAt": "2026-10-15T09:00:00+08:00",
+                      "fixed": true,
+                      "title": "模拟·早班高铁",
+                      "domain": "transport",
+                      "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_arrival",
+                      "startAt": "2026-10-15T09:00:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                      "timeSource": "provider_schedule",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "transit"
+                      ]
+                    },
+                    {
+                      "date": "2026-10-15",
+                      "role": "bag_drop",
+                      "endAt": "2026-10-15T10:15:00+08:00",
+                      "fixed": false,
+                      "title": "模拟·庭院安静酒店",
+                      "domain": "stay",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_bagdrop",
+                      "startAt": "2026-10-15T09:45:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                      "timeSource": "agent_suggested",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "taxi",
+                        "transit"
+                      ]
+                    },
+                    {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T12:05:00+08:00",
+                      "fixed": false,
+                      "title": "模拟·城市历史馆",
+                      "domain": "play",
+                      "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                      "stopId": "s_play0",
+                      "startAt": "2026-10-15T10:35:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                      "timeSource": "agent_suggested",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "transit",
+                        "taxi"
+                      ]
+                    },
+                    {
+                      "date": "2026-10-15",
+                      "role": "activity",
+                      "endAt": "2026-10-15T15:30:00+08:00",
+                      "fixed": false,
+                      "title": "模拟·室内艺术馆",
+                      "domain": "play",
+                      "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                      "stopId": "s_play1",
+                      "startAt": "2026-10-15T14:00:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                      "timeSource": "agent_suggested",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "transit",
+                        "taxi"
+                      ]
+                    },
+                    {
+                      "date": "2026-10-15",
+                      "role": "stay_check_in",
+                      "endAt": "2026-10-15T16:45:00+08:00",
+                      "fixed": false,
+                      "title": "模拟·庭院安静酒店",
+                      "domain": "stay",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_checkin",
+                      "startAt": "2026-10-15T16:15:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                      "timeSource": "agent_suggested",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "walk",
+                        "taxi"
+                      ]
+                    },
+                    {
+                      "date": "2026-10-15",
+                      "role": "stay_return",
+                      "endAt": "2026-10-15T20:45:00+08:00",
+                      "fixed": false,
+                      "title": "模拟·庭院安静酒店",
+                      "domain": "stay",
+                      "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                      "stopId": "s_return",
+                      "startAt": "2026-10-15T20:30:00+08:00",
+                      "dayIndex": 1,
+                      "rationale": "晚间用完餐后回到同一家酒店休息，第二天返程自理。",
+                      "timeSource": "agent_suggested",
+                      "openingHours": "00:00-23:59",
+                      "preferredModes": [
+                        "walk",
+                        "taxi"
+                      ]
+                    }
+                  ],
+                  "tripDates": [
+                    "2026-10-15"
+                  ],
+                  "schemaVersion": "trip-itinerary-v1",
+                  "planningSource": "model_plan"
+                },
+                "freshUntil": "2026-09-29T19:31:44.337Z",
+                "destination": "上海",
+                "feasibility": {
+                  "issues": [
+                    {
+                      "code": "planning_question_unresolved",
+                      "message": "尚有未解决的问题：具体高铁车次与到站时间（用户侧信息），用于把上午抵达窗口从假设改为确定。先用已有事实和可撤销选择解决；仅用户独有的事实才提问，来源未知项应说明影响。",
+                      "stopIds": [],
+                      "dayIndex": null,
+                      "severity": "blocking",
+                      "allowedRepairDirections": [
+                        "request_context",
+                        "replace_candidate"
+                      ]
+                    },
+                    {
+                      "code": "meal_window_missing",
+                      "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                      "stopIds": [],
+                      "dayIndex": 1,
+                      "severity": "blocking",
+                      "allowedRepairDirections": [
+                        "reorder_flexible_stop",
+                        "replace_candidate"
+                      ]
+                    },
+                    {
+                      "code": "meal_window_missing",
+                      "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                      "stopIds": [],
+                      "dayIndex": 1,
+                      "severity": "blocking",
+                      "allowedRepairDirections": [
+                        "reorder_flexible_stop",
+                        "replace_candidate"
+                      ]
+                    },
+                    {
+                      "code": "flexible_window_shifted",
+                      "message": "模拟·城市历史馆已按前序路线耗时顺延。",
+                      "stopIds": [
+                        "s_play0"
+                      ],
+                      "dayIndex": 1,
+                      "observed": {
+                        "routeMode": "taxi",
+                        "routeMinutes": 20,
+                        "previousEndAt": "2026-10-15T10:15:00+08:00",
+                        "earliestStartAt": "2026-10-15T10:35:00+08:00",
+                        "requestedStartAt": "2026-10-15T10:35:00+08:00"
+                      },
+                      "severity": "warning",
+                      "checkedAt": "2026-09-29T18:31:44.337Z",
+                      "allowedRepairDirections": [
+                        "shift_later"
+                      ]
+                    }
+                  ],
+                  "status": "blocked",
+                  "checkedAt": "2026-09-29T18:31:44.337Z",
+                  "canConfirm": false,
+                  "schemaVersion": "trip-feasibility-v1",
+                  "primaryBlocker": "尚有未解决的问题：具体高铁车次与到站时间（用户侧信息），用于把上午抵达窗口从假设改为确定。先用已有事实和可撤销选择解决；仅用户独有的事实才提问，来源未知项应说明影响。"
+                },
+                "travelerFit": {
+                  "avoidStairs": false,
+                  "maxTransfers": null,
+                  "stayAnchorFits": [],
+                  "stepFreeRequired": false,
+                  "walkingTargetSource": null,
+                  "transferTargetSource": null,
+                  "accessibilityEvidence": "not_required",
+                  "planningWalkingTarget": null,
+                  "constrainedTravelerIds": [],
+                  "planningTransferTarget": null,
+                  "maxContinuousWalkMeters": null
+                },
+                "schemaVersion": "trip-mobility-v1",
+                "fabricatedResults": false,
+                "sourceDocumentation": null
+              },
+              "checkedAt": "2026-09-29T18:31:44.337Z",
+              "freshUntil": "2026-09-29T19:31:44.337Z",
+              "feasibility": {
+                "issues": [
+                  {
+                    "code": "planning_question_unresolved",
+                    "message": "尚有未解决的问题：具体高铁车次与到站时间（用户侧信息），用于把上午抵达窗口从假设改为确定。先用已有事实和可撤销选择解决；仅用户独有的事实才提问，来源未知项应说明影响。",
+                    "stopIds": [],
+                    "dayIndex": null,
+                    "severity": "blocking",
+                    "allowedRepairDirections": [
+                      "request_context",
+                      "replace_candidate"
+                    ]
+                  },
+                  {
+                    "code": "meal_window_missing",
+                    "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                    "stopIds": [],
+                    "dayIndex": 1,
+                    "severity": "blocking",
+                    "allowedRepairDirections": [
+                      "reorder_flexible_stop",
+                      "replace_candidate"
+                    ]
+                  },
+                  {
+                    "code": "meal_window_missing",
+                    "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                    "stopIds": [],
+                    "dayIndex": 1,
+                    "severity": "blocking",
+                    "allowedRepairDirections": [
+                      "reorder_flexible_stop",
+                      "replace_candidate"
+                    ]
+                  },
+                  {
+                    "code": "flexible_window_shifted",
+                    "message": "模拟·城市历史馆已按前序路线耗时顺延。",
+                    "stopIds": [
+                      "s_play0"
+                    ],
+                    "dayIndex": 1,
+                    "observed": {
+                      "routeMode": "taxi",
+                      "routeMinutes": 20,
+                      "previousEndAt": "2026-10-15T10:15:00+08:00",
+                      "earliestStartAt": "2026-10-15T10:35:00+08:00",
+                      "requestedStartAt": "2026-10-15T10:35:00+08:00"
+                    },
+                    "severity": "warning",
+                    "checkedAt": "2026-09-29T18:31:44.337Z",
+                    "allowedRepairDirections": [
+                      "shift_later"
+                    ]
+                  }
+                ],
+                "status": "blocked",
+                "checkedAt": "2026-09-29T18:31:44.337Z",
+                "canConfirm": false,
+                "schemaVersion": "trip-feasibility-v1",
+                "primaryBlocker": "尚有未解决的问题：具体高铁车次与到站时间（用户侧信息），用于把上午抵达窗口从假设改为确定。先用已有事实和可撤销选择解决；仅用户独有的事实才提问，来源未知项应说明影响。"
+              },
+              "invalidatedBy": [],
+              "dependencyFingerprint": "55e9691c15dcf9a7c61cbbda2e66f4a3c16ca580ecfcfae938f2dd10c99a45ab"
+            },
+            "userRequest": "10月15日两位成人从杭州坐高铁上午到上海，游玩一天住一晚，一间房，返程自行安排，总预算6000元，喜欢安静和室内文化体验。请安排完整吃住行玩草案。如果某类资料暂缺，保留查到的其他选择和已排好的部分，说明缺口，别编造。先给草案，不要采用。",
+            "lastEstimate": 751,
+            "previousPlanId": null,
+            "requireCompletePlan": true
+          }
+        ],
+        "objective": {
+          "version": 1,
+          "description": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+          "requestRefs": [],
+          "completionCriteria": []
+        },
+        "planningId": "planning_trip_84b2f3ca",
+        "schemaVersion": "continuous-planning-v1"
+      },
+      "mobility": null
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conversation_6c8b44e4",
+      "tripId": "trip_84b2f3ca",
+      "modelId": "deepseek-v4-flash",
+      "messages": [
+        {
+          "role": "user",
+          "text": "10月15日两位成人从杭州坐高铁上午到上海，游玩一天住一晚，一间房，返程自行安排，总预算6000元，喜欢安静和室内文化体验。请安排完整吃住行玩草案。如果某类资料暂缺，保留查到的其他选择和已排好的部分，说明缺口，别编造。先给草案，不要采用。",
+          "createdAt": "2026-09-29T18:30:31.417Z",
+          "messageId": "input_run_45265b66-5046-481b-964c-db52b273c5b9"
+        },
+        {
+          "role": "assistant",
+          "text": "**本轮结果：草案已保留在工作区，尚未采用。** 高铁到站、行李寄存、两个室内场馆、回酒店入住与晚间返回的站序和时段已经排出来并通过路线核验；唯一没补上的是**午餐和晚餐**——餐饮来源两次检索都没有返回任何候选，没有可引用的餐厅，所以不能凭空写一家。在补上用餐之前，这份草案还不能被采用。\n\n## 10月15日（周三）草案\n\n| 时间 | 安排 | 说明 |\n|---|---|---|\n| 09:00 | 高铁抵沪（固定起点） | 唯一可用的上午高铁候选；票价参考 78 元/人·单程 |\n| 09:45–10:15 | 先到酒店寄存行李 | 把行李放下再进馆，比拖着一整天走更符合舒缓节奏；酒店参考 250 元/晚·间（一间房） |\n| 10:35–12:05 | 城市历史馆（室内） | 室内安静、步行的本地文化场馆，最贴合当天主要偏好；参考 80 元/人 |\n| 12:05–14:00 | 午餐时间窗（**目前空缺**） | 无餐饮候选，未指定地点 |\n| 14:00–15:30 | 室内艺术馆 | 与上午场馆不重复的同类室内选择；参考 30 元/人 |\n| 16:15–16:45 | 回酒店办理入住 | 把白天时间留给室内文化行程 |\n| 18:00–20:00 | 晚餐时间窗（**目前空缺**） | 同上，无候选 |\n| 20:30 | 返回同一家酒店休息 | 次日上午返程由你们自行安排，未纳入本草案 |\n\n两处用餐窗口在草案里是留白的时段，不是\"随便找一家\"的占位；哪家、什么营业时间、人均多少，来源都没有资料。\n\n## 预算（均为测试来源参考价/估算，不是实际出行报价）\n\n- 住宿 250 元（1 晚 · 1 间房）\n- 高铁 156 元（2 人 · 单程，参考价，返程自理未计）\n- 门票 220 元（2 人 · 两个场馆）\n- 市内交通估算 125 元（已排的市内段，出租车按整车估算，车型与实际条件未核验）\n- 餐饮：未知\n- 合计约 751 元，总预算 6000 元，余量很大；但余量本身不构成升级住宿或增加消费的理由。\n\n## 有意保留的取舍与缺口\n\n- **住宿**：选的是参考价较低的安静庭院酒店，一晚一间房。房态、可订性与隔音、寄存能否提前办理都属于待核实，草案里的寄存时段是规划假设。\n- **交通**：实际核验返回的市内方式是出租车（含 5 段、合计约 100 分钟）；路线数字是测试资料在查询时的估算，`walkingMeters=0` 只表示该路线未计入步行，从车门到场馆入口、馆内通道的步行仍然存在。\"没有标出楼梯\"也不等于全程无台阶——每一步的无障碍连续性都是未核验状态。\n- **车次**：约 09:00 抵沪是弹性假设，未按已购车票核验；若实际到站更晚，下午与晚间整体顺延。\n- **天气**：2026-10-15 上海的天气资料不可用，安排未按天气校准（当天主体在室内，受影响相对小）。\n- **餐饮**：这是目前唯一的硬缺口。有了可用的餐饮资料后，两处窗口可以直接补进这份草案，其余站点不必改动。\n\n按你的要求，我没有提交或采用这份草案，它仍是可撤销的；已采用安排为零，原有无已确认安排不受影响。",
+          "modelId": "deepseek-v4-flash",
+          "createdAt": "2026-09-29T18:32:09.244Z",
+          "messageId": "output_run_45265b66-5046-481b-964c-db52b273c5b9"
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "runId": "run_45265b66-5046-481b-964c-db52b273c5b9",
+      "conversationId": "conversation_6c8b44e4",
+      "status": "completed",
+      "elapsedMs": 97858,
+      "writeCount": 5,
+      "input": {
+        "text": "10月15日两位成人从杭州坐高铁上午到上海，游玩一天住一晚，一间房，返程自行安排，总预算6000元，喜欢安静和室内文化体验。请安排完整吃住行玩草案。如果某类资料暂缺，保留查到的其他选择和已排好的部分，说明缺口，别编造。先给草案，不要采用。",
+        "modelId": "deepseek-v4-flash",
+        "planningContext": null
+      },
+      "result": {
+        "schemaVersion": "travel-conversation-turn-v1",
+        "status": "completed",
+        "conversation": {
+          "schemaVersion": "travel-conversation-view-v1",
+          "conversationId": "conversation_6c8b44e4",
+          "tripId": "trip_84b2f3ca",
+          "modelId": "deepseek-v4-flash",
+          "messages": [
+            {
+              "messageId": "input_run_45265b66-5046-481b-964c-db52b273c5b9",
+              "role": "user",
+              "text": "10月15日两位成人从杭州坐高铁上午到上海，游玩一天住一晚，一间房，返程自行安排，总预算6000元，喜欢安静和室内文化体验。请安排完整吃住行玩草案。如果某类资料暂缺，保留查到的其他选择和已排好的部分，说明缺口，别编造。先给草案，不要采用。",
+              "kind": null,
+              "modelId": null,
+              "createdAt": "2026-09-29T18:30:31.417Z"
+            },
+            {
+              "messageId": "output_run_45265b66-5046-481b-964c-db52b273c5b9",
+              "role": "assistant",
+              "text": "**本轮结果：草案已保留在工作区，尚未采用。** 高铁到站、行李寄存、两个室内场馆、回酒店入住与晚间返回的站序和时段已经排出来并通过路线核验；唯一没补上的是**午餐和晚餐**——餐饮来源两次检索都没有返回任何候选，没有可引用的餐厅，所以不能凭空写一家。在补上用餐之前，这份草案还不能被采用。\n\n## 10月15日（周三）草案\n\n| 时间 | 安排 | 说明 |\n|---|---|---|\n| 09:00 | 高铁抵沪（固定起点） | 唯一可用的上午高铁候选；票价参考 78 元/人·单程 |\n| 09:45–10:15 | 先到酒店寄存行李 | 把行李放下再进馆，比拖着一整天走更符合舒缓节奏；酒店参考 250 元/晚·间（一间房） |\n| 10:35–12:05 | 城市历史馆（室内） | 室内安静、步行的本地文化场馆，最贴合当天主要偏好；参考 80 元/人 |\n| 12:05–14:00 | 午餐时间窗（**目前空缺**） | 无餐饮候选，未指定地点 |\n| 14:00–15:30 | 室内艺术馆 | 与上午场馆不重复的同类室内选择；参考 30 元/人 |\n| 16:15–16:45 | 回酒店办理入住 | 把白天时间留给室内文化行程 |\n| 18:00–20:00 | 晚餐时间窗（**目前空缺**） | 同上，无候选 |\n| 20:30 | 返回同一家酒店休息 | 次日上午返程由你们自行安排，未纳入本草案 |\n\n两处用餐窗口在草案里是留白的时段，不是\"随便找一家\"的占位；哪家、什么营业时间、人均多少，来源都没有资料。\n\n## 预算（均为测试来源参考价/估算，不是实际出行报价）\n\n- 住宿 250 元（1 晚 · 1 间房）\n- 高铁 156 元（2 人 · 单程，参考价，返程自理未计）\n- 门票 220 元（2 人 · 两个场馆）\n- 市内交通估算 125 元（已排的市内段，出租车按整车估算，车型与实际条件未核验）\n- 餐饮：未知\n- 合计约 751 元，总预算 6000 元，余量很大；但余量本身不构成升级住宿或增加消费的理由。\n\n## 有意保留的取舍与缺口\n\n- **住宿**：选的是参考价较低的安静庭院酒店，一晚一间房。房态、可订性与隔音、寄存能否提前办理都属于待核实，草案里的寄存时段是规划假设。\n- **交通**：实际核验返回的市内方式是出租车（含 5 段、合计约 100 分钟）；路线数字是测试资料在查询时的估算，`walkingMeters=0` 只表示该路线未计入步行，从车门到场馆入口、馆内通道的步行仍然存在。\"没有标出楼梯\"也不等于全程无台阶——每一步的无障碍连续性都是未核验状态。\n- **车次**：约 09:00 抵沪是弹性假设，未按已购车票核验；若实际到站更晚，下午与晚间整体顺延。\n- **天气**：2026-10-15 上海的天气资料不可用，安排未按天气校准（当天主体在室内，受影响相对小）。\n- **餐饮**：这是目前唯一的硬缺口。有了可用的餐饮资料后，两处窗口可以直接补进这份草案，其余站点不必改动。\n\n按你的要求，我没有提交或采用这份草案，它仍是可撤销的；已采用安排为零，原有无已确认安排不受影响。",
+              "kind": null,
+              "modelId": "deepseek-v4-flash",
+              "createdAt": "2026-09-29T18:32:09.244Z"
+            }
+          ],
+          "updatedAt": "2026-09-29T18:32:09.244Z",
+          "deletedAt": null
+        },
+        "tripId": "trip_84b2f3ca",
+        "activities": [
+          {
+            "toolName": "save_trip_understanding",
+            "status": "saved"
+          },
+          {
+            "toolName": "research_trip_options",
+            "status": "proposed"
+          },
+          {
+            "toolName": "get_trip_plan_view",
+            "status": "ready"
+          },
+          {
+            "toolName": "research_trip_options",
+            "status": "proposed"
+          },
+          {
+            "toolName": "plan_itinerary_trial",
+            "status": "input_rejected"
+          },
+          {
+            "toolName": "plan_itinerary_trial",
+            "status": "needs_repair",
+            "attempt": 1,
+            "runId": "planrun_c90f1586"
+          },
+          {
+            "toolName": "plan_itinerary_trial",
+            "status": "blocked",
+            "attempt": 2,
+            "runId": "planrun_c90f1586"
+          }
+        ],
+        "outcome": {
+          "status": "partial",
+          "missingDomains": [
+            "food"
+          ],
+          "incompleteAnalysis": [],
+          "planningStatus": "blocked"
+        },
+        "agentTrace": {
+          "skills": [
+            {
+              "skillId": "research-trip",
+              "version": "2026-08-27",
+              "digest": "e03b826de22fdf7b"
+            },
+            {
+              "skillId": "plan-trip",
+              "version": "2026-08-30",
+              "digest": "a2034e343083ef47"
+            }
+          ],
+          "toolCallCount": 7,
+          "researchCallCount": 2,
+          "planningCallCount": 2,
+          "planningRunId": "planrun_c90f1586",
+          "planningProviderCallCount": 2,
+          "modelCallCount": 7,
+          "analysisDecision": {
+            "status": "recommended",
+            "reasonCodes": [
+              "evidence_gap_no_candidates",
+              "evidence_gap_constraint_unverified",
+              "criteria_area_and_budget_unspecified",
+              "missing_candidate_evidence",
+              "shared_care_constraint",
+              "missing_weather",
+              "unknown_pricing"
+            ]
+          },
+          "activeRunId": "analysis_run_2d4f55311386381153204adb"
+        },
+        "itineraryTrial": {
+          "schemaVersion": "itinerary-planning-trial-v1",
+          "status": "blocked",
+          "tripId": "trip_84b2f3ca",
+          "revision": 0,
+          "committed": false,
+          "previewId": "itp_286397957672b2fcc6a1681e6b01812d",
+          "planningSource": "model_plan",
+          "planSummary": {
+            "objective": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+            "priorities": [
+              "室内文化体验优先",
+              "避开拥挤、节奏舒缓",
+              "两位成人一间房",
+              "换乘与步行尽量少"
+            ],
+            "assumptions": [
+              "车次与到站时间按“上午抵沪、约09:00 到站”的弹性假设排，未按已购车票核验；若实际到站更晚，下午与晚间站点整体顺延。",
+              "餐饮来源两次检索均无候选，午餐与晚餐的地点、营业时间与参考人均价格无法排入站点；草案保留12:00–14:00 与18:00–20:00 的用餐时间窗，待有可用餐饮资料后再补。",
+              "2026-10-15 上海天气资料不可用，户外与步行安排未按天气校准。",
+              "当地交通（酒店到场馆、晚间返回）尚无候选来源，仅给出偏好方式，未核验实际路线与耗时。",
+              "所有价格为测试来源的参考价，非实际出行查询结果，房态、开放时间与无障碍连续性均未核验。"
+            ],
+            "needsContext": [],
+            "stopRationales": [
+              {
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "dayIndex": 1,
+                "role": "intercity_arrival",
+                "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "dayIndex": 1,
+                "role": "bag_drop",
+                "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。"
+              },
+              {
+                "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                "dayIndex": 1,
+                "role": "activity",
+                "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。"
+              },
+              {
+                "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                "dayIndex": 1,
+                "role": "activity",
+                "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "dayIndex": 1,
+                "role": "stay_check_in",
+                "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "dayIndex": 1,
+                "role": "stay_return",
+                "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。"
+              }
+            ]
+          },
+          "selectedNodes": [
+            {
+              "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+              "domain": "transport",
+              "title": "模拟·早班高铁",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "time": "2026-10-15T09:00:00+08:00",
+              "location": {
+                "name": "模拟·早班高铁",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.22,
+                  "longitude": 121.46
+                }
+              },
+              "media": [],
+              "cost": 78,
+              "price": {
+                "amount": 78,
+                "currency": "CNY",
+                "quality": "reference",
+                "basis": "per_person_one_way",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "sourceStatus": "contract_fixture",
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "arrivalAt": "2026-10-15T09:00:00+08:00",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "highSpeed": true,
+                "departureAt": "2026-10-15T08:00:00+08:00",
+                "sourceLabel": "decision_fixture",
+                "arrivalPlace": {
+                  "label": "上海虹桥"
+                },
+                "mobilityRole": "intercity_inventory",
+                "researchDepth": "provider_search",
+                "routeVerified": false,
+                "transportType": "TRAIN",
+                "departurePlace": {
+                  "label": "杭州东"
+                },
+                "planningWindow": {
+                  "basis": "provider_schedule",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "label": "出发日 · 城际抵达",
+                  "startAt": "2026-10-15T08:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "scheduleVerified": true,
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "所有高铁候选(transport_0/transport_1/transport_2)成本均为78元/人，但全部标注相同的出发与到达时间(08:00-09:00)，且transport_2摘要描述为户外热闹，与其余两项不同，时间信息可能为占位数据。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2"
+                      ]
+                    },
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2",
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    },
+                    {
+                      "lane": "operability_schedule",
+                      "summary": "transport_0 高铁班次可运行：杭州东08:00出发，上海虹桥09:00抵达，库存与时刻已核验，成本78元。",
+                      "reasonCode": "operable",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "inventoryVerified": true,
+                "requestedFacilityNeeds": []
+              }
+            },
+            {
+              "nodeId": "play_0_270c490d6774d3b58652323e_1",
+              "domain": "play",
+              "title": "模拟·城市历史馆",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "time": "2026-10-15T10:00:00+08:00",
+              "location": {
+                "name": "模拟·城市历史馆",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.22,
+                  "longitude": 121.46
+                }
+              },
+              "media": [],
+              "cost": 80,
+              "price": {
+                "amount": 80,
+                "currency": "CNY",
+                "quality": "reference",
+                "basis": "per_person",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "sourceStatus": "contract_fixture",
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T12:00:00+08:00",
+                  "label": "第 1 天 10:00–12:00 · 轻松体验",
+                  "startAt": "2026-10-15T10:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "local_discovery",
+                      "summary": "play_0 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                      "reasonCode": "match_preference",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0"
+                      ]
+                    },
+                    {
+                      "lane": "local_discovery",
+                      "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                      "reasonCode": "unverified_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0",
+                        "source_play_1",
+                        "claim_play_1",
+                        "source_play_2",
+                        "claim_play_2"
+                      ]
+                    },
+                    {
+                      "lane": "operability_schedule",
+                      "summary": "play_0 为室内文化类候选（城市历史馆），与安静/室内文化偏好方向一致，但缺少开放时间、游览时长建议、当日预约/库存状态、无障碍连续性及真实库存核验。",
+                      "reasonCode": "partial_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              }
+            },
+            {
+              "nodeId": "play_1_270c490d6774d3b58652323e_2",
+              "domain": "play",
+              "title": "模拟·室内艺术馆",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "time": "2026-10-15T10:00:00+08:00",
+              "location": {
+                "name": "模拟·室内艺术馆",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.224999999999998,
+                  "longitude": 121.47
+                }
+              },
+              "media": [],
+              "cost": 30,
+              "price": {
+                "amount": 30,
+                "currency": "CNY",
+                "quality": "reference",
+                "basis": "per_person",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "sourceStatus": "contract_fixture",
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T12:00:00+08:00",
+                  "label": "第 1 天 10:00–12:00 · 轻松体验",
+                  "startAt": "2026-10-15T10:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "local_discovery",
+                      "summary": "play_1 为室内安静、少步行的本地文化体验，符合安静与室内文化体验偏好。",
+                      "reasonCode": "match_preference",
+                      "evidenceRefs": [
+                        "source_play_1",
+                        "claim_play_1"
+                      ]
+                    },
+                    {
+                      "lane": "local_discovery",
+                      "summary": "全部候选证据均为 QA 虚构测试资料，无独立官方/地图或授权库存来源交叉验证，真实库存未核验。",
+                      "reasonCode": "unverified_evidence",
+                      "evidenceRefs": [
+                        "source_play_0",
+                        "claim_play_0",
+                        "source_play_1",
+                        "claim_play_1",
+                        "source_play_2",
+                        "claim_play_2"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              }
+            },
+            {
+              "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+              "domain": "stay",
+              "title": "模拟·庭院安静酒店",
+              "summary": "QA 虚构测试资料 · 室内安静、少步行，提供本地文化体验 · 无障碍连续性未知，真实库存未核验",
+              "time": "2026-10-15T16:00:00+08:00",
+              "location": {
+                "name": "模拟·庭院安静酒店",
+                "address": "上海",
+                "coordinates": {
+                  "latitude": 31.224999999999998,
+                  "longitude": 121.47
+                }
+              },
+              "media": [],
+              "cost": 250,
+              "price": {
+                "amount": 250,
+                "currency": "CNY",
+                "quality": "reference",
+                "basis": "per_night_room",
+                "checkedAt": "2026-09-29T18:30:40.762Z"
+              },
+              "sourceStatus": "contract_fixture",
+              "operability": {
+                "openWeek": "00:00-23:59",
+                "provider": "decision_fixture",
+                "checkedAt": "2026-09-29T18:30:40.762Z",
+                "sourceLabel": "decision_fixture",
+                "researchDepth": "provider_search",
+                "planningWindow": {
+                  "basis": "agent_suggested_window",
+                  "endAt": "2026-10-15T18:00:00+08:00",
+                  "label": "第 1 天 16:00–18:00 · 抵达后入住",
+                  "startAt": "2026-10-15T16:00:00+08:00",
+                  "confirmed": false
+                },
+                "providerSummary": "QA 虚构测试资料。室内安静、少步行，提供本地文化体验。无障碍连续性未知，真实库存未核验。",
+                "semanticAnalysis": {
+                  "reasons": [
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "stay_0(400元)与stay_1(250元)均描述室内安静、少步行、本地文化体验，更贴合安静与室内文化偏好；stay_2(180元)描述户外热闹、较多步行，与偏好冲突。stay_1在更低成本下提供与stay_0相似的安静属性，性价比更优。",
+                      "reasonCode": "preference_match",
+                      "evidenceRefs": [
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    },
+                    {
+                      "lane": "inventory_budget",
+                      "summary": "按两人计算，交通成本约156元，住宿候选成本180-400元，合计仅336-556元，远低于6000元总预算。预算大头(play/food/local_transport)尚未提供候选，无法评估预算分配与冲击。",
+                      "reasonCode": "insufficient_evidence",
+                      "evidenceRefs": [
+                        "source_transport_0",
+                        "claim_transport_0",
+                        "source_transport_1",
+                        "claim_transport_1",
+                        "source_transport_2",
+                        "claim_transport_2",
+                        "source_stay_0",
+                        "claim_stay_0",
+                        "source_stay_1",
+                        "claim_stay_1",
+                        "source_stay_2",
+                        "claim_stay_2"
+                      ]
+                    }
+                  ],
+                  "disputed": false,
+                  "rejected": false,
+                  "recommended": true
+                },
+                "requestedFacilityNeeds": []
+              }
+            }
+          ],
+          "mobility": {
+            "schemaVersion": "trip-mobility-v1",
+            "status": "completed",
+            "destination": "上海",
+            "source": "fixture",
+            "checkedAt": "2026-09-29T18:31:56.295Z",
+            "freshUntil": "2026-09-29T19:31:56.295Z",
+            "coverage": {
+              "routedNodeIds": [
+                "transport_0_270c490d6774d3b58652323e_1",
+                "stay_1_270c490d6774d3b58652323e_1",
+                "play_0_270c490d6774d3b58652323e_1",
+                "play_1_270c490d6774d3b58652323e_2"
+              ],
+              "unresolvedNodeIds": [],
+              "routedStopIds": [
+                "s_arrival",
+                "s_bagdrop",
+                "s_play0",
+                "s_play1",
+                "s_checkin",
+                "s_return"
+              ],
+              "unresolvedStopIds": [],
+              "unscheduled": false
+            },
+            "legs": [
+              {
+                "legId": "fixture_leg_0",
+                "origin": {
+                  "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                  "stopId": "s_arrival",
+                  "label": "模拟·早班高铁",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.226,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "intercity_arrival",
+                  "startAt": "2026-10-15T01:00:00.000Z",
+                  "endAt": "2026-10-15T01:00:00.000Z"
+                },
+                "destination": {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_bagdrop",
+                  "label": "模拟·庭院安静酒店",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.21,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "startAt": "2026-10-15T01:45:00.000Z",
+                  "endAt": "2026-10-15T02:15:00.000Z"
+                },
+                "recommendedMode": "taxi",
+                "rationale": "受控路线",
+                "alternatives": [
+                  {
+                    "mode": "taxi",
+                    "totalMinutes": 20,
+                    "distanceMeters": 3000,
+                    "walkingMeters": 0,
+                    "transfers": 0,
+                    "estimatedFareCny": 25,
+                    "scheduleBasis": "query_time_estimate",
+                    "realTimeArrival": false,
+                    "navigationUrl": null,
+                    "polyline": [
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.226,
+                        "coordinateSystem": "GCJ-02"
+                      },
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.21,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    ],
+                    "steps": [],
+                    "accessibilityFeatures": [],
+                    "accessibilityAssessment": {
+                      "hasStairs": false,
+                      "hasElevator": false,
+                      "hasEscalator": false,
+                      "hasRamp": false,
+                      "stepFreeContinuity": "not_verified",
+                      "realTimeStatus": false
+                    }
+                  }
+                ],
+                "recommendationAudit": null
+              },
+              {
+                "legId": "fixture_leg_1",
+                "origin": {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_bagdrop",
+                  "label": "模拟·庭院安静酒店",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.21,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "startAt": "2026-10-15T01:45:00.000Z",
+                  "endAt": "2026-10-15T02:15:00.000Z"
+                },
+                "destination": {
+                  "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                  "stopId": "s_play0",
+                  "label": "模拟·城市历史馆",
+                  "coordinates": {
+                    "longitude": 121.46600000000001,
+                    "latitude": 31.218,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T02:35:00.000Z",
+                  "endAt": "2026-10-15T04:05:00.000Z"
+                },
+                "recommendedMode": "taxi",
+                "rationale": "受控路线",
+                "alternatives": [
+                  {
+                    "mode": "taxi",
+                    "totalMinutes": 20,
+                    "distanceMeters": 3000,
+                    "walkingMeters": 0,
+                    "transfers": 0,
+                    "estimatedFareCny": 25,
+                    "scheduleBasis": "query_time_estimate",
+                    "realTimeArrival": false,
+                    "navigationUrl": null,
+                    "polyline": [
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.21,
+                        "coordinateSystem": "GCJ-02"
+                      },
+                      {
+                        "longitude": 121.46600000000001,
+                        "latitude": 31.218,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    ],
+                    "steps": [],
+                    "accessibilityFeatures": [],
+                    "accessibilityAssessment": {
+                      "hasStairs": false,
+                      "hasElevator": false,
+                      "hasEscalator": false,
+                      "hasRamp": false,
+                      "stepFreeContinuity": "not_verified",
+                      "realTimeStatus": false
+                    }
+                  }
+                ],
+                "recommendationAudit": null
+              },
+              {
+                "legId": "fixture_leg_2",
+                "origin": {
+                  "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                  "stopId": "s_play0",
+                  "label": "模拟·城市历史馆",
+                  "coordinates": {
+                    "longitude": 121.46600000000001,
+                    "latitude": 31.218,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T02:35:00.000Z",
+                  "endAt": "2026-10-15T04:05:00.000Z"
+                },
+                "destination": {
+                  "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                  "stopId": "s_play1",
+                  "label": "模拟·室内艺术馆",
+                  "coordinates": {
+                    "longitude": 121.474,
+                    "latitude": 31.218,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T06:00:00.000Z",
+                  "endAt": "2026-10-15T07:30:00.000Z"
+                },
+                "recommendedMode": "taxi",
+                "rationale": "受控路线",
+                "alternatives": [
+                  {
+                    "mode": "taxi",
+                    "totalMinutes": 20,
+                    "distanceMeters": 3000,
+                    "walkingMeters": 0,
+                    "transfers": 0,
+                    "estimatedFareCny": 25,
+                    "scheduleBasis": "query_time_estimate",
+                    "realTimeArrival": false,
+                    "navigationUrl": null,
+                    "polyline": [
+                      {
+                        "longitude": 121.46600000000001,
+                        "latitude": 31.218,
+                        "coordinateSystem": "GCJ-02"
+                      },
+                      {
+                        "longitude": 121.474,
+                        "latitude": 31.218,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    ],
+                    "steps": [],
+                    "accessibilityFeatures": [],
+                    "accessibilityAssessment": {
+                      "hasStairs": false,
+                      "hasElevator": false,
+                      "hasEscalator": false,
+                      "hasRamp": false,
+                      "stepFreeContinuity": "not_verified",
+                      "realTimeStatus": false
+                    }
+                  }
+                ],
+                "recommendationAudit": null
+              },
+              {
+                "legId": "fixture_leg_3",
+                "origin": {
+                  "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                  "stopId": "s_play1",
+                  "label": "模拟·室内艺术馆",
+                  "coordinates": {
+                    "longitude": 121.474,
+                    "latitude": 31.218,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T06:00:00.000Z",
+                  "endAt": "2026-10-15T07:30:00.000Z"
+                },
+                "destination": {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_checkin",
+                  "label": "模拟·庭院安静酒店",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.21,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "startAt": "2026-10-15T08:15:00.000Z",
+                  "endAt": "2026-10-15T08:45:00.000Z"
+                },
+                "recommendedMode": "taxi",
+                "rationale": "受控路线",
+                "alternatives": [
+                  {
+                    "mode": "taxi",
+                    "totalMinutes": 20,
+                    "distanceMeters": 3000,
+                    "walkingMeters": 0,
+                    "transfers": 0,
+                    "estimatedFareCny": 25,
+                    "scheduleBasis": "query_time_estimate",
+                    "realTimeArrival": false,
+                    "navigationUrl": null,
+                    "polyline": [
+                      {
+                        "longitude": 121.474,
+                        "latitude": 31.218,
+                        "coordinateSystem": "GCJ-02"
+                      },
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.21,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    ],
+                    "steps": [],
+                    "accessibilityFeatures": [],
+                    "accessibilityAssessment": {
+                      "hasStairs": false,
+                      "hasElevator": false,
+                      "hasEscalator": false,
+                      "hasRamp": false,
+                      "stepFreeContinuity": "not_verified",
+                      "realTimeStatus": false
+                    }
+                  }
+                ],
+                "recommendationAudit": null
+              },
+              {
+                "legId": "fixture_leg_4",
+                "origin": {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_checkin",
+                  "label": "模拟·庭院安静酒店",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.21,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "startAt": "2026-10-15T08:15:00.000Z",
+                  "endAt": "2026-10-15T08:45:00.000Z"
+                },
+                "destination": {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "stopId": "s_return",
+                  "label": "模拟·庭院安静酒店",
+                  "coordinates": {
+                    "longitude": 121.458,
+                    "latitude": 31.21,
+                    "coordinateSystem": "GCJ-02"
+                  },
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_return",
+                  "startAt": "2026-10-15T12:30:00.000Z",
+                  "endAt": "2026-10-15T12:45:00.000Z"
+                },
+                "recommendedMode": "taxi",
+                "rationale": "受控路线",
+                "alternatives": [
+                  {
+                    "mode": "taxi",
+                    "totalMinutes": 20,
+                    "distanceMeters": 3000,
+                    "walkingMeters": 0,
+                    "transfers": 0,
+                    "estimatedFareCny": 25,
+                    "scheduleBasis": "query_time_estimate",
+                    "realTimeArrival": false,
+                    "navigationUrl": null,
+                    "polyline": [
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.21,
+                        "coordinateSystem": "GCJ-02"
+                      },
+                      {
+                        "longitude": 121.458,
+                        "latitude": 31.21,
+                        "coordinateSystem": "GCJ-02"
+                      }
+                    ],
+                    "steps": [],
+                    "accessibilityFeatures": [],
+                    "accessibilityAssessment": {
+                      "hasStairs": false,
+                      "hasElevator": false,
+                      "hasEscalator": false,
+                      "hasRamp": false,
+                      "stepFreeContinuity": "not_verified",
+                      "realTimeStatus": false
+                    }
+                  }
+                ],
+                "recommendationAudit": null
+              }
+            ],
+            "itinerary": {
+              "schemaVersion": "trip-itinerary-v1",
+              "planningSource": "model_plan",
+              "tripDates": [
+                "2026-10-15"
+              ],
+              "stops": [
+                {
+                  "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                  "domain": "transport",
+                  "title": "模拟·早班高铁",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "intercity_arrival",
+                  "startAt": "2026-10-15T09:00:00+08:00",
+                  "endAt": "2026-10-15T09:00:00+08:00",
+                  "timeSource": "provider_schedule",
+                  "fixed": true,
+                  "preferredModes": [
+                    "transit"
+                  ],
+                  "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_arrival"
+                },
+                {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "domain": "stay",
+                  "title": "模拟·庭院安静酒店",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "bag_drop",
+                  "startAt": "2026-10-15T09:45:00+08:00",
+                  "endAt": "2026-10-15T10:15:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "taxi",
+                    "transit"
+                  ],
+                  "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_bagdrop"
+                },
+                {
+                  "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                  "domain": "play",
+                  "title": "模拟·城市历史馆",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T10:35:00+08:00",
+                  "endAt": "2026-10-15T12:05:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_play0"
+                },
+                {
+                  "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                  "domain": "play",
+                  "title": "模拟·室内艺术馆",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "activity",
+                  "startAt": "2026-10-15T14:00:00+08:00",
+                  "endAt": "2026-10-15T15:30:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "transit",
+                    "taxi"
+                  ],
+                  "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_play1"
+                },
+                {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "domain": "stay",
+                  "title": "模拟·庭院安静酒店",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_check_in",
+                  "startAt": "2026-10-15T16:15:00+08:00",
+                  "endAt": "2026-10-15T16:45:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk",
+                    "taxi"
+                  ],
+                  "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_checkin"
+                },
+                {
+                  "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                  "domain": "stay",
+                  "title": "模拟·庭院安静酒店",
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "role": "stay_return",
+                  "startAt": "2026-10-15T20:30:00+08:00",
+                  "endAt": "2026-10-15T20:45:00+08:00",
+                  "timeSource": "agent_suggested",
+                  "fixed": false,
+                  "preferredModes": [
+                    "walk",
+                    "taxi"
+                  ],
+                  "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                  "openingHours": "00:00-23:59",
+                  "stopId": "s_return"
+                }
+              ],
+              "days": [
+                {
+                  "dayIndex": 1,
+                  "date": "2026-10-15",
+                  "stopIds": [
+                    "s_arrival",
+                    "s_bagdrop",
+                    "s_play0",
+                    "s_play1",
+                    "s_checkin",
+                    "s_return"
+                  ]
+                }
+              ]
+            },
+            "feasibility": {
+              "schemaVersion": "trip-feasibility-v1",
+              "canConfirm": false,
+              "status": "blocked",
+              "primaryBlocker": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+              "issues": [
+                {
+                  "code": "meal_window_missing",
+                  "severity": "blocking",
+                  "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                  "stopIds": [],
+                  "dayIndex": 1,
+                  "allowedRepairDirections": [
+                    "reorder_flexible_stop",
+                    "replace_candidate"
+                  ]
+                },
+                {
+                  "code": "meal_window_missing",
+                  "severity": "blocking",
+                  "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                  "stopIds": [],
+                  "dayIndex": 1,
+                  "allowedRepairDirections": [
+                    "reorder_flexible_stop",
+                    "replace_candidate"
+                  ]
+                }
+              ],
+              "checkedAt": "2026-09-29T18:31:56.295Z"
+            },
+            "travelerFit": {
+              "constrainedTravelerIds": [],
+              "maxContinuousWalkMeters": null,
+              "maxTransfers": null,
+              "planningWalkingTarget": null,
+              "planningTransferTarget": null,
+              "walkingTargetSource": null,
+              "transferTargetSource": null,
+              "stepFreeRequired": false,
+              "avoidStairs": false,
+              "accessibilityEvidence": "not_required",
+              "stayAnchorFits": []
+            },
+            "reason": null,
+            "caveats": [
+              "QA 模拟路线与示意折线，仅供交互验证，不可实际导航。"
+            ],
+            "sourceDocumentation": null,
+            "fabricatedResults": false
+          },
+          "itinerary": {
+            "schemaVersion": "trip-itinerary-v1",
+            "planningSource": "model_plan",
+            "tripDates": [
+              "2026-10-15"
+            ],
+            "stops": [
+              {
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "domain": "transport",
+                "title": "模拟·早班高铁",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "intercity_arrival",
+                "startAt": "2026-10-15T09:00:00+08:00",
+                "endAt": "2026-10-15T09:00:00+08:00",
+                "timeSource": "provider_schedule",
+                "fixed": true,
+                "preferredModes": [
+                  "transit"
+                ],
+                "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_arrival"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "domain": "stay",
+                "title": "模拟·庭院安静酒店",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "bag_drop",
+                "startAt": "2026-10-15T09:45:00+08:00",
+                "endAt": "2026-10-15T10:15:00+08:00",
+                "timeSource": "agent_suggested",
+                "fixed": false,
+                "preferredModes": [
+                  "taxi",
+                  "transit"
+                ],
+                "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_bagdrop"
+              },
+              {
+                "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                "domain": "play",
+                "title": "模拟·城市历史馆",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "activity",
+                "startAt": "2026-10-15T10:35:00+08:00",
+                "endAt": "2026-10-15T12:05:00+08:00",
+                "timeSource": "agent_suggested",
+                "fixed": false,
+                "preferredModes": [
+                  "transit",
+                  "taxi"
+                ],
+                "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_play0"
+              },
+              {
+                "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                "domain": "play",
+                "title": "模拟·室内艺术馆",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "activity",
+                "startAt": "2026-10-15T14:00:00+08:00",
+                "endAt": "2026-10-15T15:30:00+08:00",
+                "timeSource": "agent_suggested",
+                "fixed": false,
+                "preferredModes": [
+                  "transit",
+                  "taxi"
+                ],
+                "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_play1"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "domain": "stay",
+                "title": "模拟·庭院安静酒店",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "stay_check_in",
+                "startAt": "2026-10-15T16:15:00+08:00",
+                "endAt": "2026-10-15T16:45:00+08:00",
+                "timeSource": "agent_suggested",
+                "fixed": false,
+                "preferredModes": [
+                  "walk",
+                  "taxi"
+                ],
+                "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_checkin"
+              },
+              {
+                "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                "domain": "stay",
+                "title": "模拟·庭院安静酒店",
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "role": "stay_return",
+                "startAt": "2026-10-15T20:30:00+08:00",
+                "endAt": "2026-10-15T20:45:00+08:00",
+                "timeSource": "agent_suggested",
+                "fixed": false,
+                "preferredModes": [
+                  "walk",
+                  "taxi"
+                ],
+                "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                "openingHours": "00:00-23:59",
+                "stopId": "s_return"
+              }
+            ],
+            "days": [
+              {
+                "dayIndex": 1,
+                "date": "2026-10-15",
+                "stopIds": [
+                  "s_arrival",
+                  "s_bagdrop",
+                  "s_play0",
+                  "s_play1",
+                  "s_checkin",
+                  "s_return"
+                ]
+              }
+            ]
+          },
+          "feasibility": {
+            "schemaVersion": "trip-feasibility-v1",
+            "canConfirm": false,
+            "status": "blocked",
+            "primaryBlocker": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+            "issues": [
+              {
+                "code": "meal_window_missing",
+                "severity": "blocking",
+                "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                "stopIds": [],
+                "dayIndex": 1,
+                "allowedRepairDirections": [
+                  "reorder_flexible_stop",
+                  "replace_candidate"
+                ]
+              },
+              {
+                "code": "meal_window_missing",
+                "severity": "blocking",
+                "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+                "stopIds": [],
+                "dayIndex": 1,
+                "allowedRepairDirections": [
+                  "reorder_flexible_stop",
+                  "replace_candidate"
+                ]
+              }
+            ],
+            "checkedAt": "2026-09-29T18:31:56.295Z"
+          },
+          "impact": {
+            "stopCount": 4,
+            "estimatedDecisionCostCny": 751,
+            "budget": {
+              "currency": "CNY",
+              "totalBudget": 6000,
+              "domains": {
+                "stay": {
+                  "committed": 250,
+                  "estimated": 250,
+                  "quality": "reference",
+                  "basis": [
+                    "模拟·庭院安静酒店：1 晚 × 1 间房，250 元"
+                  ],
+                  "unknownCount": 0
+                },
+                "transport": {
+                  "committed": 156,
+                  "estimated": 156,
+                  "quality": "estimate",
+                  "basis": [
+                    "模拟·早班高铁：2 人 × 单程票价，156 元"
+                  ],
+                  "unknownCount": 0
+                },
+                "food": {
+                  "committed": 0,
+                  "estimated": 0,
+                  "quality": "unknown",
+                  "basis": [],
+                  "unknownCount": 1
+                },
+                "play": {
+                  "committed": 220,
+                  "estimated": 220,
+                  "quality": "estimate",
+                  "basis": [
+                    "模拟·城市历史馆：2 人 × 已排 1 次体验，160 元",
+                    "模拟·室内艺术馆：2 人 × 已排 1 次体验，60 元"
+                  ],
+                  "unknownCount": 0
+                },
+                "other": {
+                  "committed": 0,
+                  "estimated": 125,
+                  "quality": "estimate",
+                  "basis": [
+                    "已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验"
+                  ],
+                  "unknownCount": 0
+                }
+              },
+              "committed": 626,
+              "estimated": 751,
+              "exceedsBudget": false
+            },
+            "budgetDelta": {
+              "committed": 626,
+              "estimated": 235,
+              "exceedsBudget": false
+            },
+            "route": {
+              "legCount": 5,
+              "totalMinutes": 100,
+              "walkingMeters": 0,
+              "transfers": 0,
+              "estimatedFareCny": 125
+            },
+            "baseline": {
+              "kind": "none",
+              "route": null
+            },
+            "deltaFromConfirmed": null,
+            "weather": null,
+            "stayAnchorFits": []
+          },
+          "caveats": [
+            "这是试选路线，不会修改已确认行程。",
+            "QA 模拟路线与示意折线，仅供交互验证，不可实际导航。"
+          ],
+          "fabricatedResults": false,
+          "operationId": "planrun_c90f1586:2",
+          "runId": "planrun_c90f1586",
+          "baseRevision": 0,
+          "attempt": 2,
+          "proposalId": "itinerary_6034556e586673403c6af1fa",
+          "selections": {},
+          "savedState": {
+            "activeDraftCount": 1,
+            "replacesEarlierTrial": true,
+            "adoptedNodeCount": 0,
+            "adoptedTimelineAvailable": false,
+            "adoptedRouteStatus": "not_checked"
+          },
+          "issues": [
+            {
+              "code": "meal_window_missing",
+              "severity": "blocking",
+              "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+              "stopIds": [],
+              "dayIndex": 1,
+              "allowedRepairDirections": [
+                "reorder_flexible_stop",
+                "replace_candidate"
+              ]
+            },
+            {
+              "code": "meal_window_missing",
+              "severity": "blocking",
+              "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+              "stopIds": [],
+              "dayIndex": 1,
+              "allowedRepairDirections": [
+                "reorder_flexible_stop",
+                "replace_candidate"
+              ]
+            }
+          ],
+          "accept": null,
+          "checkedAt": "2026-09-29T18:31:56.295Z",
+          "providerCallCount": 1
+        }
+      },
+      "toolCalls": [
+        {
+          "name": "plan_itinerary_trial",
+          "arguments": {
+            "attempt": 2,
+            "assumptions": [
+              "车次与到站时间按“上午抵沪、约09:00 到站”的弹性假设排，未按已购车票核验；若实际到站更晚，下午与晚间站点整体顺延。",
+              "餐饮来源两次检索均无候选，午餐与晚餐的地点、营业时间与参考人均价格无法排入站点；草案保留12:00–14:00 与18:00–20:00 的用餐时间窗，待有可用餐饮资料后再补。",
+              "2026-10-15 上海天气资料不可用，户外与步行安排未按天气校准。",
+              "当地交通（酒店到场馆、晚间返回）尚无候选来源，仅给出偏好方式，未核验实际路线与耗时。",
+              "所有价格为测试来源的参考价，非实际出行查询结果，房态、开放时间与无障碍连续性均未核验。"
+            ],
+            "baseRevision": 0,
+            "days": [
+              {
+                "date": "2026-10-15",
+                "dayIndex": 1,
+                "stops": [
+                  {
+                    "durationMinutes": 0,
+                    "fixed": true,
+                    "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                    "preferredModes": [
+                      "transit"
+                    ],
+                    "rationale": "唯一可用的上午高铁候选，把抵达时刻作为当天固定起点。",
+                    "role": "intercity_arrival",
+                    "stopId": "s_arrival",
+                    "timeWindow": {
+                      "endAt": "2026-10-15T09:00:00+08:00",
+                      "startAt": "2026-10-15T09:00:00+08:00"
+                    }
+                  },
+                  {
+                    "durationMinutes": 30,
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "preferredModes": [
+                      "taxi",
+                      "transit"
+                    ],
+                    "rationale": "先寄存行李再进馆，比带着行李跑一整天更符合舒缓节奏。",
+                    "role": "bag_drop",
+                    "stopId": "s_bagdrop",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T09:45:00+08:00"
+                    }
+                  },
+                  {
+                    "durationMinutes": 90,
+                    "fixed": false,
+                    "nodeId": "play_0_270c490d6774d3b58652323e_1",
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "室内安静、少步行的本地文化场馆，最贴合当天的主要偏好。",
+                    "role": "activity",
+                    "stopId": "s_play0",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T10:35:00+08:00"
+                    }
+                  },
+                  {
+                    "durationMinutes": 90,
+                    "fixed": false,
+                    "nodeId": "play_1_270c490d6774d3b58652323e_2",
+                    "preferredModes": [
+                      "transit",
+                      "taxi"
+                    ],
+                    "rationale": "下午换成同类室内艺术馆，保持室内安静且与上午场馆不重复。",
+                    "role": "activity",
+                    "stopId": "s_play1",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T14:00:00+08:00"
+                    }
+                  },
+                  {
+                    "durationMinutes": 30,
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "rationale": "看完展再回酒店办理入住，把白天时间留给室内文化行程。",
+                    "role": "stay_check_in",
+                    "stopId": "s_checkin",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T16:15:00+08:00"
+                    }
+                  },
+                  {
+                    "durationMinutes": 15,
+                    "fixed": false,
+                    "nodeId": "stay_1_270c490d6774d3b58652323e_1",
+                    "preferredModes": [
+                      "walk",
+                      "taxi"
+                    ],
+                    "rationale": "晚间用餐后回到同一家酒店休息，第二天返程自理。",
+                    "role": "stay_return",
+                    "stopId": "s_return",
+                    "timeWindow": {
+                      "startAt": "2026-10-15T20:30:00+08:00"
+                    }
+                  }
+                ]
+              }
+            ],
+            "evidenceRefs": [
+              "source_transport_0",
+              "source_stay_1",
+              "source_play_0",
+              "source_play_1"
+            ],
+            "fixedAnchors": [
+              {
+                "endAt": "2026-10-15T09:00:00+08:00",
+                "kind": "arrival",
+                "nodeId": "transport_0_270c490d6774d3b58652323e_1",
+                "startAt": "2026-10-15T09:00:00+08:00"
+              }
+            ],
+            "lockedNodeIds": [],
+            "needsContext": [],
+            "objective": "10月15日两位成人从杭州乘高铁上午抵沪，一天安静、室内文化为主的游玩加一晚一间房住宿的完整草案；返程自理，总预算6000元。",
+            "priorities": [
+              "室内文化体验优先",
+              "避开拥挤、节奏舒缓",
+              "两位成人一间房",
+              "换乘与步行尽量少"
+            ],
+            "runId": "planrun_c90f1586",
+            "schemaVersion": "itinerary-plan-v1",
+            "scope": "complete_trip",
+            "tripId": "trip_84b2f3ca"
+          }
+        }
+      ],
+      "modelErrors": [],
+      "events": [
+        {
+          "type": "run_queued",
+          "status": "queued",
+          "sequence": 1,
+          "at": 1790706631397
+        },
+        {
+          "type": "run_started",
+          "status": "running",
+          "sequence": 2,
+          "at": 1790706631407
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "save_trip_understanding",
+          "toolCallId": "call_00_RaC9DYarw2MKJjpDDR6o0461",
+          "sequence": 3,
+          "at": 1790706640713
+        },
+        {
+          "type": "tool_finished",
+          "status": "saved",
+          "toolName": "save_trip_understanding",
+          "toolCallId": "call_00_RaC9DYarw2MKJjpDDR6o0461",
+          "sequence": 4,
+          "at": 1790706640737
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "research_trip_options",
+          "toolCallId": "call_01_gAr7eGvz0NbIiCaxkivX1049",
+          "sequence": 5,
+          "at": 1790706640746
+        },
+        {
+          "type": "analysis_lane_started",
+          "status": "running",
+          "lane": "local_discovery",
+          "attempt": 1,
+          "sequence": 6,
+          "at": 1790706640791
+        },
+        {
+          "type": "analysis_lane_started",
+          "status": "running",
+          "lane": "inventory_budget",
+          "attempt": 1,
+          "sequence": 7,
+          "at": 1790706640793
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "local_discovery",
+          "sequence": 8,
+          "at": 1790706643465
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "local_discovery",
+          "sequence": 9,
+          "at": 1790706643472
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "inventory_budget",
+          "sequence": 10,
+          "at": 1790706643489
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "inventory_budget",
+          "sequence": 11,
+          "at": 1790706644676
+        },
+        {
+          "type": "analysis_lane_completed",
+          "status": "completed",
+          "lane": "local_discovery",
+          "attempt": 1,
+          "sequence": 12,
+          "at": 1790706649659
+        },
+        {
+          "type": "analysis_lane_started",
+          "status": "running",
+          "lane": "operability_schedule",
+          "attempt": 1,
+          "sequence": 13,
+          "at": 1790706649662
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "operability_schedule",
+          "sequence": 14,
+          "at": 1790706651170
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "operability_schedule",
+          "sequence": 15,
+          "at": 1790706652360
+        },
+        {
+          "type": "analysis_lane_completed",
+          "status": "completed",
+          "lane": "inventory_budget",
+          "attempt": 1,
+          "sequence": 16,
+          "at": 1790706655059
+        },
+        {
+          "type": "analysis_lane_completed",
+          "status": "completed",
+          "lane": "operability_schedule",
+          "attempt": 1,
+          "sequence": 17,
+          "at": 1790706660138
+        },
+        {
+          "type": "analysis_handoff",
+          "status": "accepted",
+          "lane": "inventory_budget",
+          "runId": "analysis_run_270c490d6774d3b58652323e",
+          "revision": 0,
+          "sequence": 18,
+          "at": 1790706660148
+        },
+        {
+          "type": "analysis_handoff",
+          "status": "accepted",
+          "lane": "local_discovery",
+          "runId": "analysis_run_270c490d6774d3b58652323e",
+          "revision": 0,
+          "sequence": 19,
+          "at": 1790706660151
+        },
+        {
+          "type": "analysis_handoff",
+          "status": "accepted",
+          "lane": "operability_schedule",
+          "runId": "analysis_run_270c490d6774d3b58652323e",
+          "revision": 0,
+          "sequence": 20,
+          "at": 1790706660155
+        },
+        {
+          "type": "tool_finished",
+          "status": "proposed",
+          "toolName": "research_trip_options",
+          "toolCallId": "call_01_gAr7eGvz0NbIiCaxkivX1049",
+          "sequence": 21,
+          "at": 1790706660191
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "get_trip_plan_view",
+          "toolCallId": "call_00_2aLc9bLUxc9zDs2zisSx6676",
+          "sequence": 22,
+          "at": 1790706663685
+        },
+        {
+          "type": "tool_finished",
+          "status": "ready",
+          "toolName": "get_trip_plan_view",
+          "toolCallId": "call_00_2aLc9bLUxc9zDs2zisSx6676",
+          "sequence": 23,
+          "at": 1790706663715
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "research_trip_options",
+          "toolCallId": "call_00_kl6r3yvqXDwwYtMeq69l2220",
+          "sequence": 24,
+          "at": 1790706672479
+        },
+        {
+          "type": "analysis_lane_started",
+          "status": "running",
+          "lane": "operability_schedule",
+          "attempt": 1,
+          "sequence": 25,
+          "at": 1790706672546
+        },
+        {
+          "type": "analysis_lane_started",
+          "status": "running",
+          "lane": "local_discovery",
+          "attempt": 1,
+          "sequence": 26,
+          "at": 1790706672550
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "local_discovery",
+          "sequence": 27,
+          "at": 1790706674899
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "operability_schedule",
+          "sequence": 28,
+          "at": 1790706674945
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "operability_schedule",
+          "sequence": 29,
+          "at": 1790706676749
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "local_discovery",
+          "sequence": 30,
+          "at": 1790706677339
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "operability_schedule",
+          "sequence": 31,
+          "at": 1790706678407
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "local_discovery",
+          "sequence": 32,
+          "at": 1790706678803
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "local_discovery",
+          "sequence": 33,
+          "at": 1790706680098
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_evidence",
+          "lane": "operability_schedule",
+          "sequence": 34,
+          "at": 1790706680378
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "local_discovery",
+          "sequence": 35,
+          "at": 1790706681049
+        },
+        {
+          "type": "child_tool_started",
+          "status": "running",
+          "toolName": "read_analysis_context",
+          "lane": "operability_schedule",
+          "sequence": 36,
+          "at": 1790706681945
+        },
+        {
+          "type": "analysis_lane_completed",
+          "status": "completed",
+          "lane": "local_discovery",
+          "attempt": 1,
+          "sequence": 37,
+          "at": 1790706686357
+        },
+        {
+          "type": "analysis_lane_completed",
+          "status": "completed",
+          "lane": "operability_schedule",
+          "attempt": 1,
+          "sequence": 38,
+          "at": 1790706687210
+        },
+        {
+          "type": "analysis_handoff",
+          "status": "accepted",
+          "lane": "local_discovery",
+          "runId": "analysis_run_2d4f55311386381153204adb",
+          "revision": 0,
+          "sequence": 39,
+          "at": 1790706687225
+        },
+        {
+          "type": "analysis_handoff",
+          "status": "accepted",
+          "lane": "operability_schedule",
+          "runId": "analysis_run_2d4f55311386381153204adb",
+          "revision": 0,
+          "sequence": 40,
+          "at": 1790706687227
+        },
+        {
+          "type": "tool_finished",
+          "status": "proposed",
+          "toolName": "research_trip_options",
+          "toolCallId": "call_00_kl6r3yvqXDwwYtMeq69l2220",
+          "sequence": 41,
+          "at": 1790706687245
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_U8lpd2XGE0KCEZFQHMpk2131",
+          "sequence": 42,
+          "at": 1790706699007
+        },
+        {
+          "type": "tool_finished",
+          "status": "failed",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_U8lpd2XGE0KCEZFQHMpk2131",
+          "sequence": 43,
+          "at": 1790706699020
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_XgQlqpHVzc3dNOXsCjd50382",
+          "sequence": 44,
+          "at": 1790706704308
+        },
+        {
+          "type": "tool_finished",
+          "status": "needs_repair",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_XgQlqpHVzc3dNOXsCjd50382",
+          "sequence": 45,
+          "at": 1790706704395
+        },
+        {
+          "type": "tool_started",
+          "status": "running",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_AgzglrXiyrprMG2TbKrM2615",
+          "sequence": 46,
+          "at": 1790706716258
+        },
+        {
+          "type": "tool_finished",
+          "status": "blocked",
+          "toolName": "plan_itinerary_trial",
+          "toolCallId": "call_00_AgzglrXiyrprMG2TbKrM2615",
+          "sequence": 47,
+          "at": 1790706716352
+        },
+        {
+          "type": "compaction_start",
+          "status": "running",
+          "sequence": 48,
+          "at": 1790706716384
+        },
+        {
+          "type": "compaction_end",
+          "status": "completed",
+          "sequence": 49,
+          "at": 1790706721169
+        },
+        {
+          "type": "run_finished",
+          "status": "completed",
+          "sequence": 50,
+          "at": 1790706729255
+        }
+      ]
+    }
+  ]
+}

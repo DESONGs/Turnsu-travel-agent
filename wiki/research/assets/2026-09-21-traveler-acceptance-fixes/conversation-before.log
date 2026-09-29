@@ -1,0 +1,92 @@
+(node:94846) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ only-hotel comparison produces only hotel candidates on a new trip (82.237084ms)
+✖ an undecided traveler is asked one destination question instead of three bundled facts (7.474833ms)
+✖ a missing departure date is resolved before asking about arrival preferences (13.658708ms)
+✖ answering a planning question continues to a checked draft even if the model stops after saving (18.4775ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1887.626625
+
+✖ failing tests:
+
+test at tests/traveler-acceptance-regression.test.mjs:29:1
+✖ only-hotel comparison produces only hotel candidates on a new trip (82.237084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+  +   'play',
+  +   'food',
+      'stay',
+  +   'transport'
+    ]
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:39:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'play', 'food', 'stay', 'transport' ],
+    expected: [ 'stay' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/traveler-acceptance-regression.test.mjs:42:1
+✖ an undecided traveler is asked one destination question instead of three bundled facts (7.474833ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /哪天|几位|人数|日期/. Input:
+
+  '去哪座城市，哪天出发，一共几位？'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:47:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '去哪座城市，哪天出发，一共几位？',
+    expected: /哪天|几位|人数|日期/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/traveler-acceptance-regression.test.mjs:51:1
+✖ a missing departure date is resolved before asking about arrival preferences (13.658708ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /日期|哪天/. Input:
+
+  '你想几点到上海？'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:58:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '你想几点到上海？',
+    expected: /日期|哪天/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/traveler-acceptance-regression.test.mjs:62:1
+✖ answering a planning question continues to a checked draft even if the model stops after saving (18.4775ms)
+  AssertionError [ERR_ASSERTION]: {"schemaVersion":"travel-conversation-turn-v1","status":"completed","conversation":{"schemaVersion":"travel-conversation-view-v1","conversationId":"conversation_84577d75","tripId":"trip_d65bca85","modelId":"deepseek-v4-flash","messages":[{"messageId":"message_e134aabd","role":"user","text":"请做完整的一天行程，出发日期还没定。","kind":null,"modelId":null,"createdAt":"2026-09-21T03:56:15.051Z"},{"messageId":"message_eedbf3fe","role":"assistant","text":"哪天出发？","kind":null,"modelId":"deepseek-v4-flash","createdAt":"2026-09-21T03:56:15.060Z"},{"messageId":"message_fd1309d1","role":"user","text":"2026年10月15日","kind":null,"modelId":null,"createdAt":"2026-09-21T03:56:15.060Z"},{"messageId":"message_6e7926ef","role":"assistant","text":"日期已记下。","kind":null,"modelId":"deepseek-v4-flash","createdAt":"2026-09-21T03:56:15.068Z"}],"updatedAt":"2026-09-21T03:56:15.068Z","deletedAt":null},"tripId":"trip_d65bca85","activities":[{"toolName":"save_trip_understanding","status":"saved"}],"outcome":{"status":"ready","missingDomains":[],"incompleteAnalysis":[],"planningStatus":null},"agentTrace":{"skills":[{"skillId":"understand-trip","version":"2026-08-27","digest":"92b0a7cc87337c78"},{"skillId":"research-trip","version":"2026-08-27","digest":"e03b826de22fdf7b"}],"toolCallCount":1,"researchCallCount":0,"planningCallCount":0,"planningRunId":null,"planningProviderCallCount":0,"modelCallCount":2,"analysisDecision":null,"activeRunId":null}}
+  + actual - expected
+
+  + undefined
+  - 'trial_ready'
+
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/traveler-acceptance-regression.test.mjs:77:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'trial_ready',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

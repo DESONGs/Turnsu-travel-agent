@@ -1,0 +1,271 @@
+{
+  "capturedAt": "2026-09-21T04:31:40.052Z",
+  "scope": "This task isolated PostgreSQL, fictional travel facts, real browser adoption",
+  "tripId": "trip_47f724f6",
+  "revision": 2,
+  "brief": {
+    "dates": "2026-10-15 至 2026-10-16",
+    "origin": "杭州",
+    "currency": "CNY",
+    "destination": "上海",
+    "totalBudget": 6000,
+    "durationDays": 2,
+    "partyProfile": "一个人独自出行"
+  },
+  "selected": [
+    {
+      "nodeId": "transport_0_020352f094904b7f01ec70fc_1",
+      "domain": "transport",
+      "title": "transport option 0"
+    },
+    {
+      "nodeId": "stay_0_020352f094904b7f01ec70fc_1",
+      "domain": "stay",
+      "title": "stay option 0"
+    },
+    {
+      "nodeId": "play_0_020352f094904b7f01ec70fc_1",
+      "domain": "play",
+      "title": "play option 0"
+    },
+    {
+      "nodeId": "food_0_020352f094904b7f01ec70fc_1",
+      "domain": "food",
+      "title": "food option 0"
+    },
+    {
+      "nodeId": "play_1_020352f094904b7f01ec70fc_2",
+      "domain": "play",
+      "title": "play option 1"
+    },
+    {
+      "nodeId": "food_2_020352f094904b7f01ec70fc_3",
+      "domain": "food",
+      "title": "food option 2"
+    }
+  ],
+  "evidenceClaims": 6,
+  "itinerary": {
+    "days": [
+      {
+        "date": "2026-10-15",
+        "stopIds": [
+          "transport_0_020352f094904b7f01ec70fc_1:1:intercity_arrival",
+          "stay_0_020352f094904b7f01ec70fc_1:1:bag_drop",
+          "play_0_020352f094904b7f01ec70fc_1:1:activity",
+          "food_0_020352f094904b7f01ec70fc_1:1:meal",
+          "play_1_020352f094904b7f01ec70fc_2:1:activity",
+          "stay_0_020352f094904b7f01ec70fc_1:1:stay_check_in",
+          "food_2_020352f094904b7f01ec70fc_3:1:meal"
+        ],
+        "dayIndex": 1
+      },
+      {
+        "date": "2026-10-16",
+        "stopIds": [],
+        "dayIndex": 2
+      }
+    ],
+    "stops": [
+      {
+        "date": "2026-10-15",
+        "role": "intercity_arrival",
+        "endAt": "2026-10-15T09:00:00+08:00",
+        "fixed": true,
+        "title": "transport option 0",
+        "domain": "transport",
+        "nodeId": "transport_0_020352f094904b7f01ec70fc_1",
+        "stopId": "transport_0_020352f094904b7f01ec70fc_1:1:intercity_arrival",
+        "startAt": "2026-10-15T09:00:00+08:00",
+        "dayIndex": 1,
+        "rationale": "以当天最早可用的城际班次落地为起点，把整天留给市区动线，先不排第二天行程。",
+        "timeSource": "provider_schedule",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "transit",
+          "taxi"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "bag_drop",
+        "endAt": "2026-10-15T10:15:00+08:00",
+        "fixed": false,
+        "title": "stay option 0",
+        "domain": "stay",
+        "nodeId": "stay_0_020352f094904b7f01ec70fc_1",
+        "stopId": "stay_0_020352f094904b7f01ec70fc_1:1:bag_drop",
+        "startAt": "2026-10-15T09:45:00+08:00",
+        "dayIndex": 1,
+        "rationale": "先寄存行李再玩，白天不必拖着行李走景点，也让下午的入住变成顺路而非折返。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "transit",
+          "taxi"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "activity",
+        "endAt": "2026-10-15T12:35:00+08:00",
+        "fixed": false,
+        "title": "play option 0",
+        "domain": "play",
+        "nodeId": "play_0_020352f094904b7f01ec70fc_1",
+        "stopId": "play_0_020352f094904b7f01ec70fc_1:1:activity",
+        "startAt": "2026-10-15T10:35:00+08:00",
+        "dayIndex": 1,
+        "rationale": "上午安排室内文化类体验，天气不稳时这段不受影响，也避开午后暴晒或降雨。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "walk",
+          "transit"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "meal",
+        "endAt": "2026-10-15T13:55:00+08:00",
+        "fixed": false,
+        "title": "food option 0",
+        "domain": "food",
+        "nodeId": "food_0_020352f094904b7f01ec70fc_1",
+        "stopId": "food_0_020352f094904b7f01ec70fc_1:1:meal",
+        "startAt": "2026-10-15T12:55:00+08:00",
+        "dayIndex": 1,
+        "rationale": "午餐接在室内体验之后，选安静、有本地口味的一处，一人用餐不耽误下午动线。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "walk"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "activity",
+        "endAt": "2026-10-15T16:15:00+08:00",
+        "fixed": false,
+        "title": "play option 1",
+        "domain": "play",
+        "nodeId": "play_1_020352f094904b7f01ec70fc_2",
+        "stopId": "play_1_020352f094904b7f01ec70fc_2:1:activity",
+        "startAt": "2026-10-15T14:15:00+08:00",
+        "dayIndex": 1,
+        "rationale": "下午用一段户外活动承接白天的热闹氛围；若当天风雨明显，这段换成另一处室内体验即可，不牵动晚餐与入住。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "walk",
+          "transit"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "stay_check_in",
+        "endAt": "2026-10-15T17:20:00+08:00",
+        "fixed": false,
+        "title": "stay option 0",
+        "domain": "stay",
+        "nodeId": "stay_0_020352f094904b7f01ec70fc_1",
+        "stopId": "stay_0_020352f094904b7f01ec70fc_1:1:stay_check_in",
+        "startAt": "2026-10-15T16:35:00+08:00",
+        "dayIndex": 1,
+        "rationale": "入住放在下午活动结束后，房间同时承担白天寄存与当天过夜，第二天从这里自行返程最顺。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "transit",
+          "taxi"
+        ]
+      },
+      {
+        "date": "2026-10-15",
+        "role": "meal",
+        "endAt": "2026-10-15T19:30:00+08:00",
+        "fixed": false,
+        "title": "food option 2",
+        "domain": "food",
+        "nodeId": "food_2_020352f094904b7f01ec70fc_3",
+        "stopId": "food_2_020352f094904b7f01ec70fc_3:1:meal",
+        "startAt": "2026-10-15T18:00:00+08:00",
+        "dayIndex": 1,
+        "rationale": "晚餐留在入住点附近，一人吃完能步行回住处，也为第二天早起的返程留出休息时间。",
+        "timeSource": "agent_suggested",
+        "openingHours": "00:00-23:59",
+        "preferredModes": [
+          "walk"
+        ]
+      }
+    ],
+    "tripDates": [
+      "2026-10-15",
+      "2026-10-16"
+    ],
+    "schemaVersion": "trip-itinerary-v1",
+    "planningSource": "model_plan"
+  },
+  "routeLegCount": 6,
+  "adoptedProposalIds": [
+    "itinerary_2846afe3ecd02f50c21be3fc"
+  ],
+  "runs": [
+    {
+      "runId": "run_aedb8feb-3d46-4cfd-b195-8081ab63e7f3",
+      "status": "awaiting_input",
+      "createdAt": "2026-09-21T04:22:18.898Z",
+      "updatedAt": "2026-09-21T04:25:22.027Z",
+      "deadlineAt": "2026-09-21T04:26:18.898Z",
+      "question": {
+        "schemaVersion": "travel-question-v2",
+        "runId": "run_aedb8feb-3d46-4cfd-b195-8081ab63e7f3",
+        "questionId": "question_606d21e0baa41c15",
+        "question": "你打算哪天到上海？",
+        "choices": [
+          "国庆假期期间（10月1—7日）",
+          "10月中下旬的周末",
+          "10月中下旬的工作日"
+        ],
+        "options": [
+          {
+            "optionId": "option_bad8f4d379730bb2",
+            "label": "国庆假期期间（10月1—7日）",
+            "impact": "热门时段，住宿与景点紧张度最高，天气核验后我会优先安排可预约、可替代的动线"
+          },
+          {
+            "optionId": "option_8f8ea11d8a921457",
+            "label": "10月中下旬的周末",
+            "impact": "周末人流与住宿价格通常更紧，适合把室内备选和错峰用餐一起排"
+          },
+          {
+            "optionId": "option_989686844e1cf12f",
+            "label": "10月中下旬的工作日",
+            "impact": "相对好安排，可以把户外为主的动线和本地用餐放得更从容"
+          }
+        ],
+        "dependencyHash": "8467026b83b9398a00b664bb9edeca94ca2b24f0cb2123633032a9d9d414c582",
+        "readSet": [
+          "tripId",
+          "revision",
+          "brief",
+          "travelers",
+          "nodes",
+          "locks"
+        ],
+        "status": "answered",
+        "impact": "有了具体日期，我才能核验当天的天气、景点与餐厅的营业情况、以及住宿房态，并把「入住前先玩」还是「先放行李」这类取舍排进一天的时间窗。日期没定之前，只能给出可比较的暂定候选，不能算完整日程。",
+        "consumedByRunId": "run_a6a8a28e-7c14-4120-9012-dbf4bc3e7f79",
+        "answerHash": "65c2c3389ac33bb627d42c05319921108855252d345df93dacf5a395f972ccaf"
+      }
+    },
+    {
+      "runId": "run_a6a8a28e-7c14-4120-9012-dbf4bc3e7f79",
+      "status": "completed",
+      "createdAt": "2026-09-21T04:25:22.023Z",
+      "updatedAt": "2026-09-21T04:25:37.234Z",
+      "deadlineAt": "2026-09-21T04:29:22.023Z",
+      "trialStatus": "trial_ready"
+    }
+  ]
+}

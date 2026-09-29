@@ -1,0 +1,641 @@
+{
+  "baseCommit": "9b9cc0bc8514b80f6a45255e99d70575dd83b0a3",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "c5732d5ad379720b08379586103b92f5181d7a39e28582fc0edd9e0f4adbe0d3"
+    },
+    {
+      "path": ".pi/SYSTEM.md",
+      "sha256": "79e7a756a8c33bf1538d0cb15df646979884f398aa033c0c91780f5d164e8873"
+    },
+    {
+      "path": "agent.md",
+      "sha256": "b8853b3168704a7118d2b7869f104628ab1b46ebaed3bbf21d3446efacc18ee0"
+    },
+    {
+      "path": "apps/desktop/src/main.ts",
+      "sha256": "48703c7048c25c0c85b3e4408d66455648ea871c7613d9482f942d8ec794b0a8"
+    },
+    {
+      "path": "apps/desktop/src/security-policy.ts",
+      "sha256": "49fa7bd1dce4ae5c04faf2558a900000069ffdffd7e31159425bb1f2296de64e"
+    },
+    {
+      "path": "apps/desktop/src/session-vault.ts",
+      "sha256": "6159f63eb1ab194483034afdb8d9bc8f0d189865404adc900e5919d1fb8bb6ec"
+    },
+    {
+      "path": "apps/desktop/src/trusted-preload.cts",
+      "sha256": "c7db4ff49a05acb33ac2dd8f4eab622571b75561ba586c17f70c904bd47efbfb"
+    },
+    {
+      "path": "apps/miniapp/alipay/pages/index/index.acss",
+      "sha256": "a7b158287fc24bf12796c887cbd89798eccb970bf390d2405524d7aadc23b4d3"
+    },
+    {
+      "path": "apps/miniapp/alipay/pages/index/index.axml",
+      "sha256": "b88e5e800fb41a450773d3471df42b16e6ef4025917830d5b793e02c308e245d"
+    },
+    {
+      "path": "apps/miniapp/alipay/pages/index/index.js",
+      "sha256": "85a448ade4be75322c0db19633ef703d415c9fbd638d11598d7edd90dd2c6df3"
+    },
+    {
+      "path": "apps/miniapp/wechat/pages/index/index.js",
+      "sha256": "2b2fdaf10ec2fb46e80145e86e1360e122466c2350c5ecaff4a4f7359de64752"
+    },
+    {
+      "path": "apps/miniapp/wechat/pages/index/index.wxml",
+      "sha256": "79708e6853fa3381a7e16b87c802afda4824150eda6629b876f18f827d546209"
+    },
+    {
+      "path": "apps/miniapp/wechat/pages/index/index.wxss",
+      "sha256": "a7b158287fc24bf12796c887cbd89798eccb970bf390d2405524d7aadc23b4d3"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4313813422b3e43de116d9b8bdd9121c33be3b522ffc14f0131cc5a54e209534"
+    },
+    {
+      "path": "package.json",
+      "sha256": "028b6a5d526cbd83b312b372455a33ebccb387aed72e52ebca8eb0606e1b532d"
+    },
+    {
+      "path": "plugins/travel-agent/skills/plan-trip/SKILL.md",
+      "sha256": "a2034e343083ef47a55728f8e933d459318b4d4267def4aa3fc57a06bbaafcda"
+    },
+    {
+      "path": "plugins/travel-agent/skills/research-trip/SKILL.md",
+      "sha256": "e03b826de22fdf7ba27dcc8320e817088cf4998ca8928a8128f89a1b7ddda932"
+    },
+    {
+      "path": "scripts/check-auth-configuration.mjs",
+      "sha256": "833a502316c126edbcb34d7bf8c0b537dfb4869328e38ba001bbf398fdfde454"
+    },
+    {
+      "path": "scripts/check-pi-host-compatibility.mjs",
+      "sha256": "ef729ed56a0905dadfc2d333e7c1ec6b1defb0919ea98cb6181af447b5b7c2bb"
+    },
+    {
+      "path": "scripts/evaluate-travel-jev-product.mjs",
+      "sha256": "24c737e4cbf0463088f7c16aedd855838bca85f905a194c060ee8ddc56c61afb"
+    },
+    {
+      "path": "scripts/evaluate-travel-jev.mjs",
+      "sha256": "e46919ef2c60f3f96be5a7b7dbc611cb86133bb3ab86ddf3ba78e1e1eecb49b6"
+    },
+    {
+      "path": "scripts/evaluate-traveler-delivery.mjs",
+      "sha256": "2f7353a243995af26ef002b01518ff4f15054efa8641a02dbef024b11456a3e4"
+    },
+    {
+      "path": "scripts/probe-traveler-acceptance-guards.mjs",
+      "sha256": "5e01513eaac7c577c2b50766df33cbd7d8c4b5b6f22ad341ae3b289df239aa98"
+    },
+    {
+      "path": "scripts/run-linkcode-travel-host.mjs",
+      "sha256": "bdaba593768510d3d5ff813a0a5c213064c2526510f721d73891239488f79dea"
+    },
+    {
+      "path": "scripts/smoke-conversation-golden-path.mjs",
+      "sha256": "f348e0239522c0f982917d2b2bd27fda88c93fae1407b83bf338b1443bb8015e"
+    },
+    {
+      "path": "scripts/smoke-desktop-electron.mjs",
+      "sha256": "c99bd5d390d26fee4d8167f056826efbdc8646d9aaa8bae7bff62d59e0d8abd2"
+    },
+    {
+      "path": "scripts/smoke-execution-capacity.mjs",
+      "sha256": "96900422bc6772a10325104d07f3a8b15a5dcbecced955d22375641563afc6d6"
+    },
+    {
+      "path": "scripts/smoke-jev-capacity.mjs",
+      "sha256": "fcadec5f44852f7435e8354f16d5eb2552e2ef7397ecaa9167fbd4dafc0abace"
+    },
+    {
+      "path": "scripts/smoke-linkcode-travel-host.mjs",
+      "sha256": "2d69189a2fed85c1a49db28a710c0458780a222191eff02537c3a51559e622aa"
+    },
+    {
+      "path": "scripts/smoke-native-execution-live.mjs",
+      "sha256": "6438e1b2100982ec0479b698f2dd53230a07f31d1f1018a7538e0984f6743d4b"
+    },
+    {
+      "path": "scripts/smoke-travel-analysis-fanout.mjs",
+      "sha256": "c6f36846c21280dd95caf0d2e74540fd4d6202f810473a3a18335e94c645e9bf"
+    },
+    {
+      "path": "scripts/test-traveler-scenarios.mjs",
+      "sha256": "151c10ad0230748c6bbdeb14c2cb1bba9770925984acad65c137128b6a438fa1"
+    },
+    {
+      "path": "src/agent/linkcode-travel-host.mjs",
+      "sha256": "e39a2bf75d7abddd7869930aca23b4691c8ba2bd961003ae5f814db729550051"
+    },
+    {
+      "path": "src/agent/pi-host-compatibility.mjs",
+      "sha256": "bb380a122f5280fef0d7df95d6246323a395e1bc42aa7f6c112fb7fa14312dc4"
+    },
+    {
+      "path": "src/agent/travel-analysis-fanout.mjs",
+      "sha256": "d594db8d385ad18c3b751eeda8d8ad00989fb0780add40a8a494051483173e3a"
+    },
+    {
+      "path": "src/agent/travel-analysis-run-coordinator.mjs",
+      "sha256": "ce6319e39e4ea18fa0eb049b0436ed9f8c5f35043330413148d67b2a7a9f1fe2"
+    },
+    {
+      "path": "src/agent/travel-conversation-agent.mjs",
+      "sha256": "a0157626226a7071762daf2fa539ba874ec6b8be9e8c0b15464bd5a52dd3872d"
+    },
+    {
+      "path": "src/agent/travel-execution-service.mjs",
+      "sha256": "5dbf9f0ec06d2b5974371dae2f07bfb70ab2500352e1ea9a000613a642267aa3"
+    },
+    {
+      "path": "src/agent/worker.mjs",
+      "sha256": "bab9e03ec77a74133e2b735c46f1e73f4100e9de1dd05b8e528b12345a8cfcd6"
+    },
+    {
+      "path": "src/api/create-travel-service.mjs",
+      "sha256": "73936a40f91b25fac4ac3040c36ff68eab26bc9a97cd6aaad929d964c0a67ae9"
+    },
+    {
+      "path": "src/api/travel-service.mjs",
+      "sha256": "9ec765272afa3cfa8b875e207b8e8a82dbf33342d2ae28a5b2475baacfff7d60"
+    },
+    {
+      "path": "src/http/account-service.mjs",
+      "sha256": "bdd23d7e389ba14255ceb0862767c98aac74242f51eddc7af46b77d7746871ea"
+    },
+    {
+      "path": "src/http/app.mjs",
+      "sha256": "e42bc3f6d9ad7a58e9b072d9ef20113c4938a5ab62ca4009962c687624a32360"
+    },
+    {
+      "path": "src/http/auth-channels.mjs",
+      "sha256": "bf5c4c65ea3626e62ab44dd3527862a6f44e9407c1bc208d38dc34479f2b905c"
+    },
+    {
+      "path": "src/http/auth-providers.mjs",
+      "sha256": "a0574c44a5fd05add5ee8eb70045b4b552655fa17950df7c20e073a5274e4236"
+    },
+    {
+      "path": "src/http/runtime-env.mjs",
+      "sha256": "f33bde1e517a379525980bfc74d7ec12fc8b5753a70874ea38c9512f09dcd3b8"
+    },
+    {
+      "path": "src/http/server.mjs",
+      "sha256": "a47f26569a81d266fa6980337c649737b2b5330d29933898f6f42f0f74e22ad8"
+    },
+    {
+      "path": "src/http/travel-execution-routes.mjs",
+      "sha256": "d96dff144dea2d6569e97ee1d123c86c2209dba382a2cad01eeb863a0028864d"
+    },
+    {
+      "path": "src/http/travel-journal.mjs",
+      "sha256": "e6dd0aeb2147ea0640e20cedecffdb047c8a1d54738e0a083187548dda28f4b7"
+    },
+    {
+      "path": "src/http/travel-runtime-routes.mjs",
+      "sha256": "943000e2103305ba8d81c5563e3e428ae54d57d712d7626d63bad80323caedcd"
+    },
+    {
+      "path": "src/media/photo-relief-recipe.mjs",
+      "sha256": "b5a3c86cd2f13a90a3808368707c56afa90f13ce7ec1667617fd2e4b65402d37"
+    },
+    {
+      "path": "src/persistence/auth-repository.mjs",
+      "sha256": "497cb23c3aaaa6d4ba9960741cb8e1ee9f964dd393fcab54c505e30c6e8bd683"
+    },
+    {
+      "path": "src/persistence/conversation-repository.mjs",
+      "sha256": "324db2de1452ac706d8ef8617cc7632f04fdde65d52099f7e3b1b4386f396a9e"
+    },
+    {
+      "path": "src/persistence/execution-repository.mjs",
+      "sha256": "87ebde1259d53a0051b38b9395cb080cd9d1049b0351a6392d8f1e9769943276"
+    },
+    {
+      "path": "src/persistence/execution-write.mjs",
+      "sha256": "e5e2873edc6de91a89c2d481d0b61405257ff3f45ab63a50fbc6ef6448fcb732"
+    },
+    {
+      "path": "src/persistence/migrate.mjs",
+      "sha256": "290f519c6edc16fac7dfc91b6398259c55c565418d2feb4f006f1c041d8345a1"
+    },
+    {
+      "path": "src/persistence/postgres-conversation-repository.mjs",
+      "sha256": "64b912f748fb8bae27efde2e2369ca5bf5fee23f0fbd24a26cd2a1e991df2100"
+    },
+    {
+      "path": "src/persistence/postgres-trip-repository.mjs",
+      "sha256": "b71a9e6cd4af4fce4231a7dd3f6c96b291039c06e9c2b7f2f03e5126cd034656"
+    },
+    {
+      "path": "src/persistence/travel-journal-repository.mjs",
+      "sha256": "da877e2dbbda5d1a927922bf0e87a8b5bacfdffa9d737c3f12123aa5ce43feab"
+    },
+    {
+      "path": "src/providers/amap-travel-research.mjs",
+      "sha256": "3024cf6fd397516531240302d5689ee9b12bfffc91d515ff3bff3864a3663d55"
+    },
+    {
+      "path": "src/providers/flyai-travel-research.mjs",
+      "sha256": "6d518377b425c2d094dea9aadb7a87a3c88f8668bedfffc44bb88fc9b0e73078"
+    },
+    {
+      "path": "src/providers/research-criteria.mjs",
+      "sha256": "2584784b0121c29ad9b6601d2122167135913d1b964aa126cf649eda0b9f656e"
+    },
+    {
+      "path": "src/providers/travel-research-provider.mjs",
+      "sha256": "21c821a944d76ca410553c5c28b2d33f47e08ddd2b86820a0f170a70785e14f3"
+    },
+    {
+      "path": "src/providers/tuniu-travel-research.mjs",
+      "sha256": "00c6ae71f78239e730eb5158c0cf656c80113f365d4a9d4a0f03f5c5c436a7f3"
+    },
+    {
+      "path": "src/web/account-experience.css",
+      "sha256": "b52d44b7d8c7bd4de567a2bfee720324cdc2844c99357f8e953eba8fdae8f03f"
+    },
+    {
+      "path": "src/web/account-experience.jsx",
+      "sha256": "59f6a9f719629790740799f65c4a2694c87491873205a5635d8fc8f444cec680"
+    },
+    {
+      "path": "src/web/amap-map-renderer.js",
+      "sha256": "13a8c0660ffe953f47448de87d1b68b99363b73aad4a15e156174e65bae8e665"
+    },
+    {
+      "path": "src/web/api-client.js",
+      "sha256": "8d9c0b4be1170367d01406e2b9026acc7f41ac15e806a2ad40ba73b1322a3a2d"
+    },
+    {
+      "path": "src/web/destination-experience-preview.jsx",
+      "sha256": "568febc1f1d73a7d7c95b3bbd3a090d62ce72669dca75e4d72f04a3e0c1c0b0e"
+    },
+    {
+      "path": "src/web/destination-experience-scene.js",
+      "sha256": "ac9112ab95c384e227a74afdfda4c976d4c63e932152efcf516efd7bd16af93a"
+    },
+    {
+      "path": "src/web/destination-sketch-motion.js",
+      "sha256": "09c5937024a49c74f3d8d5f931dffead2636db3bdcd0e6dc5bdb82161596bc84"
+    },
+    {
+      "path": "src/web/destination-sketch-renderer.js",
+      "sha256": "2ab90bd3e026448144c168e8bf404e5990905dab890c34606d602d0a6e0e5956"
+    },
+    {
+      "path": "src/web/destination-sketch-world.jsx",
+      "sha256": "6b802d0d3ae183425ce2c8fa44030006e250d121e1e2d09e6cd79d27ac799d12"
+    },
+    {
+      "path": "src/web/destination-sketch.css",
+      "sha256": "be56dfa91da0b08babc76cf8a27b87f4b3fd010ed4d672e4ce08a7289a5365f2"
+    },
+    {
+      "path": "src/web/execution-progress.css",
+      "sha256": "d23f9d527d07085c848134614e4c9f783c5456f1e84b0055dc9b0baa7a1388c5"
+    },
+    {
+      "path": "src/web/execution-progress.jsx",
+      "sha256": "e3d8f7d124ccb755cb4b47efbfd1c917183ffcc4db16569e9557cc310823774f"
+    },
+    {
+      "path": "src/web/journey-interaction.js",
+      "sha256": "23f3cece0403862e32837cf7e13457d791a54f381e27c00e7fa09fcb0f7d9105"
+    },
+    {
+      "path": "src/web/journey-workspace.css",
+      "sha256": "eb227a58adc7ec5f3956006cae83f245baed6998147819a70bbd7274e08277ce"
+    },
+    {
+      "path": "src/web/mobile-keyboard-state.js",
+      "sha256": "0200834c2ebeaf09f65b9a39d95e4d7598eb217b79e67b7a8b308fed924c7027"
+    },
+    {
+      "path": "src/web/photo-relief-data.js",
+      "sha256": "fa88a887befbabefa8a1c4e5054cc6b9ef80b982036e59005f7182c2acdb4cb1"
+    },
+    {
+      "path": "src/web/photo-relief-preview.jsx",
+      "sha256": "cb1a254379e49ebb4adf22eb4783563e4c03992e28821a2f4bf3bd5ced53b57b"
+    },
+    {
+      "path": "src/web/photo-relief-renderer.js",
+      "sha256": "2cdd4b2058943bcfd423271e5337cf30941baeb50fd15d761c2a3006fd604e6b"
+    },
+    {
+      "path": "src/web/photo-relief.css",
+      "sha256": "3688a4ae1cb80a1ff41e0515f174671f3491f9bcaac77734770d49cff702dd23"
+    },
+    {
+      "path": "src/web/styles.css",
+      "sha256": "562a89523e443518371f01fb64f334b91352b7449825c9cc4f2bef8fc5bce65a"
+    },
+    {
+      "path": "src/web/travel-app.jsx",
+      "sha256": "a23393b8011c7db7b10f731c02ca71cb5f15efd16a19fa325cef8b264c6fe2e9"
+    },
+    {
+      "path": "src/web/travel-journal-photo.js",
+      "sha256": "4363ca481a77e1d5211098d0838090366415012ea4005126bcf8b80aa8de6612"
+    },
+    {
+      "path": "src/web/travel-photo-journal.css",
+      "sha256": "64319eae6e4d8459ed64d143409da9986b9b4e0941edd10e2e4ce7a7f6d44217"
+    },
+    {
+      "path": "src/web/travel-photo-journal.jsx",
+      "sha256": "66753678734bf518394a235be2c61a50e25686e09f082ef353ea280688fcb772"
+    },
+    {
+      "path": "src/web/trip-atlas.css",
+      "sha256": "ad432fb59d879c6c9a936e782ecddc86cf2be57c2c5bfb906146e0dc0bc870de"
+    },
+    {
+      "path": "src/web/trip-map-explorer.jsx",
+      "sha256": "864b82cabfa70da7f9943c12c82d96b2929e1299fc5d8dad09367ca640c4273c"
+    },
+    {
+      "path": "src/web/ui/message-scroller.jsx",
+      "sha256": "a84e0b364e2220fc3d0442503f26bb5047ba9e2e71e8688c755c71ad9b365036"
+    },
+    {
+      "path": "src/web/ui/overlay.jsx",
+      "sha256": "9af3472d180ff5548d7a9d59fdf278282d71f839680dbe399b0fb12c2217df2e"
+    },
+    {
+      "path": "src/web/ui/travel-drawer.jsx",
+      "sha256": "f05dde4e9b1f509e20a3fa4228e572685beac19f0c7e1f2b9539f8eb093de6eb"
+    },
+    {
+      "path": "tests/amap-mobility.test.mjs",
+      "sha256": "c637380b59521b5d1be29b328b91cd529b4b7ed1b9e8bc8ae67959dd35bf5014"
+    },
+    {
+      "path": "tests/auth-providers.test.mjs",
+      "sha256": "9c33a1f47f8548373125fc0d8deee463c5b7649ff6994b650bbb33d3c29aa5f6"
+    },
+    {
+      "path": "tests/auth-runtime-setup.test.mjs",
+      "sha256": "20d7894f801ea584f7dafd760b1dd0d85e2c3f70294c22e968b49638dfb6abab"
+    },
+    {
+      "path": "tests/desktop-security-policy.test.mjs",
+      "sha256": "c049558476cb6bac7d03d4e2f944024658886f4d07e772c74f75e1756bb5d930"
+    },
+    {
+      "path": "tests/desktop-session-vault.test.mjs",
+      "sha256": "c18c0b91a51ed88e56e328927b5688de77caf6690782de97ddddf2de627a5d78"
+    },
+    {
+      "path": "tests/destination-camera-playback.test.mjs",
+      "sha256": "40db812dd5bbb9f41b5ce9a860799d0b9474e2f4c5f181c6ac5d3b6664a38e24"
+    },
+    {
+      "path": "tests/destination-experience-scene.test.mjs",
+      "sha256": "4da2627373b3a6d3489fb4317dea2584d6bb6ff63ba002c43210166c05bc7901"
+    },
+    {
+      "path": "tests/destination-sketch-renderer.test.mjs",
+      "sha256": "6423241576b4b2b3f874851abc6699f518823ac99ec72311237ced44c7bc1049"
+    },
+    {
+      "path": "tests/fixtures/browser-execution.mjs",
+      "sha256": "6d048bd30356e9afb95e990d677bba240dd2076fb3ffa0645ad6956b8f512192"
+    },
+    {
+      "path": "tests/fixtures/execution-worker.mjs",
+      "sha256": "fc4182c3dfdf832f286ba38e0693bb7aa4757b661bd5acce501c8f2980ed62d6"
+    },
+    {
+      "path": "tests/fixtures/jev-planning.mjs",
+      "sha256": "ba3cdc6a398cfbbb7c3fd2bad13cb3146eecc09ced8ef0c3a2c2a47349776a9a"
+    },
+    {
+      "path": "tests/fixtures/jev-travel-cases.mjs",
+      "sha256": "a0c6712be74dddf0980b07836a45b5f6bf00450e96c3dce37fc2783dfd3fd2cc"
+    },
+    {
+      "path": "tests/fixtures/jev-travel.mjs",
+      "sha256": "1dd54dd389287a4cd7c82b8e92421a29cb1a297e651bb5af635dfdad0d735809"
+    },
+    {
+      "path": "tests/fixtures/traveler-acceptance-cases.mjs",
+      "sha256": "e98b73625fcc14e4e5e323813ffac327d6e8409e66fe5893f7e375f509411196"
+    },
+    {
+      "path": "tests/fixtures/traveler-business-cases.mjs",
+      "sha256": "c4c0b77a1f3b26945face3e725bb43683cff61f5ac99064a1bfd5ac5202a7615"
+    },
+    {
+      "path": "tests/http-app.test.mjs",
+      "sha256": "21a3195e666db82add0d3b562fce3c6846a18e66d698ca92e42d88b26a26fe00"
+    },
+    {
+      "path": "tests/itinerary-planning-harness.test.mjs",
+      "sha256": "5bdda3c8ccbda2a249dea034d6b5ec73a223c5e8c12e166f42c6da16097444cb"
+    },
+    {
+      "path": "tests/journey-execution.test.mjs",
+      "sha256": "dc9b809641db5183bef345f6a8edd61eec882c20f20c0e11e45ca0413a10eda1"
+    },
+    {
+      "path": "tests/journey-interaction.test.mjs",
+      "sha256": "8ec953b27b63e25d16622dc45e9ae753a0ba06367da19aa75fcf39a50f756139"
+    },
+    {
+      "path": "tests/miniapp-route-map.test.mjs",
+      "sha256": "69649ef0186bffd064f298ea973aace89ef812b2bc3853067dd532016fa30136"
+    },
+    {
+      "path": "tests/mobile-keyboard-navigation.test.mjs",
+      "sha256": "9cb8382883037dc5ff182352ae28a975401c7728254970d51b0788566e84e401"
+    },
+    {
+      "path": "tests/persistent-account.test.mjs",
+      "sha256": "e5bef2bd2781e4577b8b783f69eaba507b930143fe398d4be7591fc322a53b7b"
+    },
+    {
+      "path": "tests/photo-relief.test.mjs",
+      "sha256": "4809aafa4a28d754181dec7c808b144df5dc9473e3d815f8b79dd1230e77109b"
+    },
+    {
+      "path": "tests/pi-host-compatibility.test.mjs",
+      "sha256": "8a9ef1e2c3439f3b06bc226b8e9ba5ec911ac4b2f0e080caf746c63eb5858f33"
+    },
+    {
+      "path": "tests/pi-http-host.test.mjs",
+      "sha256": "d487b052722db60c98d85e891bb5ea7ec5b7df0d78be67f26b33be70fe63472b"
+    },
+    {
+      "path": "tests/travel-analysis-fanout.test.mjs",
+      "sha256": "12091a117ea376b75f915c781495d735bfa9bce85fdf743f5e02c518577dd2ff"
+    },
+    {
+      "path": "tests/travel-conversation-agent.test.mjs",
+      "sha256": "5eda87ced1c3dad38b7892717cfef3e03030f8fd5b0b5e3aa8cb74d96c9cbb76"
+    },
+    {
+      "path": "tests/travel-decision-policy.test.mjs",
+      "sha256": "f708f451af67843c186a5f3d236a80de1a0dc1cfd331ad53dbb8a619ebd305a4"
+    },
+    {
+      "path": "tests/travel-editor-recovery.test.mjs",
+      "sha256": "b8bb1d44f7017ef2e7b12e1b2f33b1cdd4c7ba39f21650ca8af2a753f5c3b521"
+    },
+    {
+      "path": "tests/travel-execution-postgres.test.mjs",
+      "sha256": "3956e5b5d09aef332b0106b4eee2713fccd65684af74bf2a81f3890e49cf7016"
+    },
+    {
+      "path": "tests/travel-execution-process.test.mjs",
+      "sha256": "aa3c412c9c216403c4bccd487808d957ab0c90e30a563270889f3ea9f64ad76c"
+    },
+    {
+      "path": "tests/travel-execution.test.mjs",
+      "sha256": "0041d5312f51b63c8229bdec70a9c4a9df15c3b067d17b110eaaa7a2a69ad15c"
+    },
+    {
+      "path": "tests/travel-jev.test.mjs",
+      "sha256": "3e8fc64eb84fa28f5f84ea047fdc9d69f874707a817dfc56f75d80a9d9195090"
+    },
+    {
+      "path": "tests/travel-journal.test.mjs",
+      "sha256": "8acff14c590f62ad98f0420f30f0afb48d83adeb1a1c1a7fff56bd600aac9605"
+    },
+    {
+      "path": "tests/travel-model-admission.test.mjs",
+      "sha256": "93e19e93d0625b85d7e7e45e04dc00cc7bf584b6df1ff6edee7002fc32f54a73"
+    },
+    {
+      "path": "tests/travel-native-children.test.mjs",
+      "sha256": "0cebfcfaee5de07b4e5e8703ca61df309a2bdf9170d3f16b1fe842e3b636a1a4"
+    },
+    {
+      "path": "tests/travel-planning-delivery.test.mjs",
+      "sha256": "80b01fe1152474fe2b00272669aa73870c80763bf6fdeac408a2c62aaebf7462"
+    },
+    {
+      "path": "tests/traveler-acceptance-regression.test.mjs",
+      "sha256": "86671c8c4e7b256a9bb98bd0cd5c90a87e20ba437d82118e87b617d4a97777ad"
+    },
+    {
+      "path": "tests/workflow-execution-policy.test.mjs",
+      "sha256": "077513f26a3c17831888a54f3fd429fc7eef883f5dacc45b33394e0ed6c6f0e2"
+    },
+    {
+      "path": "travel-agent-pi-package/extensions/host-compatibility.mjs",
+      "sha256": "a9a3748d865afc90aff5bdc18c26831769a8c96e20865ca9e5b41c0ccfbab3b0"
+    },
+    {
+      "path": "travel-agent-pi-package/extensions/travel-business-runtime.ts",
+      "sha256": "80db17b4c89ccb6369a7932ac08d868b9becbe7e1bbf820aa9bdf0f4a7c29636"
+    },
+    {
+      "path": "travel-agent-pi-package/package.json",
+      "sha256": "c9dcb25c8af0674d303891d9d3058e79f41e3e76748f6083560a3c5f1d0b327c"
+    },
+    {
+      "path": "travel-agent-pi-package/src/contracts/index.ts",
+      "sha256": "dd0acdf020b74499702d2e26daf294e6f85f0f8a70cb7f8a2fda5de2610105f8"
+    },
+    {
+      "path": "travel-agent-pi-package/src/contracts/mobility.ts",
+      "sha256": "fc240b576d6efde6208273df4668e79f9d5b19518024a4ce8137f78369fedbf8"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/continuous-planning.ts",
+      "sha256": "179f067d4ed7afd2ab052a7a3826d4926956c6903509c1b673c370c2548062f1"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/itinerary-proposal.ts",
+      "sha256": "8861e068fa19cab9514b421490e4b4fec9ffc932727f9bf0cd2f5b4b0484a27c"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/itinerary-schedule.ts",
+      "sha256": "a1f982869ee24d09a76ad51dd13439e1b819ef2206b69bad80e1e6e8f7255f1b"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/journey-execution.ts",
+      "sha256": "b2248bc18b0bda7abe1c80dc0879751afa096e71f783fdcf022c04b0a5cc8558"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/travel-service.ts",
+      "sha256": "c2ed007935446384032c08369058c7f16ccb9c487d63e452f2580b23aac0a8de"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/trip-feasibility.ts",
+      "sha256": "4a151446e83ca2f2ac886a2637cfb3c12afd36a72f25bec7ce9b258207d2eaf6"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/trip-runtime.ts",
+      "sha256": "cc2706c75621f7a3e122df505d3f8ebab1330456bccc216629b80796117cf86b"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/trip-state-hydration.ts",
+      "sha256": "175b763ab27dfcd348a1835292f565fe8098fbbb09779a5fe62774295e1f3bd2"
+    },
+    {
+      "path": "travel-agent-pi-package/src/core/trip-store.ts",
+      "sha256": "bd5a852408be2f662eb9be2609b7156fd53a5619e4b136273acf026d786be5be"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/analysis-handoff.ts",
+      "sha256": "539325a2c4052d82b073270dc399ce022162105c2d83c130bcfb7acdd1ec4d1c"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/execution-context.ts",
+      "sha256": "06d391a6445d36b719f98672bdec02b8e98823cd67b680baf109a42793be9eae"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/execution-contract.ts",
+      "sha256": "723269e34a663cf3e34dc4d02d6e8a9ed0fc202beb37130f0fa2cdf00ed567d0"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/execution-scheduling.ts",
+      "sha256": "f306aa31d72c26d6fc5aa60fa13ecff4e11708247e6b07ac2bf1061fa3b77a5f"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/jev-client.ts",
+      "sha256": "cfcb75a4a9015d00f139fdf6f25979de26e3bcafab2b27056b7bf4ab56b4c3b0"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/linkcode-pi-085-sdk.ts",
+      "sha256": "63d9cde5a0d79e548101d64a7a659814737b2a739c8032ae8fab2b94bc3c4e1f"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/model-budget.ts",
+      "sha256": "0fdbf3461c6cd402ad906bb828c5049817aee9507123bd24b88a5373c7b93d58"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/travel-agent-session.ts",
+      "sha256": "b3661b1217143846363ba94d468a2c62e6ed2b031d25b1731e839ebcb11a13fb"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/travel-decision-policy.ts",
+      "sha256": "cb713232998e64dc5388ffd64ab29bf4501bce9942513d2607250d27682364ac"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/travel-http-tools.ts",
+      "sha256": "99b04455b55974b1e0db167f4b4f5e89048bcdee00e4f7566176d632de5eebab"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/travel-judgment.ts",
+      "sha256": "f3dcbd5b1199a30660272644c634f584c346b581fbd2893d0de4332d476b39cf"
+    },
+    {
+      "path": "travel-agent-pi-package/src/host/travel-planning-delivery.ts",
+      "sha256": "0095281bbf6b289052323fe29270d4ad10f81ef20179d4f21957bb0715890f8d"
+    },
+    {
+      "path": "travel-agent-pi-package/src/runtime/trip-runtime-implementation.ts",
+      "sha256": "dc8cc271985156e83447e063ae75f4db126a70c82644a9dc63314d61d810cc1a"
+    }
+  ]
+}

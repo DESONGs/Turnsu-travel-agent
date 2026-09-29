@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-30",
+  "checkedAt": "2026-09-29T19:19:58.887190+00:00",
+  "node": "v26.7.0",
+  "branch": "codex/continuous-planning-runtime",
+  "baseCommit": "9b9cc0bc8514b80f6a45255e99d70575dd83b0a3",
+  "independentWorktree": true,
+  "install": {
+    "command": "npm ci --ignore-scripts --no-audit --no-fund",
+    "exitCode": 0
+  },
+  "check": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "tests": 400,
+    "passed": 400,
+    "failed": 0,
+    "skipped": 0,
+    "postgresEnabled": [
+      "execution",
+      "journal",
+      "auth"
+    ],
+    "includes": [
+      "library typecheck",
+      "desktop typecheck",
+      "tests",
+      "Web production build",
+      "WeChat/Alipay native project contract checks"
+    ]
+  },
+  "providers": {
+    "parent": "controlled faux model",
+    "travelSources": "explicit fixtures",
+    "realModelCallsThisCheck": false,
+    "realTravelProviderCallsThisCheck": false
+  },
+  "notVerified": [
+    "new-version browser end-to-end",
+    "complete T01-T12 traveler acceptance",
+    "Electron and miniapp devices",
+    "500 online reconnect",
+    "500 complex planning 30-minute load",
+    "production deployment"
+  ],
+  "warnings": [
+    "Vite chunks exceed 500 kB; performance was not measured"
+  ],
+  "evidence": "check.log",
+  "codeManifest": "code-manifest.json"
+}
