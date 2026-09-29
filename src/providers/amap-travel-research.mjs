@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
+import { setTimeout as delay } from "node:timers/promises";
+import { currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
 import { accessibilityFeaturesForWalkType, amapWalkTypeMetadata } from "../../travel-agent-pi-package/src/contracts/public.ts";
+import { scheduledRideLeg, routeAlternativeId } from "../../travel-agent-pi-package/src/core/journey-execution.ts";
 
 const AMAP_PLACE_ENDPOINT = "https://restapi.amap.com/v5/place/text";
 const AMAP_PLACE_V3_ENDPOINT = "https://restapi.amap.com/v3/place/text";
@@ -478,11 +481,11 @@ function normalizeWalkingAlternative(payload, origin, destination) {
   });
 }
 
-function normalizeDrivingAlternative(payload, origin, destination) {
+function normalizeDrivingAlternative(payload, origin, destination, mode = "taxi") {
   const path = array(payload?.route?.paths)[0];
   if (!path) return null;
   const steps = array(path.steps).slice(0, 12).map((item) => ({
-    kind: "taxi",
+    kind: mode,
     instruction: text(item?.instruction, 500) || "按驾车路线前往",
     line: null,
     origin: null,
@@ -493,12 +496,12 @@ function normalizeDrivingAlternative(payload, origin, destination) {
   }));
   const taxiFare = numberOrNull(path?.cost?.taxi ?? path?.cost?.taxi_fee ?? payload?.route?.taxi_cost);
   return {
-    mode: "taxi",
+    mode,
     totalMinutes: secondsToMinutes(path?.cost?.duration ?? path?.duration) ?? 1,
     distanceMeters: numberOrNull(path.distance),
     walkingMeters: 0,
     transfers: 0,
-    estimatedFareCny: taxiFare,
+    estimatedFareCny: mode === "drive" ? null : taxiFare,
     scheduleBasis: "query_time_estimate",
     realTimeArrival: false,
     navigationUrl: navigationRouteUrl(origin, destination, "taxi"),
@@ -720,14 +723,24 @@ export class AmapTravelResearchProvider {
     this.enabled = enabled === true;
   }
 
-  async waitForRequestSlot() {
+  async waitForRequestSlot(signal = currentTravelExecution()?.signal) {
+    signal?.throwIfAborted();
     const scheduled = this.requestSchedule.then(async () => {
+      signal?.throwIfAborted();
       const remaining = this.lastRequestStartedAt + this.requestIntervalMs - Date.now();
-      if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining));
+      if (remaining > 0) await delay(remaining, undefined, { signal });
+      signal?.throwIfAborted();
       this.lastRequestStartedAt = Date.now();
     });
     this.requestSchedule = scheduled.catch(() => {});
-    await scheduled;
+    if (!signal) { await scheduled; return; }
+    let abort;
+    try {
+      await Promise.race([scheduled, new Promise((_, reject) => {
+        abort = () => reject(signal.reason);
+        if (signal.aborted) abort(); else signal.addEventListener("abort", abort, { once: true });
+      })]);
+    } finally { signal.removeEventListener("abort", abort); }
   }
 
   get status() {
@@ -739,8 +752,9 @@ export class AmapTravelResearchProvider {
   }
 
   async requestJson(endpoint, values, provider, externalSignal = null) {
+    externalSignal ??= currentTravelExecution()?.signal;
     const parameters = signedAmapParameters({ ...values, key: this.apiKey }, this.apiSecret);
-    await this.waitForRequestSlot();
+    await this.waitForRequestSlot(externalSignal);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
@@ -769,7 +783,7 @@ export class AmapTravelResearchProvider {
       return await this.requestJson(endpoint, values, provider, externalSignal);
     } catch (error) {
       if (!isTransientQpsLimit(error)) throw error;
-      if (this.rateLimitRetryMs > 0) await new Promise((resolve) => setTimeout(resolve, this.rateLimitRetryMs));
+      if (this.rateLimitRetryMs > 0) await delay(this.rateLimitRetryMs, undefined, { signal: externalSignal ?? currentTravelExecution()?.signal });
       return this.requestJson(endpoint, values, provider, externalSignal);
     }
   }
@@ -861,14 +875,14 @@ export class AmapTravelResearchProvider {
         ...(origin.providerPoiId && destination.providerPoiId ? { originpoi: origin.providerPoiId, destinationpoi: destination.providerPoiId } : {}),
         ...(date ? { date } : {}),
         ...(routeTime ? { time: routeTime } : {}),
-      }, "amap_routes_v5_transit", signal).then((payload) => normalizeTransitAlternative(payload, origin, destination)),
+      }, "amap_routes_v5_transit", signal).then((payload) => array(payload?.route?.transits).slice(0, 3).map(transit => normalizeTransitAlternative({ ...payload, route: { ...payload.route, transits: [transit] } }, origin, destination))),
       this.requestJsonWithRetry(AMAP_DRIVING_ENDPOINT, {
         ...common,
         strategy: "32",
         alternative_route: "2",
         ...(origin.providerPoiId ? { origin_id: origin.providerPoiId } : {}),
         ...(destination.providerPoiId ? { destination_id: destination.providerPoiId } : {}),
-      }, "amap_routes_v5_driving", signal).then((payload) => normalizeDrivingAlternative(payload, origin, destination)),
+      }, "amap_routes_v5_driving", signal).then((payload) => array(payload?.route?.paths).slice(0, 2).flatMap(path => (brief.vehicle ? ["taxi", "drive"] : ["taxi"]).map(mode => normalizeDrivingAlternative({ ...payload, route: { ...payload.route, paths: [path] } }, origin, destination, mode)))),
     ];
     if (straightLineMeters(origin.coordinates, destination.coordinates) <= 3_500) {
       requests.push(this.requestJsonWithRetry(AMAP_WALKING_ENDPOINT, {
@@ -882,7 +896,7 @@ export class AmapTravelResearchProvider {
     const settled = await Promise.allSettled(requests);
     const alternatives = settled
       .filter((result) => result.status === "fulfilled" && result.value)
-      .map((result) => result.value);
+      .flatMap((result) => result.value).filter(Boolean).map(alternative => ({ ...alternative, alternativeId: routeAlternativeId(alternative) }));
     const errors = settled
       .filter((result) => result.status === "rejected")
       .map((result) => ({ code: result.reason?.code ?? "SOURCE_UNAVAILABLE", details: result.reason?.details ?? null }));
@@ -910,7 +924,7 @@ export class AmapTravelResearchProvider {
     }
     const resolved = [];
     const unresolvedNodeIds = [];
-    for (const node of selected.slice(0, 8)) {
+    for (const node of selected) {
       if (signal?.aborted) throw providerError("SOURCE_UNAVAILABLE", { provider: "amap_routes_v5", reason: "cancelled" });
       try {
         const stop = await this.resolveMobilityStop(node, destination, destinationGeocode, signal);
@@ -926,11 +940,20 @@ export class AmapTravelResearchProvider {
       ordered.push(entry);
     };
     const resolvedByNodeId = new Map(resolved.map((entry) => [entry.node.nodeId, entry]));
+    const departures = new Map();
+    for (const node of selected.filter(node => itineraryStops.some(stop => stop.nodeId === node.nodeId && stop.role === "transport_departure"))) {
+      const place = node.operability?.departurePlace;
+      if (!place?.label) continue;
+      try {
+        const stop = await this.resolveMobilityStop({ ...node, title: place.label, location: null, operability: { ...node.operability, arrivalRouteAnchor: place, arrivalPlace: place } }, place.city ?? destination, destinationGeocode, signal);
+        if (stop?.coordinates && stop.citycode) departures.set(node.nodeId, { node, stop });
+      } catch { /* Kept as an unresolved stop, never replaced by arrival coordinates. */ }
+    }
     const resolvedStay = resolved.find(({ node }) => node.domain === "stay") ?? null;
     const unresolvedStopIds = [];
     if (Array.isArray(itineraryStops) && itineraryStops.length) {
-      for (const itineraryStop of itineraryStops.slice(0, 16)) {
-        const entry = resolvedByNodeId.get(itineraryStop.nodeId);
+      for (const itineraryStop of itineraryStops) {
+        const entry = itineraryStop.role === "transport_departure" ? departures.get(itineraryStop.nodeId) : resolvedByNodeId.get(itineraryStop.nodeId);
         if (!entry) {
           unresolvedStopIds.push(itineraryStop.stopId);
           continue;
@@ -941,7 +964,7 @@ export class AmapTravelResearchProvider {
           stop: {
             ...entry.stop,
             stopId: itineraryStop.stopId,
-            label: itineraryStop.role === "intercity_arrival" ? entry.stop.label : itineraryStop.title,
+            label: ["intercity_arrival", "transport_departure", "transport_arrival"].includes(itineraryStop.role) ? entry.stop.label : itineraryStop.title,
             dayIndex: itineraryStop.dayIndex,
             date: itineraryStop.date,
             role: itineraryStop.role,
@@ -977,7 +1000,7 @@ export class AmapTravelResearchProvider {
     const constraints = mobilityConstraintProfile(brief, travelers);
     const legs = [];
     const errors = [];
-    for (let index = 0; index < ordered.length - 1 && legs.length < 8; index += 1) {
+    for (let index = 0; index < ordered.length - 1; index += 1) {
       const origin = ordered[index].stop;
       const nextDestination = ordered[index + 1].stop;
       const originNode = ordered[index].node;
@@ -987,6 +1010,11 @@ export class AmapTravelResearchProvider {
         : originNode.operability?.planningWindow?.endAt ?? originNode.operability?.arrivalAt ?? originNode.time ?? destinationNode.operability?.planningWindow?.startAt ?? destinationNode.time);
       const samePlace = origin.nodeId === nextDestination.nodeId;
       if (signal?.aborted) throw providerError("SOURCE_UNAVAILABLE", { provider: "amap_routes_v5", reason: "cancelled" });
+      if (samePlace && origin.role === "transport_departure" && nextDestination.role === "transport_arrival") {
+        const ride = scheduledRideLeg(ordered[index].itineraryStop, ordered[index + 1].itineraryStop, originNode);
+        if (ride) legs.push({ ...ride, origin, destination: nextDestination });
+        continue;
+      }
       const result = samePlace ? {
         errors: [],
         recommendation: { mode: "walk", rationale: "同一住宿的返回与次日出发节点，不产生额外移动。", audit: null },

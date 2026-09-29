@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { runWorkflow } from "@quintinshaw/pi-dynamic-workflows";
-import { contentText, createModels } from "@earendil-works/pi-ai";
+import { contentText, createModels, Type } from "@earendil-works/pi-ai";
+import { createTravelAgentSession } from "../../travel-agent-pi-package/src/host/travel-agent-session.ts";
+import { analysisAssignment, analysisContentIssue, acceptAnalysisHandoff } from "../../travel-agent-pi-package/src/host/analysis-handoff.ts";
+import { emitTravelExecution, currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
+import { TravelExecutionDeferred } from "../../travel-agent-pi-package/src/host/travel-decision-policy.ts";
+import { streamTravelModel } from "../../travel-agent-pi-package/src/host/model-budget.ts";
 import { Value } from "typebox/value";
 import { TravelAnalysisLaneResultSchema } from "../../travel-agent-pi-package/src/contracts/index.ts";
 import { childSkillForLane } from "./travel-skill-loader.mjs";
@@ -76,7 +81,7 @@ function compactOperability(value = {}) {
 }
 
 function analysisCandidates(providerResult) {
-  return Object.entries(providerResult.byDomain ?? {}).flatMap(([domain, candidates]) => (candidates ?? []).slice(0, 2).map((candidate, index) => ({
+  return Object.entries(providerResult.byDomain ?? {}).flatMap(([domain, candidates]) => (candidates ?? []).map((candidate, index) => ({
     candidateId: candidate.candidateId ?? `${domain}_${index + 1}`,
     domain,
     title: candidate.title,
@@ -135,13 +140,13 @@ function lanePrompt(lane, input, skill) {
     objective: input.objective,
     brief: input.brief,
     travelers: input.travelers,
-    candidates: laneCandidates(lane, input.candidates),
+    candidates: laneCandidates(lane, input.candidates).map(({ candidateId, domain, title, evidenceRefs }) => ({ candidateId, domain, title, evidenceRefs })),
     weather: input.weather,
     locks: input.locks,
   };
   return `You are a read-only Travel Agent analysis child. ${focus}
 
-You have no tools and must not request Providers, credentials, URLs, shell access, purchases, state writes, commits, or further delegation. Use only the supplied normalized evidence. Return exactly one compact object matching travel-analysis-lane-v1, with at most 4 findings, 4 reason codes, 4 unknowns and 3 needsContext items. Candidate IDs and evidence refs must come from the input. If evidence is insufficient, use unknowns or needsContext instead of inventing facts.
+The input already contains the assigned traveler context. Read candidate details with read_analysis_evidence; use read_analysis_context only if you need the full assignment. If both are needed, call them together in one parallel tool turn. You must not request Providers, credentials, URLs, shell access, purchases, state writes, commits, or further delegation. Use only the supplied normalized evidence. Return exactly one compact object matching travel-analysis-lane-v1, with at most 4 findings, 4 reason codes, 4 unknowns and 3 needsContext items. Candidate IDs and evidence refs must come from the input. If evidence is insufficient, use unknowns or needsContext instead of inventing facts. A missing source, forecast, room quote or user preference does not by itself justify searching again. Use a criteria_ reason code only when changing a specific search condition can address the mismatch.
 
 Active Skill ${skill.skillId} version ${skill.version}:
 ${runtimeSkillContent(skill)}
@@ -153,10 +158,12 @@ ${JSON.stringify(payload)}`;
 function normalizeLaneResult(result, task, input) {
   if (!result || typeof result !== "object" || !task) return null;
   const candidates = laneCandidates(task.lane, input.candidates);
+  const assignment = analysisAssignment({ runId: input.runId, tripId: input.tripId, baseRevision: input.baseRevision, criteriaFingerprint: input.criteriaFingerprint, lane: task.lane, candidateIds: candidates.map((candidate) => candidate.candidateId), evidenceRefs: candidates.flatMap((candidate) => candidate.evidenceRefs) });
+  const issue = analysisContentIssue(result, assignment);
+  if (issue) { task.error = `normalized_schema_invalid:${issue}`; return null; }
   const candidateIds = new Set(candidates.map((candidate) => candidate.candidateId));
   const evidenceRefs = new Set(candidates.flatMap((candidate) => candidate.evidenceRefs));
   const normalized = {
-    ...result,
     schemaVersion: "travel-analysis-lane-v1",
     analysisId: input.analysisId,
     runId: input.runId,
@@ -189,7 +196,6 @@ function normalizeLaneResult(result, task, input) {
     skillId: task.skill.skillId,
     skillVersion: task.skill.version,
   };
-  delete normalized.__runtime;
   if (Value.Check(TravelAnalysisLaneResultSchema, normalized)) return normalized;
   task.error = `normalized_schema_invalid:${[...Value.Errors(TravelAnalysisLaneResultSchema, normalized)].slice(0, 4).map((issue) => `${issue.instancePath || "/"}:${issue.message}`).join("|")}`.slice(0, 500);
   return null;
@@ -198,56 +204,103 @@ function normalizeLaneResult(result, task, input) {
 export function childModelFallbackLedger(env = process.env) {
   const kimiConfigured = Boolean(String(env.MOONSHOT_API_KEY ?? "").trim());
   const kimiVerified = env.TRAVEL_AGENT_KIMI_CHILD_SMOKE_STATUS === "passed_live_smoke";
+  const parentRoute = resolveConfiguredModel(env, { role: "reasoning" });
+  if (kimiConfigured && kimiVerified) return {
+    primary: { provider: "moonshotai-cn", model: "kimi-k2.6", status: "configured" },
+    fallback: { provider: parentRoute.provider, model: parentRoute.model, status: parentRoute.status === "checking" ? "available" : "fallback_unavailable", reason: parentRoute.status === "checking" ? null : "model_unavailable" },
+  };
   return {
-    primary: { provider: "deepseek", status: String(env.DEEPSEEK_API_KEY ?? "").trim() ? "configured" : "unavailable" },
+    primary: { provider: parentRoute.provider, model: parentRoute.model, status: parentRoute.status === "checking" ? "configured" : "unavailable" },
     fallback: { provider: "moonshotai-cn", model: "kimi-k2.6", status: kimiConfigured && kimiVerified ? "available" : "fallback_unavailable", reason: kimiVerified ? null : "child_structured_skill_smoke_required" },
   };
 }
 
 function modelRoutes(env, { forceRoute = null } = {}) {
   if (forceRoute) return [forceRoute];
-  const routes = [resolveConfiguredModel(env, { role: "reasoning" })];
   const ledger = childModelFallbackLedger(env);
-  if (ledger.fallback.status === "available") routes.push({ status: "checking", provider: "moonshotai-cn", model: "kimi-k2.6" });
+  const routes = [ledger.primary, ledger.fallback].filter((route) => ["configured", "available"].includes(route.status)).map((route) => ({ ...route, status: "checking" }));
   return routes.filter((route, index, items) => route.status === "checking" && items.findIndex((item) => item.provider === route.provider && item.model === route.model) === index);
 }
 
 export async function createTravelAnalysisAgentRunner(env = process.env, options = {}) {
-  const models = createModels({ authContext: { env: async (name) => env[name], fileExists: async () => false } });
+  const models = options.models ?? createModels({ authContext: { env: async (name) => env[name], fileExists: async () => false } });
   const resolved = [];
   for (const route of modelRoutes(env, options)) {
     const provider = TRAVEL_MODEL_PROVIDERS[route.provider];
-    if (!provider) continue;
-    models.setProvider(provider.create());
+    if (!provider && !options.models) continue;
+    if (!options.models) models.setProvider(provider.create());
     const auth = await models.checkAuth(route.provider).catch(() => undefined);
     const model = models.getModel(route.provider, route.model);
     if (auth && model) resolved.push({ route, model });
   }
   if (!resolved.length) return null;
   return {
-    async run(prompt, options = {}) {
+    async run(prompt, runOptions = {}) {
       let lastError = null;
+      const task = options.tasks?.find((item) => item.lane === runOptions.label);
+      const input = options.input;
+      const candidates = input && task ? laneCandidates(task.lane, input.candidates) : [];
+      const assignment = input && task ? analysisAssignment({ runId: input.runId, tripId: input.tripId, baseRevision: input.baseRevision, criteriaFingerprint: input.criteriaFingerprint, lane: task.lane, candidateIds: candidates.map((item) => item.candidateId), evidenceRefs: candidates.flatMap((item) => item.evidenceRefs) }, { brief: input.brief, travelers: input.travelers, weather: input.weather, locks: input.locks, candidates }) : null;
       for (const { model, route } of resolved) {
-        if (options.signal?.aborted) throw Object.assign(new Error("travel_analysis_aborted"), { code: "travel_analysis_aborted" });
+        runOptions.signal?.throwIfAborted();
+        let native;
         try {
+          const readGuard = async () => {
+            runOptions.signal?.throwIfAborted();
+            if (options.validateCurrent && !await options.validateCurrent(input)) throw Object.assign(new Error("analysis_context_stale"), { code: "analysis_context_stale" });
+          };
+          const result = (value) => ({ content: [{ type: "text", text: JSON.stringify(value) }], details: { status: "ready" } });
+          const tools = assignment ? [
+            { name: "read_analysis_context", label: "读取分工与约束", description: "Read the immutable task assignment, traveler requirements, weather and locks. This is the shared fact view, not another agent's conversation.", parameters: Type.Object({}), executionMode: "parallel", execute: async () => { await readGuard(); return result({ assignment, brief: input.brief, travelers: input.travelers, weather: input.weather, locks: input.locks }); } },
+            { name: "read_analysis_evidence", label: "读取分工内的候选证据", description: "Read normalized evidence for candidate IDs in this assignment only. No network or state write is allowed.", parameters: Type.Object({ candidateIds: Type.Array(Type.String(), { minItems: 1, maxItems: 8 }) }), executionMode: "parallel", execute: async (_callId, args) => { await readGuard(); if (args.candidateIds.some((id) => !assignment.candidateIds.includes(id))) throw new Error("analysis_context_scope_violation"); return result(candidates.filter((item) => args.candidateIds.includes(item.candidateId))); } },
+          ] : [];
           const outputTemplate = '{"schemaVersion":"travel-analysis-lane-v1","analysisId":"copy from input","lane":"copy from input","findings":[{"findingId":"stable_id","summary":"supported finding","reasonCode":"reason_code","candidateIds":[],"evidenceRefs":[]}],"recommendedCandidateIds":[],"rejectedCandidateIds":[],"reasonCodes":[],"unknowns":[],"needsContext":[],"evidenceRefs":[],"skillId":"copy active skill","skillVersion":"copy active version"}';
-          const baseOptions = visualCompletionOptions(model.id, { reasoning: "minimal", maxTokens: 600, ...(route.provider === "deepseek" ? { temperature: 0 } : {}), signal: options.signal, maxRetries: 0 });
-          const previousPayloadTransform = baseOptions.onPayload;
-          const response = await models.completeSimple(model, { systemPrompt: `Return only one compact JSON object matching this template. Never call tools. Do not add Markdown or explanations outside JSON. ${outputTemplate}`, messages: [{ role: "user", content: prompt }] }, {
-            ...baseOptions,
-            onPayload: async (payload, payloadModel) => {
-              const transformed = previousPayloadTransform ? await previousPayloadTransform(payload, payloadModel) ?? payload : payload;
-              return transformed && typeof transformed === "object" && route.provider === "deepseek"
-                ? { ...transformed, response_format: { type: "json_object" } }
-                : transformed;
-            },
+          native = await createTravelAgentSession({ conversationId: `child_${input?.runId ?? randomUUID()}_${task?.lane ?? "analysis"}`, models, model,
+            systemPrompt: `You are a bounded read-only Travel Agent child. Inspect only assigned context using the available tools. Do not delegate or commit. Finish with one compact JSON object: ${outputTemplate}`,
+            thinkingLevel: "off", tools, isSensitive: (text) => /(?:cookie|authorization|password|api[_ -]?key)\s*[:=]/i.test(text),
           });
-          const parsed = jsonObjectValue(contentText(response.content));
-          if (!parsed || typeof parsed !== "object") throw Object.assign(new Error("invalid_travel_analysis_output"), { code: "invalid_travel_analysis_output" });
-          return { ...parsed, __runtime: { model: `${route.provider}/${route.model}`, fallbackUsed: model !== resolved[0]?.model, tokenUsage: { input: Number(response.usage?.input ?? 0), output: Number(response.usage?.output ?? 0), total: Number(response.usage?.totalTokens ?? 0) } } };
+          const session = native.session;
+          let modelCalls = 0;
+          let toolCalls = 0;
+          session.agent.toolExecution = "parallel";
+          session.agent.streamFunction = (selected, context, settings) => {
+            if (++modelCalls > 4) throw new Error("analysis_model_budget_exhausted");
+            return streamTravelModel(models, selected, context, visualCompletionOptions(selected.id, { ...settings, reasoning: "minimal", maxTokens: 2200, maxRetries: 0 }));
+          };
+          const toolHook = session.agent.beforeToolCall;
+          session.agent.beforeToolCall = async (event) => {
+            if (++toolCalls > 4) return { block: true, reason: "analysis_tool_budget_exhausted", terminate: true };
+            await emitTravelExecution({ type: "child_tool_started", lane: task?.lane ?? "analysis", toolName: event.toolCall.name, status: "running" });
+            return toolHook?.(event);
+          };
+          const abort = () => { void session.abort(); };
+          runOptions.signal?.addEventListener("abort", abort, { once: true });
+          let parsed;
+          try {
+            await readGuard();
+            await session.prompt(prompt, { expandPromptTemplates: false });
+            for (let attempt = 0; attempt < 2; attempt++) {
+              const response = [...session.agent.state.messages].reverse().find((message) => message.role === "assistant");
+              if (["error", "aborted", "length"].includes(response?.stopReason)) throw Object.assign(new Error("travel_analysis_output_incomplete"), { code: "travel_analysis_output_incomplete" });
+              parsed = jsonObjectValue(contentText(response?.content ?? []));
+              const issue = analysisContentIssue(parsed, assignment);
+              if (!issue) break;
+              if (attempt > 0 || modelCalls >= 4) throw Object.assign(new Error(`invalid_travel_analysis_output:${issue}`), { code: "invalid_travel_analysis_output" });
+              await readGuard();
+              session.setActiveToolsByName([]);
+              await session.prompt(`Your handoff was rejected: ${issue}. Correct its JSON format and references once using the evidence already read. Do not change facts, invoke tools, or invent missing evidence. Include findings as an array (empty is allowed when unknowns explains the gap), and string arrays for the other collections. Only use candidate IDs and evidence refs in your assignment. Return exactly one object: ${outputTemplate}`, { expandPromptTemplates: false });
+            }
+            runOptions.signal?.throwIfAborted();
+            await readGuard();
+          } finally { runOptions.signal?.removeEventListener("abort", abort); }
+          const usage = session.agent.state.messages.filter((message) => message.role === "assistant").reduce((total, message) => ({ input: total.input + Number(message.usage?.input ?? 0), output: total.output + Number(message.usage?.output ?? 0), total: total.total + Number(message.usage?.totalTokens ?? 0) }), { input: 0, output: 0, total: 0 });
+          return { ...parsed, __runtime: { model: `${route.provider}/${route.model}`, fallbackUsed: model !== resolved[0]?.model, tokenUsage: usage, toolCalls, modelCalls, contextHash: assignment?.contextHash } };
         } catch (error) {
-          lastError = error;
+          const waiting = currentTravelExecution()?.defer;
+          if (waiting) throw new TravelExecutionDeferred(waiting.notBefore, waiting.waitReason);
+          lastError = error; if (runOptions.signal?.aborted || error?.code === "analysis_context_stale") throw error;
         }
+        finally { native?.session.dispose(); }
       }
       throw lastError ?? Object.assign(new Error("travel_analysis_model_unavailable"), { code: "travel_analysis_model_unavailable" });
     },
@@ -275,11 +328,13 @@ export function createTravelAnalysisFanout(env = process.env, options = {}) {
       const skill = childSkillForLane(lane);
       return { lane, skill, attempt: 1, queuedAt: new Date(clock()).toISOString(), startedAt: null, completedAt: null, rawResult: null, error: null, timeoutMs: options.agentTimeoutMs ?? 45_000, prompt: lanePrompt(lane, input, skill) };
     });
-    const agentRunner = options.agentRunner ?? await createTravelAnalysisAgentRunner(env, options.analysisRunnerOptions);
+    const agentRunner = options.agentRunner ?? await createTravelAnalysisAgentRunner(env, { ...options.analysisRunnerOptions, input, tasks, validateCurrent });
     if (!agentRunner) {
       return { ...base, status: "failed", lanes: [], startedLanes: [], completedLanes: [], failedLanes: laneIds, timedOutLanes: [], coverage: "failed", degradedReasons: laneIds.map((lane) => `${lane}_model_unavailable`), joinCount: 0, joinArtifactId: null, taskCount: laneIds.length, completedAt: new Date(clock()).toISOString(), conditionRevision: { status: "not_needed", reasonCodes: ["analysis_model_unavailable"] }, events: [] };
     }
     const events = [];
+    const eventWrites = [];
+    const persistEvent = (value) => { const pending = emitTravelExecution(value); void pending.catch(() => {}); eventWrites.push(pending); };
     const internalAbort = new AbortController();
     const signals = [signal, runRecord?.abortController.signal, internalAbort.signal].filter(Boolean);
     const combinedSignal = signals.length > 1 ? AbortSignal.any(signals) : signals[0];
@@ -289,7 +344,12 @@ export function createTravelAnalysisFanout(env = process.env, options = {}) {
     try {
       workflow = await runWorkflow(WORKFLOW_SCRIPT, {
         args: { tasks: tasks.map(({ lane, prompt, timeoutMs }) => ({ lane, prompt, timeoutMs })), childConcurrency, outputSchema: TravelAnalysisLaneResultSchema },
-        agent: agentRunner,
+        agent: { run: (prompt, runOptions) => {
+          const execution = currentTravelExecution();
+          const task = tasks.find(item => item.lane === runOptions.label);
+          const invoke = () => agentRunner.run(prompt, runOptions);
+          return execution?.readStep ? execution.readStep(`child_${runId}_${runOptions.label}`, { input, lane: runOptions.label, skillVersion: task?.skill.version, routes: fallbackLedger }, invoke) : invoke();
+        } },
         concurrency: Math.min(childConcurrency, tasks.length),
         maxAgents: tasks.length,
         agentRetries: 0,
@@ -304,16 +364,22 @@ export function createTravelAnalysisFanout(env = process.env, options = {}) {
           coordinator?.recordLaneStarted(runId, { lane: event.label, attempt: task?.attempt ?? 1, queuedAt: task?.queuedAt ?? at, startedAt: at });
           const runtimeEvent = { type: "analysis_lane_started", lane: event.label, attempt: task?.attempt ?? 1, queuedAt: task?.queuedAt ?? at, queueDurationMs: Math.max(0, new Date(at).getTime() - new Date(task?.queuedAt ?? at).getTime()), at };
           events.push(runtimeEvent); options.onEvent?.(runtimeEvent);
+          persistEvent({ type: runtimeEvent.type, lane: event.label, attempt: task?.attempt ?? 1, status: "running" });
         },
         onAgentEnd: (event) => {
           const task = tasks.find((item) => item.lane === event.label);
           const at = new Date(clock()).toISOString();
           const timedOut = /timed out|timeout/i.test(event.error ?? "");
-          if (task) { task.completedAt = at; task.rawResult = event.result ?? null; task.error = event.error ?? null; }
+          if (task) {
+            task.completedAt = at; task.rawResult = event.result ?? null; task.error = event.error ?? null;
+            if (!task.error && !normalizeLaneResult(task.rawResult, task, input)) task.error ??= "normalized_schema_invalid:child_result_shape";
+          }
+          const error = task?.error ?? event.error ?? null;
           consecutiveTimeouts = timedOut ? consecutiveTimeouts + 1 : 0;
-          coordinator?.recordLaneCompletion(runId, { lane: event.label, attempt: task?.attempt ?? 1, completedAt: at, status: timedOut ? "timed_out" : event.error ? "failed" : "completed", result: event.result ?? null });
-          const runtimeEvent = { type: "analysis_lane_completed", lane: event.label, attempt: task?.attempt ?? 1, at, error: event.error ?? null, executionDurationMs: Math.max(0, new Date(at).getTime() - new Date(task?.startedAt ?? at).getTime()), model: event.model ?? event.result?.__runtime?.model ?? null };
+          coordinator?.recordLaneCompletion(runId, { lane: event.label, attempt: task?.attempt ?? 1, completedAt: at, status: timedOut ? "timed_out" : error ? "failed" : "completed", result: error ? null : event.result ?? null });
+          const runtimeEvent = { type: "analysis_lane_completed", lane: event.label, attempt: task?.attempt ?? 1, at, error, executionDurationMs: Math.max(0, new Date(at).getTime() - new Date(task?.startedAt ?? at).getTime()), model: event.model ?? event.result?.__runtime?.model ?? null };
           events.push(runtimeEvent); options.onEvent?.(runtimeEvent);
+          persistEvent({ type: runtimeEvent.type, lane: event.label, attempt: task?.attempt ?? 1, status: timedOut || error ? "failed" : "completed" });
           if (consecutiveTimeouts >= childConcurrency && !tasks.some((item) => item.rawResult)) internalAbort.abort("travel_analysis_timeout_circuit_open");
         },
       });
@@ -321,7 +387,10 @@ export function createTravelAnalysisFanout(env = process.env, options = {}) {
       if (!combinedSignal.aborted) throw error;
     } finally {
       clearTimeout(deadlineTimer);
+      await Promise.all(eventWrites);
     }
+    const waiting = currentTravelExecution()?.defer;
+    if (waiting) throw new TravelExecutionDeferred(waiting.notBefore, waiting.waitReason);
     const rawResults = Array.isArray(workflow?.result) ? workflow.result : tasks.map((task) => task.rawResult);
     const lanes = rawResults.map((result, index) => normalizeLaneResult(result, tasks[index], input)).filter(Boolean);
     for (const task of tasks.filter((item) => item.error?.startsWith("normalized_schema_invalid:"))) {
@@ -336,11 +405,17 @@ export function createTravelAnalysisFanout(env = process.env, options = {}) {
     const coverage = completedLanes.length === laneIds.length ? "complete" : completedLanes.length ? "partial" : "failed";
     const degradedReasons = failedLanes.map((lane) => `${lane}_${timedOutLanes.includes(lane) ? "timed_out" : "failed"}`);
     const reasonCodes = [...new Set(lanes.flatMap((result) => result.reasonCodes))];
-    const needsRevision = lanes.some((result) => result.needsContext.length || result.reasonCodes.some((code) => /^criteria_|wrong_area|hard_constraint/.test(code)));
+    const needsRevision = lanes.some((result) => result.reasonCodes.some((code) => /^(?:criteria_|wrong_area|hard_constraint)/i.test(code)));
     const isCurrent = validateCurrent ? await validateCurrent({ runId, tripId, baseRevision, criteriaFingerprint }) : true;
     if (!isCurrent) {
       coordinator?.markStale(runId, "revision_or_fingerprint_changed");
       return { ...base, status: "stale_discarded", lanes: [], startedLanes, completedLanes: [], failedLanes: laneIds, timedOutLanes, coverage: "failed", degradedReasons: ["revision_or_fingerprint_changed"], joinCount: 0, joinArtifactId: null, taskCount: tasks.length, completedAt: new Date(clock()).toISOString(), conditionRevision: { status: "not_needed", reasonCodes: ["stale_discarded"] }, events };
+    }
+    for (const lane of lanes) {
+      const candidates = laneCandidates(lane.lane, input.candidates);
+      const assignment = analysisAssignment({ runId, tripId, baseRevision, criteriaFingerprint, lane: lane.lane, candidateIds: candidates.map((candidate) => candidate.candidateId), evidenceRefs: candidates.flatMap((candidate) => candidate.evidenceRefs) }, { brief: input.brief, travelers: input.travelers, weather: input.weather, locks: input.locks, candidates });
+      const receipt = acceptAnalysisHandoff(assignment, lane);
+      await emitTravelExecution({ type: "analysis_handoff", status: receipt.status, lane: lane.lane, runId, revision: baseRevision });
     }
     const join = coordinator?.tryJoin(runId) ?? { acquired: true, reason: "no_coordinator", artifact: null };
     if (!join.acquired && join.artifact) return join.artifact;

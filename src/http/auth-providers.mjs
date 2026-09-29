@@ -10,7 +10,10 @@ import {
 } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
-const WEB_PROVIDERS = Object.freeze(["google", "wechat", "alipay", "apple"]);
+import { AUTH_CHANNELS, normalizedAuthOrigin as normalizedOrigin, resolveAuthChannel } from "./auth-channels.mjs";
+
+const WEB_CHANNELS = AUTH_CHANNELS.filter((item) => item.channel === "web");
+const WEB_PROVIDERS = WEB_CHANNELS.map((item) => item.provider);
 const AUTH_CLIENTS = new Set(["web", "desktop"]);
 const STATE_TTL_MS = 10 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 12_000;
@@ -34,17 +37,6 @@ function requiredSecret(env) {
   return secret.length >= 32 ? secret : null;
 }
 
-function normalizedOrigin(value) {
-  try {
-    const url = new URL(String(value ?? ""));
-    if (!url.hostname || url.username || url.password || url.pathname !== "/" || url.search || url.hash) return null;
-    if (url.protocol !== "https:" && !(url.protocol === "http:" && ["127.0.0.1", "localhost"].includes(url.hostname))) return null;
-    return url.origin;
-  } catch {
-    return null;
-  }
-}
-
 function safeReturnTo(value) {
   const returnTo = String(value ?? "/").trim();
   return returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo.slice(0, 1024) : "/";
@@ -54,7 +46,7 @@ function stateSignature(body, secret) {
   return createHmac("sha256", secret).update(body).digest("base64url");
 }
 
-function createState({ provider, origin, returnTo, client = "web", secret, clock }) {
+function createState({ provider, origin, returnTo, client = "web", linkSessionId = null, secret, clock }) {
   const nonce = randomBytes(24).toString("base64url");
   const issuedAt = clock().getTime();
   const body = Buffer.from(JSON.stringify({
@@ -64,6 +56,7 @@ function createState({ provider, origin, returnTo, client = "web", secret, clock
     returnTo: safeReturnTo(returnTo),
     client: AUTH_CLIENTS.has(client) ? client : "web",
     nonce,
+    linkSessionId,
     issuedAt,
     expiresAt: issuedAt + STATE_TTL_MS,
   })).toString("base64url");
@@ -94,67 +87,8 @@ function callbackUrl(origin, provider) {
   return `${origin}/api/auth/${provider}/callback`;
 }
 
-function missing(values) {
-  return values.some((value) => !String(value ?? "").trim());
-}
-
-function alipayConfiguration(env, channel) {
-  const prefix = channel === "miniapp" ? "ALIPAY_MINIAPP" : "ALIPAY_WEB";
-  return {
-    appId: env[`${prefix}_APP_ID`] || env.ALIPAY_APP_ID,
-    privateKeyPath: env[`${prefix}_PRIVATE_KEY_PATH`] || env.ALIPAY_PRIVATE_KEY_PATH,
-    publicKeyPath: env[`${prefix}_PUBLIC_KEY_PATH`] || env.ALIPAY_PUBLIC_KEY_PATH,
-  };
-}
-
 function providerConfiguration(env, provider, origin) {
-  const stateSecret = requiredSecret(env);
-  const normalized = normalizedOrigin(origin ?? env.TRAVEL_AGENT_PUBLIC_ORIGIN);
-  const https = normalized?.startsWith("https://") === true;
-  const commonReady = Boolean(stateSecret && normalized && String(env.TRAVEL_AGENT_SESSION_SECRET ?? "").length >= 32);
-  if (provider === "google") {
-    return {
-      available: commonReady && !missing([env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET]),
-      reason: !commonReady ? "secure_session_required" : missing([env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET]) ? "configuration_required" : null,
-      stateSecret,
-      origin: normalized,
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-    };
-  }
-  if (provider === "wechat") {
-    return {
-      available: commonReady && https && !missing([env.WECHAT_OPEN_APP_ID, env.WECHAT_OPEN_APP_SECRET]),
-      reason: !commonReady ? "secure_session_required" : !https ? "https_required" : missing([env.WECHAT_OPEN_APP_ID, env.WECHAT_OPEN_APP_SECRET]) ? "configuration_required" : null,
-      stateSecret,
-      origin: normalized,
-      appId: env.WECHAT_OPEN_APP_ID,
-      appSecret: env.WECHAT_OPEN_APP_SECRET,
-    };
-  }
-  if (provider === "alipay") {
-    const alipay = alipayConfiguration(env, "web");
-    return {
-      available: commonReady && https && !missing([alipay.appId, alipay.privateKeyPath, alipay.publicKeyPath]),
-      reason: !commonReady ? "secure_session_required" : !https ? "https_required" : missing([alipay.appId, alipay.privateKeyPath, alipay.publicKeyPath]) ? "configuration_required" : null,
-      stateSecret,
-      origin: normalized,
-      ...alipay,
-    };
-  }
-  if (provider === "apple") {
-    return {
-      available: commonReady && https && !missing([env.APPLE_CLIENT_ID, env.APPLE_TEAM_ID, env.APPLE_KEY_ID, env.APPLE_PRIVATE_KEY_PATH]),
-      reason: !commonReady ? "secure_session_required" : !https ? "https_required" : missing([env.APPLE_CLIENT_ID, env.APPLE_TEAM_ID, env.APPLE_KEY_ID, env.APPLE_PRIVATE_KEY_PATH]) ? "configuration_required" : null,
-      stateSecret,
-      origin: normalized,
-      clientId: env.APPLE_CLIENT_ID,
-      teamId: env.APPLE_TEAM_ID,
-      keyId: env.APPLE_KEY_ID,
-      privateKeyPath: env.APPLE_PRIVATE_KEY_PATH,
-    };
-  }
-  throw authError("unsupported_auth_provider", 400, { provider });
+  return resolveAuthChannel(env, provider, "web", origin);
 }
 
 async function fetchText(fetchImpl, url, options = {}) {
@@ -205,7 +139,7 @@ async function verifyIdentityToken(fetchImpl, token, { keysUrl, issuers, audienc
   const verified = verifyBytes("RSA-SHA256", Buffer.from(`${encodedHeader}.${encodedPayload}`), createPublicKey({ key: jwk, format: "jwk" }), Buffer.from(encodedSignature, "base64url"));
   const audiences = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
   const now = Math.floor(clock().getTime() / 1000);
-  if (!verified || !issuers.includes(claims.iss) || !audiences.includes(audience) || !claims.sub || claims.exp <= now || claims.iat > now + 60) {
+  if (!verified || !issuers.includes(claims.iss) || !audiences.includes(audience) || typeof claims.sub !== "string" || !claims.sub.trim() || !Number.isFinite(claims.exp) || !Number.isFinite(claims.iat) || claims.exp <= now || claims.iat > now + 60) {
     throw authError("auth_identity_token_invalid", 502);
   }
   if (nonce && claims.nonce !== nonce) throw authError("auth_identity_token_invalid", 502);
@@ -385,24 +319,22 @@ function webAuthorizationUrl(provider, config, state, nonce) {
 export function createAuthService({ env = process.env, fetchImpl = globalThis.fetch, readFileImpl = readFile, clock = () => new Date() } = {}) {
   return Object.freeze({
     providerSummary({ origin } = {}) {
-      const labels = { google: "Google", wechat: "微信", alipay: "支付宝", apple: "Apple" };
-      const interactions = { google: "redirect", wechat: "qr", alipay: "qr", apple: "redirect" };
       return {
         schemaVersion: "auth-providers-v1",
         primaryProvider: "google",
-        providers: WEB_PROVIDERS.map((provider) => {
+        providers: WEB_CHANNELS.map(({ provider, label, interaction }) => {
           const config = providerConfiguration(env, provider, origin);
-          return { id: provider, label: labels[provider], interaction: interactions[provider], available: config.available, unavailableReason: config.reason, startPath: `/api/auth/${provider}/start` };
+          return { id: provider, label, interaction, available: config.available, unavailableReason: config.reason, startPath: `/api/auth/${provider}/start` };
         }),
       };
     },
 
-    beginWeb({ provider, origin, returnTo = "/", client = "web" }) {
+    beginWeb({ provider, origin, returnTo = "/", client = "web", linkSessionId = null }) {
       if (!WEB_PROVIDERS.includes(provider)) throw authError("unsupported_auth_provider", 400, { provider });
       if (!AUTH_CLIENTS.has(client)) throw authError("unsupported_auth_client", 400, { client });
       const config = providerConfiguration(env, provider, origin);
       if (!config.available) throw authError("auth_provider_not_configured", 503, { provider, reason: config.reason });
-      const { state, nonce } = createState({ provider, origin: config.origin, returnTo, client, secret: config.stateSecret, clock });
+      const { state, nonce } = createState({ provider, origin: config.origin, returnTo, client, linkSessionId, secret: config.stateSecret, clock });
       return {
         authorizationUrl: webAuthorizationUrl(provider, config, state, nonce),
         state,
@@ -427,27 +359,22 @@ export function createAuthService({ env = process.env, fetchImpl = globalThis.fe
       else if (provider === "wechat") identity = await exchangeWechatWeb({ config, code, fetchImpl });
       else if (provider === "alipay") identity = await exchangeAlipay({ config, code, fetchImpl, readFileImpl, clock });
       else identity = await exchangeApple({ config, code, nonce: verifiedState.nonce, fetchImpl, readFileImpl, clock });
-      return { identity, returnTo: verifiedState.returnTo, client: verifiedState.client };
+      return { identity, returnTo: verifiedState.returnTo, client: verifiedState.client, linkSessionId: verifiedState.linkSessionId ?? null };
     },
 
     async exchangePlatform({ provider, authorizationCode }) {
       const code = String(authorizationCode ?? "").trim();
       if (!code || code.length > 4096) throw authError("invalid_authorization_code", 400);
+      const config = resolveAuthChannel(env, provider, "miniapp");
+      if (!config.available) throw authError("auth_provider_not_configured", 503, { provider, channel: "miniapp", reason: config.reason });
       if (provider === "wechat") {
-        if (missing([env.WECHAT_MINIAPP_APP_ID, env.WECHAT_MINIAPP_APP_SECRET, env.TRAVEL_AGENT_SESSION_SECRET])) {
-          throw authError("auth_provider_not_configured", 503, { provider, channel: "miniapp" });
-        }
         const url = new URL("https://api.weixin.qq.com/sns/jscode2session");
-        url.search = new URLSearchParams({ appid: env.WECHAT_MINIAPP_APP_ID, secret: env.WECHAT_MINIAPP_APP_SECRET, js_code: code, grant_type: "authorization_code" });
+        url.search = new URLSearchParams({ appid: config.appId, secret: config.appSecret, js_code: code, grant_type: "authorization_code" });
         const result = await fetchJson(fetchImpl, url);
         if (result.errcode || !result.openid) throw authError("auth_provider_rejected_exchange", 502, { providerCode: result.errcode ?? null });
         return { provider, subject: result.unionid || result.openid, displayName: null };
       }
       if (provider === "alipay") {
-        const config = alipayConfiguration(env, "miniapp");
-        if (missing([config.appId, config.privateKeyPath, config.publicKeyPath, env.TRAVEL_AGENT_SESSION_SECRET])) {
-          throw authError("auth_provider_not_configured", 503, { provider, channel: "miniapp" });
-        }
         return exchangeAlipay({ config, code, fetchImpl, readFileImpl, clock });
       }
       throw authError("unsupported_auth_provider", 400, { provider });

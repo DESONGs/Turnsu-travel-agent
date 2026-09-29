@@ -1,6 +1,7 @@
 import { MobilityObservationSchema, TripFeasibilitySchema, TripItinerarySchema, assertSchema, type MobilityLeg, type MobilityObservation } from "./index.js";
+import { selectedRoute, routeAlternativeId } from "../core/journey-execution.js";
 
-const MODES = new Set(["walk", "transit", "taxi"]);
+const MODES = new Set(["walk", "transit", "taxi", "drive", "train", "flight", "shuttle", "cable_car", "ferry"]);
 const STATUSES = new Set(["completed", "partial", "needs_context", "provider_unavailable"]);
 const WALK_TYPES = {
   "0": { kind: "road", label: "普通道路" }, "1": { kind: "crosswalk", label: "人行横道" },
@@ -126,7 +127,7 @@ function place(input: unknown, field: string) {
 function step(input: unknown, index: number, field: string) {
   const value = objectValue(input, `${field}.${index}`);
   const kind = text(value.kind, `${field}.${index}.kind`, { max: 40 });
-  if (!["walk", "ride", "transfer", "taxi", "arrive"].includes(kind)) return fail(`${field}.${index}.kind`);
+  if (!["walk", "ride", "transfer", "taxi", "drive", "arrive"].includes(kind)) return fail(`${field}.${index}.kind`);
   const walkTypeValue = optionalObject(value.walkType);
   const walkType = walkTypeValue?.code ? amapWalkTypeMetadata(walkTypeValue.code) : amapWalkTypeMetadata(value.walkType ?? value.walkTypeCode);
   const suppliedFeatures = Array.isArray(value.accessibilityFeatures)
@@ -154,6 +155,11 @@ function alternative(input: unknown, index: number, field: string) {
   const steps = Array.isArray(value.steps) ? value.steps.slice(0, 24).map((item, stepIndex) => step(item, stepIndex, `${field}.${index}.steps`)) : [];
   const accessibilityFeatures = [...new Map(steps.flatMap((item) => item.accessibilityFeatures).map((feature) => [feature.kind, feature])).values()];
   return {
+    alternativeId: routeAlternativeId(value),
+    ...(value.fareIncludedByNodeId ? { fareIncludedByNodeId: text(value.fareIncludedByNodeId, `${field}.${index}.fareIncludedByNodeId`, { max: 128 }) } : {}),
+    ...(Array.isArray(value.sourceRefs) ? { sourceRefs: value.sourceRefs.map(String) } : {}),
+    ...(value.departureAt ? { departureAt: timestamp(value.departureAt, `${field}.${index}.departureAt`) } : {}),
+    ...(value.arrivalAt ? { arrivalAt: timestamp(value.arrivalAt, `${field}.${index}.arrivalAt`) } : {}),
     mode, totalMinutes: nonNegativeNumber(value.totalMinutes, `${field}.${index}.totalMinutes`),
     distanceMeters: nonNegativeNumber(value.distanceMeters, `${field}.${index}.distanceMeters`, { optional: true }),
     walkingMeters: nonNegativeNumber(value.walkingMeters, `${field}.${index}.walkingMeters`, { optional: true }),
@@ -177,7 +183,7 @@ function alternative(input: unknown, index: number, field: string) {
 function leg(input: unknown, index: number) {
   const value = objectValue(input, `legs.${index}`);
   const alternatives = Array.isArray(value.alternatives)
-    ? value.alternatives.slice(0, 3).map((item, alternativeIndex) => alternative(item, alternativeIndex, `legs.${index}.alternatives`)) : [];
+    ? value.alternatives.map((item, alternativeIndex) => alternative(item, alternativeIndex, `legs.${index}.alternatives`)) : [];
   if (!alternatives.length) return fail(`legs.${index}.alternatives`);
   const recommendedMode = text(value.recommendedMode, `legs.${index}.recommendedMode`, { max: 20 });
   if (!MODES.has(recommendedMode) || !alternatives.some((item) => item.mode === recommendedMode)) return fail(`legs.${index}.recommendedMode`);
@@ -226,6 +232,7 @@ function leg(input: unknown, index: number) {
   return {
     legId: text(value.legId, `legs.${index}.legId`, { max: 128 }), origin: place(value.origin, `legs.${index}.origin`),
     destination: place(value.destination, `legs.${index}.destination`), recommendedMode,
+    selectedAlternativeId: text(value.selectedAlternativeId, `legs.${index}.selectedAlternativeId`, { optional: true, max: 128 }) ?? alternatives.find(item => item.mode === recommendedMode)?.alternativeId,
     rationale: text(value.rationale, `legs.${index}.rationale`, { max: 800 }), alternatives, recommendationAudit,
   };
 }
@@ -270,7 +277,9 @@ export function normalizeTripMobility(input: unknown): MobilityObservation {
   const value = objectValue(input, "root");
   const status = text(value.status, "status", { max: 40 });
   if (!STATUSES.has(status)) return fail("status");
-  const legs = ["completed", "partial"].includes(status) && Array.isArray(value.legs) ? value.legs.slice(0, 8).map(leg) : [];
+  // Route evidence is authoritative for every scheduled transition. Presentation
+  // limits must never silently remove later days from the checked itinerary.
+  const legs = ["completed", "partial"].includes(status) && Array.isArray(value.legs) ? value.legs.map(leg) : [];
   if (status === "completed" && !legs.length) return fail("legs");
   const coverage = optionalObject(value.coverage);
   return assertSchema(MobilityObservationSchema, {
@@ -280,10 +289,10 @@ export function normalizeTripMobility(input: unknown): MobilityObservation {
     checkedAt: timestamp(value.checkedAt, "checkedAt", { optional: true }),
     freshUntil: timestamp(value.freshUntil, "freshUntil", { optional: true }),
     coverage: {
-      routedNodeIds: Array.isArray(coverage?.routedNodeIds) ? [...new Set(coverage.routedNodeIds.map(String))].slice(0, 24) : [],
-      unresolvedNodeIds: Array.isArray(coverage?.unresolvedNodeIds) ? [...new Set(coverage.unresolvedNodeIds.map(String))].slice(0, 24) : [],
-      routedStopIds: Array.isArray(coverage?.routedStopIds) ? [...new Set(coverage.routedStopIds.map(String))].slice(0, 32) : [],
-      unresolvedStopIds: Array.isArray(coverage?.unresolvedStopIds) ? [...new Set(coverage.unresolvedStopIds.map(String))].slice(0, 32) : [],
+      routedNodeIds: Array.isArray(coverage?.routedNodeIds) ? [...new Set(coverage.routedNodeIds.map(String))] : [],
+      unresolvedNodeIds: Array.isArray(coverage?.unresolvedNodeIds) ? [...new Set(coverage.unresolvedNodeIds.map(String))] : [],
+      routedStopIds: Array.isArray(coverage?.routedStopIds) ? [...new Set(coverage.routedStopIds.map(String))] : [],
+      unresolvedStopIds: Array.isArray(coverage?.unresolvedStopIds) ? [...new Set(coverage.unresolvedStopIds.map(String))] : [],
       unscheduled: coverage?.unscheduled !== false,
     },
     legs,
@@ -296,5 +305,5 @@ export function normalizeTripMobility(input: unknown): MobilityObservation {
 }
 
 export function mobilityRecommendedAlternative(legValue: MobilityLeg) {
-  return legValue.alternatives.find((alternativeValue) => alternativeValue.mode === legValue.recommendedMode) ?? null;
+  return selectedRoute(legValue);
 }

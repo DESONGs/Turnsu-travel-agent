@@ -32,6 +32,16 @@ test("single-process workflow mode fails closed for uncoordinated multi-worker d
   }
 });
 
+test("multi-worker semantic analysis requires the PostgreSQL run owner, not a coordinator label", async () => {
+  const env = { DATABASE_URL: "postgresql://localhost/travel_execution_test", TRAVEL_AGENT_INSTANCE_COUNT: "2", TRAVEL_AGENT_WORKFLOW_EXECUTION_MODE: "postgres_run" };
+  assert.equal(workflowExecutionPolicy(env).semanticFanoutEnabled, true);
+  assert.equal(workflowExecutionPolicy(env).backgroundResumeSupported, "read_only_once");
+  let calls = 0;
+  const service = createTravelService(env, { store: { mode: "postgres" }, researchProvider: { status: "configured" }, analysisFanout: async () => { calls++; } });
+  await assert.rejects(service.analysisFanout({}), { code: "analysis_durable_run_required" });
+  assert.equal(calls, 0);
+});
+
 test("an uncoordinated multi-worker research request exposes failed semantic coverage instead of claiming full planning", async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "travel-workflow-degraded-"));
   const checkedAt = "2026-08-28T08:00:00.000Z";

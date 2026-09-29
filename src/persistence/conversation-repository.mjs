@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, open, readFile, readdir, rename, unlink } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { PostgresConversationRepository } from "./postgres-conversation-repository.mjs";
+import { assertTravelExecutionCurrent } from "../../travel-agent-pi-package/src/host/execution-context.ts";
 import { DEFAULT_USER_MODEL_ID, userModelOption } from "../agent/user-model-options.mjs";
 
 const SAFE_ID = /^[A-Za-z0-9_.:-]{1,128}$/;
@@ -171,6 +172,7 @@ export class FileConversationRepository {
         await handle.writeFile(`${JSON.stringify(persisted, null, 2)}\n`, "utf8");
         await handle.close();
         handle = null;
+        await assertTravelExecutionCurrent();
         await rename(tempPath, path);
       } catch (error) {
         await handle?.close();
@@ -195,7 +197,7 @@ export class FileConversationRepository {
   }
 }
 
-export function createConversationRepository({ databaseUrl = process.env.DATABASE_URL, rootDir } = {}) {
-  if (databaseUrl) return new PostgresConversationRepository({ databaseUrl });
+export function createConversationRepository({ databaseUrl = process.env.DATABASE_URL, pool, rootDir } = {}) {
+  if (databaseUrl || pool) return new PostgresConversationRepository({ databaseUrl, pool });
   return new FileConversationRepository({ rootDir });
 }

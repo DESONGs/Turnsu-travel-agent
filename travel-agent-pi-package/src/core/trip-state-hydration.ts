@@ -1,5 +1,6 @@
-import { FOUR_DOMAINS, assertTripState, type TripState } from "../contracts/index.js";
+import { FOUR_DOMAINS, assertTripState, assertSchema, TripStateSchema, type TripState } from "../contracts/index.js";
 import { estimateTripBudget, normalizeTravelPrice } from "../runtime/trip-runtime-implementation.js";
+import { ensureContinuousPlanning, projectAdoptedPlan } from "./continuous-planning.js";
 
 type UnknownObject = { [key: string]: unknown };
 
@@ -123,5 +124,9 @@ export function hydrateStoredTripState(value: unknown): TripState {
     updatedAt: readiness.updatedAt ?? null,
   };
   next.budgetLedger = estimateTripBudget(next);
-  return assertTripState(next);
+  const state = assertTripState(next);
+  ensureContinuousPlanning(state);
+  projectAdoptedPlan(state);
+  state.budgetLedger = assertSchema(TripStateSchema.properties.budgetLedger, estimateTripBudget(state), "invalid_trip_budget");
+  return assertTripState(state);
 }

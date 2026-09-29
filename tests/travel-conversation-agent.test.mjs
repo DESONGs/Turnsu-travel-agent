@@ -19,15 +19,21 @@ test("user-facing agent copy translates internal planning enums before rendering
 test("negative confirmation language never becomes a selection command", () => {
   assert.equal(explicitSelectionIntent("请比较预算，不要确认任何候选"), false);
   assert.equal(explicitSelectionIntent("暂不确认住宿，只看价格"), false);
+  assert.equal(explicitSelectionIntent("没有任何已确认的住宿、车次或门票；只生成待比较方案，不确认、不购买。"), false);
+  assert.equal(explicitSelectionIntent("酒店还没确认，请比较价格"), false);
+  assert.equal(explicitSelectionIntent("我是否确认过全季酒店？"), false);
   assert.equal(explicitSelectionIntent("我选择并确认全季酒店"), true);
 });
 
 test("travel dates and route timestamps are not mistaken for payment cards", () => {
   assert.equal(containsPaymentCardNumber("2026-10-15T21:20:00+08:00 → 2026-10-16T10:00:00+08:00"), false);
+  assert.equal(containsPaymentCardNumber('"play_0_105c2638350095126c34887d_1"'), false);
   assert.equal(containsPaymentCardNumber("4111 1111 1111 1111"), true);
+  assert.equal(containsPaymentCardNumber('"card":"4111111111111111"'), true);
+  assert.equal(containsPaymentCardNumber("卡号4111-1111-1111-1111"), true);
 });
 
-test("only a direct itinerary optimization turn exposes the planning harness", () => {
+test("explicit itinerary optimization can use the focused planning path", () => {
   assert.equal(itineraryPlanningIntent("这趟预算还剩多少"), false);
   assert.equal(itineraryPlanningIntent("请直接优化当前按天路线，比较先寄存行李还是先入住"), true);
 });
@@ -40,7 +46,8 @@ test("budget explanation keeps candidate quote quality separate from trip-total 
   assert.match(text, /本次实价快照/);
   assert.match(text, /参考价/);
   assert.match(text, /整趟数字仍标为估算/);
-  assert.match(text, /没有确认、购买或改写/);
+  assert.match(text, /当前尚未采用任何候选/);
+  assert.match(text, /本轮没有新增确认或购买/);
 });
 
 test("Agent copy names missing analysis coverage and distinguishes empty inventory from unavailable sources", () => {
@@ -97,7 +104,54 @@ test("fixture: Pi conversation loop creates and reads a travel draft through bou
   assert.equal(control.travelers[2].careNeeds.schedule.latestDinnerTime, "19:00");
 });
 
-test("Parent Agent executes one Plan-Check-Repair loop and returns a reversible itinerary Trial", async () => {
+test("a first planning request exposes object tool parameters accepted by the live model transport", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "travel-tool-transport-"));
+  const service = new TravelService({ store: new TripStore({ rootDir: join(rootDir, "trips") }) });
+  const faux = fauxProvider({ provider: "fixture-tool-contract", models: [{ id: "parent" }] });
+  const models = createModels();
+  models.setProvider(faux.provider);
+  let tools;
+  faux.setResponses([(context) => {
+    tools = context.tools;
+    return fauxAssistantMessage("请告诉我想去的目的地。");
+  }]);
+  const agent = new TravelConversationAgent({ travelService: service,
+    conversationRepository: new FileConversationRepository({ rootDir: join(rootDir, "conversations") }),
+    modelRuntime: { models, model: faux.getModel("parent") } });
+  const conversation = await agent.createConversation({ userId: "user_tool_contract" });
+  await agent.reply({ conversationId: conversation.conversationId, userId: "user_tool_contract", text: "想出去玩几天，帮我规划一下。" });
+  assert.ok(tools.some(tool => tool.name === "plan_itinerary_trial"));
+  // Live Kimi rejects the entire request before generating any answer when a
+  // registered function lacks an explicit root object type, even if unused.
+  for (const tool of tools) assert.equal(tool.parameters.type, "object", `${tool.name} must be transportable before a traveler can receive any response`);
+});
+
+test("a traveler saying not to replan can still save a higher budget without creating another itinerary", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "travel-budget-only-negative-"));
+  const store = new TripStore({ rootDir: join(rootDir, "trips") });
+  const service = new TravelService({ store });
+  const tripId = "trip_budget_only_negative";
+  await service.createTrip({ tripId, brief: { destination: "上海", dates: "2026-10-15", durationDays: 1, totalBudget: 6000, currency: "CNY" } });
+  const faux = fauxProvider({ provider: "fixture-budget-request", models: [{ id: "parent" }] });
+  const models = createModels(); models.setProvider(faux.provider);
+  faux.setResponses([
+    context => context.tools.some(tool => tool.name === "save_trip_understanding")
+      ? fauxAssistantMessage(fauxToolCall("save_trip_understanding", { totalBudget: 8000, requestedWork: "save_only" }), { stopReason: "toolUse" })
+      : fauxAssistantMessage("总预算已从6000元提高到8000元。"),
+    fauxAssistantMessage("预算已保存，其他安排保留。"),
+  ]);
+  const agent = new TravelConversationAgent({ travelService: service,
+    conversationRepository: new FileConversationRepository({ rootDir: join(rootDir, "conversations") }),
+    modelRuntime: { models, model: faux.getModel("parent") } });
+  const conversation = await agent.createConversation({ userId: "user_budget_only", tripId });
+  await agent.reply({ conversationId: conversation.conversationId, userId: "user_budget_only",
+    text: "把总预算从6000元提高到8000元。已经采用的所有安排、日期、每次到访和时间都保留，只保存预算，不要重新查资料或重排行程。" });
+  const state = await store.get(tripId);
+  assert.equal(state.brief.totalBudget, 8000, "negative planning language must not remove the tool needed to save the user's actual request");
+  assert.equal(state.pendingProposals.some(proposal => proposal.itineraryPlan), false);
+});
+
+for (const { naturalEntry, clarification } of [{ naturalEntry: false }, { naturalEntry: true }, { naturalEntry: true, clarification: true }]) test(`Parent Agent runs Plan-Check-Repair from ${clarification ? "a request needing user input" : naturalEntry ? "ordinary itinerary request" : "focused optimization"}`, async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "travel-conversation-itinerary-plan-"));
   const tripStore = new TripStore({ rootDir: join(rootDir, "trips") });
   const routeAlternative = (mode, minutes, walkingMeters = 0) => ({ mode, totalMinutes: minutes, distanceMeters: 5_000, walkingMeters, transfers: mode === "transit" ? 1 : 0, estimatedFareCny: mode === "taxi" ? 35 : 4, scheduleBasis: "query_time_estimate", realTimeArrival: false, navigationUrl: null, polyline: [], steps: [], accessibilityFeatures: [], accessibilityAssessment: { hasStairs: false, hasElevator: false, hasEscalator: false, hasRamp: false, stepFreeContinuity: "not_verified", realTimeStatus: false } });
@@ -116,7 +170,7 @@ test("Parent Agent executes one Plan-Check-Repair loop and returns a reversible 
       },
     },
   });
-  await travelService.createTrip({ tripId: "trip_agent_plan", brief: { destination: "上海", dates: "2026-10-15 至 2026-10-17" }, travelers: [{ travelerId: "traveler_1", displayName: "父亲", careNeeds: { mobility: { maxContinuousWalkMeters: 600, maxTransfers: 1 } } }] });
+  await travelService.createTrip({ tripId: "trip_agent_plan", brief: { destination: "上海", dates: "2026-10-15", durationDays: 1, planningDomains: ["play", "stay", "transport"] }, travelers: [{ travelerId: "traveler_1", displayName: "父亲", careNeeds: { mobility: { maxContinuousWalkMeters: 600, maxTransfers: 1 } } }] });
   const nodes = [
     { nodeId: "arrival_pvg", domain: "transport", title: "浦东机场 T2", sourceStatus: "verified", sourceRefs: ["amap:arrival"], operability: { mobilityRole: "intercity_inventory", arrivalAt: "2026-10-15T09:00:00+08:00" } },
     { nodeId: "stay_hotel", domain: "stay", title: "人民广场酒店", sourceStatus: "verified", sourceRefs: ["amap:stay"], operability: { openWeek: "00:00-23:59" } },
@@ -129,7 +183,7 @@ test("Parent Agent executes one Plan-Check-Repair loop and returns a reversible 
   models.setProvider(faux.provider);
   let runId = null;
   const makePlan = (attempt, activityStart, fixed) => ({
-    schemaVersion: "itinerary-plan-v1", runId, tripId: "trip_agent_plan", baseRevision: 0, attempt,
+    schemaVersion: "itinerary-plan-v1", scope: "selected_visits", runId, tripId: "trip_agent_plan", baseRevision: 0, attempt,
     objective: "先寄存行李再参观", priorities: ["少步行", "保留抵达"], lockedNodeIds: [], fixedAnchors: [{ nodeId: "arrival_pvg", kind: "arrival", startAt: "2026-10-15T09:00:00+08:00", endAt: "2026-10-15T09:00:00+08:00" }],
     days: [{ dayIndex: 1, date: "2026-10-15", stops: [
       { nodeId: "arrival_pvg", role: "intercity_arrival", timeWindow: { startAt: "2026-10-15T09:00:00+08:00", endAt: "2026-10-15T09:00:00+08:00" }, durationMinutes: 0, fixed: true, preferredModes: ["taxi"], rationale: "固定抵达" },
@@ -138,27 +192,39 @@ test("Parent Agent executes one Plan-Check-Repair loop and returns a reversible 
     ] }], assumptions: [], needsContext: [], evidenceRefs: ["amap:arrival", "amap:stay", "amap:play"],
   });
   faux.setResponses([
+    ...(naturalEntry ? [() => fauxAssistantMessage(fauxToolCall("get_trip_plan_view", {}), { stopReason: "toolUse" })] : []),
     (context) => {
       runId = context.systemPrompt.match(/runId[：=]([A-Za-z0-9_.:-]+)/)?.[1] ?? null;
       assert.ok(runId);
       assert.match(context.systemPrompt, /repair exactly once|修正一次/);
       assert.ok(context.tools.some((tool) => tool.name === "plan_itinerary_trial"));
-      assert.equal(context.tools.some((tool) => tool.name === "get_trip_plan_view"), false);
-      assert.match(context.systemPrompt, /当前可用规划上下文/);
+      assert.ok(context.tools.some((tool) => tool.name === "get_trip_plan_view"), "planning always retains current-state reads");
+      assert.ok(context.tools.some((tool) => tool.name === "save_trip_understanding"), "planning must still allow traveler corrections");
+      if (!naturalEntry) assert.match(context.systemPrompt, /当前可用规划上下文/);
+      else assert.ok(context.messages.some((message) => message.role === "toolResult" && JSON.stringify(message).includes("play_museum")), "ordinary planning must obtain current candidates before checking");
       return fauxAssistantMessage(fauxToolCall("plan_itinerary_trial", makePlan(1, "2026-10-15T10:20:00+08:00", true)), { stopReason: "toolUse" });
     },
-    fauxAssistantMessage("第一次核验发现冲突。"),
+    clarification ? fauxAssistantMessage(fauxToolCall("ask_travel_question", { question: "要保留上午的预约，还是把参观移到下午？", choices: ["保留上午预约", "改到下午"] }), { stopReason: "toolUse" }) : fauxAssistantMessage("第一次核验发现冲突。"),
     () => fauxAssistantMessage(fauxToolCall("plan_itinerary_trial", makePlan(2, "2026-10-15T11:00:00+08:00", false)), { stopReason: "toolUse" }),
-    fauxAssistantMessage("优化已经完成。"),
+    fauxAssistantMessage("这版可撤销试排已经核验，先寄存再参观。"),
   ]);
   const agent = new TravelConversationAgent({ travelService, conversationRepository: new FileConversationRepository({ rootDir: join(rootDir, "conversations") }), modelRuntime: { models, model: faux.getModel("fixture-parent") }, clock: () => new Date("2026-08-30T08:00:00.000Z") });
   const conversation = await agent.createConversation({ userId: "user_itinerary_planner", tripId: "trip_agent_plan" });
-  const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_itinerary_planner", text: "请直接 AI 优化当前路线，先寄存行李再去博物馆。" });
+  const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_itinerary_planner", text: naturalEntry ? "请按这趟上海旅行需求给我完整的每天行程。" : "请直接 AI 优化当前路线，先寄存行李再去博物馆。" });
 
+  if (clarification) {
+    assert.equal(turn.status, "needs_context");
+    assert.equal(turn.itineraryTrial.status, "needs_repair");
+    assert.equal(turn.agentTrace.planningCallCount, 1, "waiting for the user's answer must not trigger an unsolicited second repair");
+    assert.equal(providerCalls, 1);
+    assert.equal(turn.agentTrace.modelCallCount, 3);
+    assert.match(turn.conversation.messages.at(-1).text, /要保留上午的预约/);
+    return;
+  }
   assert.equal(turn.itineraryTrial.status, "trial_ready");
   assert.equal(turn.agentTrace.planningCallCount, 2);
   assert.equal(turn.agentTrace.planningProviderCallCount, 2);
-  assert.equal(turn.agentTrace.modelCallCount, 4, "initial tool call + response and one bounded repair tool call + response");
+  assert.equal(turn.agentTrace.modelCallCount, naturalEntry ? 5 : 4, "Parent reviews the successful trial and delivers its explanation after the bounded repair");
   assert.deepEqual(turn.activities.filter((activity) => activity.toolName === "plan_itinerary_trial").map((activity) => [activity.attempt, activity.status]), [[1, "needs_repair"], [2, "trial_ready"]]);
   assert.match(turn.conversation.messages.at(-1).text, /可撤销试排/);
   assert.equal(providerCalls, 2);
@@ -309,7 +375,7 @@ test("an incomplete first tool call cannot persist a one-person trip when an exp
   const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_party_count", text: "国庆和父母去大理五天" });
 
   assert.deepEqual(turn.activities.map(({ toolName, status }) => ({ toolName, status })), [
-    { toolName: "save_trip_understanding", status: "error" },
+    { toolName: "save_trip_understanding", status: "saved" },
     { toolName: "save_trip_understanding", status: "saved" },
   ]);
   const control = await agent.travelService.getTripControlView(turn.tripId);
@@ -430,7 +496,7 @@ test("fixture: one Parent Agent turn creates the scoped trip and stages one link
       assert.match(context.systemPrompt, /Skill research-trip version/);
       return fauxAssistantMessage(fauxToolCall("save_trip_understanding", { destination: "大理", dates: "2026-10-03 至 2026-10-07", durationDays: 5, origin: "广州", arrivalMode: "飞机", travelerCount: 3, partyProfile: "与父母同行", pace: "轻松", lodgingPreference: "交通方便", foodPreferences: ["本地菜"], language: "zh-CN" }), { stopReason: "toolUse" });
     },
-    fauxAssistantMessage(fauxToolCall("research_trip_options", { domains: ["stay"], question: "轻松、住得方便、少折返，并兼顾本地菜", criteria: { byDomain: { stay: { targetAreas: ["大理古城"], preferenceHints: ["少折返"] } } } }), { stopReason: "toolUse" }),
+    fauxAssistantMessage(fauxToolCall("research_trip_options", { domains: ["play", "food", "stay", "transport"], question: "轻松、住得方便、少折返，并兼顾本地菜", criteria: { byDomain: { stay: { targetAreas: ["大理古城"], preferenceHints: ["少折返"] } } } }), { stopReason: "toolUse" }),
     fauxAssistantMessage("已完成一次联动研究，方案画布里有吃、住、行、玩候选和来源，请先比较后确认。"),
   ]);
   const agent = new TravelConversationAgent({
@@ -443,7 +509,7 @@ test("fixture: one Parent Agent turn creates the scoped trip and stages one link
   const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_research", text: "10月3日从广州飞大理，和父母三人玩5天，轻松、住得方便、想吃本地菜，请给我完整方案。" });
 
   assert.equal(turn.status, "completed");
-  assert.deepEqual(turn.agentTrace.skills.map((skill) => skill.skillId), ["understand-trip", "research-trip"]);
+  assert.deepEqual(turn.agentTrace.skills.map((skill) => skill.skillId), ["research-trip", "plan-trip"], "after research the planning phase replaces the understanding Skill instead of stacking all three in one window");
   assert.deepEqual(turn.activities.map((activity) => activity.status), ["saved", "proposed"]);
   const plan = await travelService.getTripPlanView(turn.tripId);
   assert.equal(plan.pendingProposals.length, 1);
@@ -548,8 +614,42 @@ test("replaces model prose with an explicit no-result state when linked research
   const conversation = await agent.createConversation({ userId: "user_provider_blocked" });
   const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_provider_blocked", text: "10月3日从广州飞大理，和父母三人玩5天，请给我完整方案。" });
   assert.equal(turn.activities[1].status, "provider_unavailable");
+  assert.equal(turn.outcome.status, "partial", "finishing the Agent loop does not turn unavailable travel data into a completed plan");
+  assert.deepEqual(turn.outcome.missingDomains, ["play", "food", "stay", "transport"]);
   assert.match(turn.conversation.messages.at(-1).text, /无法连接实时地点或天气资料/);
   assert.doesNotMatch(turn.conversation.messages.at(-1).text, /未经工具核验的具体地点/);
+});
+
+test("missing route capability keeps candidates and ends with a service gap instead of an unanswerable question", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "travel-conversation-route-unavailable-"));
+  const tripStore = new TripStore({ rootDir: join(rootDir, "trips") });
+  const travelService = new TravelService({ store: tripStore, researchProvider: { ...linkedProviderFixture(), canPlanMobility: false }, clock: () => new Date("2026-08-26T12:00:00.000Z") });
+  const faux = fauxProvider({ provider: "fixture-pi", models: [{ id: "fixture-parent" }] });
+  const models = createModels(); models.setProvider(faux.provider);
+  faux.setResponses([
+    fauxAssistantMessage(fauxToolCall("save_trip_understanding", { destination: "上海", dates: "2026-08-27 至 2026-08-29", travelerCount: 1 }), { stopReason: "toolUse" }),
+    fauxAssistantMessage(fauxToolCall("research_trip_options", { domains: ["play", "food", "stay", "transport"], question: "查找候选并安排每天路线" }), { stopReason: "toolUse" }),
+    fauxAssistantMessage(fauxToolCall("get_trip_plan_view", {}), { stopReason: "toolUse" }),
+    fauxAssistantMessage(fauxToolCall("ask_travel_question", { question: "你要按哪一个基准排？" }), { stopReason: "toolUse" }),
+    fauxAssistantMessage("候选已保留，市内路线资料暂时不可用，无法核验衔接；继续补偏好无法恢复路线服务。"),
+  ]);
+  const agent = new TravelConversationAgent({ travelService, conversationRepository: new FileConversationRepository({ rootDir: join(rootDir, "conversations") }), modelRuntime: { models, model: faux.getModel("fixture-parent") } });
+  const conversation = await agent.createConversation({ userId: "user_route_unavailable" });
+  const turn = await agent.reply({ conversationId: conversation.conversationId, userId: "user_route_unavailable", text: "去上海三天，查找候选并安排每天路线" });
+  assert.equal(turn.status, "completed");
+  assert.equal(turn.outcome.status, "partial");
+  assert.equal(turn.outcome.planningStatus, "blocked");
+  assert.equal(turn.question, undefined);
+  assert.ok(turn.agentTrace.modelCallCount >= 4, "Parent receives the source gap and can explain retained work");
+  assert.equal(turn.agentTrace.planningCallCount, 0);
+  assert.match(turn.conversation.messages.at(-1).text, /市内路线资料暂时不可用/);
+  const savedPlan = await travelService.getTripPlanView(turn.tripId);
+  assert.equal(savedPlan.pendingProposals.length, 1);
+  faux.setResponses([fauxAssistantMessage("市内路线资料暂时不可用，候选保持原样。")]);
+  const continuation = await agent.reply({ conversationId: conversation.conversationId, userId: "user_route_unavailable", text: "请优化当前路线" });
+  assert.equal(continuation.agentTrace.planningCallCount, 0, "an unavailable route cannot trigger a fake successful trial");
+  assert.equal(continuation.outcome.status, "partial");
+  assert.deepEqual((await travelService.getTripPlanView(turn.tripId)).pendingProposals, savedPlan.pendingProposals);
 });
 
 test("a successful research retry wins over an earlier failure in the same Agent turn", async () => {

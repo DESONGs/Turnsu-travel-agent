@@ -1,4 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
+import { currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
+import { decisionHash, rankDecisionCandidates, TravelExecutionDeferred } from "../../travel-agent-pi-package/src/host/travel-decision-policy.ts";
+import { buildJudgmentSnapshot } from "../../travel-agent-pi-package/src/host/travel-judgment.ts";
+import { completeItineraryIssues, tripBusinessIssues, withTripFeasibility } from "../../travel-agent-pi-package/src/core/trip-feasibility.ts";
+import { withScheduledRides, selectRoute, selectedRoute } from "../../travel-agent-pi-package/src/core/journey-execution.ts";
+import { itinerarySelectionProposal, itineraryInputValidation } from "../../travel-agent-pi-package/src/core/itinerary-proposal.ts";
+import { ensureContinuousPlanning, projectAdoptedPlan, saveWorkingPlan, adoptWorkingPlan, discardWorkingPlan, stablePlanVisits, planMobilityProjection, planNeedsRecheck, planningHash, editSavedPlan, continuousPlanningContext } from "../../travel-agent-pi-package/src/core/continuous-planning.ts";
 import {
   acceptStagedTripPatch,
   applyMobilityObservation,
@@ -20,6 +27,7 @@ import {
   validateTripCoherence,
   assertSchema,
   ItineraryPlanSchema,
+  ItineraryEditSchema,
 } from "../../travel-agent-pi-package/src/core/index.ts";
 import { createTripRepository } from "../persistence/trip-repository.mjs";
 import { validateTravelMcpRequest } from "../../travel-agent-pi-package/src/mcp/index.ts";
@@ -41,6 +49,8 @@ function serviceError(code, details = {}) {
 
 function requireTrip(state, tripId) {
   if (!state) throw serviceError("trip_not_found", { tripId });
+  ensureContinuousPlanning(state);
+  projectAdoptedPlan(state);
   return state;
 }
 
@@ -219,6 +229,8 @@ function controlView(state, providerStatus = "provider_unavailable") {
     activeBranchId: state.activeBranchId,
     brief: state.brief,
     travelers: state.travelers,
+    nodes: state.nodes.filter(node => node.selected).map(({ nodeId, title, domain, selected, status, lock }) => ({ nodeId, title, domain, selected, status, lock })),
+    locks: state.locks,
     openDecisions: state.openDecisions.filter((decision) => decision.status === "open"),
     dirtySet: state.dirtySet,
     taskQueues: state.taskQueues,
@@ -342,6 +354,7 @@ function proposalView(proposal, sharedFeedback = []) {
     partial: proposal.partial === true,
     fixtureOnly: proposal.fixtureOnly === true,
     analysis: proposal.analysis ?? null,
+    comparison: proposal.comparison ?? null,
     domainStatuses: proposal.domainStatuses ?? null,
     stagedAt: proposal.stagedAt ?? null,
     itineraryPlan: proposal.itineraryPlan ?? null,
@@ -431,9 +444,16 @@ function weatherAwareCandidate(candidate, domain, weather) {
 
 function applySemanticAnalysis(providerResult, analysis) {
   const partial = providerResult.partial === true || (analysis && analysis.coverage !== "complete");
+  if (analysis?.judgment && analysis.judgment.mode === "auto") {
+    const judgments = analysis.judgment.judgments;
+    return { ...providerResult, partial, analysis, byDomain: Object.fromEntries(Object.entries(providerResult.byDomain ?? {}).map(([domain, candidates]) => [domain,
+      rankDecisionCandidates(candidates, judgments).map(candidate => ({ ...candidate, operability: { ...candidate.operability, decisionJudgment: judgments.find(item => item.candidateId === candidate.candidateId) ?? null } }))])) };
+  }
   if (!analysis?.lanes?.length) return { ...providerResult, partial, analysis: analysis ?? null };
   const recommended = new Set(analysis.lanes.flatMap((lane) => lane.recommendedCandidateIds ?? []));
   const rejected = new Set(analysis.lanes.flatMap((lane) => lane.rejectedCandidateIds ?? []));
+  const disputed = new Set([...recommended].filter(id => rejected.has(id)));
+  for (const id of disputed) { recommended.delete(id); rejected.delete(id); }
   const reasonsByCandidate = new Map();
   for (const lane of analysis.lanes) {
     for (const finding of lane.findings ?? []) {
@@ -451,6 +471,7 @@ function applySemanticAnalysis(providerResult, analysis) {
       semanticAnalysis: {
         recommended: recommended.has(candidate.candidateId),
         rejected: rejected.has(candidate.candidateId),
+        disputed: disputed.has(candidate.candidateId),
         reasons: reasonsByCandidate.get(candidate.candidateId) ?? [],
       },
     },
@@ -612,7 +633,8 @@ function stageUnaffectedResearchProposal(state, existing, requestedDomains, crit
   };
   delete proposal.stagedAt;
   const staged = stageTripPatch(state, proposal, { clock });
-  return staged.status === "proposed" ? staged.state : state;
+  if (staged.status !== "proposed") throw serviceError("research_preservation_failed", { reason: staged.validation?.reason, originalProposalId: existing.proposalId, requestedDomains });
+  return staged.state;
 }
 
 function candidateSourceLabel(candidate, fallback = "旅行资料来源") {
@@ -794,7 +816,7 @@ function stayTargetAreas(state) {
 }
 
 function mobilityTotals(mobility) {
-  const recommended = (mobility?.legs ?? []).map((leg) => leg.alternatives?.find((alternative) => alternative.mode === leg.recommendedMode)).filter(Boolean);
+  const recommended = (mobility?.legs ?? []).map((leg) => selectedRoute(leg)).filter(Boolean);
   return {
     legCount: recommended.length,
     totalMinutes: recommended.reduce((sum, item) => sum + Number(item.totalMinutes ?? 0), 0),
@@ -829,14 +851,15 @@ function previewNodeView(node, mobility = null) {
   };
 }
 
-function mobilityWithItinerary(observation, draft) {
+function mobilityWithItinerary(observation, draft, options = {}) {
+  observation = withScheduledRides(observation, draft.itinerary, options.selectedNodes ?? []);
   const base = normalizeTripMobility({
     ...observation,
     itinerary: draft.itinerary,
     feasibility: draft.feasibility,
     coverage: { ...(observation?.coverage ?? {}), unscheduled: !draft.itinerary },
   });
-  const finalized = finalizeItinerarySchedule(draft, base, base.checkedAt);
+  const finalized = finalizeItinerarySchedule(draft, base, base.checkedAt, options);
   return normalizeTripMobility({
     ...base,
     itinerary: finalized.itinerary,
@@ -850,14 +873,14 @@ function stableHash(value) {
 }
 
 function itineraryPlanningNodes(state) {
-  const pending = state.pendingProposals.flatMap((proposal) => (proposal.operations ?? [])
+  const pending = state.pendingProposals.filter(proposal => !proposal.itineraryPlan).flatMap((proposal) => (proposal.operations ?? [])
     .filter((operation) => operation.kind === "add_candidate" && operation.node)
     .map((operation) => ({ ...operation.node, nodeId: operation.nodeId, selected: false })));
   return [...new Map([...state.nodes, ...pending].map((node) => [node.nodeId, node])).values()];
 }
 
-function planningStateFingerprint(state) {
-  return stableHash({
+function planningStateFingerprint(state, ownRunId = null) {
+  return decisionHash({
     tripId: state.tripId,
     revision: state.revision,
     brief: {
@@ -872,8 +895,8 @@ function planningStateFingerprint(state) {
       pace: state.brief?.pace ?? null,
     },
     travelers: state.travelers.map((traveler) => ({ travelerId: traveler.travelerId, version: traveler.version ?? null, hardConstraints: traveler.hardConstraints ?? [], careNeeds: traveler.careNeeds ?? {} })),
-    nodes: itineraryPlanningNodes(state).map((node) => ({ nodeId: node.nodeId, version: node.version ?? 0, selected: node.selected === true, domain: node.domain, lock: node.lock ?? null, time: node.time ?? null, sourceRefs: node.sourceRefs ?? [] })),
-    proposals: state.pendingProposals.map((proposal) => ({ proposalId: proposal.proposalId, baseRevision: proposal.baseRevision, operationNodeIds: (proposal.operations ?? []).map((operation) => operation.nodeId) })),
+    nodes: itineraryPlanningNodes(state).map((node) => ({ nodeId: node.nodeId, version: node.version ?? 0, selected: node.selected === true, domain: node.domain, lock: node.lock ?? null, time: node.time ?? null, sourceRefs: node.sourceRefs ?? [], price: node.price ?? node.cost, operability: node.operability })),
+    proposals: state.pendingProposals.filter(proposal => !proposal.itineraryPlan).map((proposal) => ({ proposalId: proposal.proposalId, baseRevision: proposal.baseRevision, operationNodeIds: (proposal.operations ?? []).map((operation) => operation.nodeId) })),
   });
 }
 
@@ -887,7 +910,7 @@ function planSelections(state, plan) {
   for (const nodeId of planNodeIds(plan)) {
     const node = byNodeId.get(nodeId);
     if (!node || node.selected === true || node.operability?.mobilityRole === "user_confirmed_arrival") continue;
-    if (selections[node.domain] && selections[node.domain] !== nodeId) throw serviceError("itinerary_plan_multiple_candidates_per_domain", { domain: node.domain });
+    if (selections[node.domain] && selections[node.domain] !== nodeId) return null;
     selections[node.domain] = nodeId;
   }
   return selections;
@@ -895,10 +918,14 @@ function planSelections(state, plan) {
 
 function routeModesFromPlan(plan, itinerary) {
   const byOccurrence = new Map();
+  const matchedStops = new Set();
   for (const day of plan.days) {
     for (const stop of day.stops) {
-      const itineraryStop = itinerary?.stops?.find((item) => item.nodeId === stop.nodeId && item.dayIndex === day.dayIndex && item.role === stop.role);
-      if (itineraryStop && stop.preferredModes.length) byOccurrence.set(itineraryStop.stopId, stop.preferredModes);
+      const itineraryStop = itinerary?.stops?.find((item) => item.nodeId === stop.nodeId && item.dayIndex === day.dayIndex && item.role === stop.role && !matchedStops.has(item.stopId));
+      if (itineraryStop) {
+        matchedStops.add(itineraryStop.stopId);
+        if (stop.alternativeId || stop.preferredModes.length) byOccurrence.set(itineraryStop.stopId, stop.alternativeId ? [stop.alternativeId] : stop.preferredModes);
+      }
     }
   }
   return byOccurrence;
@@ -909,8 +936,8 @@ function mobilityWithRouteModes(mobility, routeModes = {}, preferredByDestinatio
   next.legs = (next.legs ?? []).map((leg) => {
     const requested = routeModes?.[leg.legId];
     const preferences = requested ? [requested] : preferredByDestination.get(leg.destination?.stopId) ?? [];
-    const selected = preferences.find((mode) => leg.alternatives?.some((alternative) => alternative.mode === mode));
-    return selected ? { ...leg, recommendedMode: selected } : leg;
+    const selected = preferences.find((choice) => leg.alternatives?.some((alternative) => alternative.alternativeId === choice || alternative.mode === choice));
+    return selectRoute(leg, selected);
   });
   return next;
 }
@@ -946,6 +973,32 @@ export class TravelService {
 
   providerStatus() {
     return this.researchProvider?.status === "configured" ? "configured" : "provider_unavailable";
+  }
+
+  itineraryPlanningAvailability() {
+    const available = this.researchProvider?.status === "configured"
+      && this.researchProvider.canPlanMobility !== false
+      && typeof this.researchProvider.planMobility === "function";
+    return available
+      ? { status: "available" }
+      : { status: "provider_unavailable", code: "route_provider_unavailable", message: "市内路线资料暂时不可用，无法核验每天的交通、步行量和衔接时间。已有候选可以继续比较；资料服务恢复后可从当前旅行继续，无需为此重新填写旅行要求。" };
+  }
+
+  async readMobilityPreview(previewId) {
+    const now = new Date(this.clock?.() ?? Date.now()).getTime();
+    if (this.store.getMobilityPreview) return this.store.getMobilityPreview(previewId, now);
+    const cached = this.mobilityPreviewCache.get(previewId);
+    return cached?.expiresAt > now ? cached : null;
+  }
+
+  async saveMobilityPreview(previewId, value) {
+    const now = new Date(this.clock?.() ?? Date.now()).getTime();
+    const sourceExpiry = new Date(value.preview?.mobility?.freshUntil ?? now + 900_000).getTime();
+    const expiresAt = Math.min(value.expiresAt ?? now + 900_000, Number.isFinite(sourceExpiry) ? sourceExpiry : now);
+    const record = { ...value, expiresAt };
+    if (this.store.saveMobilityPreview) await this.store.saveMobilityPreview(previewId, record, expiresAt, now);
+    this.mobilityPreviewCache.set(previewId, record);
+    while (this.mobilityPreviewCache.size > 20) this.mobilityPreviewCache.delete(this.mobilityPreviewCache.keys().next().value);
   }
 
   async createTrip(input = {}) {
@@ -1076,32 +1129,71 @@ export class TravelService {
     return controlView(requireTrip(await this.store.get(tripId), tripId), this.providerStatus());
   }
 
+  async getPlanningContext(tripId) {
+    const state = requireTrip(await this.store.get(tripId), tripId);
+    const context = continuousPlanningContext(state);
+    return { ...controlView(state, this.providerStatus()), ...context };
+  }
+
   async getTripPlanView(tripId) {
     validateRequest("get_trip_plan_view", { tripId }, "mcp_client");
     const state = requireTrip(await this.store.get(tripId), tripId);
+    const at = new Date(this.clock?.() ?? Date.now()).toISOString();
+    projectAdoptedPlan(state, at);
     const sourceRefs = placeSourceRefs(state);
     const sharedFeedback = typeof this.store.listSharedPlaceFeedback === "function"
       ? await this.store.listSharedPlaceFeedback(sourceRefs)
       : [];
     const view = planView(state, { mapPreviewAvailable: this.researchProvider?.canRenderMap === true, sharedFeedback, clock: this.clock });
+    view.planningAvailability = this.itineraryPlanningAvailability();
     const planningProposal = state.pendingProposals.find((proposal) => proposal.itineraryPreviewId && proposal.itineraryPlan) ?? null;
-    const cached = planningProposal ? this.mobilityPreviewCache.get(planningProposal.itineraryPreviewId) : null;
-    if (cached?.tripId === state.tripId && cached.revision === state.revision) {
+    const cached = planningProposal ? await this.readMobilityPreview(planningProposal.itineraryPreviewId) : null;
+    if (cached?.tripId === state.tripId && cached.revision === state.revision && (!cached.planningFingerprint || cached.planningFingerprint === planningStateFingerprint(state))) {
       view.itineraryTrial = {
         ...cached.preview,
         schemaVersion: "itinerary-planning-trial-v1",
-        status: "trial_ready",
+        status: cached.trialStatus ?? (cached.preview.feasibility?.canConfirm ? "trial_ready" : "blocked"),
+        issues: cached.preview.feasibility?.issues ?? [],
         runId: planningProposal.planningRunId,
         attempt: planningProposal.planningAttempt,
         proposalId: planningProposal.proposalId,
         baseRevision: state.revision,
         selections: cached.selectionValues ?? {},
-        accept: { proposalId: planningProposal.proposalId, selections: cached.selectionValues ?? {}, partial: Object.keys(cached.selectionValues ?? {}).length > 0, previewId: cached.preview.previewId, baseRevision: state.revision },
+        accept: cached.preview.feasibility?.canConfirm ? { proposalId: planningProposal.proposalId, selections: cached.selectionValues ?? {}, partial: Object.keys(cached.selectionValues ?? {}).length > 0, previewId: cached.preview.previewId, baseRevision: state.revision } : null,
         committed: false,
+      };
+    } else if (cached?.tripId === state.tripId && planningProposal) {
+      // Changed evidence invalidates adoption, not the saved itinerary artifact.
+      // Keep the timeline for comparison, but never present old route readings
+      // or an old accept receipt as valid for the new facts.
+      const issues = [{ code: "trial_dependencies_changed", severity: "blocking", resolution: "plan_change", message: "草案已保留，但旅行条件或候选资料已变化，需要重新核验后才能采用。", stopIds: [], dayIndex: null, allowedRepairDirections: ["fetch_evidence"] }];
+      const feasibility = { schemaVersion: "trip-feasibility-v1", status: "needs_context", canConfirm: false, primaryBlocker: issues[0].message, issues, checkedAt: null };
+      view.itineraryTrial = {
+        ...cached.preview, schemaVersion: "itinerary-planning-trial-v1", status: "needs_recheck",
+        runId: planningProposal.planningRunId, attempt: planningProposal.planningAttempt,
+        proposalId: planningProposal.proposalId, baseRevision: state.revision, issues, feasibility,
+        mobility: { ...cached.preview.mobility, status: "needs_context", checkedAt: null, freshUntil: null, legs: [], feasibility },
+        impact: null, checkedAt: null, accept: null, committed: false,
       };
     } else if (planningProposal) {
       view.itineraryTrial = { schemaVersion: "itinerary-planning-trial-v1", status: "needs_recheck", runId: planningProposal.planningRunId, attempt: planningProposal.planningAttempt, proposalId: planningProposal.proposalId, baseRevision: state.revision, committed: false };
     }
+    const draft = state.planning?.draft;
+    if (draft && (!view.itineraryTrial?.itinerary || planNeedsRecheck(draft, at))) {
+      const mobility = planMobilityProjection(draft, at);
+      view.itineraryTrial = {
+        schemaVersion: "itinerary-planning-trial-v1", status: "needs_recheck", tripId: state.tripId,
+        planId: draft.planId, planVersion: draft.version, runId: draft.plan?.runId, attempt: draft.plan?.attempt,
+        proposalId: draft.proposalId, previewId: draft.previewId, baseRevision: state.revision, selections: {},
+        itinerary: draft.itinerary, mobility, feasibility: mobility.feasibility, issues: mobility.feasibility?.issues ?? [],
+        planSummary: draft.plan ? { objective: draft.plan.objective, priorities: draft.plan.priorities, assumptions: draft.plan.assumptions, needsContext: draft.plan.needsContext } : null,
+        selectedNodes: draft.candidates.map(node => previewNodeView(node)),
+        impact: draft.lastEstimate == null ? null : { estimatedDecisionCostCny: draft.lastEstimate, estimateStatus: "previous_estimate" },
+        accept: null, committed: false,
+      };
+    }
+    view.planning = continuousPlanningContext(state);
+    view.brief = state.brief;
     return view;
   }
 
@@ -1161,7 +1253,7 @@ export class TravelService {
     })).filter((point) => Number.isFinite(point.coordinates?.longitude) && Number.isFinite(point.coordinates?.latitude)).slice(0, 12);
     if (!points.length) throw serviceError("trip_map_points_unavailable");
     const paths = (state.environment?.mobility?.legs ?? []).map((leg) => {
-      const recommended = leg.alternatives?.find((alternative) => alternative.mode === leg.recommendedMode);
+      const recommended = selectedRoute(leg);
       return recommended?.polyline ?? [];
     }).filter((path) => path.length >= 2);
     return this.researchProvider.renderStaticMap({ points, paths });
@@ -1173,12 +1265,16 @@ export class TravelService {
       return { schemaVersion: "trip-mobility-preview-v1", status: "needs_refresh", tripId: state.tripId, revision: state.revision, reason: "trip_revision_changed", fabricatedResults: false };
     }
     if (input.previewId && input.routeModes && typeof input.routeModes === "object") {
-      const cached = this.mobilityPreviewCache.get(input.previewId);
+      const cached = await this.readMobilityPreview(input.previewId);
       if (!cached || cached.tripId !== state.tripId || cached.revision !== state.revision) {
         return { schemaVersion: "trip-mobility-preview-v1", status: "needs_refresh", tripId: state.tripId, revision: state.revision, reason: "itinerary_preview_stale", fabricatedResults: false };
       }
       const routed = mobilityWithRouteModes(cached.preview.mobility, input.routeModes);
-      const mobility = mobilityWithItinerary(routed, cached.sourceDraft);
+      const mobility = withTripFeasibility(state, cached.preview.selectedNodes.map(node => ({ ...node, selected: true })), mobilityWithItinerary(routed, cached.sourceDraft, { selectedNodes: cached.preview.selectedNodes }));
+      if (cached.requireCompletePlan && cached.itineraryPlan) {
+        const issues = completeItineraryIssues(cached.itineraryPlan, state.brief, cached.planningUserRequest ?? "");
+        if (issues.length) mobility.feasibility = { ...mobility.feasibility, canConfirm: false, status: "blocked", primaryBlocker: issues[0].message, issues: [...issues, ...mobility.feasibility.issues] };
+      }
       const totals = mobilityTotals(mobility);
       const baselineMobility = state.environment?.mobility;
       const baselineAvailable = baselineMobility?.status === "completed" && baselineMobility?.feasibility?.canConfirm === true;
@@ -1203,13 +1299,13 @@ export class TravelService {
           } : null,
         },
       };
-      this.mobilityPreviewCache.set(next.previewId, { ...cached, preview: next, routeModes: structuredClone(input.routeModes) });
+      await this.saveMobilityPreview(next.previewId, { ...cached, preview: next, routeModes: structuredClone(input.routeModes) });
       return next;
     }
     const itineraryPlan = input.itineraryPlan ? assertSchema(ItineraryPlanSchema, input.itineraryPlan, "invalid_itinerary_plan") : null;
     const knownNodes = itineraryPlanningNodes(state);
     const selections = itineraryPlan
-      ? planSelections(state, itineraryPlan)
+      ? (planSelections(state, itineraryPlan) ?? {})
       : input.selections && typeof input.selections === "object" && !Array.isArray(input.selections) ? input.selections : {};
     const chosen = [];
     if (itineraryPlan) {
@@ -1240,7 +1336,7 @@ export class TravelService {
     let observation;
     if (selectedNodes.length < 2) {
       observation = { schemaVersion: "trip-mobility-v1", status: "needs_context", destination: state.brief?.destination ?? null, source: "amap_routes_v5", reason: "select_arrival_and_at_least_one_place", fabricatedResults: false };
-    } else if (!this.researchProvider || typeof this.researchProvider.planMobility !== "function") {
+    } else if (!this.researchProvider || this.researchProvider.canPlanMobility === false || typeof this.researchProvider.planMobility !== "function") {
       observation = { schemaVersion: "trip-mobility-v1", status: "provider_unavailable", destination: state.brief?.destination ?? null, source: "amap_routes_v5", reason: "amap_routes_provider_not_configured", fabricatedResults: false };
     } else {
       try {
@@ -1250,7 +1346,7 @@ export class TravelService {
       }
     }
     const preferredModes = itineraryPlan && itineraryDraft.itinerary ? routeModesFromPlan(itineraryPlan, itineraryDraft.itinerary) : new Map();
-    const mobility = mobilityWithItinerary(mobilityWithRouteModes(observation, {}, preferredModes), itineraryDraft);
+    const mobility = withTripFeasibility(state, selectedNodes, mobilityWithItinerary(mobilityWithRouteModes(observation, {}, preferredModes), itineraryDraft, { selectedNodes }));
     const itineraryOrder = new Map((mobility.itinerary?.stops ?? []).map((stop, index) => [stop.nodeId, index]));
     const nodesBySchedule = [...selectedNodes].sort((left, right) => {
       const order = (itineraryOrder.get(left.nodeId) ?? Number.MAX_SAFE_INTEGER) - (itineraryOrder.get(right.nodeId) ?? Number.MAX_SAFE_INTEGER);
@@ -1263,7 +1359,7 @@ export class TravelService {
     const baselineMobility = state.environment?.mobility;
     const baselineAvailable = baselineMobility?.status === "completed" && baselineMobility?.feasibility?.canConfirm === true;
     const baseline = baselineAvailable ? mobilityTotals(baselineMobility) : null;
-    const previewBudget = estimateTripBudget({ ...state, nodes: selectedNodes });
+    const previewBudget = estimateTripBudget({ ...state, nodes: selectedNodes, pendingProposals: [], environment: { ...state.environment, mobility } });
     const baselineBudget = estimateTripBudget(state);
     const weather = state.environment?.weather ?? null;
     const previewResult = {
@@ -1320,7 +1416,7 @@ export class TravelService {
       ],
       fabricatedResults: false,
     };
-    this.mobilityPreviewCache.set(previewResult.previewId, {
+    await this.saveMobilityPreview(previewResult.previewId, {
       tripId: state.tripId,
       revision: state.revision,
       selections: JSON.stringify(Object.entries(selections).sort(([left], [right]) => left.localeCompare(right))),
@@ -1330,73 +1426,91 @@ export class TravelService {
       preview: previewResult,
       routeModes: {},
     });
-    while (this.mobilityPreviewCache.size > 20) this.mobilityPreviewCache.delete(this.mobilityPreviewCache.keys().next().value);
     return previewResult;
   }
 
+  // Keep work visible even when it is not adoptable. The same proposal and
+  // preview repositories own both partial and checked drafts; no second state.
+  async stageItineraryTrial(state, plan, preview, { status, requireCompletePlan, userRequest, inputFingerprint, providerCallCount }) {
+    // An itinerary's full visit set is the selection. The comparison dictionary
+    // cannot express two meals and must not deselect a retained lunch on adopt.
+    const selections = {};
+    const proposalId = planningProposalId(plan.runId);
+    const proposal = { ...itinerarySelectionProposal(state, plan, proposalId, { replaceSelected: requireCompletePlan }), itineraryPreviewId: preview.previewId, requireCompletePlan, planningUserRequest: userRequest };
+    const withoutPrevious = { ...state, pendingProposals: state.pendingProposals.filter(item => !item.itineraryPlan) };
+    const staged = stageTripPatch(withoutPrevious, proposal, { clock: this.clock });
+    if (staged.status !== "proposed") throw serviceError(staged.validation?.reason ?? "itinerary_trial_proposal_rejected");
+    const pendingState = staged.state;
+    saveWorkingPlan(pendingState, { plan, itinerary: preview.itinerary, mobility: preview.mobility, proposalId, previewId: preview.previewId,
+      requireCompletePlan, userRequest, estimatedCost: preview.impact?.estimatedDecisionCostCny }, new Date(this.clock?.() ?? Date.now()).toISOString());
+    const savedState = { activeDraftCount: 1, replacesEarlierTrial: true, adoptedNodeCount: state.nodes.filter(node => node.selected).length, adoptedTimelineAvailable: !!state.environment?.mobility?.itinerary, adoptedRouteStatus: state.environment?.mobility?.status ?? "not_checked" };
+    const cached = await this.readMobilityPreview(preview.previewId);
+    if (cached) await this.saveMobilityPreview(preview.previewId, { ...cached, selections: "[]", selectionValues: selections, preview: { ...preview, savedState }, proposalId, planningRunId: plan.runId, trialStatus: status, requireCompletePlan, planningUserRequest: userRequest, planningFingerprint: planningStateFingerprint(state) });
+    const payload = {
+      ...preview, schemaVersion: "itinerary-planning-trial-v1", status, operationId: `${plan.runId}:${plan.attempt}`,
+      runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, attempt: plan.attempt,
+      proposalId, selections, savedState, issues: preview.feasibility?.issues ?? [],
+      accept: status === "trial_ready" ? { proposalId, selections, partial: false, previewId: preview.previewId, baseRevision: state.revision } : null,
+      committed: false, checkedAt: preview.mobility?.checkedAt ?? null, providerCallCount,
+    };
+    pendingState.changeJournal.push({ event: "itinerary_trial_saved", operationId: payload.operationId, inputFingerprint,
+      dependencyFingerprint: planningStateFingerprint(pendingState), result: payload });
+    // Artifact and business receipt are one optimistic/fenced write. The
+    // disposable preview cache is never the only copy of the user's draft.
+    await this.store.save(pendingState, { expectedStorageVersion: state.storageVersion });
+    return payload;
+  }
+
   async planItineraryTrial(input = {}) {
+    input.signal?.throwIfAborted();
     if (!this.planningRunCoordinator) throw serviceError("itinerary_planning_runtime_unavailable");
-    const plan = assertSchema(ItineraryPlanSchema, input.plan, "invalid_itinerary_plan");
-    const state = requireTrip(await this.store.get(plan.tripId), plan.tripId);
-    const operationId = `${plan.runId}:${plan.attempt}`;
-    const planFingerprint = stableHash(plan);
+    const submitted = assertSchema(input.plan?.schemaVersion === "itinerary-edit-v1" ? ItineraryEditSchema : ItineraryPlanSchema, input.plan, "invalid_itinerary_plan");
+    const state = requireTrip(await this.store.get(submitted.tripId), submitted.tripId);
+    const operationId = `${submitted.runId}:${submitted.attempt}`;
+    const planFingerprint = planningHash(submitted);
+    const savedReceipt = state.changeJournal.find(entry => entry.event === "itinerary_trial_saved" && entry.operationId === operationId);
+    if (savedReceipt && savedReceipt.dependencyFingerprint === planningStateFingerprint(state)) {
+      if (savedReceipt.inputFingerprint !== planFingerprint) throw serviceError("itinerary_planning_attempt_identity_conflict");
+      return structuredClone(savedReceipt.result);
+    }
+    const resolved = submitted.schemaVersion === "itinerary-edit-v1" ? editSavedPlan(state, submitted) : submitted;
+    const plan = stablePlanVisits(resolved, state.planning?.draft ?? state.planning?.adopted);
+    const requireCompletePlan = input.requireCompletePlan === true || plan.scope === "complete_trip";
     if (plan.tripId !== input.tripId || plan.baseRevision !== state.revision) {
       return { schemaVersion: "itinerary-planning-trial-v1", status: "stale_discarded", operationId, runId: plan.runId, tripId: state.tripId, baseRevision: plan.baseRevision, currentRevision: state.revision, attempt: plan.attempt, committed: false };
     }
-    const criteriaFingerprint = planningStateFingerprint(state);
-    const existingRun = this.planningRunCoordinator.get(plan.runId);
-    const existingAttempt = existingRun?.lanes?.get?.(`itinerary_plan:${plan.attempt}`);
-    if (existingAttempt?.completedAt) {
-      if (existingAttempt.result?.planFingerprint !== planFingerprint) throw serviceError("itinerary_planning_attempt_identity_conflict", { runId: plan.runId, attempt: plan.attempt });
-      return existingAttempt.result.payload;
-    }
+    const availability = this.itineraryPlanningAvailability();
+    const criteriaFingerprint = planningStateFingerprint(state, plan.runId);
+    const inputValidation = itineraryInputValidation(state, plan, itineraryPlanningNodes(state));
+    if (inputValidation.issues.length) throw serviceError("invalid_itinerary_plan_references", { ...inputValidation, attempt: plan.attempt, instruction: "Correct the arguments and retry the same attempt. No route call or business repair was consumed. Keep the user constraints unchanged." });
+    const coordinatorId = `${plan.runId}:${plan.attempt}:${criteriaFingerprint.slice(0, 12)}`;
     const run = this.planningRunCoordinator.begin({
-      runId: plan.runId,
+      runId: coordinatorId,
       tripId: state.tripId,
       baseRevision: state.revision,
       criteriaFingerprint,
       requiredLanes: ["itinerary_plan"],
+      scopeFingerprint: decisionHash({ brief: state.brief, travelers: state.travelers, nodes: state.nodes }),
       deadlineAt: new Date(Date.now() + 90_000).toISOString(),
     });
-    if (!this.planningRunCoordinator.isCurrent({ runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, criteriaFingerprint })) {
+    if (!this.planningRunCoordinator.isCurrent({ runId: coordinatorId, tripId: state.tripId, baseRevision: state.revision, criteriaFingerprint })) {
       return { schemaVersion: "itinerary-planning-trial-v1", status: "stale_discarded", operationId, runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, attempt: plan.attempt, committed: false };
     }
     const startedAt = new Date(this.clock?.() ?? Date.now()).toISOString();
-    this.planningRunCoordinator.recordLaneStarted(plan.runId, { lane: "itinerary_plan", attempt: plan.attempt, queuedAt: startedAt, startedAt });
+    this.planningRunCoordinator.recordLaneStarted(coordinatorId, { lane: "itinerary_plan", attempt: plan.attempt, queuedAt: startedAt, startedAt });
     let payload;
     let terminal = false;
     try {
-      const nodes = itineraryPlanningNodes(state);
-      const byNodeId = new Map(nodes.map((node) => [node.nodeId, node]));
-      const plannedNodeIds = planNodeIds(plan);
-      const unknownNodeIds = plannedNodeIds.filter((nodeId) => !byNodeId.has(nodeId));
-      const allowedEvidence = candidateEvidenceRefs(plannedNodeIds.map((nodeId) => byNodeId.get(nodeId)).filter(Boolean));
-      const invalidEvidenceRefs = plan.evidenceRefs.filter((ref) => !allowedEvidence.has(ref));
-      const invalidLockedNodeIds = plan.lockedNodeIds.filter((nodeId) => {
-        const node = state.nodes.find((item) => item.nodeId === nodeId);
-        return !node || (node.selected !== true && !node.lock);
-      });
-      const anchorConflicts = plan.fixedAnchors.flatMap((anchor) => {
-        const node = byNodeId.get(anchor.nodeId);
-        if (!node) return [{ anchor, actual: null }];
-        const actual = anchor.kind === "arrival"
-          ? node.operability?.arrivalAt ?? node.operability?.arrivalRouteAnchor?.time ?? node.operability?.planningWindow?.endAt ?? null
-          : node.operability?.planningWindow?.startAt ?? node.time ?? null;
-        return actual && new Date(actual).getTime() === new Date(anchor.startAt).getTime() ? [] : [{ anchor, actual }];
-      });
-      if (unknownNodeIds.length || invalidEvidenceRefs.length || invalidLockedNodeIds.length || anchorConflicts.length) {
-        const issues = [
-          ...(unknownNodeIds.length ? [{ code: "plan_node_not_found", severity: "blocking", message: "计划引用了当前候选中不存在的地点。", stopIds: unknownNodeIds.slice(0, 8), dayIndex: null, allowedRepairDirections: ["replace_candidate"] }] : []),
-          ...(invalidEvidenceRefs.length ? [{ code: "plan_evidence_not_allowed", severity: "blocking", message: "计划引用了不属于当前候选的资料。", stopIds: [], dayIndex: null, allowedRepairDirections: ["request_context"] }] : []),
-          ...(invalidLockedNodeIds.length ? [{ code: "plan_lock_not_authoritative", severity: "blocking", message: "计划把尚未确认的地点当成了锁定安排。", stopIds: invalidLockedNodeIds.slice(0, 8), dayIndex: null, allowedRepairDirections: ["reorder_flexible_stop"] }] : []),
-          ...(anchorConflicts.length ? [{ code: "fixed_anchor_fact_mismatch", severity: "blocking", message: "计划改变了已确认的抵达或预约时间。", stopIds: anchorConflicts.map(({ anchor }) => anchor.nodeId).slice(0, 8), dayIndex: null, observed: { requestedStartAt: anchorConflicts[0]?.anchor.startAt ?? null, earliestStartAt: anchorConflicts[0]?.actual ?? null }, allowedRepairDirections: ["reorder_flexible_stop", "move_to_next_day"] }] : []),
-        ];
-        payload = { schemaVersion: "itinerary-planning-trial-v1", status: plan.attempt === 1 ? "needs_repair" : "blocked", operationId, runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, attempt: plan.attempt, issues, committed: false, checkedAt: null };
-        terminal = plan.attempt === 2;
-      } else {
+      const completenessIssues = requireCompletePlan ? completeItineraryIssues(plan, state.brief, input.userRequest) : [];
+      {
         const combinedSignal = input.signal ? AbortSignal.any([run.abortController.signal, input.signal]) : run.abortController.signal;
         let preview = await this.previewTripMobility({ tripId: state.tripId, baseRevision: state.revision, itineraryPlan: plan, signal: combinedSignal });
-        const baselinePreview = input.baselinePreviewId ? this.mobilityPreviewCache.get(input.baselinePreviewId) : null;
+        combinedSignal.throwIfAborted();
+        const checkIssues = [...completenessIssues, ...(availability.status === "available" ? [] : [{ code: availability.code, severity: "blocking", message: availability.message, stopIds: [], dayIndex: null, allowedRepairDirections: [] }]), ...(preview.feasibility?.issues ?? [])];
+        const firstBlocker = checkIssues.find(issue => issue.severity === "blocking");
+        preview.feasibility = { ...preview.feasibility, issues: checkIssues, ...(firstBlocker ? { canConfirm: false, status: "blocked", primaryBlocker: firstBlocker.message } : {}) };
+        preview.mobility = { ...preview.mobility, feasibility: preview.feasibility };
+        const baselinePreview = input.baselinePreviewId ? await this.readMobilityPreview(input.baselinePreviewId) : null;
         if (baselinePreview?.tripId === state.tripId && baselinePreview.revision === state.revision && baselinePreview.preview?.mobility) {
           const baselineRoute = mobilityTotals(baselinePreview.preview.mobility);
           const route = mobilityTotals(preview.mobility);
@@ -1413,115 +1527,38 @@ export class TravelService {
               },
             },
           };
-          const cachedPlanned = this.mobilityPreviewCache.get(preview.previewId);
-          if (cachedPlanned) this.mobilityPreviewCache.set(preview.previewId, { ...cachedPlanned, preview });
+          const cachedPlanned = await this.readMobilityPreview(preview.previewId);
+          if (cachedPlanned) await this.saveMobilityPreview(preview.previewId, { ...cachedPlanned, preview });
         }
         const latest = requireTrip(await this.store.get(state.tripId), state.tripId);
-        if (!this.planningRunCoordinator.isCurrent({ runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, criteriaFingerprint })
+        if (!this.planningRunCoordinator.isCurrent({ runId: coordinatorId, tripId: state.tripId, baseRevision: state.revision, criteriaFingerprint })
           || latest.revision !== state.revision
-          || planningStateFingerprint(latest) !== criteriaFingerprint) {
-          this.planningRunCoordinator.markStale(plan.runId, "stale_discarded");
+          || planningStateFingerprint(latest, plan.runId) !== criteriaFingerprint) {
+          this.planningRunCoordinator.markStale(coordinatorId, "stale_discarded");
           payload = { schemaVersion: "itinerary-planning-trial-v1", status: "stale_discarded", operationId, runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, currentRevision: latest.revision, attempt: plan.attempt, committed: false };
           payload.providerCallCount = 1;
           terminal = true;
-        } else if (preview.feasibility?.canConfirm !== true) {
-          const issues = preview.feasibility?.issues ?? [];
-          const repairable = issues.some((issue) => (issue.allowedRepairDirections ?? []).length > 0);
-          payload = {
-            schemaVersion: "itinerary-planning-trial-v1",
-            status: plan.attempt === 1 && repairable ? "needs_repair" : preview.feasibility?.status === "needs_context" ? "needs_context" : "blocked",
-            operationId,
-            runId: plan.runId,
-            tripId: state.tripId,
-            baseRevision: state.revision,
-            attempt: plan.attempt,
-            itinerary: preview.itinerary,
-            mobility: preview.mobility,
-            feasibility: preview.feasibility,
-            issues,
-            committed: false,
-            checkedAt: preview.mobility?.checkedAt ?? null,
-            providerCallCount: 1,
-          };
-          terminal = plan.attempt === 2 || !repairable;
         } else {
-          const selections = planSelections(latest, plan);
-          const carrier = planningProposalCarrier(latest, plan, selections);
-          let proposalId;
-          let pendingState;
-          if (carrier) {
-            proposalId = carrier.proposalId;
-            pendingState = structuredClone(latest);
-            pendingState.pendingProposals = pendingState.pendingProposals.map((proposal) => proposal.proposalId === carrier.proposalId ? {
-              ...proposal,
-              readSet: [...new Map([
-                ...(proposal.readSet ?? []),
-                ...plannedNodeIds.flatMap((nodeId) => {
-                  const node = latest.nodes.find((item) => item.nodeId === nodeId);
-                  return node ? [{ nodeId, version: node.version }] : [];
-                }),
-              ].map((entry) => [entry.nodeId, entry])).values()],
-              itineraryPlan: structuredClone(plan),
-              itineraryPreviewId: preview.previewId,
-              planningRunId: plan.runId,
-              planningAttempt: plan.attempt,
-            } : proposal);
-          } else {
-            proposalId = planningProposalId(plan.runId);
-            const writeSet = plannedNodeIds.filter((nodeId) => latest.nodes.some((node) => node.nodeId === nodeId));
-            const proposal = {
-              schemaVersion: "trip-patch-proposal-v1",
-              proposalId,
-              tripId: latest.tripId,
-              baseRevision: latest.revision,
-              title: "AI 优化行程试排",
-              summary: plan.objective,
-              writeSet,
-              writeContract: { allowedNodeIds: writeSet },
-              readSet: writeSet.map((nodeId) => ({ nodeId, version: latest.nodes.find((node) => node.nodeId === nodeId).version })),
-              operations: [],
-              itineraryPlan: structuredClone(plan),
-              itineraryPreviewId: preview.previewId,
-              planningRunId: plan.runId,
-              planningAttempt: plan.attempt,
-            };
-            const staged = stageTripPatch(latest, proposal, { clock: this.clock });
-            if (staged.status !== "proposed") throw serviceError(staged.validation?.reason ?? "itinerary_trial_proposal_rejected");
-            pendingState = staged.state;
-          }
-          const saved = await this.store.save(pendingState, { expectedStorageVersion: latest.storageVersion });
-          const cached = this.mobilityPreviewCache.get(preview.previewId);
-          if (cached) this.mobilityPreviewCache.set(preview.previewId, { ...cached, proposalId, planningRunId: plan.runId });
-          payload = {
-            ...preview,
-            schemaVersion: "itinerary-planning-trial-v1",
-            status: "trial_ready",
-            operationId,
-            runId: plan.runId,
-            tripId: saved.tripId,
-            baseRevision: saved.revision,
-            attempt: plan.attempt,
-            proposalId,
-            selections,
-            accept: { proposalId, selections, partial: Object.keys(selections).length > 0, previewId: preview.previewId, baseRevision: saved.revision },
-            committed: false,
-            checkedAt: preview.mobility?.checkedAt ?? null,
-            providerCallCount: 1,
-          };
-          terminal = true;
+          const issues = preview.feasibility?.issues ?? [];
+          const repairable = availability.status === "available" && issues.some(issue => (issue.allowedRepairDirections ?? []).length > 0);
+          const ready = preview.feasibility?.canConfirm === true;
+          const status = ready ? "trial_ready" : plan.attempt === 1 && repairable ? "needs_repair" : "blocked";
+          payload = await this.stageItineraryTrial(latest, plan, preview, { status, requireCompletePlan, userRequest: input.userRequest ?? "",
+            inputFingerprint: planFingerprint, providerCallCount: availability.status === "available" ? 1 : 0 });
+          terminal = ready || plan.attempt === 2 || !repairable;
         }
       }
     } catch (error) {
-      const stale = run.abortController.signal.aborted || error?.code === "itinerary_preview_stale";
+      const stale = input.signal?.aborted || run.abortController.signal.aborted || error?.code === "itinerary_preview_stale";
       payload = { schemaVersion: "itinerary-planning-trial-v1", status: stale ? "stale_discarded" : plan.attempt === 1 ? "needs_repair" : "blocked", operationId, runId: plan.runId, tripId: state.tripId, baseRevision: state.revision, attempt: plan.attempt, issues: [{ code: error?.code ?? "itinerary_planning_failed", severity: "blocking", message: stale ? "旅行条件已经变化，这份旧试排不会继续使用。" : "这次没有完成路线核验，当前方案保持不变。", stopIds: [], dayIndex: null, allowedRepairDirections: stale ? [] : ["request_context"] }], committed: false, checkedAt: null };
       terminal = stale || plan.attempt === 2;
     }
     const completedAt = new Date(this.clock?.() ?? Date.now()).toISOString();
     if (payload.providerCallCount == null) payload.providerCallCount = 0;
-    this.planningRunCoordinator.recordLaneCompletion(plan.runId, { lane: "itinerary_plan", attempt: plan.attempt, completedAt, status: payload.status, result: { planFingerprint, payload } });
+    this.planningRunCoordinator.recordLaneCompletion(coordinatorId, { lane: "itinerary_plan", attempt: plan.attempt, completedAt, status: payload.status, result: { planFingerprint, payload } });
     if (terminal) {
-      const acquired = this.planningRunCoordinator.tryJoin(plan.runId);
-      if (acquired.acquired) this.planningRunCoordinator.completeJoin(plan.runId, { joinArtifactId: `join_${plan.runId}`, operationId, status: payload.status, completedAt });
+      const acquired = this.planningRunCoordinator.tryJoin(coordinatorId);
+      if (acquired.acquired) this.planningRunCoordinator.completeJoin(coordinatorId, { joinArtifactId: `join_${plan.runId}`, operationId, status: payload.status, completedAt });
     }
     return payload;
   }
@@ -1529,9 +1566,10 @@ export class TravelService {
   async refreshTripMobility(input) {
     const state = requireTrip(await this.store.get(input.tripId), input.tripId);
     const selectedNodes = state.nodes.filter((node) => node.selected);
-    const itineraryDraft = buildItineraryDraft(state.brief, selectedNodes);
+    const adopted = state.planning?.adopted;
+    const itineraryDraft = adopted?.itinerary ? { itinerary: structuredClone(adopted.itinerary), feasibility: adopted.validation.feasibility } : buildItineraryDraft(state.brief, selectedNodes);
     let observation;
-    if (!this.researchProvider || typeof this.researchProvider.planMobility !== "function") {
+    if (!this.researchProvider || this.researchProvider.canPlanMobility === false || typeof this.researchProvider.planMobility !== "function") {
       observation = {
         schemaVersion: "trip-mobility-v1",
         status: "provider_unavailable",
@@ -1565,7 +1603,7 @@ export class TravelService {
       ...observation,
       status: ["completed", "partial", "needs_context", "provider_unavailable"].includes(observation?.status) ? observation.status : "provider_unavailable",
       reason: ["completed", "partial"].includes(observation?.status) ? observation.reason : observation?.reason ?? observation?.status ?? "SOURCE_UNAVAILABLE",
-    }, itineraryDraft);
+    }, itineraryDraft, { preserveSchedule: Boolean(adopted), selectedNodes });
     const next = applyMobilityObservation(state, normalized, { clock: this.clock });
     const saved = await this.store.save(next, { expectedStorageVersion: state.storageVersion });
     return {
@@ -1585,9 +1623,36 @@ export class TravelService {
     return { schemaVersion: "open-decisions-v1", tripId, revision: state.revision, decisions: state.openDecisions.filter((decision) => decision.status === "open"), pendingProposals: state.pendingProposals };
   }
 
+  async compareTripCandidates({ tripId, objective, signal }) {
+    if (this.judgment?.mode !== "auto") return null;
+    const state = requireTrip(await this.store.get(tripId), tripId);
+    const proposal = state.pendingProposals.find(item => String(item.proposalId).startsWith("proposal_research_") && !item.itineraryPlan);
+    // Only a fresh, unconfirmed comparison can finish without a planning turn.
+    if (!proposal || state.environment?.mobility?.itinerary || !proposal.checkedAt || Date.now() - Date.parse(proposal.checkedAt) > 60_000) return null;
+    const view = proposalView(proposal);
+    const byDomain = Object.fromEntries(Object.entries(view.byDomain).map(([domain, candidates]) => [domain, candidates.map(candidate => ({ ...candidate, candidateId: candidate.nodeId, evidenceRefs: [...(candidate.sourceRefs ?? []), ...(candidate.claimRefs ?? [])] }))]));
+    const snapshot = buildJudgmentSnapshot({ tripId, baseRevision: state.revision, criteriaFingerprint: decisionHash(proposal.researchCriteria ?? proposal.proposalId), objective, planningContext: continuousPlanningContext(state), brief: state.brief, travelers: state.travelers, locks: state.nodes.filter(node => node.lock).map(node => node.nodeId), providerResult: { byDomain, weather: state.environment?.weather } });
+    const previous = proposal.comparison?.judgment;
+    const cached = previous?.snapshotHash === this.judgment.snapshotHash(snapshot)
+      && previous.status === "evaluated" && Date.now() - Date.parse(previous.checkedAt) < 60_000;
+    const judgment = cached ? previous : await this.judgment.evaluate(snapshot);
+    if (!judgment.automatic || judgment.scope !== "compare") return null;
+    signal?.throwIfAborted();
+    const current = requireTrip(await this.store.get(tripId), tripId);
+    if (current.revision !== state.revision || current.storageVersion !== state.storageVersion) return null;
+    const ordered = rankDecisionCandidates(proposal.operations.filter(op => op.node).map(op => ({ ...op, candidateId: op.nodeId })), judgment.judgments);
+    const ranks = new Map(ordered.map((op, index) => [op.nodeId, index]));
+    const updated = { ...proposal, comparison: { objective, judgment, previousOrder: proposal.operations.map(op => op.nodeId), checkedAt: new Date().toISOString() },
+      operations: [...proposal.operations].sort((a, b) => a.node?.domain === b.node?.domain ? (ranks.get(a.nodeId) ?? 0) - (ranks.get(b.nodeId) ?? 0) : 0) };
+    const saved = await this.store.save({ ...state, pendingProposals: state.pendingProposals.map(item => item.proposalId === proposal.proposalId ? updated : item) }, { expectedStorageVersion: state.storageVersion });
+    return { status: "compared", tripId, revision: saved.revision, proposalId: proposal.proposalId, judgment, nextAction: "review_comparison" };
+  }
+
   async researchTripOptions(input) {
+    input.signal?.throwIfAborted();
     validateRequest("research_trip_options", input);
     const state = requireTrip(await this.store.get(input.tripId), input.tripId);
+    input.signal?.throwIfAborted();
     this.planningRunCoordinator?.supersedeTrip(state.tripId, "candidate_set_changed");
     const rawRequestedDomains = Array.isArray(input.domains) && input.domains.length ? input.domains : FOUR_DOMAINS;
     const hasConfirmedBookedArrival = state.brief?.intercityBooked === true
@@ -1618,6 +1683,7 @@ export class TravelService {
     const existingProposalView = existingResearchProposal ? proposalView(existingResearchProposal) : null;
     const existingProposalCoversRequest = existingProposalView
       && requestedDomains.every((domain) => existingProposalView.byDomain[domain]?.length > 0)
+      && (!this.analysisFanout || existingResearchProposal.analysis?.coverage === "complete")
       && researchCriteriaMatchesProposal(existingResearchProposal, criteria, requestedDomains);
     if (existingProposalCoversRequest) {
       const existingView = existingProposalView;
@@ -1651,18 +1717,20 @@ export class TravelService {
     }
     const potentialRequiredLanes = requiredAnalysisLanes(requestedDomains, state);
     const requiredLanes = this.analysisFanout ? potentialRequiredLanes : [];
-    const analysisRunId = requiredLanes.length > 0 ? `analysis_run_${randomUUID().slice(0, 8)}` : null;
+    const execution = currentTravelExecution();
+    const researchIdentity = { tripId: state.tripId, revision: state.revision, criteria: criteria.fingerprint, requestedDomains, question: input.question ?? input.query ?? "" };
+    const analysisRunId = requiredLanes.length > 0 ? `analysis_run_${execution ? decisionHash([execution.runId, researchIdentity]).slice(0, 24) : randomUUID().slice(0, 8)}` : null;
     const analysisRun = analysisRunId ? this.analysisRunCoordinator?.begin({
       runId: analysisRunId,
       tripId: state.tripId,
       baseRevision: state.revision,
       criteriaFingerprint: criteria.fingerprint,
       requiredLanes,
-      deadlineAt: new Date(Date.now() + 90_000).toISOString(),
+      deadlineAt: new Date(execution?.deadlineAt ?? Date.now() + 90_000).toISOString(),
     }) : null;
     let providerResult;
     try {
-      providerResult = await this.researchProvider.research({
+      const prepare = () => this.researchProvider.research({
         tripId: state.tripId,
         brief: state.brief,
         travelers: state.travelers,
@@ -1670,9 +1738,12 @@ export class TravelService {
         question: input.question ?? input.query ?? "",
         criteria,
         existingWeather: state.environment?.weather ?? null,
+        signal: input.signal,
       });
+      providerResult = execution?.readStep ? await execution.readStep(`research_${decisionHash(researchIdentity)}`, researchIdentity, prepare) : await prepare();
     } catch (error) {
       if (analysisRunId) this.analysisRunCoordinator?.markStale(analysisRunId, "provider_failed");
+      input.signal?.throwIfAborted();
       return {
         schemaVersion: "travel-provider-result-v1",
         status: error?.code ?? "SOURCE_UNAVAILABLE",
@@ -1685,6 +1756,7 @@ export class TravelService {
         fabricatedResults: false,
       };
     }
+    input.signal?.throwIfAborted();
     if (providerResult.status !== "completed") {
       if (analysisRunId) this.analysisRunCoordinator?.markStale(analysisRunId, `provider_${providerResult.status}`);
       if (existingResearchProposal && !researchCriteriaMatchesProposal(existingResearchProposal, criteria, requestedDomains)) {
@@ -1744,9 +1816,10 @@ export class TravelService {
           brief: state.brief,
           travelers: state.travelers,
           providerResult,
+          planningContext: continuousPlanningContext(state),
           objective: input.question ?? input.query ?? "Review the linked trip candidates",
           locks: state.nodes.filter((node) => node.lock).map((node) => node.nodeId),
-          signal: analysisRun?.abortController.signal,
+          signal: input.signal && analysisRun?.abortController.signal ? AbortSignal.any([input.signal, analysisRun.abortController.signal]) : input.signal ?? analysisRun?.abortController.signal,
           deadlineAt: analysisRun?.deadlineAt,
           validateCurrent: async (identity) => {
             const current = await this.store.get(state.tripId);
@@ -1755,6 +1828,7 @@ export class TravelService {
           },
         });
       } catch (error) {
+        if (error instanceof TravelExecutionDeferred || execution?.defer) throw error;
         const now = new Date(this.clock?.() ?? Date.now()).toISOString();
         const failed = {
           schemaVersion: "travel-analysis-fanout-v1",
@@ -1800,6 +1874,7 @@ export class TravelService {
           fabricatedResults: false,
         };
       }
+      input.signal?.throwIfAborted();
       providerResult = applySemanticAnalysis(providerResult, semanticAnalysis);
     }
     if (!this.analysisFanout && semanticAnalysis) providerResult = applySemanticAnalysis(providerResult, semanticAnalysis);
@@ -1819,6 +1894,7 @@ export class TravelService {
     }
     const staged = stageTripPatch(workingState, proposal, { clock: this.clock });
     if (staged.status !== "proposed") return staged;
+    input.signal?.throwIfAborted();
     const saved = await this.store.save(staged.state, { expectedStorageVersion: state.storageVersion });
     const stagedProposalView = proposalView({ ...proposal, stagedAt: saved.pendingProposals.find((item) => item.proposalId === proposal.proposalId)?.stagedAt });
     return {
@@ -1861,10 +1937,15 @@ export class TravelService {
     if (!pendingProposal?.itineraryPlan) this.planningRunCoordinator?.supersedeTrip(state.tripId, "selection_changed");
     const hasSelections = input.selections && Object.values(input.selections).some(Boolean);
     const hasItineraryPlan = Boolean(pendingProposal?.itineraryPlan);
+    if (hasItineraryPlan && pendingProposal.requireCompletePlan) {
+      const issues = completeItineraryIssues(pendingProposal.itineraryPlan, state.brief, pendingProposal.planningUserRequest ?? "");
+      if (issues.length) return { schemaVersion: "trip-commit-result-v1", status: "rejected", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "itinerary_incomplete" }, feasibility: { schemaVersion: "trip-feasibility-v1", canConfirm: false, status: "blocked", primaryBlocker: issues[0].message, issues, checkedAt: null } };
+    }
     let preflight = null;
     if (hasSelections || hasItineraryPlan) {
       const selectionKey = JSON.stringify(Object.entries(input.selections ?? {}).sort(([left], [right]) => left.localeCompare(right)));
-      const cached = input.previewId ? this.mobilityPreviewCache.get(input.previewId) : null;
+      const cached = input.previewId ? await this.readMobilityPreview(input.previewId) : null;
+      if (cached?.planningFingerprint && cached.planningFingerprint !== planningStateFingerprint(state)) return { schemaVersion: "trip-commit-result-v1", status: "needs_rebase", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "itinerary_preview_stale" } };
       let preview = cached?.tripId === state.tripId && cached.revision === state.revision && cached.selections === selectionKey
         ? cached.preview
         : await this.previewTripMobility({ tripId: input.tripId, baseRevision: state.revision, ...(hasItineraryPlan ? { itineraryPlan: pendingProposal.itineraryPlan } : { selections: input.selections }) });
@@ -1876,10 +1957,15 @@ export class TravelService {
         return { schemaVersion: "trip-commit-result-v1", status: "rejected", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "itinerary_not_executable" }, feasibility: preview.feasibility, previewId: preview.previewId };
       }
     }
-    const result = acceptStagedTripPatch(state, input.proposalId, { clock: this.clock, selections: input.selections, partial: input.partial === true });
+    const result = acceptStagedTripPatch(state, input.proposalId, { clock: this.clock, selections: hasItineraryPlan ? undefined : input.selections, partial: !hasItineraryPlan && input.partial === true });
     if (result.status !== "committed") return result;
     if (preflight?.mobility && preflight.feasibility?.canConfirm === true) {
-      result.state.environment = { ...result.state.environment, mobility: preflight.mobility, updatedAt: new Date(this.clock?.() ?? Date.now()).toISOString() };
+      const checkedMobility = withTripFeasibility(result.state, result.state.nodes, preflight.mobility);
+      if (checkedMobility.feasibility.canConfirm !== true) {
+        return { schemaVersion: "trip-commit-result-v1", status: "rejected", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "itinerary_not_executable" }, feasibility: checkedMobility.feasibility };
+      }
+      result.state.environment = { ...result.state.environment, mobility: checkedMobility, updatedAt: new Date(this.clock?.() ?? Date.now()).toISOString() };
+      if (hasItineraryPlan) adoptWorkingPlan(result.state, checkedMobility, new Date(this.clock?.() ?? Date.now()).toISOString());
       result.state.pendingProposals = result.state.pendingProposals.map((proposal) => {
         if (!proposal.itineraryPlan) return proposal;
         const { itineraryPlan, itineraryPreviewId, planningRunId, planningAttempt, ...rest } = proposal;
@@ -1887,8 +1973,10 @@ export class TravelService {
       });
       result.qa = validateTripCoherence(result.state);
     }
+    const businessIssues = tripBusinessIssues(result.state);
+    if (businessIssues.length) return { schemaVersion: "trip-commit-result-v1", status: "rejected", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "trip_constraints_unmet" }, feasibility: { schemaVersion: "trip-feasibility-v1", canConfirm: false, status: "blocked", primaryBlocker: businessIssues[0].message, issues: businessIssues, checkedAt: null } };
     const saved = await this.store.save(result.state, { expectedStorageVersion: state.storageVersion });
-    const selectedNodeIds = Object.values(input.selections ?? {}).filter(Boolean);
+    const selectedNodeIds = hasItineraryPlan ? planNodeIds(pendingProposal.itineraryPlan) : Object.values(input.selections ?? {}).filter(Boolean);
     return {
       schemaVersion: result.schemaVersion,
       status: result.status,
@@ -1896,7 +1984,7 @@ export class TravelService {
       revision: saved.revision,
       storageVersion: saved.storageVersion,
       qa: result.qa,
-      partial: input.partial === true,
+      partial: !hasItineraryPlan && input.partial === true,
       selectedNodes: saved.nodes.filter((node) => selectedNodeIds.includes(node.nodeId)).map((node) => ({ nodeId: node.nodeId, domain: node.domain, title: node.title })),
       openDomains: saved.openDecisions.filter((decision) => decision.status === "open").map((decision) => decision.domain),
       pendingProposalIds: saved.pendingProposals.map((proposal) => proposal.proposalId),
@@ -1922,6 +2010,7 @@ export class TravelService {
     if (!proposal) return { schemaVersion: "itinerary-trial-discard-result-v1", status: "unchanged", tripId: state.tripId, revision: state.revision };
     this.planningRunCoordinator?.supersedeTrip(state.tripId, "trial_discarded_by_user");
     const next = structuredClone(state);
+    discardWorkingPlan(next, input.proposalId);
     next.pendingProposals = next.pendingProposals.flatMap((item) => {
       if (item.proposalId !== proposal.proposalId) return [item];
       if (!(item.operations ?? []).length) return [];

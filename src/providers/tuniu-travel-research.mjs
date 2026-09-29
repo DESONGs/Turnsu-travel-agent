@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { createTuniuOfficialMcpClient } from "./tuniu-official-mcp.mjs";
 import { intercityModes, travelDates } from "./flyai-travel-research.mjs";
+import { journeyQueries, tagJourneyCandidate } from "../../travel-agent-pi-package/src/core/journey-execution.ts";
 
 const PROVIDER = "tuniu_official_mcp";
 const DOCUMENTATION = "https://open.tuniu.com/mcp/docs/";
@@ -170,7 +171,10 @@ function normalizeFlight(item, checkedAt, context = {}) {
   return candidate({ domain: "transport", providerRef, title, summary: details.join(" · "), checkedAt, cost, operability: { transportType: "FLIGHT", serviceNumber, carrier: text(item.airlineCompany, 80) || null, mobilityRole: "intercity_inventory", priceHint: cost ? `¥${cost} 含税` : null, departureCity: text(context.origin, 100) || null, arrivalCity: text(context.destination, 100) || null, departurePlace: departureLabel ? { kind: "airport", city: text(context.origin, 100) || null, label: departureLabel, terminal: departureTerminal } : null, arrivalPlace: arrivalLabel ? { kind: "airport", city: text(context.destination, 100) || null, label: arrivalLabel, terminal: arrivalTerminal } : null, departureTerminal, arrivalTerminal, departureAt: text(item.departureTime, 80) || null, arrivalAt: text(item.arrivalTime, 80) || null, durationMinutes: durationMinutes(item.totalDuration), vehicleModel: text(item.craftType, 80) || null, seatClass: text(item.cabinClass, 60) || null, fareOffers: cost > 0 ? [{ provider: PROVIDER, providerLabel: "途牛", currency: "CNY", totalFare: cost, baseFare: base || null, taxes: tax || null, checkedAt, bookingUrl: null }] : [], availableSeats: numeric(item.remainingSeats), routeVerified: true, scheduleVerified: true, inventoryVerified: true, offerFreshness: "search_time" } });
 }
 
-function limitDomainCandidates(domain, candidates) {
+function limitDomainCandidates(domain, candidates, groupJourneys = true) {
+  if (groupJourneys && domain === "transport" && candidates.some(item => item.operability?.journeyId)) {
+    return [...new Set(candidates.map(item => item.operability?.journeyId))].flatMap(id => limitDomainCandidates("transport", candidates.filter(item => item.operability?.journeyId === id), false));
+  }
   const unique = [...new Map(candidates.map((item) => [item.candidateId, item])).values()];
   if (domain !== "transport") return unique.slice(0, 6);
   const flights = unique.filter((item) => item.operability?.transportType === "FLIGHT").slice(0, 3);
@@ -202,16 +206,16 @@ export class TuniuTravelResearchProvider {
       if (dates.start && dates.end) Object.assign(args, { checkIn: dates.start, checkOut: dates.end });
       tasks.push({ domain: "stay", service: "hotel", tool: "tuniuHotelSearch", args, extract: (result) => result?.hotels ?? [], normalize: normalizeHotel });
     }
-    if (requested.includes("transport") && origin && dates.start) {
-      for (const mode of intercityModes(brief, question, criteria)) {
+    if (requested.includes("transport")) {
+      for (const journey of journeyQueries(brief)) for (const mode of journey.mode && journey.mode !== "flexible" ? [journey.mode] : intercityModes(brief, question, criteria)) {
         const flight = mode === "flight";
         tasks.push({
           domain: "transport",
           service: flight ? "flight" : "train",
           tool: flight ? "searchLowestPriceFlight" : "searchLowestPriceTrain",
-          args: { departureCityName: origin, arrivalCityName: destination, departureDate: dates.start },
+          args: { departureCityName: journey.origin, arrivalCityName: journey.destination, departureDate: journey.date },
           extract: (result) => result?.data ?? [],
-          normalize: (item, checkedAt) => (flight ? normalizeFlight : normalizeTrain)(item, checkedAt, { origin, destination }),
+          normalize: (item, checkedAt) => tagJourneyCandidate((flight ? normalizeFlight : normalizeTrain)(item, checkedAt, { origin: journey.origin, destination: journey.destination }), journey),
         });
       }
     }

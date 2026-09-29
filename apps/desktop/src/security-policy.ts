@@ -57,11 +57,15 @@ export function isAllowedEvidenceUrl(value: string, expectedPlatform: string | n
   return Boolean(platform && (!expectedPlatform || platform === expectedPlatform));
 }
 
-export function oauthStartUrl(apiOrigin: string, provider: string, returnTo = "/"): string | null {
+export function oauthStartUrl(apiOrigin: string, provider: string, returnTo = "/", link?: string): string | null {
   const origin = normalizedApiOrigin(apiOrigin);
   if (!origin || !AUTH_PROVIDERS.has(provider)) return null;
   const url = new URL(`/api/auth/${provider}/start`, origin);
   url.searchParams.set("client", "desktop");
+  if (link !== undefined) {
+    if (!/^[A-Za-z0-9_-]{43}$/.test(link)) return null;
+    url.searchParams.set("link", link);
+  }
   url.searchParams.set("returnTo", safeReturnTo(returnTo));
   return url.toString();
 }

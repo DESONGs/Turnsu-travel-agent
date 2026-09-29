@@ -43,5 +43,6 @@ assert.ok(ends.length >= 2);
 assert.ok(new Date(starts[1].at).getTime() <= Math.min(...ends.map((event) => new Date(event.at).getTime())), "lanes did not overlap");
 
 const status = result.coverage === "complete" ? "passed_live_model_smoke" : `${result.coverage}_live_model_smoke`;
+if (result.coverage !== "complete") process.stdout.write(`${JSON.stringify({ failureDetails: result.events.filter((event) => event.error).map((event) => ({ lane: event.lane, code: /travel_analysis_output_truncated|invalid_travel_analysis_output|normalized_schema_invalid|timed out|timeout/.exec(event.error)?.[0] ?? "child_execution_failed" })) })}\n`);
 process.stdout.write(`${JSON.stringify({ status, coverage: result.coverage, analysisId: result.analysisId, lanes: result.lanes.map((lane) => ({ lane: lane.lane, skillId: lane.skillId, reasonCodes: lane.reasonCodes })), failedLanes: result.failedLanes, timedOutLanes: result.timedOutLanes, degradedReasons: result.degradedReasons, modelFallback: result.modelFallback, joinCount: result.joinCount, durationMs: new Date(result.completedAt).getTime() - new Date(result.startedAt).getTime() })}\n`);
 if (result.coverage !== "complete") process.exitCode = 1;

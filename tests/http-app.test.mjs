@@ -9,7 +9,7 @@ import { createModels, fauxAssistantMessage, fauxProvider, fauxToolCall } from "
 import { TravelConversationAgent } from "../src/agent/travel-conversation-agent.mjs";
 import { TravelService } from "../src/api/travel-service.mjs";
 import { createHttpApp } from "../src/http/app.mjs";
-import { FileConversationRepository } from "../src/persistence/conversation-repository.mjs";
+import { FileConversationRepository, createConversationRecord } from "../src/persistence/conversation-repository.mjs";
 import { InMemorySessionStore } from "../src/http/session.mjs";
 import { TripStore } from "../travel-agent-pi-package/src/core/index.ts";
 
@@ -31,7 +31,7 @@ async function httpFixture({ conversationAgent, service: suppliedService, conver
     const value = response.status === 204 ? null : await response.json();
     return { response, value };
   };
-  return { request, service, close: () => new Promise((resolveClose) => server.close(resolveClose)) };
+  return { request, service, conversationRepository, close: async () => { await app.locals.close(); await new Promise((resolveClose) => server.close(resolveClose)); } };
 }
 
 function transitProposal(tripId) {
@@ -338,7 +338,7 @@ test("default file repositories keep trips and conversations under the configure
     assert.equal(tripResponse.status, 201);
     const conversationResponse = await fetch(`http://127.0.0.1:${port}/api/conversations`, { method: "POST", headers, body: "{}" });
     assert.equal(conversationResponse.status, 201);
-    assert.deepEqual((await readdir(rootDir)).sort(), ["conversations", "trip_shared_root.json"]);
+    assert.deepEqual((await readdir(rootDir)).filter((name) => !name.startsWith("auth.sqlite-")).sort(), ["auth.sqlite", "conversations", "executions", "trip_shared_root.json"]);
     assert.equal((await readdir(join(rootDir, "conversations"))).length, 1);
   } finally {
     await new Promise((resolveClose) => server.close(resolveClose));
@@ -422,9 +422,10 @@ test("conversation message HTTP contract forwards image and text into one Agent 
       return { schemaVersion: "travel-conversation-turn-v1", status: "completed", conversation, activities: [{ toolName: "interpret_visual_context", status: "completed" }], multimodal: { status: "completed", persistence: "none" } };
     },
   };
-  const { request, close } = await httpFixture({ conversationAgent });
+  const { request, close, conversationRepository } = await httpFixture({ conversationAgent });
   try {
     const session = await request("/api/auth/session", { method: "POST", body: { provider: "email_otp", identity: "visual-turn@example.com" } });
+    await conversationRepository.create({ ...createConversationRecord({ userId: session.value.userId }), conversationId: conversation.conversationId });
     const image = { mimeType: "image/png", data: "iVBORw0KGgo=" };
     const response = await request("/api/conversations/conversation_visual_http/messages", {
       method: "POST",
@@ -477,8 +478,8 @@ test("guest travelers can plan before login and claim trips and conversations af
     assert.equal(claimedPlan.value.readiness.items.find((item) => item.itemId === "china_account_continuity").status, "needs_verification");
 
     const oldGuestAccess = await request("/api/trips/trip_guest_claim/plan", { headers: { cookie: guestCookie } });
-    assert.equal(oldGuestAccess.response.status, 403);
-    assert.equal(oldGuestAccess.value.code, "trip_access_denied");
+    assert.equal(oldGuestAccess.response.status, 401);
+    assert.equal(oldGuestAccess.value.code, "authentication_required");
   } finally {
     await close();
   }

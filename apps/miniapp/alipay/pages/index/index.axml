@@ -1,28 +1,202 @@
-<view class="page">
-  <view class="header"><text class="brand">Travel Agent</text><text class="locale">中 / EN</text></view>
-  <view class="intro" a:if="{{!signedIn}}"><text class="title">从一句话开始规划旅行。</text><text class="copy">旅行助手会持续理解你的补充，再把吃、住、行、玩放到同一份方案里。</text></view>
-  <view class="card" a:if="{{!signedIn}}"><text class="card-title">使用支付宝登录</text><text class="copy">登录后直接进入旅行对话。没有完成真实授权时不会创建模拟账户。</text><button class="primary" loading="{{loading}}" onTap="signIn">登录并开始对话</button></view>
+<view class="page journey-mini atlas-mini {{!signedIn ? 'needs-login' : ''}} {{!trip ? 'journey-start' : ''}} {{activeView === 'conversation' ? 'is-chat' : ''}}">
+  <view class="header">
+    <view class="brand-lockup"><text class="brand">Travel Agent</text><text class="brand-sub">你的下一段旅程</text></view>
+    <button a:if="{{signedIn}}" class="history-toggle" onTap="toggleHistory">我的旅行</button>
+  </view>
+
+  <view class="welcome" a:if="{{!signedIn}}">
+    <text class="welcome-kicker">从需求到可执行路线</text>
+    <text class="title">下一趟，想去哪里？</text>
+    <text class="copy">从一个想法开始，把想去的地方串成舒服的旅程。每一次改动，都由你确认。</text>
+    <view class="welcome-flow"><text>说需求</text><view class="flow-line"></view><text>比较取舍</text><view class="flow-line"></view><text>确认行程</text></view>
+  </view>
+  <view class="card sign-in-card" a:if="{{!signedIn}}">
+    <text class="card-title">使用微信登录</text>
+    <text class="copy">用你的平台账号保存行程，随时接着规划。授权未完成时，不会创建账号。</text>
+    <button class="primary" loading="{{loading}}" disabled="{{loading}}" onTap="signIn">登录并开始规划</button>
+  </view>
+
   <block a:else>
-    <block a:if="{{activeView === 'conversation'}}">
-      <view class="chat-head"><text class="card-title">说说你想怎么旅行</text><text class="copy">目的地、时间、同行人不必一次说完整。</text></view>
-      <scroll-view class="messages" scroll-y="true"><view a:if="{{!conversation.messages.length}}" class="empty">例如：国庆和父母去大理 5 天，轻松一点，住宿位置请你帮我设计。</view><view a:for="{{conversation.messages}}" a:key="messageId" class="message {{item.role}}"><text>{{item.text}}</text></view></scroll-view>
-      <view class="composer"><textarea value="{{input}}" onInput="onInput" maxlength="4000" auto-height="true" placeholder="输入旅行想法或继续补充"></textarea><view class="composer-actions"><text class="composer-hint">先理解，再生成方案</text><button class="send" loading="{{loading}}" disabled="{{!input || loading}}" onTap="sendMessage">发送</button></view></view>
-    </block>
-    <block a:if="{{activeView === 'itinerary'}}">
-      <view class="trip-summary" a:if="{{trip}}"><text class="card-title">{{trip.destination}}</text><text class="copy">{{trip.timeLabel}} · {{trip.travelerCount}} 位同行人</text><view class="trip-facts" a:if="{{trip.budgetLabel || trip.paceLabel}}"><text a:if="{{trip.budgetLabel}}">{{trip.budgetLabel}}</text><text a:if="{{trip.paceLabel}}">{{trip.paceLabel}}</text></view><view class="traveler-care" a:if="{{trip.travelerCare.length}}"><text class="section-label">同行人的安排重点</text><view a:for="{{trip.travelerCare}}" a:key="travelerId"><text>{{item.displayName}}</text><text>{{item.labelText}}</text></view></view></view>
-      <view class="plan budget-board" a:if="{{planBudget}}"><text class="card-title">{{planBudget.summary}}</text><text class="copy">分域合计为确定性估算；候选单价仍保留实价、参考价或待核验。</text><view class="budget-rows"><view a:for="{{planBudget.rows}}" a:key="domain"><text>{{item.label}}</text><text>{{item.amountLabel}}</text><text>{{item.basis}}</text></view></view></view>
-      <view class="plan" a:if="{{proposal}}"><text class="card-title">比较旅行候选</text><text class="copy">从抵达开始逐项决定；只确认你已选择的环节，其他候选继续保留。</text><view class="decision-tabs"><button a:for="{{proposalDomains}}" a:key="key" data-domain="{{item.key}}" class="{{activeDomainKey === item.key ? 'active' : ''}}" onTap="switchDecisionDomain">{{item.label}}<text>{{item.hasSelection ? '已选' : item.candidates.length + ' 个'}}</text></button></view><view a:for="{{proposalDomains}}" a:key="key" a:if="{{item.key === activeDomainKey}}" class="domain"><view a:for="{{item.candidates}}" a:for-item="candidate" a:key="nodeId" class="candidate {{candidate.selected ? 'selected' : ''}}" data-domain="{{item.key}}" data-node-id="{{candidate.nodeId}}" onTap="selectCandidate"><image a:if="{{candidate.photo}}" src="{{candidate.photo}}" mode="aspectFill"></image><view><text>{{candidate.title}}</text><view class="candidate-price {{candidate.priceTone}}"><text>{{candidate.priceLabel}}</text><text>{{candidate.priceDetail}}</text></view><text class="candidate-copy">{{candidate.summary}}</text><text class="facility-copy" a:if="{{candidate.facilityText}}">{{candidate.facilityText}}</text></view></view></view><button class="primary" loading="{{loading}}" onTap="acceptProposal">确认当前已选</button></view>
-      <view class="plan" a:if="{{accepted.length}}"><text class="card-title">已确认安排</text><text class="copy">没有可靠时间时不会自动编造时间表。</text><view a:for="{{accepted}}" a:key="nodeId" class="accepted"><text class="schedule-label">{{item.scheduleLabel}}</text><text>{{item.title}}</text><text class="candidate-copy">{{item.summary}}</text><view class="route-facilities" a:if="{{item.facilities.length}}"><text a:for="{{item.facilities}}" a:for-item="facility" a:key="kind">{{facility.note}}</text></view></view><button class="map-cta" data-view="map" onTap="switchView">查看地图、路线和设施</button></view>
-    </block>
-    <block a:if="{{activeView === 'map'}}">
-      <view class="route-day-tabs" a:if="{{routeDays.length > 1}}"><button a:for="{{routeDays}}" a:key="*this" data-day="{{item}}" class="{{activeDay === item ? 'active' : ''}}" onTap="selectRouteDay">第 {{item}} 天</button></view>
+    <view class="recovery-banner" a:if="{{initializationFailed}}">
+      <text>账号已登录，对话暂时没有载入。</text><button disabled="{{loading}}" onTap="retryInitialization">重新载入对话</button>
+    </view>
+    <view class="recovery-banner" a:if="{{tripRefreshNeeded}}">
+      <text>行程需要重新读取，无需重复发送或确认。</text><button disabled="{{loading}}" onTap="retryTrip">重新读取行程</button>
+    </view>
+    <view class="trip-context" a:if="{{trip && activeView !== 'itinerary'}}" data-view="itinerary" onTap="switchView">
+      <view><text class="trip-context-label">正在规划</text><text class="trip-context-title">{{trip.destination || '目的地待确认'}}</text></view>
+      <text class="trip-context-meta">{{trip.timeLabel}} · {{trip.travelerCount}} 人 ›</text>
+    </view>
+
+    <view class="conversation-workspace" a:if="{{activeView === 'conversation'}}">
+      <view class="chat-head">
+        <text class="section-eyebrow">旅行对话</text>
+        <text class="card-title">说说你想怎么旅行</text>
+        <text class="copy">目的地、时间、同行人和预算不必一次说完整。</text>
+      </view>
+      <scroll-view class="messages" scroll-y="true" scroll-into-view="message-end-{{messageVersion}}" scroll-with-animation="true">
+        <view a:if="{{!conversation || !conversation.messages.length}}" class="conversation-empty">
+          <text class="empty-title">先告诉我最重要的一件事</text>
+          <text class="copy">可以从同行人、节奏或预算开始。</text>
+          <view class="starter-prompts">
+            <button a:for="{{starterPrompts}}" a:key="label" data-prompt="{{item.text}}" onTap="useStarterPrompt"><text>{{item.label}}</text><text>{{item.detail}}</text></button>
+          </view>
+        </view>
+        <view a:for="{{conversation.messages}}" a:key="messageId" class="message {{item.role}}"><text>{{item.text}}</text></view>
+        <view class="message user pending" a:if="{{pendingText}}"><text>{{pendingText}}</text><text class="message-caption">{{executionActive ? '需求已保存' : '正在发送'}}</text></view>
+        <view class="message assistant waiting" a:if="{{loading && conversation}}"><text>正在处理这次请求…</text><text class="message-caption">已确认行程保持不变，你可以继续写下补充想法。</text></view>
+        <view id="message-end-{{messageVersion}}"></view>
+      </scroll-view>
+      <view class="execution-progress" a:if="{{execution || executionDisconnected}}">
+        <view class="execution-heading"><text>{{executionLabel}}</text><button a:if="{{executionActive}}" disabled="{{execution.status === 'cancelling'}}" onTap="stopExecution">停止</button></view>
+        <view a:if="{{executionDisconnected}}" class="execution-actions"><text>请求已保存，可重新连接查看结果。</text><button onTap="refreshExecution">重新连接</button></view>
+        <view a:if="{{executionQuestion}}" class="execution-question"><text>{{executionQuestion.question}}</text><text>{{executionQuestion.impact}}</text><view><button a:for="{{executionQuestion.options}}" a:key="optionId" data-option-id="{{item.optionId}}" onTap="answerExecution">{{item.label}}<text a:if="{{item.impact}}">{{item.impact}}</text></button></view></view>
+        <button a:if="{{execution && !executionActive && execution.status !== 'awaiting_input' && (execution.status !== 'completed' || execution.result.outcome.status === 'partial')}}" onTap="continueExecution">继续规划</button>
+      </view>
+      <view class="composer">
+        <textarea value="{{input}}" onInput="onInput" maxlength="4000" focus="{{inputFocus}}" auto-height="true" placeholder="例如：和父母去大理 5 天，轻松一点，想吃本地菜"></textarea>
+        <view class="draft-recovery" a:if="{{failedText}}"><text>上一条未发送内容已保留</text><button onTap="restoreFailedDraft">恢复到输入框</button></view>
+        <view class="composer-actions"><text class="composer-hint">先理解，再生成方案</text><button class="send" loading="{{loading}}" disabled="{{!input || loading || !conversation || routeSwitching}}" onTap="sendMessage">发送</button></view>
+      </view>
+    </view>
+
+    <scroll-view scroll-y="true" class="itinerary-workspace" a:if="{{activeView === 'itinerary'}}">
+      <view class="empty-plan" a:if="{{!proposal && !accepted.length}}">
+        <text class="card-title">还需要一点旅行信息</text><text class="copy">你的想法已经保留。回到对话补充，或重试暂时缺失的资料。</text>
+        <button class="primary" data-view="conversation" onTap="switchView">继续和助手规划</button>
+        <button class="secondary" a:if="{{trip}}" disabled="{{loading}}" onTap="retryTrip">重新读取方案</button>
+      </view>
+      <view class="trip-hero" a:if="{{trip}}">
+        <text class="section-eyebrow">我的下一段旅程</text>
+        <text class="trip-hero-title">{{trip.destination || '目的地待确认'}}</text>
+        <text class="copy">{{trip.timeLabel}} · {{trip.travelerCount}} 位同行人</text>
+        <view class="trip-facts" a:if="{{trip.budgetLabel || trip.paceLabel}}"><text a:if="{{trip.budgetLabel}}">{{trip.budgetLabel}}</text><text a:if="{{trip.paceLabel}}">{{trip.paceLabel}}</text></view>
+        <view class="traveler-care" a:if="{{trip.travelerCare.length}}">
+          <text class="section-label">同行人的安排重点</text>
+          <view a:for="{{trip.travelerCare}}" a:key="travelerId"><text>{{item.displayName}}</text><text>{{item.labelText}}</text></view>
+        </view>
+      </view>
+
+
+      <view class="plan decision-board" a:if="{{proposal}}">
+        <view class="plan-heading"><view><text class="section-eyebrow">当前要决定</text><text class="card-title">先挑喜欢的，再看怎么串起来。</text></view><text class="evidence-chip">确认后才写入</text></view>
+        <text class="copy">先把喜欢的地点加入试排，核对路线后再确认。</text>
+        <scroll-view class="decision-tabs" scroll-x="true" show-scrollbar="false">
+          <button a:for="{{proposalDomains}}" a:key="key" data-domain="{{item.key}}" class="{{activeDomainKey === item.key ? 'active' : ''}}" onTap="switchDecisionDomain">{{item.label}}<text>{{item.hasSelection ? '已选' : item.candidates.length + ' 个'}}</text></button>
+        </scroll-view>
+        <block a:for="{{proposalDomains}}" a:key="key"><view a:if="{{item.key === activeDomainKey}}" class="domain">
+          <view a:for="{{item.candidates}}" a:for-item="candidate" a:key="nodeId" class="candidate {{candidate.selected ? 'selected' : ''}}">
+            <image a:if="{{candidate.photo}}" src="{{candidate.photo}}" mode="aspectFill"></image>
+            <view class="candidate-body">
+              <view class="candidate-title-row"><text>{{candidate.title}}</text><text class="candidate-choice">{{candidate.selected ? '试排中 · 未确认' : '待比较'}}</text></view>
+              <view class="candidate-price {{candidate.priceTone}}"><text>{{candidate.priceLabel}}</text><text>{{candidate.priceDetail}}</text></view>
+              <text class="candidate-copy">{{candidate.summary}}</text>
+              <text class="facility-copy" a:if="{{candidate.facilityText}}">{{candidate.facilityText}}</text>
+              <view class="candidate-actions">
+                <button data-domain="{{item.key}}" data-node-id="{{candidate.nodeId}}" onTap="openPlacePreview">先看详情</button>
+                <button class="candidate-trial" disabled="{{loading || routeSwitching}}" data-domain="{{item.key}}" data-node-id="{{candidate.nodeId}}" onTap="selectCandidate">{{candidate.selected ? '取消试排' : '加入试排'}}</button>
+              </view>
+            </view>
+          </view>
+        </view></block>
+      </view>
+
+      <view class="plan accepted-board" a:if="{{accepted.length}}">
+        <view class="plan-heading"><view><text class="section-eyebrow">已写入行程</text><text class="card-title">已确认安排</text></view><text class="evidence-chip">{{accepted.length}} 项</text></view>
+        <text class="copy">没有可靠时间时不会自动编造时间表。</text>
+        <view a:for="{{accepted}}" a:key="nodeId" class="accepted"><text class="schedule-label">{{item.scheduleLabel}}</text><text>{{item.title}}</text><text class="candidate-copy">{{item.summary}}</text><view class="route-facilities" a:if="{{item.facilities.length}}"><text a:for="{{item.facilities}}" a:for-item="facility" a:key="kind">{{facility.note}}</text></view></view>
+        <button class="map-cta" data-view="map" onTap="switchView">查看地图、路线和设施</button>
+      </view>
+      <view class="plan budget-board" a:if="{{planBudget}}">
+        <view class="plan-heading"><view><text class="section-eyebrow">预算边界</text><text class="card-title">{{planBudget.summary}}</text></view><text class="evidence-chip">按当前候选</text></view>
+        <text class="copy">分域合计为确定性估算；候选单价仍保留实价、参考价或待核验。</text>
+        <view class="budget-rows"><view a:for="{{planBudget.rows}}" a:key="domain"><text>{{item.label}}</text><text>{{item.amountLabel}}</text><text>{{item.basis}}</text></view></view>
+      </view>
+
+    </scroll-view>
+
+    <scroll-view scroll-y="true" class="map-workspace" a:if="{{activeView === 'map'}}">
+      <view class="map-heading"><view><text class="section-eyebrow">路线工作台</text><text class="card-title">{{trip.destination}}怎么走</text></view><text class="map-evidence">{{routeDrawable ? '路线已绘制' : '路线待核验'}}</text></view>
+      <view class="mini-route-status" a:if="{{selectedCount}}">
+        <text class="card-title">{{routeSwitching ? '正在核验路线…' : routeCanConfirm ? '路线已核验，待你确认' : '确认前，还需要补齐'}}</text>
+        <text class="copy">{{routeBlocker || '核对时间、步行和费用；确认不会产生预订或付款。'}}</text>
+        <view><button class="secondary" data-view="itinerary" onTap="switchView">继续挑选</button><button a:if="{{!routeCanConfirm}}" class="secondary" disabled="{{routeSwitching || loading}}" onTap="reviewDraft">重试核验</button><button a:if="{{routeBlocker}}" class="secondary" data-view="conversation" onTap="switchView">补充信息</button></view>
+      </view>
+      <scroll-view class="route-day-tabs" a:if="{{routeDays.length > 1}}" scroll-x="true" show-scrollbar="false"><button a:for="{{routeDays}}" a:key="*this" data-day="{{item}}" class="{{activeDay === item ? 'active' : ''}}" onTap="selectRouteDay">第 {{item}} 天</button></scroll-view>
       <map a:if="{{markers.length}}" class="map" markers="{{markers}}" polyline="{{polylines}}" include-points="{{markers}}" longitude="{{markers[0].longitude}}" latitude="{{markers[0].latitude}}" scale="11"></map>
-      <view class="plan next-route" a:if="{{nextLeg}}"><text class="section-label">下一段怎么走</text><text class="card-title">{{nextLeg.origin.label}} → {{nextLeg.destination.label}}</text><view class="route-facts"><text>{{nextLeg.modeLabel}}</text><text>约 {{nextLeg.minutes}} 分钟</text><text a:if="{{nextLeg.walkingMeters != null}}">步行 {{nextLeg.walkingMeters}} 米</text><text a:if="{{nextLeg.transfers != null}}">{{nextLeg.transfers}} 次换乘</text><text a:if="{{nextLeg.estimatedFareCny != null}}">约 ¥{{nextLeg.estimatedFareCny}}</text></view><text class="candidate-copy">{{nextLeg.rationale}}</text><view class="route-mode-options"><button a:for="{{nextLeg.modeOptions}}" a:key="mode" data-leg-id="{{nextLeg.legId}}" data-mode="{{item.mode}}" class="{{nextLeg.mode === item.mode ? 'active' : ''}}" loading="{{routeSwitching && nextLeg.mode !== item.mode}}" disabled="{{routeSwitching}}" onTap="selectRouteMode"><text>{{item.label}}</text><text>{{item.minutes}} 分钟 · 步行 {{item.walkingMeters || 0}}m</text></button></view><view class="route-steps" a:if="{{nextLeg.steps.length}}"><text a:for="{{nextLeg.steps}}" a:key="index">{{item.line || item.instruction}}<text a:if="{{item.line}}"> · {{item.instruction}}</text></text></view><text class="route-warning" a:if="{{!nextLeg.drawable}}">这段没有返回真实折线，地图不会用两点直线代替，也不会开放路线确认。</text><text class="route-warning" a:if="{{routeSwitchBlocked}}">刚才的切换未通过核验，地图仍保留上一条路线。</text></view>
-      <view class="plan day-route-list" a:if="{{routeLegs.length > 1}}"><text class="section-label">当天其他路段</text><button a:for="{{routeLegs}}" a:key="legId" data-leg-id="{{item.legId}}" class="{{activeLegId === item.legId ? 'active' : ''}}" onTap="selectRouteLeg"><text>{{item.origin.label}} → {{item.destination.label}}</text><text>{{item.modeLabel}} · {{item.minutes}} 分钟</text></button></view>
-      <view class="plan facility-panel" a:if="{{accepted.length}}"><text class="card-title">地点设施参考</text><text class="copy">地图有记录 · 非实时 · 建议现场确认。</text><view a:for="{{accepted}}" a:key="nodeId" class="accepted"><text>{{item.title}}</text><view class="route-facilities" a:if="{{item.facilities.length}}"><text a:for="{{item.facilities}}" a:for-item="facility" a:key="kind">{{facility.note}}</text></view><text class="candidate-copy" a:else>没有返回设施资料，不代表现场没有。</text></view></view>
-      <text class="map-source-note" a:if="{{mobility}}">{{mobility.notice}}</text>
-    </block>
-    <view class="workspace-tabs bottom-tabs"><button data-view="conversation" class="{{activeView === 'conversation' ? 'active' : ''}}" onTap="switchView">对话</button><button data-view="itinerary" class="{{activeView === 'itinerary' ? 'active' : ''}}" disabled="{{!trip}}" onTap="switchView">行程<text class="tab-badge" a:if="{{proposalDomains.length}}">{{proposalDomains.length}}</text></button><button data-view="map" class="{{activeView === 'map' ? 'active' : ''}}" disabled="{{!trip}}" onTap="switchView">地图</button></view>
+      <view class="map-empty" a:else><text>地图资料待补</text><text>取得可靠坐标后才会显示地点与路线，不用两点直线代替。</text></view>
+
+      <view class="route-sheet {{routeSheetExpanded ? 'expanded' : 'compact'}}" a:if="{{nextLeg}}">
+        <button class="sheet-grip" onTap="toggleRouteSheet"><view class="grip-line"></view><text>{{routeSheetExpanded ? '收起路线详情' : '展开路线详情'}}</text></button>
+        <view class="next-route">
+          <text class="section-label">下一段怎么走</text>
+          <text class="route-title">{{nextLeg.origin.label}} → {{nextLeg.destination.label}}</text>
+          <view class="route-facts"><text>{{nextLeg.modeLabel}}</text><text>约 {{nextLeg.minutes}} 分钟</text><text a:if="{{nextLeg.walkingMeters != null}}">步行 {{nextLeg.walkingMeters}} 米</text><text a:if="{{nextLeg.transfers != null}}">{{nextLeg.transfers}} 次换乘</text><text a:if="{{nextLeg.estimatedFareCny != null}}">约 ¥{{nextLeg.estimatedFareCny}}</text></view>
+          <text class="candidate-copy">{{nextLeg.rationale}}</text>
+          <view class="route-mode-options"><button a:for="{{nextLeg.modeOptions}}" a:key="mode" data-leg-id="{{nextLeg.legId}}" data-mode="{{item.mode}}" class="{{nextLeg.mode === item.mode ? 'active' : ''}}" loading="{{routeSwitching && nextLeg.mode !== item.mode}}" disabled="{{routeSwitching}}" onTap="selectRouteMode"><text>{{item.label}}</text><text>{{item.minutes}} 分钟 · 步行 {{item.walkingMeters || 0}}m</text></button></view>
+        </view>
+        <block a:if="{{routeSheetExpanded}}">
+          <view class="route-steps" a:if="{{nextLeg.steps.length}}"><text class="section-label">换乘与步行步骤</text><text a:for="{{nextLeg.steps}}" a:key="index">{{item.line || item.instruction}}<text a:if="{{item.line}}"> · {{item.instruction}}</text></text></view>
+          <text class="route-warning" a:if="{{!nextLeg.drawable}}">这段没有返回真实折线，地图不会用两点直线代替，也不会开放路线确认。</text>
+          <text class="route-warning" a:if="{{routeSwitchBlocked}}">刚才的切换未通过核验，地图仍保留上一条路线。</text>
+          <view class="day-route-list" a:if="{{routeLegs.length > 1}}"><text class="section-label">当天其他路段</text><button a:for="{{routeLegs}}" a:key="legId" data-leg-id="{{item.legId}}" class="{{activeLegId === item.legId ? 'active' : ''}}" onTap="selectRouteLeg"><text>{{item.origin.label}} → {{item.destination.label}}</text><text>{{item.modeLabel}} · {{item.minutes}} 分钟</text></button></view>
+          <view class="facility-panel" a:if="{{accepted.length}}"><text class="section-label">地点设施参考</text><text class="copy">地图有记录 · 非实时 · 建议现场确认。</text><view a:for="{{accepted}}" a:key="nodeId" class="accepted"><text>{{item.title}}</text><view class="route-facilities" a:if="{{item.facilities.length}}"><text a:for="{{item.facilities}}" a:for-item="facility" a:key="kind">{{facility.note}}</text></view><text class="candidate-copy" a:else>没有返回设施资料，不代表现场没有。</text></view></view>
+          <text class="map-source-note" a:if="{{mobility}}">{{mobility.notice}}</text>
+        </block>
+      </view>
+    </scroll-view>
+
+    <view class="mini-draft-tray" a:if="{{selectedCount && activeView !== 'conversation'}}">
+      <view><text class="mini-draft-count">{{selectedCount}} 项试排</text><text class="mini-draft-note">还没改动行程</text></view>
+      <button a:if="{{activeView !== 'map'}}" class="primary" disabled="{{loading || routeSwitching || tripRefreshNeeded}}" onTap="reviewDraft">查看路线 ›</button>
+      <button a:else class="primary" loading="{{loading}}" disabled="{{loading || routeSwitching || !routeCanConfirm || routeSwitchBlocked || tripRefreshNeeded}}" onTap="acceptProposal">确认加入行程</button>
+    </view>
+
+    <view class="preview-backdrop" a:if="{{activePreview}}" onTap="closePlacePreview"></view>
+    <scroll-view scroll-y="true" class="place-preview-sheet" a:if="{{activePreview}}">
+      <view class="preview-heading"><text>地点详情</text><button onTap="closePlacePreview">关闭</button></view>
+      <view class="place-preview-hero">
+        <image a:if="{{activePreview.photo}}" src="{{activePreview.photo}}" mode="aspectFill"></image>
+        <view class="place-preview-photo-empty" a:else>暂无来源图片</view>
+        <view>
+          <text class="section-eyebrow">{{activePreview.domainLabel}} · 目的地预览</text>
+          <text class="place-preview-title">{{activePreview.title}}</text>
+          <text class="copy">{{activePreview.sourceLabel}}</text>
+        </view>
+      </view>
+      <view class="place-preview-facts">
+        <view a:for="{{activePreview.facts}}" a:key="label"><text>{{item.label}}</text><text>{{item.value}}</text></view>
+      </view>
+      <view class="place-preview-route" a:if="{{activePreview.routeImpact}}">
+        <text class="section-label">路线与体力影响</text>
+        <text>{{activePreview.routeImpact.title}}</text>
+        <text>{{activePreview.routeImpact.detail}}</text>
+        <text a:if="{{activePreview.routeImpact.rationale}}">{{activePreview.routeImpact.rationale}}</text>
+      </view>
+      <view class="place-preview-unknowns" a:if="{{activePreview.unknowns.length}}">
+        <text class="section-label">仍需核验</text>
+        <text a:for="{{activePreview.unknowns}}" a:key="*this">{{item}}</text>
+      </view>
+      <view class="place-preview-actions">
+        <button class="primary" disabled="{{loading || routeSwitching}}" onTap="selectPreviewCandidate">{{activePreview.ctaLabel}}</button>
+        <button class="secondary" onTap="closePlacePreview">返回比较</button>
+      </view>
+      <text class="map-source-note">预览只读；加入试排只改变本地候选，确认后才写入行程。</text>
+    </scroll-view>
+
+    <view class="workspace-tabs bottom-tabs" a:if="{{trip}}">
+      <button data-view="itinerary" class="{{activeView === 'itinerary' ? 'active' : ''}}" onTap="switchView"><text class="tab-symbol">选</text><text>发现与比较</text></button>
+      <button data-view="map" class="{{activeView === 'map' ? 'active' : ''}}" onTap="switchView"><text class="tab-symbol">程</text><text>行程与路线</text><text class="tab-badge" a:if="{{selectedCount}}">{{selectedCount}}</text></button>
+      <button data-view="conversation" class="{{activeView === 'conversation' ? 'active' : ''}}" onTap="switchView"><text class="tab-symbol">聊</text><text>旅行助手</text></button>
+    </view>
   </block>
-  <text class="notice bottom" a:if="{{notice}}">{{notice}}</text>
+  <view class="notice bottom" a:if="{{notice}}"><text>{{notice}}</text><button onTap="dismissNotice">关闭</button></view>
+  <view class="preview-backdrop" a:if="{{historyOpen}}" onTap="toggleHistory"></view>
+  <scroll-view scroll-y="true" class="history-sheet" a:if="{{historyOpen}}">
+    <view class="preview-heading"><text>我的旅行</text><button onTap="toggleHistory">关闭</button></view>
+    <text class="copy">每段对话连着一趟旅行，已确认安排会保留。</text>
+    <text class="copy" a:if="{{notice}}">{{notice}}</text>
+    <button class="primary" disabled="{{loading || routeSwitching}}" onTap="openConversation">＋ 规划新的旅行</button>
+    <button class="history-row {{conversation.conversationId === item.conversationId ? 'active' : ''}}" a:for="{{conversations}}" a:key="conversationId" data-id="{{item.conversationId}}" disabled="{{loading || routeSwitching}}" onTap="openConversation"><text>{{item.title || '旅行对话'}}</text><text>{{conversation.conversationId === item.conversationId ? '正在查看' : '继续规划 ›'}}</text></button>
+  </scroll-view>
 </view>

@@ -1,4 +1,5 @@
 import * as runtime from "../runtime/trip-runtime-implementation.js";
+import { ensureContinuousPlanning, invalidateSavedPlans, recordAdoptedValidation, planningHash, planningDependencies, projectAdoptedPlan } from "./continuous-planning.js";
 import {
   FOUR_DOMAINS,
   SOCIAL_ERROR_CODES,
@@ -101,15 +102,49 @@ export function createTripControlState(input: CreateTripControlStateInput = {}):
 }
 
 export function applyWeatherObservation(state: TripState, observation: object, options: RuntimeOptions = {}): TripState {
-  return assertTripState(runtime.applyWeatherObservation(state, observation as Record<string, unknown>, options));
+  const source = structuredClone(state);
+  ensureContinuousPlanning(source);
+  const next = assertTripState(runtime.applyWeatherObservation(source, observation as Record<string, unknown>, options));
+  if (next.revision !== state.revision) invalidateSavedPlans(next, ["weather_changed"]);
+  return next;
 }
 
 export function applyMobilityObservation(state: TripState, observation: MobilityObservation, options: RuntimeOptions = {}): TripState {
-  return assertTripState(runtime.applyMobilityObservation(state, observation, options));
+  const source = structuredClone(state);
+  ensureContinuousPlanning(source);
+  const next = assertTripState(runtime.applyMobilityObservation(source, observation, options));
+  recordAdoptedValidation(next, observation);
+  return next;
 }
 
 export function updateTripControlScope(state: TripState, input: UpdateTripScopeInput = {}, options: RuntimeOptions = {}): TripState {
-  return assertTripState(runtime.updateTripControlScope(state, input, options));
+  const source = structuredClone(state);
+  ensureContinuousPlanning(source);
+  const next = assertTripState(runtime.updateTripControlScope(source, input, options));
+  if (next.revision !== state.revision) {
+    const changed: string[] = (Object.keys(next.brief) as Array<keyof TripBrief>).filter(key => planningHash(next.brief[key] ?? null) !== planningHash(state.brief[key] ?? null));
+    if (planningHash(next.travelers) !== planningHash(state.travelers)) changed.push("travelers");
+    if (changed.length && changed.every(key => key === "totalBudget")) {
+      // A spending limit does not change a route's measured duration or places.
+      // Recalculate affordability of each saved version using its own choices.
+      for (const document of [next.planning?.adopted, next.planning?.draft]) {
+        if (!document?.validation.feasibility) continue;
+        const budget = runtime.estimateTripBudget({ ...next, nodes: document.candidates.map(node => ({ ...node, selected: true })), pendingProposals: [], environment: { ...next.environment, mobility: document.validation.mobility } });
+        const check = document.validation.feasibility;
+        check.issues = check.issues.filter(issue => issue.code !== "trip_budget_exceeded");
+        if (budget.exceedsBudget) check.issues.unshift({ code: "trip_budget_exceeded", scope: "plan", severity: "blocking", message: `当前方案预计 ${budget.estimated} 元，超过已确认的 ${budget.totalBudget} 元预算。`, stopIds: [], dayIndex: null, resolution: "plan_change", allowedRepairDirections: ["replace_candidate", "change_mode"] });
+        const blocker = check.issues.find(issue => issue.severity === "blocking");
+        check.canConfirm = !blocker && document.validation.status === "checked";
+        check.status = blocker ? "blocked" : check.canConfirm ? "feasible" : check.status;
+        check.primaryBlocker = blocker?.message ?? null;
+        if (document.validation.mobility) document.validation.mobility.feasibility = structuredClone(check);
+        document.validation.dependencyFingerprint = planningDependencies(next);
+      }
+      projectAdoptedPlan(next);
+    } else if (changed.length) invalidateSavedPlans(next, changed);
+    next.budgetLedger = estimateTripBudget(next);
+  }
+  return next;
 }
 
 export function updateTripReadiness(state: TripState, input: UpdateTripReadinessInput, options: RuntimeOptions = {}): TripState {

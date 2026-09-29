@@ -14,6 +14,8 @@ For a refinement, change only the affected domain criteria. Named places and tar
 
 Return evidence-backed findings, candidate IDs, rejected IDs, reason codes, unknowns and evidence references. Never create a purchase or write TripState.
 
+Jev receives independent typed questions over the same immutable evidence snapshot; it never supplies new source facts or calls Providers. Preserve unknowns and disagreements. Do not stop a complete-itinerary request at scoring: return the findings to Parent for combination, routing and checking. A deferred read resumes from its completed receipts, with dependency/freshness revalidation and no repeat of completed sibling analysis.
+
 Never mutate Trip State or commit a patch.
 
 References retained from the previous micro Skills:

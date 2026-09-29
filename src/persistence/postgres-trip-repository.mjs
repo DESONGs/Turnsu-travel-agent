@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { executionWrite } from "./execution-write.mjs";
 import { hydrateStoredTripState } from "../../travel-agent-pi-package/src/core/index.ts";
 
 function repositoryError(code, details = {}) {
@@ -49,17 +50,42 @@ CREATE TABLE IF NOT EXISTS evidence_presentations (
 );
 CREATE INDEX IF NOT EXISTS evidence_presentations_trip_idx ON evidence_presentations (trip_id, updated_at DESC);
 CREATE INDEX IF NOT EXISTS evidence_presentations_expiry_idx ON evidence_presentations (expires_at);
+CREATE TABLE IF NOT EXISTS travel_mobility_previews (
+  preview_id TEXT PRIMARY KEY, trip_id TEXT NOT NULL REFERENCES trip_states(trip_id),
+  expires_at BIGINT NOT NULL, record_json JSONB NOT NULL
+);
+CREATE INDEX IF NOT EXISTS travel_mobility_previews_expiry ON travel_mobility_previews(expires_at);
 `;
+
+const migrations = new WeakMap();
+export async function migrateTravelDatabase(pool) {
+  let pending = migrations.get(pool);
+  if (!pending) {
+    pending = (async () => {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        await client.query("SELECT pg_advisory_xact_lock(715803124)");
+        await client.query(POSTGRES_MIGRATION_SQL);
+        await client.query("COMMIT");
+      } catch (error) { await client.query("ROLLBACK").catch(() => {}); migrations.delete(pool); throw error; }
+      finally { client.release(); }
+    })();
+    migrations.set(pool, pending);
+  }
+  await pending;
+}
 
 export class PostgresTripRepository {
   constructor({ databaseUrl, pool } = {}) {
     if (!pool && !databaseUrl) throw repositoryError("database_url_required");
     this.pool = pool ?? new Pool({ connectionString: databaseUrl, max: 10, idleTimeoutMillis: 10_000 });
+    this.ownsPool = !pool;
     this.mode = "postgres";
   }
 
   async migrate() {
-    await this.pool.query(POSTGRES_MIGRATION_SQL);
+    await migrateTravelDatabase(this.pool);
   }
 
   async create(state) {
@@ -67,10 +93,10 @@ export class PostgresTripRepository {
     const persisted = structuredClone(state);
     persisted.storageVersion = 0;
     try {
-      await this.pool.query(
+      await executionWrite(this.pool, (db) => db.query(
         "INSERT INTO trip_states (trip_id, storage_version, state_json) VALUES ($1, $2, $3::jsonb)",
-        [persisted.tripId, persisted.storageVersion, JSON.stringify(persisted)],
-      );
+      [persisted.tripId, persisted.storageVersion, JSON.stringify(persisted)],
+    ), { productWrite: true, tripId: persisted.tripId });
       return persisted;
     } catch (error) {
       if (error?.code === "23505") throw repositoryError("trip_already_exists", { tripId: persisted.tripId });
@@ -87,6 +113,16 @@ export class PostgresTripRepository {
   async list() {
     const result = await this.pool.query("SELECT state_json FROM trip_states ORDER BY updated_at DESC");
     return result.rows.map((row) => validateState(row.state_json, row.state_json.tripId));
+  }
+  async getMobilityPreview(previewId, now = Date.now()) {
+    await this.migrate();
+    const result = await this.pool.query("SELECT record_json FROM travel_mobility_previews WHERE preview_id=$1 AND expires_at>$2", [previewId, now]);
+    return result.rows[0]?.record_json ?? null;
+  }
+  async saveMobilityPreview(previewId, record, expiresAt, now = Date.now()) {
+    await this.migrate();
+    await executionWrite(this.pool, (db) => db.query("INSERT INTO travel_mobility_previews(preview_id,trip_id,expires_at,record_json) VALUES($1,$2,$3,$4::jsonb) ON CONFLICT(preview_id) DO UPDATE SET expires_at=EXCLUDED.expires_at,record_json=EXCLUDED.record_json WHERE travel_mobility_previews.trip_id=EXCLUDED.trip_id", [previewId, record.tripId, expiresAt, JSON.stringify(record)]));
+    await this.pool.query("DELETE FROM travel_mobility_previews WHERE preview_id IN (SELECT preview_id FROM travel_mobility_previews WHERE expires_at<$1 LIMIT 64)", [now]);
   }
 
   async listSharedPlaceFeedback(sourceRefs) {
@@ -113,12 +149,12 @@ export class PostgresTripRepository {
     const persisted = structuredClone(state);
     const nextVersion = Number(expectedStorageVersion) + 1;
     persisted.storageVersion = nextVersion;
-    const result = await this.pool.query(
+    const result = await executionWrite(this.pool, (db) => db.query(
       `UPDATE trip_states
        SET storage_version = $3, state_json = $4::jsonb, updated_at = now()
        WHERE trip_id = $1 AND storage_version = $2`,
       [persisted.tripId, expectedStorageVersion, nextVersion, JSON.stringify(persisted)],
-    );
+    ), { productWrite: true, tripId: persisted.tripId });
     if (!result.rowCount) {
       const exists = await this.pool.query("SELECT 1 FROM trip_states WHERE trip_id = $1", [persisted.tripId]);
       throw repositoryError(exists.rowCount ? "storage_conflict" : "trip_not_found", { tripId: persisted.tripId });
@@ -127,6 +163,6 @@ export class PostgresTripRepository {
   }
 
   async close() {
-    await this.pool.end();
+    if (this.ownsPool) await this.pool.end();
   }
 }

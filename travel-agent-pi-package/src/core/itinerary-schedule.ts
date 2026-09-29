@@ -7,7 +7,10 @@ import {
   type ItineraryPlan,
   type MobilityObservation,
   type TripBrief,
+  type ItineraryStopRole,
+  type ItineraryPlanMode,
 } from "../contracts/index.js";
+import { transportStopWindow, selectedRoute } from "./journey-execution.js";
 
 type ScheduleNode = {
   nodeId: string;
@@ -18,12 +21,13 @@ type ScheduleNode = {
   operability?: Record<string, unknown>;
 };
 
-type ItineraryRole = "intercity_arrival" | "bag_drop" | "stay_check_in" | "stay_departure" | "stay_return" | "meal" | "activity" | "local_transport";
+type ItineraryRole = ItineraryStopRole;
 type ItineraryDomain = ScheduleNode["domain"];
 type TimeSource = "provider_schedule" | "user_confirmed" | "agent_suggested" | "derived_route";
 
 export interface ItineraryStopValue {
   stopId: string;
+  mealPurpose?: string;
   nodeId: string;
   domain: ItineraryDomain;
   title: string;
@@ -34,7 +38,7 @@ export interface ItineraryStopValue {
   endAt: string | null;
   timeSource: TimeSource;
   fixed: boolean;
-  preferredModes?: Array<"walk" | "transit" | "taxi">;
+  preferredModes?: ItineraryPlanMode[];
   rationale?: string;
   openingHours?: string | null;
 }
@@ -50,6 +54,7 @@ export interface ItineraryValue {
 export interface FeasibilityIssueValue {
   code: string;
   severity: "blocking" | "warning";
+  resolution?: "provider_evidence" | "plan_change" | "user_fact";
   message: string;
   stopIds: string[];
   dayIndex: number | null;
@@ -58,13 +63,13 @@ export interface FeasibilityIssueValue {
     requestedStartAt?: string | null;
     earliestStartAt?: string | null;
     routeMinutes?: number | null;
-    routeMode?: "walk" | "transit" | "taxi" | null;
+    routeMode?: ItineraryPlanMode | null;
     walkingMeters?: number | null;
     walkingLimitMeters?: number | null;
     transfers?: number | null;
     transferLimit?: number | null;
   };
-  allowedRepairDirections?: Array<"shift_later" | "move_to_next_day" | "change_mode" | "reorder_flexible_stop" | "replace_candidate" | "remove_optional_stop" | "request_context">;
+  allowedRepairDirections?: Array<"shift_later" | "move_to_next_day" | "change_mode" | "reorder_flexible_stop" | "replace_candidate" | "remove_optional_stop" | "request_context" | "fetch_evidence">;
   checkedAt?: string | null;
 }
 
@@ -140,8 +145,11 @@ function datePart(value: string | null, fallback: string): string {
   return value?.slice(0, 10).match(/^20\d{2}-\d{2}-\d{2}$/)?.[0] ?? fallback;
 }
 
-function makeStop(input: Omit<ItineraryStopValue, "stopId">): ItineraryStopValue {
-  return { ...input, stopId: stopId(input.nodeId, input.dayIndex, input.role) };
+function makeStop(input: Omit<ItineraryStopValue, "stopId">, visitIndex = 0): ItineraryStopValue {
+  const baseId = stopId(input.nodeId, input.dayIndex, input.role);
+  // A place is not a visit: lunch and dinner may use the same restaurant.
+  const uniqueId = visitIndex ? `${baseId.slice(0, 100)}:visit_${visitIndex}_${createHash("sha256").update(input.nodeId).digest("hex").slice(0, 8)}` : baseId;
+  return { ...input, stopId: uniqueId };
 }
 
 function needsContext(message: string): FeasibilityValue {
@@ -168,9 +176,11 @@ function blockedDraft(issues: FeasibilityIssueValue[], status: "blocked" | "need
 }
 
 function roleMatchesDomain(role: ItineraryRole, domain: ItineraryDomain): boolean {
+  if (["parking", "vehicle_pickup", "vehicle_return", "rest"].includes(role)) return true;
+  if (role === "transport_departure" || role === "transport_arrival") return domain === "transport";
   if (role === "intercity_arrival" || role === "local_transport") return domain === "transport";
   if (["bag_drop", "stay_check_in", "stay_departure", "stay_return"].includes(role)) return domain === "stay";
-  if (role === "meal") return domain === "food";
+  if (role === "meal") return domain === "food" || domain === "stay";
   return role === "activity" && domain === "play";
 }
 
@@ -182,6 +192,7 @@ export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief,
   const issues: FeasibilityIssueValue[] = plan.needsContext.slice(0, 6).map((item) => ({ code: "planner_context_note", severity: "warning", message: item, stopIds: [], dayIndex: null, allowedRepairDirections: ["request_context"] }));
   const stops: ItineraryStopValue[] = [];
   const seenDays = new Set<number>();
+  const visits = new Map<string, number>();
   for (const day of plan.days) {
     const expectedDate = dates[day.dayIndex - 1];
     if (!expectedDate || expectedDate !== day.date || seenDays.has(day.dayIndex)) {
@@ -207,8 +218,12 @@ export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief,
         issues.push({ code: "plan_role_domain_mismatch", severity: "blocking", message: `${String(node.title ?? node.nodeId)}的行程角色与地点类型不一致。`, stopIds: [planned.nodeId], dayIndex: day.dayIndex, allowedRepairDirections: ["reorder_flexible_stop", "replace_candidate"] });
         continue;
       }
-      const startAt = planned.timeWindow.startAt ?? null;
-      const endAt = planned.timeWindow.endAt ?? (startAt ? shifted(startAt, planned.durationMinutes) : null);
+      const transport = transportStopWindow(node, plannedRole, planned.durationMinutes);
+      const startAt = transport?.startAt ?? planned.timeWindow.startAt ?? null;
+      const endAt = transport?.endAt ?? planned.timeWindow.endAt ?? (startAt ? shifted(startAt, planned.durationMinutes) : null);
+      const visitKey = `${planned.nodeId}:${day.dayIndex}:${plannedRole}`;
+      const visitIndex = visits.get(visitKey) ?? 0;
+      visits.set(visitKey, visitIndex + 1);
       const stop = makeStop({
         nodeId: planned.nodeId,
         domain: node.domain,
@@ -219,11 +234,14 @@ export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief,
         startAt,
         endAt,
         timeSource: planned.fixed ? (plannedRole === "intercity_arrival" && objectValue(node.operability).mobilityRole === "user_confirmed_arrival" ? "user_confirmed" : "provider_schedule") : "agent_suggested",
-        fixed: planned.fixed,
-        preferredModes: [...planned.preferredModes] as Array<"walk" | "transit" | "taxi">,
+        fixed: Boolean(transport) || planned.fixed,
+        preferredModes: [...planned.preferredModes] as ItineraryPlanMode[],
         rationale: planned.rationale,
         openingHours: String(objectValue(node.operability).openWeek ?? "").trim().slice(0, 300) || null,
-      });
+      }, visitIndex);
+      if (planned.stopId) stop.stopId = planned.stopId;
+      if (transport) stop.timeSource = "provider_schedule";
+      if (planned.mealPurpose) stop.mealPurpose = planned.mealPurpose;
       if (startAt && datePart(startAt, day.date) !== day.date) {
         issues.push({ code: "plan_stop_date_mismatch", severity: "blocking", message: `${stop.title}的时间不在第 ${day.dayIndex} 天。`, stopIds: [stop.stopId], dayIndex: day.dayIndex, allowedRepairDirections: ["move_to_next_day", "shift_later"] });
       }
@@ -375,15 +393,15 @@ export function buildItineraryDraft(brief: TripBrief, nodes: ScheduleNode[]): It
 }
 
 function recommendedMinutes(leg: MobilityObservation["legs"][number] | undefined): number | null {
-  const alternative = leg?.alternatives.find((item) => item.mode === leg.recommendedMode);
+  const alternative = leg ? selectedRoute(leg) : null;
   return alternative ? alternative.totalMinutes : null;
 }
 
 function recommendedAlternative(leg: MobilityObservation["legs"][number] | undefined) {
-  return leg?.alternatives.find((item) => item.mode === leg.recommendedMode) ?? null;
+  return leg ? selectedRoute(leg) : null;
 }
 
-export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility: MobilityObservation, checkedAt: string | null = mobility.checkedAt): ItineraryDraftResult {
+export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility: MobilityObservation, checkedAt: string | null = mobility.checkedAt, { preserveSchedule = false } = {}): ItineraryDraftResult {
   if (!draft.itinerary) return draft;
   const itinerary = structuredClone(draft.itinerary);
   const issues: FeasibilityIssueValue[] = [];
@@ -407,22 +425,26 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
   const legByStops = new Map<string, MobilityObservation["legs"][number]>();
   for (const leg of mobility.legs) {
     legByStops.set(`${leg.origin.stopId ?? leg.origin.nodeId}->${leg.destination.stopId ?? leg.destination.nodeId}`, leg);
-    legByStops.set(`${leg.origin.nodeId}->${leg.destination.nodeId}`, leg);
+    // A route checked for yesterday's visit is not evidence for today's visit.
+    // Node-only matching is retained for legacy, unscheduled observations only.
+    if (!leg.origin.stopId && !leg.destination.stopId && mobility.coverage?.unscheduled !== false) {
+      legByStops.set(`${leg.origin.nodeId}->${leg.destination.nodeId}`, leg);
+    }
   }
   for (let index = 1; index < itinerary.stops.length; index += 1) {
     const previous = itinerary.stops[index - 1]!;
     const current = itinerary.stops[index]!;
-    const samePlace = previous.nodeId === current.nodeId;
+    const samePlace = previous.nodeId === current.nodeId && !(previous.role === "transport_departure" && current.role === "transport_arrival");
     const leg = legByStops.get(`${previous.stopId}->${current.stopId}`) ?? legByStops.get(`${previous.nodeId}->${current.nodeId}`);
     const minutes = samePlace ? 0 : recommendedMinutes(leg);
     if (minutes == null) {
-      issues.push({ code: "required_route_missing", severity: "blocking", message: `${previous.title}到${current.title}的路线尚未核验，不能确认这份方案。`, stopIds: [previous.stopId, current.stopId], dayIndex: current.dayIndex, observed: { previousEndAt: previous.endAt ?? null, requestedStartAt: current.startAt ?? null, routeMinutes: null, routeMode: null }, allowedRepairDirections: ["replace_candidate", "request_context"] });
+      issues.push({ code: "required_route_missing", severity: "blocking", resolution: "provider_evidence", message: `${previous.title}到${current.title}的路线尚未核验，不能确认这份方案。`, stopIds: [previous.stopId, current.stopId], dayIndex: current.dayIndex, observed: { previousEndAt: previous.endAt ?? null, requestedStartAt: current.startAt ?? null, routeMinutes: null, routeMode: null }, allowedRepairDirections: ["replace_candidate", "fetch_evidence"] });
       continue;
     }
     if (!previous.endAt) continue;
     const earliest = shifted(previous.endAt, minutes);
     if (!current.startAt) {
-      if (!current.fixed) {
+      if (!current.fixed && !preserveSchedule) {
         current.startAt = earliest;
         current.endAt = shifted(earliest, current.role === "meal" ? 90 : current.role === "activity" ? 120 : 30);
       }
@@ -430,7 +452,7 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
     }
     const deltaMinutes = Math.ceil((new Date(earliest).getTime() - new Date(current.startAt).getTime()) / 60_000);
     if (deltaMinutes <= 0) continue;
-    if (current.fixed) {
+    if (current.fixed || preserveSchedule) {
       issues.push({ code: "chronology_conflict", severity: "blocking", message: `${current.title}的固定时间早于上一站结束加移动耗时。`, stopIds: [previous.stopId, current.stopId], dayIndex: current.dayIndex, observed: { previousEndAt: previous.endAt, requestedStartAt: current.startAt, earliestStartAt: earliest, routeMinutes: minutes, routeMode: (leg?.recommendedMode as "walk" | "transit" | "taxi" | undefined) ?? null }, allowedRepairDirections: ["change_mode", "reorder_flexible_stop", "move_to_next_day"] });
       continue;
     }
@@ -458,7 +480,7 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
   if (unresolved.length) issues.push({ code: "unresolved_stops", severity: "blocking", message: "仍有地点没有成功定位或接入路线。", stopIds: unresolved.slice(0, 8), dayIndex: null });
   if (mobility.status !== "completed") issues.push({ code: "mobility_incomplete", severity: "blocking", message: "多点路线尚未完整核验。", stopIds: [], dayIndex: null });
   if (mobility.freshUntil && new Date(mobility.freshUntil).getTime() <= new Date(checkedAt ?? Date.now()).getTime()) {
-    issues.push({ code: "mobility_stale", severity: "blocking", message: "路线资料已经过期，需要重新核验后才能确认。", stopIds: [], dayIndex: null, allowedRepairDirections: ["request_context"] });
+    issues.push({ code: "mobility_stale", severity: "blocking", resolution: "provider_evidence", message: "路线资料已经过期，需要重新核验后才能确认。", stopIds: [], dayIndex: null, allowedRepairDirections: ["fetch_evidence"] });
   }
   for (const day of itinerary.days.filter((item) => item.stopIds.length === 0)) issues.push({ code: "day_without_stops", severity: "warning", message: `第 ${day.dayIndex} 天仍有待安排时段。`, stopIds: [], dayIndex: day.dayIndex });
   for (const stop of itinerary.stops.filter((item) => ["meal", "activity"].includes(item.role))) {

@@ -80,7 +80,7 @@ function candidateIdentity(candidate) {
     const number = String(candidate.operability.serviceNumber).replace(/\s+/g, "").toUpperCase();
     const rawDeparture = String(candidate.operability.departureAt ?? "").replace("T", " ").replace(/\s+/g, " ").trim();
     const departure = rawDeparture.match(/^(20\d{2}-\d{2}-\d{2} \d{2}:\d{2})/)?.[1] ?? rawDeparture;
-    return `transport:${type}:${number}:${departure}`;
+    return `transport:${type}:${number}:${departure}:${candidate.operability.serviceDate ?? ""}:${candidate.operability.departureCity ?? ""}:${candidate.operability.arrivalCity ?? ""}:${candidate.operability.journeyId ?? ""}`;
   }
   const normalizedTitle = String(candidate?.title ?? "").trim().toLowerCase().replace(/[\s·・()（）【】\[\]-]+/g, "");
   return `${candidate?.domain}:${normalizedTitle}`;
@@ -362,7 +362,15 @@ function withCriteriaFit(candidate, domain, criteria) {
   };
 }
 
-function rankAndFuse(domain, candidates, criteria) {
+function rankAndFuse(domain, candidates, criteria, groupJourneys = true) {
+  if (domain === "transport" && groupJourneys && candidates.some(item => item.operability?.journeyId)) {
+    return [...new Set(candidates.map(item => item.operability?.journeyId))].flatMap(id => {
+      const group = candidates.filter(item => item.operability?.journeyId === id);
+      const outbound = group[0]?.operability?.journeyPurpose === "outbound";
+      const scoped = outbound ? criteria : { ...criteria, arrival: { airport: null, terminal: null, time: null, confirmed: false }, byDomain: { ...criteria?.byDomain, transport: { ...criteria?.byDomain?.transport, namedEntities: [] } } };
+      return rankAndFuse(domain, group, scoped, false);
+    });
+  }
   let ranked = deduplicate(candidates)
     .filter((candidate) => candidateRoleValid(candidate, domain))
     .map((candidate) => withCriteriaFit(candidate, domain, criteria));

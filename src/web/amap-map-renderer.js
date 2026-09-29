@@ -94,7 +94,120 @@ function midpoint(path) {
   return path[Math.max(0, Math.floor((path.length - 1) / 2))];
 }
 
-export async function createAmapSceneRenderer({ container, stops, legs, activeNodeId = null, activeLegId = null, onFocusNode, onFocusLeg, locale = "zh-CN" }) {
+function position(point) {
+  return [point.longitude, point.latitude];
+}
+
+function applyDestinationCamera(map, beat, smooth = true) {
+  if (!beat?.center) return;
+  const immediately = !smooth;
+  map.setPitch?.(beat.pitch, immediately, beat.duration);
+  map.setRotation?.(beat.rotation, immediately, beat.duration);
+  if (typeof map.setZoomAndCenter === "function") {
+    map.setZoomAndCenter(beat.zoom, position(beat.center), immediately, beat.duration);
+  } else {
+    map.setZoom?.(beat.zoom);
+    map.setCenter?.(position(beat.center));
+  }
+}
+
+export function createDestinationCameraPlayback({
+  map,
+  beats = [],
+  setTimer = (callback, delay) => window.setTimeout(callback, delay),
+  clearTimer = (timer) => window.clearTimeout(timer),
+  reducedMotion = false,
+} = {}) {
+  const timers = new Set();
+  let stopped = false;
+  const clearTimers = () => {
+    timers.forEach((timer) => clearTimer(timer));
+    timers.clear();
+  };
+  const stop = () => {
+    stopped = true;
+    clearTimers();
+  };
+  const schedule = (callback, delay) => {
+    const timer = setTimer(() => {
+      timers.delete(timer);
+      if (!stopped) callback();
+    }, delay);
+    timers.add(timer);
+  };
+  const start = () => {
+    if (!map || !beats.length) return;
+    stopped = false;
+    clearTimers();
+    if (reducedMotion) {
+      applyDestinationCamera(map, beats[0], false);
+      return;
+    }
+    let elapsed = 0;
+    beats.forEach((beat, index) => {
+      schedule(() => applyDestinationCamera(map, beat, index > 0), elapsed);
+      elapsed += Math.max(0, Number(beat.duration ?? 0));
+    });
+  };
+  return { start, stop, get pendingTimers() { return timers.size; } };
+}
+
+function destinationMarkerElement(scene) {
+  const element = document.createElement("span");
+  element.className = "amap-scene-marker active destination";
+  element.textContent = "目的地";
+  element.setAttribute("aria-label", scene.title);
+  return element;
+}
+
+async function createDestinationAmapRenderer({ container, destinationScene, reducedMotion = false }) {
+  const AMap = await loadAmapJsApi();
+  const firstBeat = destinationScene.cameraBeats?.[0] ?? { center: destinationScene.coordinates, zoom: 16, pitch: 58, rotation: 22 };
+  const map = new AMap.Map(container, {
+    viewMode: "3D",
+    center: position(firstBeat.center),
+    zoom: firstBeat.zoom,
+    pitch: firstBeat.pitch,
+    rotation: firstBeat.rotation,
+    resizeEnable: true,
+    dragEnable: true,
+    zoomEnable: true,
+    rotateEnable: true,
+    pitchEnable: true,
+    doubleClickZoom: true,
+    scrollWheel: true,
+    buildingAnimation: false,
+    features: ["bg", "road", "building", "point"],
+  });
+  map.setFeatures?.(["bg", "road", "building", "point"]);
+  const marker = new AMap.Marker({ position: position(destinationScene.coordinates), content: destinationMarkerElement(destinationScene), anchor: "bottom-center", title: destinationScene.title, zIndex: 260 });
+  map.add(marker);
+  const routeLine = destinationScene.routeRelation?.polyline?.length >= 2
+    ? new AMap.Polyline({ path: destinationScene.routeRelation.polyline.map(position), strokeColor: "#2268c7", strokeWeight: 7, strokeOpacity: 0.82, lineJoin: "round", lineCap: "round", showDir: true, zIndex: 100 })
+    : null;
+  if (routeLine) {
+    map.add(routeLine);
+  }
+  const playback = createDestinationCameraPlayback({ map, beats: destinationScene.cameraBeats, reducedMotion });
+  const stopCamera = () => playback.stop();
+  ["dragstart", "zoomstart", "rotatestart", "pitchstart", "mousewheel", "touchstart"].forEach((eventName) => map.on?.(eventName, stopCamera));
+  playback.start();
+  return {
+    map,
+    focusNode: () => applyDestinationCamera(map, destinationScene.cameraBeats?.[1] ?? firstBeat, !reducedMotion),
+    focusLeg: () => routeLine && map.setFitView?.([routeLine], false, [72, 72, 72, 72], 16),
+    zoomIn: () => map.zoomIn(),
+    zoomOut: () => map.zoomOut(),
+    destroy: () => {
+      playback.stop();
+      ["dragstart", "zoomstart", "rotatestart", "pitchstart", "mousewheel", "touchstart"].forEach((eventName) => map.off?.(eventName, stopCamera));
+      map.destroy();
+    },
+  };
+}
+
+export async function createAmapSceneRenderer({ container, stops, legs, activeNodeId = null, activeLegId = null, onFocusNode, onFocusLeg, locale = "zh-CN", presentation = "plan", destinationScene = null, reducedMotion = false }) {
+  if (presentation === "destination" && destinationScene?.coordinates) return createDestinationAmapRenderer({ container, destinationScene, reducedMotion });
   const AMap = await loadAmapJsApi();
   const map = new AMap.Map(container, { viewMode: "2D", zoom: 12, resizeEnable: true, dragEnable: true, zoomEnable: true, doubleClickZoom: true, scrollWheel: true });
   const markerEntries = new Map();

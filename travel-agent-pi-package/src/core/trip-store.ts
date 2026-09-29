@@ -3,6 +3,7 @@ import { mkdir, open, readFile, readdir, rename, unlink } from "node:fs/promises
 import { join, resolve } from "node:path";
 import type { TripFeedbackRecord, TripState } from "../contracts/index.js";
 import { hydrateStoredTripState } from "./trip-state-hydration.js";
+import { assertTravelExecutionCurrent } from "../host/execution-context.js";
 
 const SAFE_ID = /^[A-Za-z0-9_.:-]{1,128}$/;
 
@@ -99,6 +100,7 @@ export class TripStore implements TripRepository {
       persisted.storageVersion = 0;
       let handle;
       try {
+        await assertTravelExecutionCurrent();
         handle = await open(path, "wx", 0o600);
         await handle.writeFile(`${JSON.stringify(persisted, null, 2)}\n`, "utf8");
       } catch (error) {
@@ -169,6 +171,7 @@ export class TripStore implements TripRepository {
         await handle.writeFile(`${JSON.stringify(persisted, null, 2)}\n`, "utf8");
         await handle.close();
         handle = undefined;
+        await assertTravelExecutionCurrent();
         await rename(tempPath, path);
       } catch (error) {
         await handle?.close();

@@ -12,7 +12,7 @@ export const SOCIAL_ERROR_CODES = [
   "EMPTY_VERIFIED",
 ] as const;
 
-export const DomainSchema = Type.Union(FOUR_DOMAINS.map((domain) => Type.Literal(domain)), { $id: "TravelDomain" });
+export const DomainSchema = Type.Union([Type.Literal("play"), Type.Literal("food"), Type.Literal("stay"), Type.Literal("transport")], { $id: "TravelDomain" });
 export type TravelDomain = Static<typeof DomainSchema>;
 
 export const PriceQualitySchema = Type.Union([
@@ -24,6 +24,10 @@ export const PriceQualitySchema = Type.Union([
 export type PriceQuality = Static<typeof PriceQualitySchema>;
 
 export const TravelPriceSchema = Type.Object({
+  unit: Type.Optional(Type.String({ enum: ["per_person", "per_vehicle", "per_room_night", "per_booking"] })),
+  quantity: Type.Optional(Type.Number({ minimum: 0 })),
+  includes: Type.Optional(Type.Array(Type.String({ maxLength: 128 }), { maxItems: 12 })),
+  includedByNodeId: Type.Optional(Type.String({ maxLength: 128 })),
   amount: Type.Union([Type.Number({ minimum: 0 }), Type.Null()]),
   currency: Type.String({ minLength: 3, maxLength: 8 }),
   quality: PriceQualitySchema,
@@ -50,7 +54,31 @@ export const IsoTimestampSchema = Type.String({ minLength: 10, maxLength: 40 });
 const NullableStringSchema = Type.Union([Type.String(), Type.Null()]);
 const ExtensibleObjectSchema = Type.Object({}, { additionalProperties: true });
 
+export const JourneyRequestSchema = Type.Object({
+  journeyId: IdentifierSchema,
+  origin: Type.String({ minLength: 1, maxLength: 120 }),
+  destination: Type.String({ minLength: 1, maxLength: 120 }),
+  date: Type.String({ pattern: "^20\\d{2}-\\d{2}-\\d{2}$" }),
+  purpose: Type.String({ enum: ["outbound", "return", "transfer", "scenic"] }),
+  scope: Type.String({ enum: ["plan", "self_arranged"] }),
+  mode: Type.Optional(Type.String({ enum: ["train", "flight", "flexible"] })),
+  arriveBy: Type.Optional(IsoTimestampSchema),
+}, { additionalProperties: false });
+export type JourneyRequest = Static<typeof JourneyRequestSchema>;
+
+export const TripVehicleSchema = Type.Object({
+  vehicleId: IdentifierSchema,
+  originNodeId: IdentifierSchema,
+  returnNodeId: Type.Optional(IdentifierSchema),
+  returnBy: Type.Optional(IsoTimestampSchema),
+  seats: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
+  luggageCapacity: Type.Optional(Type.Integer({ minimum: 0, maximum: 40 })),
+  luggageCount: Type.Optional(Type.Integer({ minimum: 0, maximum: 40 })),
+}, { additionalProperties: false });
+
 export const TripBriefSchema = Type.Object({
+  journeys: Type.Optional(Type.Array(JourneyRequestSchema, { maxItems: 12 })),
+  vehicle: Type.Optional(TripVehicleSchema),
   destination: Type.Optional(NullableStringSchema),
   dates: Type.Optional(NullableStringSchema),
   origin: Type.Optional(NullableStringSchema),
@@ -65,6 +93,8 @@ export const TripBriefSchema = Type.Object({
   lodgingPreference: Type.Optional(NullableStringSchema),
   currency: Type.Optional(NullableStringSchema),
   durationDays: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
+  lodgingNights: Type.Optional(Type.Integer({ minimum: 0, maximum: 60 })),
+  planningDomains: Type.Optional(Type.Array(Type.String({ enum: ["play", "food", "stay", "transport"] }), { minItems: 1, maxItems: 4 })),
   totalBudget: Type.Optional(Type.Union([Type.Number({ minimum: 0 }), Type.Null()])),
   foodPreferences: Type.Optional(Type.Array(Type.String({ maxLength: 120 }), { maxItems: 12 })),
 }, { $id: "TripBrief", additionalProperties: true });
@@ -119,6 +149,7 @@ const NormalizedResearchDomainCriteriaSchema = Type.Object({
 }, { additionalProperties: false });
 
 export const TravelResearchCriteriaSchema = Type.Object({
+  journeys: Type.Optional(Type.Array(JourneyRequestSchema, { maxItems: 12 })),
   schemaVersion: Type.Literal("travel-research-criteria-v1"),
   origin: NullableStringSchema,
   destination: Type.String({ minLength: 1, maxLength: 120 }),
@@ -562,13 +593,16 @@ export const MobilityStepSchema = Type.Object({
   accessibilityFeatures: Type.Array(AccessibilityFeatureSchema),
 }, { additionalProperties: true });
 
-export const ItineraryStopRoleSchema = Type.String({ enum: ["intercity_arrival", "bag_drop", "stay_check_in", "stay_departure", "stay_return", "meal", "activity", "local_transport"] });
+export const ItineraryStopRoleSchema = Type.String({ enum: ["intercity_arrival", "transport_departure", "transport_arrival", "vehicle_pickup", "vehicle_return", "parking", "rest", "bag_drop", "stay_check_in", "stay_departure", "stay_return", "meal", "activity", "local_transport"] });
 export type ItineraryStopRole = Static<typeof ItineraryStopRoleSchema>;
 
-export const ItineraryPlanModeSchema = Type.String({ enum: ["walk", "transit", "taxi"] });
+export const ItineraryPlanModeSchema = Type.String({ enum: ["walk", "transit", "taxi", "drive", "train", "flight", "shuttle", "cable_car", "ferry"] });
 export type ItineraryPlanMode = Static<typeof ItineraryPlanModeSchema>;
 
 export const ItineraryPlanStopSchema = Type.Object({
+  alternativeId: Type.Optional(IdentifierSchema),
+  stopId: Type.Optional(IdentifierSchema),
+  mealPurpose: Type.Optional(Type.String({ enum: ["breakfast", "lunch", "dinner", "snack"] })),
   nodeId: IdentifierSchema,
   role: ItineraryStopRoleSchema,
   timeWindow: Type.Object({
@@ -584,6 +618,7 @@ export type ItineraryPlanStop = Static<typeof ItineraryPlanStopSchema>;
 
 export const ItineraryPlanSchema = Type.Object({
   schemaVersion: Type.Literal("itinerary-plan-v1"),
+  scope: Type.Optional(Type.String({ enum: ["complete_trip", "selected_visits"], description: "完整旅行及调整用 complete_trip；明确的局部连线用 selected_visits。" })),
   runId: IdentifierSchema,
   tripId: IdentifierSchema,
   baseRevision: Type.Integer({ minimum: 0 }),
@@ -600,6 +635,10 @@ export const ItineraryPlanSchema = Type.Object({
   days: Type.Array(Type.Object({
     dayIndex: Type.Integer({ minimum: 1, maximum: 60 }),
     date: Type.String({ pattern: "^20\\d{2}-\\d{2}-\\d{2}$" }),
+    purpose: Type.Optional(Type.Object({
+      kind: Type.String({ enum: ["rest", "self_arranged", "transfer_only"] }),
+      userQuote: Type.String({ minLength: 2, maxLength: 240, description: "逐字引用用户要求，不得用自行安排隐藏缺口。" }),
+    }, { additionalProperties: false })),
     stops: Type.Array(ItineraryPlanStopSchema, { minItems: 1, maxItems: 16 }),
   }, { additionalProperties: false }), { minItems: 1, maxItems: 60 }),
   assumptions: Type.Array(Type.String({ minLength: 1, maxLength: 300 }), { maxItems: 12 }),
@@ -608,8 +647,24 @@ export const ItineraryPlanSchema = Type.Object({
 }, { additionalProperties: false });
 export type ItineraryPlan = Static<typeof ItineraryPlanSchema>;
 
+export const ItineraryEditSchema = Type.Object({
+  schemaVersion: Type.Literal("itinerary-edit-v1"),
+  tripId: IdentifierSchema, baseRevision: Type.Integer({ minimum: 0 }),
+  runId: IdentifierSchema, attempt: Type.Integer({ enum: [1, 2] }),
+  basePlanId: IdentifierSchema, basePlanVersion: Type.Integer({ minimum: 1 }),
+  objective: Type.String({ minLength: 1, maxLength: 500 }),
+  operations: Type.Array(Type.Union([
+    Type.Object({ kind: Type.Literal("update"), stopId: IdentifierSchema, changes: Type.Partial(Type.Omit(ItineraryPlanStopSchema, ["stopId"])) }, { additionalProperties: false }),
+    Type.Object({ kind: Type.Literal("remove"), stopId: IdentifierSchema }, { additionalProperties: false }),
+    Type.Object({ kind: Type.Literal("insert"), dayIndex: Type.Integer({ minimum: 1, maximum: 60 }), date: Type.String(), afterStopId: Type.Union([IdentifierSchema, Type.Null()]), stop: ItineraryPlanStopSchema }, { additionalProperties: false }),
+    Type.Object({ kind: Type.Literal("move"), stopId: IdentifierSchema, dayIndex: Type.Integer({ minimum: 1, maximum: 60 }), date: Type.String(), afterStopId: Type.Union([IdentifierSchema, Type.Null()]) }, { additionalProperties: false }),
+  ]), { minItems: 1, maxItems: 960 }),
+}, { additionalProperties: false });
+export type ItineraryEdit = Static<typeof ItineraryEditSchema>;
+
 export const TripItineraryStopSchema = Type.Object({
   stopId: IdentifierSchema,
+  mealPurpose: Type.Optional(Type.String({ enum: ["breakfast", "lunch", "dinner", "snack"] })),
   nodeId: IdentifierSchema,
   domain: DomainSchema,
   title: Type.String({ minLength: 1, maxLength: 200 }),
@@ -635,7 +690,9 @@ export const TripItinerarySchema = Type.Object({
   schemaVersion: Type.Literal("trip-itinerary-v1"),
   planningSource: Type.Optional(Type.Union([Type.Literal("model_plan"), Type.Literal("conservative_fallback")])),
   tripDates: Type.Array(Type.String({ pattern: "^20\\d{2}-\\d{2}-\\d{2}$" }), { minItems: 1, maxItems: 60 }),
-  stops: Type.Array(TripItineraryStopSchema, { maxItems: 32 }),
+  // The flattened itinerary must represent every stop the 60-day, 16-stops/day
+  // planning contract accepts. Provider and execution budgets still apply.
+  stops: Type.Array(TripItineraryStopSchema, { maxItems: 60 * 16 }),
   days: Type.Array(Type.Object({
     dayIndex: Type.Integer({ minimum: 1, maximum: 60 }),
     date: Type.String({ pattern: "^20\\d{2}-\\d{2}-\\d{2}$" }),
@@ -645,8 +702,10 @@ export const TripItinerarySchema = Type.Object({
 export type TripItinerary = Static<typeof TripItinerarySchema>;
 
 export const TripFeasibilityIssueSchema = Type.Object({
+  scope: Type.Optional(Type.String({ enum: ["plan", "day", "visits"] })),
   code: Type.String({ minLength: 1, maxLength: 120 }),
   severity: Type.Union([Type.Literal("blocking"), Type.Literal("warning")]),
+  resolution: Type.Optional(Type.Union([Type.Literal("provider_evidence"), Type.Literal("plan_change"), Type.Literal("user_fact")])),
   message: Type.String({ minLength: 1, maxLength: 500 }),
   stopIds: Type.Array(IdentifierSchema, { maxItems: 8 }),
   dayIndex: Type.Union([Type.Integer({ minimum: 1, maximum: 60 }), Type.Null()]),
@@ -669,6 +728,7 @@ export const TripFeasibilityIssueSchema = Type.Object({
     Type.Literal("replace_candidate"),
     Type.Literal("remove_optional_stop"),
     Type.Literal("request_context"),
+    Type.Literal("fetch_evidence"),
   ]), { maxItems: 6 })),
   checkedAt: Type.Optional(Type.Union([IsoTimestampSchema, Type.Null()])),
 }, { additionalProperties: false });
@@ -696,6 +756,12 @@ const MobilityPlaceSchema = Type.Object({
 }, { additionalProperties: false });
 
 export const MobilityAlternativeSchema = Type.Object({
+  alternativeId: Type.Optional(IdentifierSchema),
+  fareIncludedByNodeId: Type.Optional(IdentifierSchema),
+  sourceRefs: Type.Optional(Type.Array(Type.String())),
+  checkedAt: Type.Optional(NullableStringSchema),
+  departureAt: Type.Optional(NullableStringSchema),
+  arrivalAt: Type.Optional(NullableStringSchema),
   mode: Type.String(),
   totalMinutes: Type.Number({ minimum: 0 }),
   distanceMeters: Type.Union([Type.Number({ minimum: 0 }), Type.Null()]),
@@ -719,6 +785,8 @@ export const MobilityAlternativeSchema = Type.Object({
 }, { additionalProperties: true });
 
 export const MobilityLegSchema = Type.Object({
+  selectedAlternativeId: Type.Optional(IdentifierSchema),
+  recommendationAudit: Type.Optional(Type.Union([ExtensibleObjectSchema, Type.Null()])),
   legId: Type.String(),
   origin: MobilityPlaceSchema,
   destination: MobilityPlaceSchema,
@@ -869,6 +937,8 @@ export const TripPatchProposalSchema = Type.Object({
   overrideLock: Type.Optional(Type.Boolean()),
   operations: Type.Array(PatchOperationSchema),
   itineraryPlan: Type.Optional(ItineraryPlanSchema),
+  requireCompletePlan: Type.Optional(Type.Boolean()),
+  planningUserRequest: Type.Optional(Type.String()),
   itineraryPreviewId: Type.Optional(IdentifierSchema),
   planningRunId: Type.Optional(IdentifierSchema),
   planningAttempt: Type.Optional(Type.Union([Type.Literal(1), Type.Literal(2)])),
@@ -880,6 +950,48 @@ export const TripPatchProposalSchema = Type.Object({
   weatherSnapshot: Type.Optional(Type.Union([WeatherObservationSchema, Type.Null()])),
 }, { $id: "TripPatchProposal", additionalProperties: true });
 export type TripPatchProposal = Static<typeof TripPatchProposalSchema>;
+
+export const SavedPlanSchema = Type.Object({
+  planId: IdentifierSchema,
+  version: Type.Integer({ minimum: 1 }),
+  lifecycle: Type.String({ enum: ["draft", "adopted", "discarded", "superseded"] }),
+  previousPlanId: Type.Union([IdentifierSchema, Type.Null()]),
+  plan: Type.Union([ItineraryPlanSchema, Type.Null()]),
+  itinerary: Type.Union([TripItinerarySchema, Type.Null()]),
+  candidates: Type.Array(DecisionNodeInputSchema),
+  proposalId: Type.Union([IdentifierSchema, Type.Null()]),
+  previewId: Type.Union([IdentifierSchema, Type.Null()]),
+  requireCompletePlan: Type.Boolean(),
+  userRequest: Type.String(),
+  lastEstimate: Type.Union([Type.Number({ minimum: 0 }), Type.Null()]),
+  createdAt: IsoTimestampSchema,
+  updatedAt: IsoTimestampSchema,
+  validation: Type.Object({
+    status: Type.String({ enum: ["needs_check", "checked", "conflict", "unknown", "stale"] }),
+    dependencyFingerprint: Type.String(),
+    checkedAt: Type.Union([IsoTimestampSchema, Type.Null()]),
+    freshUntil: Type.Union([IsoTimestampSchema, Type.Null()]),
+    invalidatedBy: Type.Array(Type.String()),
+    mobility: Type.Union([MobilityObservationSchema, Type.Null()]),
+    feasibility: Type.Union([TripFeasibilitySchema, Type.Null()]),
+  }, { additionalProperties: false }),
+}, { additionalProperties: false });
+export type SavedPlan = Static<typeof SavedPlanSchema>;
+
+export const ContinuousPlanningSchema = Type.Object({
+  schemaVersion: Type.Literal("continuous-planning-v1"),
+  planningId: IdentifierSchema,
+  objective: Type.Object({
+    version: Type.Integer({ minimum: 0 }),
+    description: Type.String(),
+    requestRefs: Type.Array(Type.String()),
+    completionCriteria: Type.Array(Type.String()),
+  }, { additionalProperties: false }),
+  adopted: Type.Union([SavedPlanSchema, Type.Null()]),
+  draft: Type.Union([SavedPlanSchema, Type.Null()]),
+  history: Type.Array(SavedPlanSchema),
+}, { additionalProperties: false });
+export type ContinuousPlanning = Static<typeof ContinuousPlanningSchema>;
 
 export const TripStateSchema = Type.Object({
   schemaVersion: Type.Literal("trip-control-state-v1"),
@@ -922,6 +1034,7 @@ export const TripStateSchema = Type.Object({
   fulfillmentLedger: Type.Array(OfferSnapshotSchema),
   evidence: EvidenceGraphSchema,
   pendingProposals: Type.Array(TripPatchProposalSchema),
+  planning: Type.Optional(ContinuousPlanningSchema),
   proposalHistory: Type.Array(ExtensibleObjectSchema),
   feedbackLedger: Type.Array(TripFeedbackRecordSchema),
   fulfillmentEvents: Type.Array(ExtensibleObjectSchema),
@@ -1109,6 +1222,14 @@ export const TravelAnalysisLaneResultSchema = Type.Object({
 }, { additionalProperties: false });
 export type TravelAnalysisLaneResult = Static<typeof TravelAnalysisLaneResultSchema>;
 
+export const TravelJudgmentResultSchema = Type.Object({
+  schemaVersion: Type.Literal("travel-judgment-v1"), model: Type.String(), template: Type.String(), snapshotHash: Type.String(),
+  status: Type.Union([Type.Literal("evaluated"), Type.Literal("unavailable")]), mode: Type.String(), scope: Type.String(), automatic: Type.Boolean(),
+  judgments: Type.Array(Type.Object({ candidateId: IdentifierSchema, fit: Type.Number({ minimum: 0, maximum: 3 }), support: Type.String(), eligible: Type.Boolean(), confidence: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })) }, { additionalProperties: false })),
+  unknowns: Type.Array(Type.String()), checkedAt: IsoTimestampSchema, code: Type.Optional(Type.String()),
+  nextAction: Type.Object({ type: Type.Union([Type.Literal("execute_read"), Type.Literal("revise_draft"), Type.Literal("delegate_parent"), Type.Literal("ask_user"), Type.Literal("deliver")]), reason: Type.String(), targets: Type.Array(Type.String()) }, { additionalProperties: false }),
+}, { additionalProperties: false });
+
 export const TravelAnalysisFanoutResultSchema = Type.Object({
   schemaVersion: Type.Literal("travel-analysis-fanout-v1"),
   analysisId: IdentifierSchema,
@@ -1117,7 +1238,8 @@ export const TravelAnalysisFanoutResultSchema = Type.Object({
   baseRevision: Type.Integer({ minimum: 0 }),
   criteriaFingerprint: Type.String({ minLength: 1, maxLength: 128 }),
   status: Type.Union([Type.Literal("completed"), Type.Literal("partial"), Type.Literal("failed"), Type.Literal("skipped"), Type.Literal("stale_discarded")]),
-  engine: Type.Union([Type.Literal("dynamic_workflow"), Type.Literal("pi_subagents"), Type.Literal("fixture")]),
+  engine: Type.Union([Type.Literal("dynamic_workflow"), Type.Literal("pi_subagents"), Type.Literal("fixture"), Type.Literal("jev")]),
+  judgment: Type.Optional(TravelJudgmentResultSchema),
   lanes: Type.Array(TravelAnalysisLaneResultSchema, { maxItems: 3 }),
   requiredLanes: Type.Array(TravelAnalysisLaneSchema, { maxItems: 3 }),
   startedLanes: Type.Array(TravelAnalysisLaneSchema, { maxItems: 3 }),
@@ -1128,7 +1250,7 @@ export const TravelAnalysisFanoutResultSchema = Type.Object({
   degradedReasons: Type.Array(Type.String({ maxLength: 300 }), { maxItems: 12 }),
   joinCount: Type.Union([Type.Literal(0), Type.Literal(1)]),
   joinArtifactId: Type.Union([IdentifierSchema, Type.Null()]),
-  taskCount: Type.Integer({ minimum: 0, maximum: 3 }),
+  taskCount: Type.Integer({ minimum: 0, maximum: 1025 }),
   childConcurrency: Type.Integer({ minimum: 1, maximum: 3 }),
   modelFallback: Type.Object({
     primaryStatus: Type.String({ maxLength: 80 }),

@@ -5,7 +5,10 @@ const apiBaseUrl = apiArgument?.slice("--travel-api-origin=".length) ?? "";
 
 contextBridge.exposeInMainWorld("travelDesktop", Object.freeze({
   runtimeConfig: Object.freeze({ desktop: true, apiBaseUrl }),
-  beginOAuth: (provider: string, returnTo = "/") => ipcRenderer.invoke("desktop:oauth-begin", { provider, returnTo }),
+  restoreSession: () => ipcRenderer.invoke("desktop:session-restore"),
+  saveSession: (token: string) => ipcRenderer.invoke("desktop:session-save", token),
+  clearSession: () => ipcRenderer.invoke("desktop:session-clear"),
+  beginOAuth: (provider: string, returnTo = "/", link?: string) => ipcRenderer.invoke("desktop:oauth-begin", { provider, returnTo, link }),
   openEvidenceSource: (url: string) => ipcRenderer.invoke("desktop:evidence-open", { url }),
   closeEvidenceSource: () => ipcRenderer.invoke("desktop:evidence-close"),
   captureEvidence: () => ipcRenderer.invoke("desktop:evidence-capture"),
