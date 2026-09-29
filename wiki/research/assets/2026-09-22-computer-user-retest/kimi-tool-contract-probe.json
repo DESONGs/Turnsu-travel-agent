@@ -1,0 +1,18 @@
+[
+  {
+    "variant": "current_union",
+    "at": "2026-09-21T18:41:48.919Z",
+    "elapsedMs": 402,
+    "stopReason": "error",
+    "errorMessage": "400: {\"message\":\"Invalid request: tools.function.parameters.type is required and must be \\\"object\\\"\",\"type\":\"invalid_request_error\"}",
+    "text": ""
+  },
+  {
+    "variant": "object_control",
+    "at": "2026-09-21T18:41:53.756Z",
+    "elapsedMs": 4836,
+    "stopReason": "stop",
+    "errorMessage": "",
+    "text": "READY"
+  }
+]

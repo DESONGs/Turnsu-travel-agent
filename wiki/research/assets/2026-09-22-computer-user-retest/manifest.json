@@ -1,0 +1,86 @@
+{
+  "frozenAt": "2026-09-21T18:36:49.273Z",
+  "cases": [
+    {
+      "id": "R01",
+      "scenario": "默认模型故障",
+      "action": "首次输入完整需求，刷新、继续",
+      "expected": "清楚说明模型故障；原始要求保留；不得声称已完成"
+    },
+    {
+      "id": "R02",
+      "scenario": "切换已配置模型",
+      "action": "通过页面切换 Kimi，重新提交已知完整需求",
+      "expected": "真实模型产生候选与草案或具体必要问题；记录模型差异"
+    },
+    {
+      "id": "R03",
+      "scenario": "补日期接续",
+      "action": "手机视口缺日期规划→回答日期",
+      "expected": "只问必要事实；回答自动接续，草案可见"
+    },
+    {
+      "id": "R04",
+      "scenario": "采用与刷新",
+      "action": "采用完整草案→刷新→查看行程",
+      "expected": "时间、餐次、同地点重复到访、费用和选中安排一致"
+    },
+    {
+      "id": "R05",
+      "scenario": "仅改预算",
+      "action": "提高预算并要求保留行程",
+      "expected": "已采用行程不被重写，价格口径一致"
+    },
+    {
+      "id": "R06",
+      "scenario": "局部调整",
+      "action": "只换酒店和晚餐，午餐和其他安排不动",
+      "expected": "变更清晰；未涉及的到访、时间保留；可放弃回到原版"
+    },
+    {
+      "id": "R07",
+      "scenario": "新增硬性无障碍要求",
+      "action": "采用后增加轮椅、全程无台阶和抵达方式",
+      "expected": "保留原行程对照，自动补查，未知不可当通过；失败可解释可恢复"
+    },
+    {
+      "id": "R08",
+      "scenario": "预算取舍与后续失败",
+      "action": "100 元硬预算→选择调整额度→后续执行",
+      "expected": "不得自动放宽；回答持久，草案持续可见"
+    },
+    {
+      "id": "R09",
+      "scenario": "取消",
+      "action": "模型执行期间点击停止→刷新",
+      "expected": "取消立即可见；之后不再提交迟到结果"
+    },
+    {
+      "id": "R10",
+      "scenario": "真实来源局部缺失",
+      "action": "真实来源规划→只补查缺失的餐饮",
+      "expected": "可靠候选不消失，partial 不显示全程已核验"
+    },
+    {
+      "id": "R11",
+      "scenario": "只查酒店及中文纠正",
+      "action": "先只查酒店，再纠正人数和偏好",
+      "expected": "无扩域；顺序保留；按每间每晚显示价格"
+    },
+    {
+      "id": "R12",
+      "scenario": "跨页恢复与证据过期",
+      "action": "另一个标签查看同一行程→刷新/核验过期",
+      "expected": "当前事实一致；草案保留，过期证明不可采用"
+    }
+  ],
+  "evidenceScope": "Computer Use UI with real models, HTTP and isolated PostgreSQL; reference candidates except explicitly real-provider cases. Synthetic travelers. Browser mobile viewport is not a physical device.",
+  "sourceHashes": {
+    "src/web/travel-app.jsx": "a23393b8011c7db7b10f731c02ca71cb5f15efd16a19fa325cef8b264c6fe2e9",
+    "src/agent/travel-conversation-agent.mjs": "bc4c26de1c76d7d3a2e2c2a0a7e5b055b6c6bd969ccf7627a01f87a9b8746ce7",
+    "src/api/travel-service.mjs": "c65b5385f01d042bf1e50d7b85ae56eb5611bb9a7d4a35fd0203cfdd617aaa4b",
+    "travel-agent-pi-package/src/core/continuous-planning.ts": "62bd2f59565f4da9597c6649236808ac94bf833c988c55b0a0a3405fe855989a",
+    "travel-agent-pi-package/src/contracts/index.ts": "3c79a30d30ed7ddf578dc36591ce3e4f80831397b84800ce49abb617abeabd1e"
+  },
+  "initialTypecheck": "failed; 8 errors in continuous-planning.ts; unchanged for QA"
+}

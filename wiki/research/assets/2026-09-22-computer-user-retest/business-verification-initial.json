@@ -1,0 +1,171 @@
+{
+  "capturedAt": "2026-09-21T18:57:02.891Z",
+  "budgetRequested": 8000,
+  "budgetPersisted": 6000,
+  "adoptedTimelinePreserved": true,
+  "comparison": [
+    {
+      "stopId": "s1_arrive",
+      "role": "intercity_arrival",
+      "before": {
+        "nodeId": "transport_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "transport option 0",
+        "startAt": "2026-10-15T09:00:00+08:00",
+        "endAt": "2026-10-15T09:00:00+08:00"
+      },
+      "after": {
+        "nodeId": "transport_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "transport option 0",
+        "startAt": "2026-10-15T09:00:00+08:00",
+        "endAt": "2026-10-15T09:00:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": true
+    },
+    {
+      "stopId": "s2_play",
+      "role": "activity",
+      "before": {
+        "nodeId": "play_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "play option 0",
+        "startAt": "2026-10-15T10:00:00+08:00",
+        "endAt": "2026-10-15T12:00:00+08:00"
+      },
+      "after": {
+        "nodeId": "play_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "play option 0",
+        "startAt": "2026-10-15T10:00:00+08:00",
+        "endAt": "2026-10-15T12:00:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": true
+    },
+    {
+      "stopId": "s3_lunch",
+      "role": "meal",
+      "before": {
+        "nodeId": "food_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "food option 0",
+        "startAt": "2026-10-15T12:30:00+08:00",
+        "endAt": "2026-10-15T13:45:00+08:00"
+      },
+      "after": {
+        "nodeId": "food_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "food option 0",
+        "startAt": "2026-10-15T12:30:00+08:00",
+        "endAt": "2026-10-15T13:45:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": true
+    },
+    {
+      "stopId": "s4_checkin",
+      "role": "stay_check_in",
+      "before": {
+        "nodeId": "stay_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "stay option 0",
+        "startAt": "2026-10-15T15:30:00+08:00",
+        "endAt": "2026-10-15T16:00:00+08:00"
+      },
+      "after": {
+        "nodeId": "stay_1_e96a0d2503795986dd7b1f2b_2",
+        "title": "stay option 1",
+        "startAt": "2026-10-15T15:30:00+08:00",
+        "endAt": "2026-10-15T16:00:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": false
+    },
+    {
+      "stopId": "s5_dinner",
+      "role": "meal",
+      "before": {
+        "nodeId": "food_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "food option 0",
+        "startAt": "2026-10-15T18:00:00+08:00",
+        "endAt": "2026-10-15T19:30:00+08:00"
+      },
+      "after": {
+        "nodeId": "food_0_e6e0bdb8a124147cf9fb955e_1",
+        "title": "food option 0",
+        "startAt": "2026-10-15T18:00:00+08:00",
+        "endAt": "2026-10-15T19:30:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": false
+    },
+    {
+      "stopId": "s6_return",
+      "role": "stay_return",
+      "before": {
+        "nodeId": "stay_0_e96a0d2503795986dd7b1f2b_1",
+        "title": "stay option 0",
+        "startAt": "2026-10-15T20:00:00+08:00",
+        "endAt": "2026-10-15T20:30:00+08:00"
+      },
+      "after": {
+        "nodeId": "stay_1_e96a0d2503795986dd7b1f2b_2",
+        "title": "stay option 1",
+        "startAt": "2026-10-15T20:00:00+08:00",
+        "endAt": "2026-10-15T20:30:00+08:00"
+      },
+      "sameTime": true,
+      "sameCandidate": false
+    }
+  ],
+  "cancelledRun": {
+    "runId": "run_b01b1538-aa02-4130-9449-9edc57773a6f",
+    "conversationId": "conversation_45a5ac98",
+    "tripId": null,
+    "status": "cancelled",
+    "createdAt": "1790016622557",
+    "updatedAt": "1790016645637",
+    "elapsedMs": 23080,
+    "productWriteCount": 0,
+    "input": {
+      "text": "2026年10月15日至16日，两个人从杭州去上海玩两天，住一晚，预算6000元。请查资料并生成完整草案。",
+      "modelId": "kimi-k3",
+      "planningContext": null
+    },
+    "result": null,
+    "publicTools": [],
+    "calls": [
+      {
+        "run_id": "run_b01b1538-aa02-4130-9449-9edc57773a6f",
+        "scope": "moonshotai-cn",
+        "count": 1,
+        "input_tokens": null,
+        "output_tokens": null
+      }
+    ],
+    "events": [
+      {
+        "type": "run_queued",
+        "status": "queued",
+        "sequence": 1,
+        "at": 1790016622557
+      },
+      {
+        "type": "run_started",
+        "status": "running",
+        "sequence": 2,
+        "at": 1790016622567
+      },
+      {
+        "type": "run_cancel_requested",
+        "status": "cancelling",
+        "sequence": 3,
+        "at": 1790016645604
+      },
+      {
+        "type": "run_finished",
+        "status": "cancelled",
+        "sequence": 4,
+        "at": 1790016645638
+      }
+    ]
+  },
+  "hotelOnlyDomains": [
+    "stay"
+  ]
+}

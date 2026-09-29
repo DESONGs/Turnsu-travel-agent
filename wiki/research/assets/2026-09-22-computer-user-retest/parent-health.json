@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-21T18:36:06.764Z",
+  "model": "deepseek-v4-flash",
+  "elapsedMs": 592,
+  "stopReason": "error",
+  "errorMessage": "402: {\"message\":\"Insufficient Balance\",\"type\":\"unknown_error\",\"param\":null,\"code\":\"invalid_request_error\"}",
+  "text": "",
+  "configured": {
+    "parent": true,
+    "child": true,
+    "amap": false
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "tripId": "trip_ac8e37a6",
+  "sourceMode": "configured_real_providers",
+  "candidatesBefore": {
+    "transport": 3,
+    "stay": 6,
+    "food": 0,
+    "play": 6
+  },
+  "candidatesAfter": {
+    "transport": 3,
+    "stay": 6,
+    "food": 0,
+    "play": 6
+  },
+  "candidateIdsUnchanged": true,
+  "firstProposalBefore": {
+    "id": "proposal_research_analysis_run_1cf8194ded152dd97a57614d",
+    "counts": {
+      "transport": 3,
+      "stay": 6,
+      "food": 0,
+      "play": 6
+    }
+  },
+  "firstProposalAfter": {
+    "id": "itinerary_d83b90998e7248ef60c46c56",
+    "counts": {
+      "transport": 1,
+      "stay": 1,
+      "food": 0,
+      "play": 2
+    }
+  },
+  "draftPlanDaysUnchanged": true,
+  "draftPlannedVisits": 7,
+  "draftItineraryIsNull": true,
+  "initialValidationIssues": [
+    {
+      "code": "meal_window_missing",
+      "message": "第 1 天的安排跨过午餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+      "stopIds": [],
+      "dayIndex": 1,
+      "severity": "blocking",
+      "allowedRepairDirections": [
+        "reorder_flexible_stop",
+        "replace_candidate"
+      ]
+    },
+    {
+      "code": "meal_window_missing",
+      "message": "第 1 天的安排跨过晚餐时段，但没有安排用餐；请使用已有餐饮候选补齐并调整灵活活动，不能通过缩短行程隐藏缺口。",
+      "stopIds": [],
+      "dayIndex": 1,
+      "severity": "blocking",
+      "allowedRepairDirections": [
+        "reorder_flexible_stop",
+        "replace_candidate"
+      ]
+    },
+    {
+      "code": "route_provider_unavailable",
+      "message": "市内路线资料暂时不可用，无法核验每天的交通、步行量和衔接时间。已有候选可以继续比较；资料服务恢复后可从当前旅行继续，无需为此重新填写旅行要求。",
+      "stopIds": [],
+      "dayIndex": null,
+      "severity": "blocking",
+      "allowedRepairDirections": []
+    },
+    {
+      "code": "plan_day_mismatch",
+      "message": "第 2 天与旅行日期不一致。",
+      "stopIds": [],
+      "dayIndex": 2,
+      "severity": "blocking",
+      "allowedRepairDirections": [
+        "move_to_next_day"
+      ]
+    }
+  ],
+  "afterInvalidatedBy": [
+    "weather_changed"
+  ],
+  "selectedNodesAfter": 0
+}

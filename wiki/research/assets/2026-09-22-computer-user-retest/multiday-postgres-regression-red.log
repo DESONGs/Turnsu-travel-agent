@@ -1,0 +1,28 @@
+(node:62589) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (328.369917ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 879.006583
+
+✖ failing tests:
+
+test at tests/itinerary-planning-harness.test.mjs:428:1
+✖ a checked itinerary survives another API instance and confirmation reuses its persisted route evidence (328.369917ms)
+  AssertionError [ERR_ASSERTION]: Budget-only update must leave the adopted plan readable after JSONB roundtrip: invalid_trip_state [{"path":"/environment/mobility/feasibility/issues/0/stopIds","message":"must not have more than 8 items"},{"path":"/environment/mobility/feasibility","message":"must be null"},{"path":"/environment/mobility/feasibility","message":"must match a schema in anyOf"},{"path":"/environment/mobility","message":"must be null"},{"path":"/environment/mobility","message":"must match a schema in anyOf"}]; affected visit counts: [13]
+      at TestContext.<anonymous> (file:///Users/chenge/Desktop/travel-agent/tests/itinerary-planning-harness.test.mjs:455:26)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }
