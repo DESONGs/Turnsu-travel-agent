@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 export interface TravelExecutionContext {
+  sessionPool?: import("../dsh/postgres-session.js").SqlPool;
   runId: string;
   workerId: string;
   fence: number;

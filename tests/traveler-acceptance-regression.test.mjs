@@ -19,7 +19,7 @@ async function fixture(t) {
   const research = provider.research.bind(provider);
   provider.research = async input => { const result = await research(input); result.byDomain = Object.fromEntries(Object.entries(result.byDomain).filter(([domain]) => input.domains.includes(domain))); return result; };
   const service = new TravelService({ store: new TripStore({ rootDir: join(root, "trips") }), researchProvider: provider, planningRunCoordinator: createTravelAnalysisRunCoordinator() });
-  const faux = fauxProvider({ provider: "fixture-traveler", models: [{ id: "parent" }] });
+  const faux = fauxProvider({ provider: "fixture-traveler", models: [{ id: "parent", contextWindow: 32768 }] });
   const models = createModels(); models.setProvider(faux.provider);
   const agent = new TravelConversationAgent({ travelService: service, conversationRepository: new FileConversationRepository({ rootDir: join(root, "conversations") }), modelRuntime: { models, model: faux.getModel("parent") } });
   const conversation = await agent.createConversation({ userId: "traveler" });

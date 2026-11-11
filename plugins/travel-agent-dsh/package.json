@@ -1,0 +1,23 @@
+{
+  "name": "dsh-turnsu-travel-agent",
+  "version": "0.2.0",
+  "type": "module",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-mcp-client": "0.2.2-rc.1"
+  }
+}

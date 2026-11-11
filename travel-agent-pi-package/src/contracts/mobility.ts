@@ -1,7 +1,7 @@
 import { MobilityObservationSchema, TripFeasibilitySchema, TripItinerarySchema, assertSchema, type MobilityLeg, type MobilityObservation } from "./index.js";
 import { selectedRoute, routeAlternativeId } from "../core/journey-execution.js";
 
-const MODES = new Set(["walk", "transit", "taxi", "drive", "train", "flight", "shuttle", "cable_car", "ferry"]);
+const MODES = new Set(["walk", "transit", "taxi", "drive", "bicycle", "train", "flight", "shuttle", "cable_car", "ferry"]);
 const STATUSES = new Set(["completed", "partial", "needs_context", "provider_unavailable"]);
 const WALK_TYPES = {
   "0": { kind: "road", label: "普通道路" }, "1": { kind: "crosswalk", label: "人行横道" },
@@ -59,11 +59,11 @@ function timestamp(value: unknown, field: string, { optional = false }: { option
   return date.toISOString();
 }
 
-function safeAmapUrl(value: unknown, field: string, { optional = true }: { optional?: boolean } = {}): string | null {
+function safeMapUrl(value: unknown, field: string, { optional = true }: { optional?: boolean } = {}): string | null {
   if ((value == null || value === "") && optional) return null;
   let url: URL;
   try { url = new URL(String(value)); } catch { return fail(field); }
-  if (url.protocol !== "https:" || !["uri.amap.com", "lbs.amap.com"].includes(url.hostname)) return fail(field);
+  if (url.protocol !== "https:" || url.username || url.password || !["uri.amap.com", "lbs.amap.com", "www.google.com", "maps.google.com", "developers.google.com"].includes(url.hostname)) return fail(field);
   return url.toString();
 }
 
@@ -72,8 +72,11 @@ function coordinates(input: unknown, field: string) {
   const value = objectValue(input, field);
   const longitude = Number(value.longitude);
   const latitude = Number(value.latitude);
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return fail(field);
-  return { longitude, latitude, coordinateSystem: "GCJ-02" as const };
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude) || Math.abs(longitude) > 180 || Math.abs(latitude) > 90) return fail(field);
+  // Legacy records without a declared CRS keep their route facts, but cannot
+  // supply drawable geometry. Never silently label them as Chinese coordinates.
+  if (value.coordinateSystem !== "GCJ-02" && value.coordinateSystem !== "WGS-84") return null;
+  return { longitude, latitude, coordinateSystem: value.coordinateSystem };
 }
 
 export interface WalkTypeMetadata { code: string; kind: string; label: string }
@@ -165,9 +168,15 @@ function alternative(input: unknown, index: number, field: string) {
     walkingMeters: nonNegativeNumber(value.walkingMeters, `${field}.${index}.walkingMeters`, { optional: true }),
     transfers: nonNegativeNumber(value.transfers, `${field}.${index}.transfers`, { optional: true }),
     estimatedFareCny: nonNegativeNumber(value.estimatedFareCny, `${field}.${index}.estimatedFareCny`, { optional: true }),
+    ...(value.fare ? { fare: {
+      amount: nonNegativeNumber(objectValue(value.fare, `${field}.${index}.fare`).amount, `${field}.${index}.fare.amount`),
+      currency: text(objectValue(value.fare, `${field}.${index}.fare`).currency, `${field}.${index}.fare.currency`, { max: 3 }),
+      quality: text(objectValue(value.fare, `${field}.${index}.fare`).quality, `${field}.${index}.fare.quality`, { max: 20 }),
+    } } : {}),
+    ...(typeof value.checkedAt === "string" ? { checkedAt: timestamp(value.checkedAt, `${field}.${index}.checkedAt`) } : {}),
     scheduleBasis: value.scheduleBasis === "scheduled_service" ? "scheduled_service" as const : "query_time_estimate" as const,
     realTimeArrival: false as const,
-    navigationUrl: safeAmapUrl(value.navigationUrl, `${field}.${index}.navigationUrl`),
+    navigationUrl: safeMapUrl(value.navigationUrl, `${field}.${index}.navigationUrl`),
     polyline: Array.isArray(value.polyline) ? value.polyline.map((point, pointIndex) => coordinates(point, `${field}.${index}.polyline.${pointIndex}`)).filter((point) => point !== null).slice(0, 600) : [],
     steps, accessibilityFeatures,
     accessibilityAssessment: {
@@ -300,7 +309,7 @@ export function normalizeTripMobility(input: unknown): MobilityObservation {
     feasibility: value.feasibility ? assertSchema(TripFeasibilitySchema, value.feasibility, "invalid_trip_feasibility") : null,
     travelerFit: travelerFit(value.travelerFit), reason: text(value.reason, "reason", { optional: true, max: 200 }),
     caveats: Array.isArray(value.caveats) ? value.caveats.map((item) => String(item).trim().slice(0, 500)).filter(Boolean).slice(0, 12) : [],
-    sourceDocumentation: safeAmapUrl(value.sourceDocumentation, "sourceDocumentation"), fabricatedResults: false,
+    sourceDocumentation: safeMapUrl(value.sourceDocumentation, "sourceDocumentation"), fabricatedResults: false,
   }, "invalid_trip_mobility");
 }
 

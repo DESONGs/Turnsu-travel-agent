@@ -105,12 +105,14 @@ export class PostgresTripRepository {
   }
 
   async get(tripId) {
+    await this.migrate();
     const result = await this.pool.query("SELECT state_json FROM trip_states WHERE trip_id = $1", [tripId]);
     if (!result.rowCount) return null;
     return validateState(result.rows[0].state_json, tripId);
   }
 
   async list() {
+    await this.migrate();
     const result = await this.pool.query("SELECT state_json FROM trip_states ORDER BY updated_at DESC");
     return result.rows.map((row) => validateState(row.state_json, row.state_json.tripId));
   }

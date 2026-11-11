@@ -75,7 +75,8 @@ export function tripBusinessIssues(state: TripState): TripFeasibility["issues"] 
       resolution: code.endsWith("unverified") ? "provider_evidence" : "plan_change",
       allowedRepairDirections: code.endsWith("unverified") ? ["replace_candidate", "fetch_evidence"] : ["replace_candidate", "change_mode"] });
   }
-  if (budget.exceedsBudget) issues.unshift({ code: "trip_budget_exceeded", message: `当前方案预计 ${budget.estimated} 元，超过已确认的 ${budget.totalBudget} 元预算；先在相同需求内比较更便宜的候选和交通。不得改预算或删必要项目；确实无解时才说明来源范围与需要用户决定的取舍。`, severity: "blocking", stopIds: [], dayIndex: null, allowedRepairDirections: ["replace_candidate", "change_mode"] });
+  if (budget.unconvertedCurrencies?.length && budget.totalBudget != null) issues.unshift({ code: "budget_exchange_rate_required", message: `Budget conversion is required for ${budget.unconvertedCurrencies.join(", ")}.`, severity: "blocking", stopIds: [], dayIndex: null, resolution: "provider_evidence", allowedRepairDirections: ["fetch_evidence"] });
+  if (budget.exceedsBudget) issues.unshift({ code: "trip_budget_exceeded", message: `当前方案预计 ${budget.estimated} ${budget.currency}，超过已确认的 ${budget.totalBudget} ${budget.currency}预算；先在相同需求内比较更便宜的候选和交通。不得改预算或删必要项目；确实无解时才说明来源范围与需要用户决定的取舍。`, severity: "blocking", stopIds: [], dayIndex: null, allowedRepairDirections: ["replace_candidate", "change_mode"] });
   return issues;
 }
 

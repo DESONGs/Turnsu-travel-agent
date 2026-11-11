@@ -1,3 +1,4 @@
+import { googleSafeConversation } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { randomUUID } from "node:crypto";
 import { mkdir, open, readFile, readdir, rename, unlink } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -114,7 +115,7 @@ export class FileConversationRepository {
       let handle;
       try {
         handle = await open(path, "wx", 0o600);
-        await handle.writeFile(`${JSON.stringify(persisted, null, 2)}\n`, "utf8");
+        await handle.writeFile(`${JSON.stringify(googleSafeConversation(persisted), null, 2)}\n`, "utf8");
       } catch (error) {
         if (error?.code === "EEXIST") throw repositoryError("conversation_already_exists");
         throw error;
@@ -169,7 +170,7 @@ export class FileConversationRepository {
       let handle;
       try {
         handle = await open(tempPath, "wx", 0o600);
-        await handle.writeFile(`${JSON.stringify(persisted, null, 2)}\n`, "utf8");
+        await handle.writeFile(`${JSON.stringify(googleSafeConversation(persisted), null, 2)}\n`, "utf8");
         await handle.close();
         handle = null;
         await assertTravelExecutionCurrent();

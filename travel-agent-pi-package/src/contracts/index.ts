@@ -24,6 +24,8 @@ export const PriceQualitySchema = Type.Union([
 export type PriceQuality = Static<typeof PriceQualitySchema>;
 
 export const TravelPriceSchema = Type.Object({
+  taxStatus: Type.Optional(Type.String({ enum: ["included", "excludes_some_taxes_or_fees", "unknown"] })),
+  taxesAndFees: Type.Optional(Type.Array(Type.Object({}, { additionalProperties: true }), { maxItems: 40 })),
   unit: Type.Optional(Type.String({ enum: ["per_person", "per_vehicle", "per_room_night", "per_booking"] })),
   quantity: Type.Optional(Type.Number({ minimum: 0 })),
   includes: Type.Optional(Type.Array(Type.String({ maxLength: 128 }), { maxItems: 12 })),
@@ -77,6 +79,14 @@ export const TripVehicleSchema = Type.Object({
 }, { additionalProperties: false });
 
 export const TripBriefSchema = Type.Object({
+  market: Type.Optional(Type.String({ pattern: "^[A-Z]{2}$" })),
+  locale: Type.Optional(Type.String({ maxLength: 24 })),
+  party: Type.Optional(Type.Object({ adults: Type.Integer({ minimum: 1, maximum: 12 }), childrenAges: Type.Array(Type.Integer({ minimum: 0, maximum: 17 }), { maxItems: 12 }), rooms: Type.Optional(Type.Integer({ minimum: 1, maximum: 12 })) })),
+  carHire: Type.Optional(ExtensibleObjectSchema),
+  countryCode: Type.Optional(Type.String({ pattern: "^[A-Z]{2}$" })),
+  timeZone: Type.Optional(Type.String({ maxLength: 100 })),
+  destinationContext: Type.Optional(ExtensibleObjectSchema),
+  exchangeRates: Type.Optional(Type.Array(ExtensibleObjectSchema, { maxItems: 64 })),
   journeys: Type.Optional(Type.Array(JourneyRequestSchema, { maxItems: 12 })),
   vehicle: Type.Optional(TripVehicleSchema),
   destination: Type.Optional(NullableStringSchema),
@@ -156,6 +166,10 @@ export const TravelResearchCriteriaSchema = Type.Object({
   dates: NullableStringSchema,
   partySize: Type.Union([Type.Integer({ minimum: 1, maximum: 12 }), Type.Null()]),
   budgetCny: Type.Union([Type.Number({ minimum: 0 }), Type.Null()]),
+  countryCode: Type.Optional(NullableStringSchema),
+  timeZone: Type.Optional(NullableStringSchema),
+  currency: Type.Optional(NullableStringSchema),
+  totalBudget: Type.Optional(Type.Union([Type.Number({ minimum: 0 }), Type.Null()])),
   travelerConstraintHints: ResearchTextListSchema,
   byDomain: Type.Object({
     play: NormalizedResearchDomainCriteriaSchema,
@@ -292,7 +306,7 @@ export const LocationSchema = Type.Object({
   coordinates: Type.Optional(Type.Object({
     longitude: Type.Number({ minimum: -180, maximum: 180 }),
     latitude: Type.Number({ minimum: -90, maximum: 90 }),
-    coordinateSystem: Type.Optional(Type.Literal("GCJ-02")),
+    coordinateSystem: Type.Optional(Type.Union([Type.Literal("GCJ-02"), Type.Literal("WGS-84")])),
   }, { additionalProperties: false })),
 }, { additionalProperties: true });
 export const LocationValueSchema = Type.Union([LocationSchema, Type.String(), Type.Null()]);
@@ -573,7 +587,7 @@ export const AccessibilityFeatureSchema = Type.Object({
 }, { additionalProperties: false });
 
 const MobilityCoordinatesSchema = Type.Object({
-  longitude: Type.Number(), latitude: Type.Number(), coordinateSystem: Type.Literal("GCJ-02"),
+  longitude: Type.Number(), latitude: Type.Number(), coordinateSystem: Type.Union([Type.Literal("GCJ-02"), Type.Literal("WGS-84")]),
 }, { additionalProperties: false });
 
 export const MobilityStepSchema = Type.Object({
@@ -663,6 +677,7 @@ export const ItineraryEditSchema = Type.Object({
 export type ItineraryEdit = Static<typeof ItineraryEditSchema>;
 
 export const TripItineraryStopSchema = Type.Object({
+  timeZone: Type.Optional(Type.String({ maxLength: 100 })),
   stopId: IdentifierSchema,
   mealPurpose: Type.Optional(Type.String({ enum: ["breakfast", "lunch", "dinner", "snack"] })),
   nodeId: IdentifierSchema,
@@ -756,6 +771,7 @@ const MobilityPlaceSchema = Type.Object({
 }, { additionalProperties: false });
 
 export const MobilityAlternativeSchema = Type.Object({
+  fare: Type.Optional(Type.Union([Type.Object({ amount: Type.Number({ minimum: 0 }), currency: Type.String({ pattern: "^[A-Z]{3}$" }), quality: Type.String() }), Type.Null()])),
   alternativeId: Type.Optional(IdentifierSchema),
   fareIncludedByNodeId: Type.Optional(IdentifierSchema),
   sourceRefs: Type.Optional(Type.Array(Type.String())),
@@ -995,6 +1011,7 @@ export type ContinuousPlanning = Static<typeof ContinuousPlanningSchema>;
 
 export const TripStateSchema = Type.Object({
   schemaVersion: Type.Literal("trip-control-state-v1"),
+  recentChange: Type.Optional(Type.Object({ changeId: Type.String(), appliedRevision: Type.Integer({ minimum: 0 }), fingerprint: Type.String(), beforeJson: Type.String({ maxLength: 5000000 }) }, { additionalProperties: false })),
   tripId: IdentifierSchema,
   revision: Type.Integer({ minimum: 0 }),
   storageVersion: Type.Integer({ minimum: 0 }),
@@ -1024,6 +1041,8 @@ export const TripStateSchema = Type.Object({
     committed: Type.Number(),
     estimated: Type.Number(),
     exceedsBudget: Type.Boolean(),
+    unconvertedCurrencies: Type.Optional(Type.Array(Type.String())),
+    currencyTotals: Type.Optional(Type.Array(Type.Object({ currency: Type.String(), amount: Type.Number() }))),
   }, { additionalProperties: false }),
   environment: Type.Object({
     weather: Type.Union([WeatherObservationSchema, Type.Null()]),

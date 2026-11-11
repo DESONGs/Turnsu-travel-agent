@@ -43,5 +43,6 @@ export function gcj02ToWgs84(longitude, latitude) {
 export function coordinatesForWebMap(coordinates) {
   if (!coordinates || !Number.isFinite(Number(coordinates.longitude)) || !Number.isFinite(Number(coordinates.latitude))) return null;
   if (coordinates.coordinateSystem === "WGS-84") return { longitude: Number(coordinates.longitude), latitude: Number(coordinates.latitude) };
+  if (coordinates.coordinateSystem !== "GCJ-02") return null;
   return gcj02ToWgs84(coordinates.longitude, coordinates.latitude);
 }

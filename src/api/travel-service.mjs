@@ -1,3 +1,7 @@
+import { localChoicePlan } from "../../travel-agent-pi-package/src/product/local-change.ts";
+import { withRecentTripChange, restoreRecentTripChange, recentTripChangeAvailable } from "../../travel-agent-pi-package/src/product/trip-undo.ts";
+import { destinationContext, localDateTime } from "../../travel-agent-pi-package/src/core/global-travel.ts";
+import { containsGoogleContent } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
 import { decisionHash, rankDecisionCandidates, TravelExecutionDeferred } from "../../travel-agent-pi-package/src/host/travel-decision-policy.ts";
@@ -55,6 +59,8 @@ function requireTrip(state, tripId) {
 }
 
 function isInboundTrip(state) {
+  const country = state.brief?.destinationContext?.countryCode ?? state.brief?.countryCode;
+  if (country && country !== "CN") return false;
   return state.travelers.some((traveler) => !String(traveler.language ?? "zh-CN").toLowerCase().startsWith("zh")
     || traveler.hardConstraints?.some((constraint) => constraint?.type === "foreign_guest_required"));
 }
@@ -67,6 +73,8 @@ function signalStatus(signal, { applicable = true } = {}) {
 
 function readinessView(state) {
   const inbound = isInboundTrip(state);
+  const overseas = Boolean(destinationContext(state.brief).countryCode && destinationContext(state.brief).countryCode !== "CN");
+  const preparation = inbound || overseas;
   const signals = state.readiness?.signals ?? {};
   const selectedStay = state.nodes.find((node) => node.domain === "stay" && node.selected);
   const mobility = state.environment?.mobility;
@@ -84,29 +92,29 @@ function readinessView(state) {
     {
       itemId: "travel_documents",
       title: "入境与旅行证件",
-      status: signalStatus(signals.travel_documents, { applicable: inbound }),
-      reason: inbound ? "只记录是否已核对，不收集证件号码或影像。" : "国内旅行不需要入境准备检查。",
-      action: inbound ? "按国籍与行程核对官方要求" : null,
-      editable: inbound,
+      status: signalStatus(signals.travel_documents, { applicable: preparation }),
+      reason: preparation ? "只记录是否已核对，不收集证件号码或影像。" : "国内旅行不需要入境准备检查。",
+      action: preparation ? "按国籍与行程核对官方要求" : null,
+      editable: preparation,
       sourceNature: "traveler_confirmation",
       guidanceUrl: inbound ? "https://english.www.gov.cn/2025special/bizexpatsinchina2025" : null,
     },
     {
       itemId: "mobile_access",
       title: "手机网络与可用联系方式",
-      status: signalStatus(signals.mobile_access, { applicable: inbound }),
-      reason: inbound ? "地图、票务、酒店沟通和账号恢复都依赖可用网络。" : "国内旅行默认沿用现有手机网络。",
-      action: inbound ? "确认漫游、eSIM 或本地网络方案" : null,
-      editable: inbound,
+      status: signalStatus(signals.mobile_access, { applicable: preparation }),
+      reason: preparation ? "地图、票务、酒店沟通和账号恢复都依赖可用网络。" : "国内旅行默认沿用现有手机网络。",
+      action: preparation ? "确认漫游、eSIM 或本地网络方案" : null,
+      editable: preparation,
       sourceNature: "traveler_confirmation",
     },
     {
       itemId: "cashless_access",
       title: "支付与备用方式",
-      status: signalStatus(signals.cashless_access, { applicable: inbound }),
-      reason: inbound ? "只记录是否准备完成，不收集卡号、账户或支付凭据。" : "国内旅行不展示入境支付教育。",
-      action: inbound ? "确认可用方式并保留备用方案" : null,
-      editable: inbound,
+      status: signalStatus(signals.cashless_access, { applicable: preparation }),
+      reason: preparation ? "只记录是否准备完成，不收集卡号、账户或支付凭据。" : "国内旅行不展示入境支付教育。",
+      action: preparation ? "确认可用方式并保留备用方案" : null,
+      editable: preparation,
       sourceNature: "traveler_confirmation",
       guidanceUrl: inbound ? "https://english.www.gov.cn/news/202404/11/content_WS6617c858c6d0868f4e8e5f4d.html" : null,
     },
@@ -535,28 +543,20 @@ function isoTripDates(value) {
   return dates;
 }
 
-function normalizedScheduleAt(value, fallbackDate = null) {
-  const raw = String(value ?? "").trim();
-  const full = raw.match(/^(20\d{2}-\d{2}-\d{2})[ T](\d{1,2}:\d{2})(?::\d{2})?/);
-  if (full) return `${full[1]}T${full[2]}:00+08:00`;
-  const time = raw.match(/^(\d{1,2}:\d{2})$/);
-  if (time && fallbackDate) return `${fallbackDate}T${time[1]}:00+08:00`;
-  return raw || null;
-}
-
 function planningWindow(candidate, domain, criteria) {
   const dates = isoTripDates(criteria?.dates);
-  const firstDate = dates[0] ?? null;
-  const secondDate = dates[1] ?? firstDate;
+  const firstDate = dates[0] ?? null, secondDate = dates[1] ?? firstDate;
+  const country = candidate.location?.countryCode ?? candidate.operability?.countryCode ?? criteria?.countryCode;
+  const zone = candidate.location?.timeZone ?? candidate.operability?.timeZone ?? criteria?.timeZone ?? (!country || country === "CN" ? "Asia/Shanghai" : null);
+  const at = (value, day = firstDate, timeZone = zone) => timeZone ? localDateTime(value, day, timeZone) : null;
   if (domain === "transport" && candidate.operability?.mobilityRole === "intercity_inventory") {
-    const startAt = normalizedScheduleAt(candidate.operability?.departureAt, firstDate) ?? (firstDate ? `${firstDate}T09:00:00+08:00` : null);
-    const endAt = normalizedScheduleAt(candidate.operability?.arrivalAt, firstDate) ?? (firstDate && criteria?.arrival?.time ? `${firstDate}T${criteria.arrival.time}:00+08:00` : null);
-    return { startAt, endAt, label: "出发日 · 城际抵达", basis: candidate.operability?.scheduleVerified ? "provider_schedule" : "planning_window", confirmed: false };
+    const op = candidate.operability;
+    return { startAt: at(op.departureAt, firstDate, op.departureTimeZone ?? op.departurePlace?.timeZone ?? zone), endAt: at(op.arrivalAt, firstDate, op.arrivalTimeZone ?? op.arrivalPlace?.timeZone ?? zone), label: "城际班次 · 两端当地时间", basis: op.scheduleVerified ? "provider_schedule" : "planning_window", confirmed: false };
   }
-  if (!firstDate) return null;
-  if (domain === "stay") return { startAt: `${firstDate}T16:00:00+08:00`, endAt: `${firstDate}T18:00:00+08:00`, label: "第 1 天 16:00–18:00 · 抵达后入住", basis: "agent_suggested_window", confirmed: false };
-  if (domain === "food") return { startAt: `${firstDate}T18:00:00+08:00`, endAt: `${firstDate}T19:30:00+08:00`, label: "第 1 天 18:00–19:30 · 晚餐", basis: "agent_suggested_window", confirmed: false };
-  if (domain === "play") return { startAt: `${secondDate}T10:00:00+08:00`, endAt: `${secondDate}T12:00:00+08:00`, label: `${secondDate === firstDate ? "第 1 天" : "第 2 天"} 10:00–12:00 · 轻松体验`, basis: "agent_suggested_window", confirmed: false };
+  if (!firstDate || !zone) return null;
+  if (domain === "stay") return { startAt: at("16:00"), endAt: at("18:00"), label: "第 1 天 16:00–18:00 · 抵达后入住", basis: "agent_suggested_window", confirmed: false };
+  if (domain === "food") return { startAt: at("18:00"), endAt: at("19:30"), label: "第 1 天 18:00–19:30 · 晚餐", basis: "agent_suggested_window", confirmed: false };
+  if (domain === "play") return { startAt: at("10:00", secondDate), endAt: at("12:00", secondDate), label: `${secondDate === firstDate ? "第 1 天" : "第 2 天"} 10:00–12:00 · 轻松体验`, basis: "agent_suggested_window", confirmed: false };
   return null;
 }
 
@@ -895,7 +895,7 @@ function planningStateFingerprint(state, ownRunId = null) {
       pace: state.brief?.pace ?? null,
     },
     travelers: state.travelers.map((traveler) => ({ travelerId: traveler.travelerId, version: traveler.version ?? null, hardConstraints: traveler.hardConstraints ?? [], careNeeds: traveler.careNeeds ?? {} })),
-    nodes: itineraryPlanningNodes(state).map((node) => ({ nodeId: node.nodeId, version: node.version ?? 0, selected: node.selected === true, domain: node.domain, lock: node.lock ?? null, time: node.time ?? null, sourceRefs: node.sourceRefs ?? [], price: node.price ?? node.cost, operability: node.operability })),
+    nodes: itineraryPlanningNodes(state).map((node) => ({ nodeId: node.nodeId, version: node.version ?? 0, selected: node.selected === true, domain: node.domain, lock: node.lock ?? null, time: node.time ?? null, sourceRefs: node.sourceRefs ?? [], price: node.price ?? node.cost, operability: node.operability?.provider === "google_maps" ? Object.fromEntries(Object.entries(node.operability).filter(([key]) => !["checkedAt", "photos", "googleContentExpiresAt", "googleMapsUri", "attribution", "contentRefreshRequired"].includes(key))) : node.operability })),
     proposals: state.pendingProposals.filter(proposal => !proposal.itineraryPlan).map((proposal) => ({ proposalId: proposal.proposalId, baseRevision: proposal.baseRevision, operationNodeIds: (proposal.operations ?? []).map((operation) => operation.nodeId) })),
   });
 }
@@ -986,8 +986,9 @@ export class TravelService {
 
   async readMobilityPreview(previewId) {
     const now = new Date(this.clock?.() ?? Date.now()).getTime();
-    if (this.store.getMobilityPreview) return this.store.getMobilityPreview(previewId, now);
     const cached = this.mobilityPreviewCache.get(previewId);
+    if (cached?.expiresAt > now && containsGoogleContent(cached)) return cached;
+    if (this.store.getMobilityPreview) return this.store.getMobilityPreview(previewId, now);
     return cached?.expiresAt > now ? cached : null;
   }
 
@@ -1003,6 +1004,7 @@ export class TravelService {
 
   async createTrip(input = {}) {
     validateRequest("create_trip", input);
+    if (input.brief?.exchangeRates !== undefined) throw serviceError("server_exchange_rates_required");
     const state = createTripControlState({
       tripId: input.tripId ?? `trip_${randomUUID().slice(0, 8)}`,
       brief: input.brief ?? {},
@@ -1022,14 +1024,31 @@ export class TravelService {
     return controlView(await this.store.create(state), this.providerStatus());
   }
 
-  async updateTripScope(input = {}) {
+  async refreshBudgetRates(tripId) {
+    const state = requireTrip(await this.store.get(tripId), tripId);
+    const currency = state.brief?.currency ?? "CNY";
+    const candidates = [...state.nodes, ...state.pendingProposals.flatMap(proposal => (proposal.operations ?? []).flatMap(op => op.node ? [op.node] : []))];
+    const from = [...new Set(candidates.map(node => node.price?.currency).filter(code => code && code !== currency && code !== "XXX"))];
+    if (!from.length || !this.exchangeRateProvider) return state;
+    try {
+      const rates = await this.exchangeRateProvider.rates(from, currency);
+      if (!rates.length || JSON.stringify(rates) === JSON.stringify(state.brief.exchangeRates)) return state;
+      const next = updateTripControlScope(state, { brief: { exchangeRates: rates } }, { clock: this.clock });
+      return await this.store.save(next, { expectedStorageVersion: state.storageVersion });
+    } catch { return state; } // Unknown conversion stays visible and blocks budget confirmation.
+  }
+
+  async updateTripScope(input = {}, { expectedRevision } = {}) {
+    if (input.brief?.exchangeRates !== undefined) throw serviceError("server_exchange_rates_required");
     validateRequest("update_trip_scope", input);
     const state = requireTrip(await this.store.get(input.tripId), input.tripId);
     this.analysisRunCoordinator?.supersedeTrip(state.tripId, "trip_scope_changed");
     this.planningRunCoordinator?.supersedeTrip(state.tripId, "trip_scope_changed");
+    if (expectedRevision !== undefined && expectedRevision !== state.revision) throw Object.assign(serviceError("revision_conflict"), { status: 409 });
     const next = updateTripControlScope(state, input, { clock: this.clock });
     const saved = await this.store.save(next, { expectedStorageVersion: state.storageVersion });
-    return controlView(saved, this.providerStatus());
+    const rated = await this.refreshBudgetRates(saved.tripId);
+    return controlView(rated, this.providerStatus());
   }
 
   async confirmUserArrival(input = {}) {
@@ -1052,7 +1071,9 @@ export class TravelService {
     const existing = scoped.nodes.find((node) => node.domain === "transport" && node.operability?.mobilityRole === "user_confirmed_arrival");
     const nodeId = existing?.nodeId ?? `transport_user_arrival_${randomUUID().slice(0, 8)}`;
     const date = isoTripDates(scoped.brief?.dates)[0] ?? null;
-    const timeValue = date && /^\d{1,2}:\d{2}$/.test(time) ? `${date}T${time.padStart(5, "0")}:00+08:00` : time;
+    const context = destinationContext(state.brief);
+    const zone = context.timeZone ?? (!context.countryCode || context.countryCode === "CN" ? "Asia/Shanghai" : null);
+    const timeValue = zone ? localDateTime(time, date, zone) : /(?:Z|[+-]\d{2}:\d{2})$/.test(time) ? time : null;
     const label = [airport, terminal].filter(Boolean).join(" ");
     const title = `已确认抵达：${label}`;
     const summary = `你已确认${date ? `${date} ` : ""}${time}抵达${label}${input.intercityBooked === true ? "，城际票已自行安排" : ""}；该节点只用于接驳，不代表库存航班。`;
@@ -1145,6 +1166,7 @@ export class TravelService {
       ? await this.store.listSharedPlaceFeedback(sourceRefs)
       : [];
     const view = planView(state, { mapPreviewAvailable: this.researchProvider?.canRenderMap === true, sharedFeedback, clock: this.clock });
+    view.recentChange = recentTripChangeAvailable(state) ? { changeId: state.recentChange.changeId, appliedRevision: state.recentChange.appliedRevision } : null;
     view.planningAvailability = this.itineraryPlanningAvailability();
     const planningProposal = state.pendingProposals.find((proposal) => proposal.itineraryPreviewId && proposal.itineraryPlan) ?? null;
     const cached = planningProposal ? await this.readMobilityPreview(planningProposal.itineraryPreviewId) : null;
@@ -1651,7 +1673,12 @@ export class TravelService {
   async researchTripOptions(input) {
     input.signal?.throwIfAborted();
     validateRequest("research_trip_options", input);
-    const state = requireTrip(await this.store.get(input.tripId), input.tripId);
+    let state = requireTrip(await this.store.get(input.tripId), input.tripId);
+    if (this.researchProvider?.resolveDestination && state.brief?.destination && (!state.brief?.destinationContext?.countryCode || !state.brief?.destinationContext?.timeZone)) {
+      const context = await this.researchProvider.resolveDestination(state.brief);
+      await this.updateTripScope({ tripId: input.tripId, brief: { destinationContext: context, countryCode: context.countryCode, timeZone: context.timeZone } });
+      state = requireTrip(await this.store.get(input.tripId), input.tripId);
+    }
     input.signal?.throwIfAborted();
     this.planningRunCoordinator?.supersedeTrip(state.tripId, "candidate_set_changed");
     const rawRequestedDomains = Array.isArray(input.domains) && input.domains.length ? input.domains : FOUR_DOMAINS;
@@ -1927,7 +1954,24 @@ export class TravelService {
     return { ...result, state: undefined, tripId: saved.tripId, revision: saved.revision, storageVersion: saved.storageVersion };
   }
 
-  async acceptTripChange(input) {
+  async previewLocalChoice({tripId,baseRevision,nodeId,replaceNodeId,basePlanId}) {
+    const state=requireTrip(await this.store.get(tripId),tripId);
+    if(state.revision!==baseRevision)throw Object.assign(serviceError("revision_conflict"),{status:409});
+    const document=state.planning?.draft ?? state.planning?.adopted;
+    if(!document?.plan||document.planId!==basePlanId)throw Object.assign(serviceError("local_plan_stale"),{status:409});
+    const plan=localChoicePlan(document.plan,itineraryPlanningNodes(state),{nodeId,replaceNodeId,baseRevision});
+    return this.planItineraryTrial({tripId,plan,requireCompletePlan:document.requireCompletePlan,userRequest:plan.objective});
+  }
+
+  async undoTripChange({tripId,changeId,baseRevision}) {
+    const state = requireTrip(await this.store.get(tripId), tripId);
+    const next = restoreRecentTripChange(state, changeId, baseRevision, new Date(this.clock?.() ?? Date.now()).toISOString());
+    this.planningRunCoordinator?.supersedeTrip(tripId, "user_undo");
+    const saved = await this.store.save(next, {expectedStorageVersion:state.storageVersion});
+    return {status:"committed",tripId,revision:saved.revision};
+  }
+
+  async acceptTripChange(input, { userId = currentTravelExecution()?.userId } = {}) {
     validateRequest("accept_trip_change", input);
     const state = requireTrip(await this.store.get(input.tripId), input.tripId);
     if (input.baseRevision != null && Number(input.baseRevision) !== state.revision) {
@@ -1975,8 +2019,15 @@ export class TravelService {
     }
     const businessIssues = tripBusinessIssues(result.state);
     if (businessIssues.length) return { schemaVersion: "trip-commit-result-v1", status: "rejected", tripId: state.tripId, revision: state.revision, validation: { ok: false, reason: "trip_constraints_unmet" }, feasibility: { schemaVersion: "trip-feasibility-v1", canConfirm: false, status: "blocked", primaryBlocker: businessIssues[0].message, issues: businessIssues, checkedAt: null } };
-    const saved = await this.store.save(result.state, { expectedStorageVersion: state.storageVersion });
+    const saved = await this.store.save(withRecentTripChange(state, result.state), { expectedStorageVersion: state.storageVersion });
     const selectedNodeIds = hasItineraryPlan ? planNodeIds(pendingProposal.itineraryPlan) : Object.values(input.selections ?? {}).filter(Boolean);
+    if(userId && this.continuity){
+      for(const node of saved.nodes.filter(n=>n.domain==='stay'&&selectedNodeIds.includes(n.nodeId))){
+        const bed=String(node.operability?.bedType??node.operability?.roomName??'').match(/双床|twin|大床|king|queen/i)?.[0];
+        if(bed)await this.continuity.suggestPreference(userId,`住宿优先${/双床|twin/i.test(bed)?'双床房':'大床房'}`,`你在这次旅行中采用了${node.title}`).catch(()=>{});
+      }
+    }
+
     return {
       schemaVersion: result.schemaVersion,
       status: result.status,

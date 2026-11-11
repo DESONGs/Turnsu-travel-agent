@@ -1,3 +1,4 @@
+import { convertMoney, validTimeZone, destinationContext } from "../core/global-travel.js";
 import { createHash, randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { TripBriefSchema, assertSchema } from "../contracts/index.js";
@@ -138,6 +139,8 @@ export function normalizeTravelPrice(value: DynamicValue, defaults: DynamicRecor
     amount,
     currency: String(source.currency ?? defaults.currency ?? "CNY").slice(0, 8) || "CNY",
     quality,
+    ...(source.taxStatus ? { taxStatus: source.taxStatus } : {}),
+    ...(source.taxesAndFees ? { taxesAndFees: clone(source.taxesAndFees) } : {}),
     ...(source.unit ? { unit: source.unit } : {}),
     ...(source.quantity != null ? { quantity: source.quantity } : {}),
     ...(source.includes ? { includes: source.includes } : {}),
@@ -172,7 +175,7 @@ function hasExplicitTripDuration(brief: DynamicRecord = {}): boolean {
     || (String(brief.dates ?? "").match(/20\d{2}-\d{2}-\d{2}/g)?.length ?? 0) >= 2;
 }
 
-function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicRecord {
+function pricedTripTotalOriginal(item: DynamicRecord, state: DynamicRecord): DynamicRecord {
   const domain = requireDomain(item.domain);
   const explicit = explicitPriceTotal(item as Parameters<typeof explicitPriceTotal>[0], state.nodes, state.brief, Math.max(1, asArray(state.travelers).length), state.environment?.mobility?.itinerary);
   if (explicit) return explicit;
@@ -214,6 +217,16 @@ function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicReco
   };
 }
 
+function pricedTripTotal(item: DynamicRecord, state: DynamicRecord): DynamicRecord {
+  const total = pricedTripTotalOriginal(item, state);
+  const from = String(item.price?.currency ?? "CNY");
+  const to = String(state.brief?.currency ?? state.budgetLedger?.currency ?? "CNY");
+  if (total.amount == null || from === to) return total;
+  const converted = convertMoney({ amount: total.amount, currency: from }, to, state.brief?.exchangeRates ?? []);
+  return converted ? { ...total, amount: converted.amount, quality: "estimate", basis: `${total.basis} · ${from} → ${to} · ${converted.conversion?.source} ${converted.conversion?.asOf}` }
+    : { ...total, amount: null, quality: "unknown", basis: `${from} → ${to}: exchange rate required` };
+}
+
 function median(values: number[]): number | null {
   const sorted = values.filter((value) => Number.isFinite(value) && value >= 0).sort((left, right) => left - right);
   if (!sorted.length) return null;
@@ -237,7 +250,7 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
       bucket.estimated = bucket.committed;
       bucket.quality = knownSelected.some((item) => item.quality === "estimate") ? "estimate"
         : knownSelected.some((item) => item.quality === "reference") ? "reference" : "firm";
-      bucket.basis = selectedTotals.flatMap((item, index) => item.amount == null ? [] : [`${selected[index].title}：${item.basis}，${item.amount} 元`]);
+      bucket.basis = selectedTotals.flatMap((item, index) => item.amount == null ? [] : [`${selected[index].title}：${item.basis}，${item.amount} ${currency}`]);
       continue;
     }
     const candidateTotals = proposalCandidates
@@ -257,11 +270,16 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
   const localRoutes = asArray(state.environment?.mobility?.legs).map(leg => selectedRoute(leg)).filter((route): route is NonNullable<ReturnType<typeof selectedRoute>> => Boolean(route && !route.fareIncludedByNodeId));
   if (localRoutes.length) {
     const partySize = Math.max(1, asArray(state.travelers).length);
-    const known = localRoutes.filter(route => typeof route.estimatedFareCny === "number" && Number.isFinite(route.estimatedFareCny));
-    domains.other.estimated = Math.round(known.reduce((sum, route) => sum + (route.estimatedFareCny ?? 0) * (route.mode === "transit" ? partySize : route.mode === "taxi" ? Math.ceil(partySize / 4) : 1), 0) * 100) / 100;
+    const converted = localRoutes.map(route => {
+      const fare = route.fare ?? (typeof route.estimatedFareCny === "number" ? { amount: route.estimatedFareCny, currency: "CNY" } : null);
+      if (!fare) return ["walk", "bicycle"].includes(route.mode) ? { amount: 0 } : null;
+      const total = convertMoney(fare, currency, state.brief?.exchangeRates ?? []);
+      return total ? { amount: total.amount * (route.mode === "transit" ? partySize : route.mode === "taxi" ? Math.ceil(partySize / 4) : 1) } : null;
+    });
+    domains.other.estimated = Math.round(converted.reduce((sum, item) => sum + (item?.amount ?? 0), 0) * 100) / 100;
     domains.other.quality = "estimate";
     domains.other.basis = ["已排市内交通；公交按人数、出租车暂按每车最多四人估算，车型与实际载客条件待核验"];
-    domains.other.unknownCount = localRoutes.length - known.length;
+    domains.other.unknownCount = converted.filter(item => item === null).length;
   } else if (asArray(state.environment?.mobility?.itinerary?.stops).length > 1) {
     domains.other.quality = "unknown";
     domains.other.basis = ["已采用站序保留，市内交通与费用需要按新要求重新核验"];
@@ -270,6 +288,15 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
   const committed = Math.round(FOUR_DOMAINS.reduce((sum, domain) => sum + domains[domain].committed, 0) * 100) / 100;
   const estimated = Math.round(BUDGET_DOMAINS.reduce((sum, domain) => sum + Math.max(domains[domain].committed, domains[domain].estimated), 0) * 100) / 100;
   const totalBudget = state.brief?.totalBudget ?? state.budgetLedger?.totalBudget ?? null;
+  const grouped = new Map<string, number>();
+  const unconverted = new Set<string>();
+  for (const node of asArray(state.nodes).filter(node => node.selected)) {
+    const from = String(node.price?.currency ?? "CNY");
+    const total = pricedTripTotalOriginal(node, state);
+    if (total.amount != null) grouped.set(from, (grouped.get(from) ?? 0) + total.amount);
+    if (total.amount != null && !convertMoney({ amount: total.amount, currency: from }, currency, state.brief?.exchangeRates ?? [])) unconverted.add(from);
+  }
+
   return {
     currency,
     totalBudget,
@@ -277,6 +304,8 @@ export function estimateTripBudget(state: DynamicRecord): DynamicRecord {
     committed,
     estimated,
     exceedsBudget: totalBudget != null && estimated > totalBudget,
+    unconvertedCurrencies: [...unconverted],
+    currencyTotals: [...grouped].map(([currency, amount]) => ({ currency, amount: Math.round(amount * 100) / 100 })),
   };
 }
 
@@ -453,7 +482,7 @@ export function createTripControlState({ tripId = `trip_${randomUUID().slice(0, 
     })),
     dirtySet: [],
     budgetLedger: {
-      currency: normalizedBrief.currency ?? "CNY",
+      currency: normalizedBrief.currency ?? (destinationContext(normalizedBrief).countryCode && destinationContext(normalizedBrief).countryCode !== "CN" ? "XXX" : "CNY"),
       totalBudget: normalizedBrief.totalBudget ?? null,
       domains: Object.fromEntries(BUDGET_DOMAINS.map((domain) => [domain, emptyBudgetBucket()])),
       committed: 0,
@@ -683,7 +712,7 @@ export function applyMobilityObservation(state: DynamicRecord, observation: Dyna
 
 const BRIEF_TEXT_FIELDS = Object.freeze([
   "destination", "dates", "origin", "arrivalMode", "arrivalAirport", "arrivalTerminal", "arrivalTime",
-  "partyProfile", "pace", "lodgingPreference", "currency",
+  "partyProfile", "pace", "lodgingPreference", "currency", "countryCode", "timeZone", "market", "locale",
 ]);
 
 function proposalEvidenceForOperations(proposal: DynamicRecord, operations: DynamicRecord[]): DynamicRecord | undefined {
@@ -719,7 +748,7 @@ function researchProposalWithOperations(proposal: DynamicRecord, operations: Dyn
 function briefChangeDomains(previous: DynamicRecord, current: DynamicRecord, travelerScopeChanged: boolean): Set<string> {
   if (travelerScopeChanged) return new Set(FOUR_DOMAINS);
   const changed = new Set([...Object.keys(previous ?? {}), ...Object.keys(current ?? {})].filter((key) => JSON.stringify(previous?.[key]) !== JSON.stringify(current?.[key])));
-  if (["destination", "dates", "durationDays", "planningDomains", "lodgingNights", "partyProfile", "pace", "currency"].some((key) => changed.has(key))) return new Set(FOUR_DOMAINS);
+  if (["destination", "dates", "durationDays", "planningDomains", "lodgingNights", "partyProfile", "pace", "currency", "countryCode", "timeZone", "market", "locale", "destinationContext"].some((key) => changed.has(key))) return new Set(FOUR_DOMAINS);
   const affected = new Set<string>();
   if (["origin", "arrivalMode", "arrivalAirport", "arrivalTerminal", "arrivalTime", "arrivalConfirmed", "intercityBooked"].some((key) => changed.has(key))) affected.add("transport");
   if (changed.has("lodgingPreference")) {
@@ -757,7 +786,8 @@ function retainPendingOutsideDomains(state: DynamicRecord, affectedDomains: Set<
 
 function normalizedBriefUpdate(current: DynamicRecord, changes: DynamicRecord, referenceTimestamp = new Date().toISOString()): DynamicRecord {
   const next = clone(current ?? {});
-  for (const field of ["journeys", "vehicle"]) if (changes[field] !== undefined) {
+  if (changes.timeZone !== undefined && !validTimeZone(changes.timeZone)) throw new Error("invalid_time_zone");
+  for (const field of ["journeys", "vehicle", "destinationContext", "exchangeRates", "party", "carHire"]) if (changes[field] !== undefined) {
     assertSchema(TripBriefSchema, { [field]: changes[field] }, "invalid_trip_brief");
     next[field] = clone(changes[field]);
   }

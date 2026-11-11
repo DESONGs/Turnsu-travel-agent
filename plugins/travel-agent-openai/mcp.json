@@ -1,0 +1,23 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "travel-agent": {
+      "type": "streamable-http",
+      "url": "__TRAVEL_MCP_URL__",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {
+              "mode": "dcr"
+            },
+            "baseScopes": [
+              "travel:read",
+              "travel:write"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import {
   type ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
+import { googleSafeCheckpoint } from "../core/provider-content.js";
 import { assertTravelExecutionCurrent } from "./execution-context.js";
 import { streamTravelModel } from "./model-budget.js";
 
@@ -103,7 +104,7 @@ export function travelCheckpoint(manager: SessionManager, conversationId: string
   }
   const header = manager.getHeader();
   if (!header) throw new Error("travel_session_header_missing");
-  return { schemaVersion: "travel-agent-session-v1", conversationId, entries: [{ ...header, cwd: "/travel" }, ...safeEntries] };
+  return googleSafeCheckpoint({ schemaVersion: "travel-agent-session-v1" as const, conversationId, entries: [{ ...header, cwd: "/travel" }, ...safeEntries] });
 }
 
 export async function createTravelAgentSession(options: {

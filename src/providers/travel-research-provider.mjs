@@ -1,3 +1,6 @@
+import { createGoogleMapsProvider } from "./google-maps.mjs";
+import { createGlobalInventoryProviders } from "./global-inventory.mjs";
+import { destinationContext, providerCoversRegion } from "../../travel-agent-pi-package/src/core/global-travel.ts";
 import { createAmapTravelResearchProvider } from "./amap-travel-research.mjs";
 import { createFlyaiTravelResearchProvider } from "./flyai-travel-research.mjs";
 import { createOpenMeteoWeatherProvider } from "./open-meteo-weather.mjs";
@@ -20,10 +23,16 @@ function providerFamily(result, provider = null) {
   if (/amap|高德/.test(value)) return "amap";
   if (/flyai|fliggy|飞猪/.test(value)) return "flyai";
   if (/tuniu|途牛/.test(value)) return "tuniu";
+  if (/google/.test(value)) return "google";
+  if (/skyscanner/.test(value)) return "skyscanner";
+  if (/viator/.test(value)) return "viator";
   return "unknown";
 }
 
 function providerSupportsEmptyDomain(family, domain, criteria) {
+  if (family === "google") return ["food", "play", "stay"].includes(domain);
+  if (family === "skyscanner") return ["stay", "transport"].includes(domain);
+  if (family === "viator") return domain === "play";
   if (family === "amap") return ["play", "food", "stay"].includes(domain) || (domain === "transport" && !criteria?.intercityIntent);
   if (["flyai", "tuniu"].includes(family)) return ["stay", "transport"].includes(domain);
   return true;
@@ -83,7 +92,7 @@ function candidateIdentity(candidate) {
     return `transport:${type}:${number}:${departure}:${candidate.operability.serviceDate ?? ""}:${candidate.operability.departureCity ?? ""}:${candidate.operability.arrivalCity ?? ""}:${candidate.operability.journeyId ?? ""}`;
   }
   const normalizedTitle = String(candidate?.title ?? "").trim().toLowerCase().replace(/[\s·・()（）【】\[\]-]+/g, "");
-  return `${candidate?.domain}:${normalizedTitle}`;
+  return `${candidate?.domain}:${candidate?.location?.countryCode ?? "legacy"}:${normalizedTitle}`;
 }
 
 function mergeDefined(primary = {}, secondary = {}) {
@@ -127,7 +136,7 @@ function bestPrice(...candidates) {
     if (quality) return quality;
     const leftAmount = left.amount == null ? Number.POSITIVE_INFINITY : Number(left.amount);
     const rightAmount = right.amount == null ? Number.POSITIVE_INFINITY : Number(right.amount);
-    return leftAmount - rightAmount;
+    return left.currency === right.currency ? leftAmount - rightAmount : 0;
   })[0];
 }
 
@@ -148,7 +157,7 @@ function mergeTransportCandidate(primary, secondary) {
     ...(primaryOperability.providerSources ?? [primaryOperability.provider]),
     ...(secondaryOperability.providerSources ?? [secondaryOperability.provider]),
   ].filter(Boolean))];
-  if (cost > 0) operability.priceHint = `¥${cost} 起${fareOffers.length > 1 ? ` · ${fareOffers.length} 个来源` : ""}`;
+  if (cost > 0) operability.priceHint = `${price.currency} ${cost} 起${fareOffers.length > 1 ? ` · ${fareOffers.length} 个来源` : ""}`;
   const evidence = [
     ...(primary.additionalEvidence ?? []),
     evidenceRecord(secondary),
@@ -450,18 +459,46 @@ export class CompositeTravelResearchProvider {
     return Boolean(this.mobilityProvider);
   }
 
-  planMobility(input) {
-    if (!this.mobilityProvider) {
+  async planMobility(input) {
+    const country = destinationContext(input?.brief ?? {}).countryCode ?? null;
+    const nodes = new Map((input.selectedNodes ?? []).map(node => [node.nodeId, node]));
+    const visits = input.itineraryStops ?? [];
+    const visitCountry = visit => {
+      const node = nodes.get(visit.nodeId), op = node?.operability;
+      const endpoint = op?.[visit.role === "transport_departure" ? "departurePlace" : "arrivalPlace"];
+      return endpoint?.countryCode ?? node?.location?.countryCode ?? op?.countryCode ?? country;
+    };
+    const countries = new Set(visits.map(visitCountry).filter(Boolean));
+    if (countries.size > 1) {
+      const observations = [], unresolved = [];
+      for (let index = 1; index < visits.length; index++) {
+        const pair = visits.slice(index - 1, index + 1), [from, to] = pair;
+        if (from.nodeId === to.nodeId && from.role === "transport_departure" && to.role === "transport_arrival") continue;
+        if (from.dayIndex !== to.dayIndex) continue;
+        const fromCountry = visitCountry(from), toCountry = visitCountry(to);
+        const provider = this.configuredProviders.find(p => typeof p.planMobility === "function" && providerCoversRegion(p, fromCountry) && providerCoversRegion(p, toCountry));
+        if (!provider) { unresolved.push(from, to); continue; }
+        observations.push(await provider.planMobility({ ...input, brief: { ...input.brief, countryCode: toCountry, destinationContext: { ...input.brief.destinationContext, countryCode: toCountry } }, itineraryStops: pair }));
+      }
+      const legs = observations.flatMap(o => o.legs ?? []), unresolvedStops = [...new Set([...unresolved.map(s => s.stopId), ...observations.flatMap(o => o.coverage?.unresolvedStopIds ?? [])])];
+      return { schemaVersion: "trip-mobility-v1", status: observations.every(o => o.status === "completed") && !unresolvedStops.length ? "completed" : "partial", source: "regional_routes", destination: input.brief.destination,
+        checkedAt: new Date(this.clock?.() ?? Date.now()).toISOString(), freshUntil: observations.map(o => o.freshUntil).filter(Boolean).sort()[0] ?? null,
+        legs, itinerary: null, feasibility: null, travelerFit: observations[0]?.travelerFit ?? {},
+        coverage: { routedNodeIds: [...new Set(legs.flatMap(l => [l.origin.nodeId, l.destination.nodeId]))], routedStopIds: [...new Set(legs.flatMap(l => [l.origin.stopId, l.destination.stopId]))], unresolvedNodeIds: [...new Set([...unresolved.map(s => s.nodeId), ...observations.flatMap(o => o.coverage?.unresolvedNodeIds ?? [])])], unresolvedStopIds: unresolvedStops, unscheduled: false },
+        caveats: [...new Set(observations.flatMap(o => o.caveats ?? []))], sourceDocumentation: null, reason: unresolvedStops.length ? "cross_border_source_required" : null, fabricatedResults: false };
+    }
+    const mobilityProvider = this.configuredProviders.find(provider => typeof provider.planMobility === "function" && providerCoversRegion(provider, country));
+    if (!mobilityProvider) {
       return Promise.resolve({
         schemaVersion: "trip-mobility-v1",
         status: "provider_unavailable",
         destination: input?.brief?.destination ?? null,
-        source: "amap_routes_v5",
-        reason: "amap_routes_live_smoke_required",
+        source: "regional_routes",
+        reason: "regional_route_provider_not_configured",
         fabricatedResults: false,
       });
     }
-    return this.mobilityProvider.planMobility(input);
+    return mobilityProvider.planMobility(input);
   }
 
   async resolveWeather(input) {
@@ -477,6 +514,7 @@ export class CompositeTravelResearchProvider {
       && current - checkedAt <= 3 * 60 * 60 * 1_000) return { ...existing, reused: true };
     let lastFailure = null;
     for (const provider of this.weatherProviders.filter((item) => item.status === "configured" && typeof item.getWeather === "function")) {
+      if (provider.regions && !providerCoversRegion(provider, destinationContext(input?.brief ?? {}).countryCode ?? null)) continue;
       const result = await provider.getWeather(input);
       if (result?.status === "completed") return result;
       lastFailure = result;
@@ -485,7 +523,8 @@ export class CompositeTravelResearchProvider {
   }
 
   async research(input) {
-    const providers = this.configuredProviders;
+    const country = destinationContext(input?.brief ?? {}).countryCode ?? null;
+    const providers = this.configuredProviders.filter(provider => providerCoversRegion(provider, country));
     const requested = Array.isArray(input?.domains) && input.domains.length ? input.domains : DOMAINS;
     const hasWeatherProvider = this.weatherProviders.some((provider) => provider.status === "configured" && typeof provider.getWeather === "function");
     if (!providers.length && !hasWeatherProvider) return normalizeProviderResult({ schemaVersion: "travel-provider-result-v1", status: "provider_unavailable", provider: "composite_travel_research", fabricatedResults: false });
@@ -504,7 +543,7 @@ export class CompositeTravelResearchProvider {
     const domainStatuses = Object.fromEntries(requested.map((domain) => [domain, aggregateDomainStatus(providerDomainRows[domain])]));
     const errors = [...this.staticErrors, ...settled.flatMap((result) => {
       if (result.status === "rejected") return [{ code: result.reason?.code ?? "SOURCE_UNAVAILABLE" }];
-      if (!["completed", "partial"].includes(result.value?.status)) return [{ code: result.value?.status ?? "SOURCE_UNAVAILABLE", provider: result.value?.provider ?? null }];
+      if (!["completed", "partial"].includes(result.value?.status)) return [{ code: result.value?.status ?? "SOURCE_UNAVAILABLE", reason: result.value?.reason ?? null, provider: result.value?.provider ?? null }];
       return [];
     })];
     const amapAccountGate = errors.some((error) => error.code === "ACCOUNT_LIMITED" && error.provider === "amap_web_service");
@@ -535,7 +574,7 @@ export class CompositeTravelResearchProvider {
             ? "ACCOUNT_LIMITED"
             : errors.some((error) => error.code === "RATE_LIMITED")
               ? "RATE_LIMITED"
-              : "EMPTY_VERIFIED",
+              : errors.length ? "provider_unavailable" : "EMPTY_VERIFIED",
         provider: "composite_travel_research",
         errors,
         domainStatuses,
@@ -581,20 +620,29 @@ export class CompositeTravelResearchProvider {
 
 export function createTravelResearchProvider(env = process.env, options = {}) {
   const amap = createAmapTravelResearchProvider(env, options.amap);
+  const google = createGoogleMapsProvider(env, options.google);
+  amap.regions = ["CN"]; amap.legacyCountryCode = "CN";
   const openMeteo = createOpenMeteoWeatherProvider(env, options.openMeteo);
   const weatherProviders = env.TRAVEL_AGENT_AMAP_SMOKE_STATUS === "passed_live_smoke" ? [amap, openMeteo] : [openMeteo, amap];
   const amapSmokeStatus = String(env.TRAVEL_AGENT_AMAP_SMOKE_STATUS ?? "");
   const staticErrors = amapSmokeStatus.includes("account_gate_10044")
     ? [{ code: "ACCOUNT_LIMITED", provider: "amap_web_service", infoCode: "10044" }]
     : [];
-  return new CompositeTravelResearchProvider({
+  const composite = new CompositeTravelResearchProvider({
     providers: [
       amap,
       createFlyaiTravelResearchProvider(env, options.flyai),
       createTuniuTravelResearchProvider(env, options.tuniu),
+      google, ...createGlobalInventoryProviders(env, { ...options, skyscanner: { ...(google.status === "configured" ? { resolvePlaceContext: place => google.resolveDestination({ destination: `${place.name ?? ""} ${place.iata ?? ""}` }) } : {}), ...options.skyscanner } }),
     ],
     weatherProviders,
     staticErrors,
     clock: options.clock,
   });
+  composite.google = google;
+  for (const provider of composite.providers) {
+    if (["FlyaiTravelResearchProvider", "TuniuTravelResearchProvider"].includes(provider.constructor.name)) provider.regions = ["CN"], provider.legacyCountryCode = "CN";
+  }
+  composite.resolveDestination = google.status === "configured" ? brief => google.resolveDestination(brief) : null;
+  return composite;
 }
