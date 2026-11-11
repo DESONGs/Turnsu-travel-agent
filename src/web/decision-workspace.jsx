@@ -10,9 +10,16 @@ export function quoteLabel(node) {
   if (p?.amount == null) return { amount: "价格待核验", basis: "尚无完整报价" };
   return { amount: new Intl.NumberFormat("zh-CN", { style: "currency", currency: p.currency || "CNY", maximumFractionDigits: 0 }).format(p.amount), basis: [({ per_night_room: "每间每晚", per_person: "每人", per_order: "整单", per_vehicle: "每车", entire_stay: "整个入住期" })[p.unit] || p.basis || "价格口径待核验", ({ firm: "实时报价", reference: "参考价", estimate: "估算" })[p.quality] || "价格待核验"].join(" · ") };
 }
+function travelTime(raw) {
+  if (!raw) return "待核验";
+  const parts = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?(Z|[+-]\d{2}:\d{2})?$/);
+  if (!parts) return String(raw);
+  const [, year, month, day, time, offset] = parts;
+  return `${year}/${month}/${day} ${time}${offset ? ` UTC${offset === "Z" ? "+00:00" : offset}` : ""}`;
+}
 export function comparisonFacts(node, domain) {
   const o = node.operability ?? {};
-  const facts = domain === "stay" ? [["房型／床型", o.roomName ?? o.roomType ?? o.bedType], ["房间与入住人数", o.party ? `${o.party.rooms ?? "?"} 间 · ${o.party.adults ?? "?"} 位成人` : null], ["早餐", o.mealPlan ?? o.breakfast], ["退改与支付", o.cancellationPolicy ?? o.refundPolicy], ["位置", node.location?.address ?? node.location?.label], ["入住资格与设施", o.foreignGuestPolicy ?? o.accessibilitySummary]] : domain === "transport" ? [["出发 → 抵达", o.departureAt || o.arrivalAt ? `${o.departureAt ?? "待核验"} → ${o.arrivalAt ?? "待核验"}` : null], ["机场／车站", o.departureStation || o.arrivalStation ? `${o.departureStation ?? "待核验"} → ${o.arrivalStation ?? "待核验"}` : null], ["舱等／席别", o.cabinClass ?? o.seatClass ?? o.fareClass], ["行李", o.baggageAllowance ?? o.baggage], ["退改", o.refundPolicy ?? o.cancellationPolicy], ["换乘与接驳", o.transferSummary ?? node.summary]] : [["时间与预约", o.openingHours ?? o.reservationPolicy], ["位置与动线", node.location?.address ?? node.location?.label], ["适用限制", o.restrictions ?? o.dietarySummary], ["退改", o.cancellationPolicy]];
+  const facts = domain === "stay" ? [["房型／床型", o.roomName ?? o.roomType ?? o.bedType], ["房间与入住人数", o.party ? `${o.party.rooms ?? "?"} 间 · ${o.party.adults ?? "?"} 位成人` : null], ["早餐", o.mealPlan ?? o.breakfast], ["退改与支付", o.cancellationPolicy ?? o.refundPolicy], ["位置", node.location?.address ?? node.location?.label], ["入住资格与设施", o.foreignGuestPolicy ?? o.accessibilitySummary]] : domain === "transport" ? [["出发 → 抵达", o.departureAt || o.arrivalAt ? `${travelTime(o.departureAt)} → ${travelTime(o.arrivalAt)}` : null], ["机场／车站", o.departureStation || o.arrivalStation ? `${o.departureStation ?? "待核验"} → ${o.arrivalStation ?? "待核验"}` : null], ["舱等／席别", o.cabinClass ?? o.seatClass ?? o.fareClass], ["行李", o.baggageAllowance ?? o.baggage], ["退改", o.refundPolicy ?? o.cancellationPolicy], ["换乘与接驳", o.transferSummary]] : [["时间与预约", o.openingHours ?? o.reservationPolicy], ["位置与动线", node.location?.address ?? node.location?.label], ["适用限制", o.restrictions ?? o.dietarySummary], ["退改", o.cancellationPolicy]];
   return facts.map(([label, v]) => [label, value(v)]);
 }
 export function DecisionComparison({ domain = "stay", nodes = [], selectedIds = [], currentIds = [], onDetails, onSelect, onPreview, onResearch, loading, renderPrice }) {

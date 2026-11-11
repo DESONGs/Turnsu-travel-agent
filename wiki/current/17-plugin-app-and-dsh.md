@@ -47,7 +47,9 @@ PostgreSQL 同时保存原生 DSH 日志与业务记录。执行权由任务租�
 
 Codex/ChatGPT 使用 OpenAI 插件声明与 MCP App；Claude 优先标准交互式 MCP App，Artifact 只在宿主确实提供授权连接器绑定时作为附加适配。WorkBuddy 使用官方 Connector 的 MCP + Skill 包。它们复用同一业务服务和画布。
 
-DSH 云端后端组合已实现；DSH 个人宿主 Bundle 目前接入官方 MCP client，依赖个人授权凭据。固定版本的 MCP client 不代办旅行 OAuth 登录/续期，原生 DSH Web 画布挂载仍待实现与原生验收。这一缺口不能用云端 DSH 的通过结果代替，也不把“可读取 HTML 资源”称为可用原生界面。
+DSH 云端后端组合与个人宿主 Bundle 均已实现。个人插件补上动态 OAuth/PKCE 授权和自动刷新，官方 MCP client 引用宿主凭据服务中的托管令牌；右侧标签页加载同一份 opaque 旅行画布。有限操作走 DSH owner 接口，再由云端校验用户权限。画布选择进入同一个宿主 Session 的上下文，保存后才确认同步，不额外启动对话。一个私有 owner profile 对应一个旅行账户。
+
+隔离官方 DSH Web 宿主已实际完成本地授权同意页、回跳、侧栏和画布展开/行程读取；使用受控账号与旅行事实。DSH 桌面包、HTTPS 远程回调、真实宿主模型轮次和跨宿主接力仍未验收。具体安装、撤销与信任边界见 [DSH 插件说明](../../plugins/travel-agent-dsh/README.md)。
 
 所有宿主都需要真实安装、OAuth、权限、断开重连、展开画布和跨宿主继续同一旅行的验收。源码、协议检查和本地容器通过，均不等于完成这一步。
 

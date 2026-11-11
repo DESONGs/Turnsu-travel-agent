@@ -28,3 +28,4 @@ research-checkouts/
 # Shared embedded app and per-host install packages
 dist-mcp/
 dist-plugins/
+dist-dsh/

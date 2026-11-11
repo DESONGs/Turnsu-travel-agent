@@ -38,6 +38,7 @@
 | 390px 比较 | [截图](./assets/2026-11-11-plugin-app/implementation/mobile-comparison.png) |
 | 偏好保存 | [截图](./assets/2026-11-11-plugin-app/implementation/preferences.png) |
 | 主动核对最新报价 | [截图](./assets/2026-11-11-plugin-app/implementation/quote-recheck.png) |
+| DSH 原生 Web 侧栏/展开 | [侧栏](./assets/2026-11-11-plugin-app/implementation/dsh-native-sidebar.png) · [展开](./assets/2026-11-11-plugin-app/implementation/dsh-native-canvas.png)；官方宿主，本地受控账号与旅行事实 |
 | MCP 内嵌/展开 | [内嵌](./assets/2026-11-11-plugin-app/implementation/mcp-inline.png) · [展开](./assets/2026-11-11-plugin-app/implementation/mcp-expanded.png)；本地协议环境，非真实宿主 |
 
 设计稿新增八个可编辑核心画面。Figma `use_figma` 套餐额度阻止了组件实例整理和原型连线；本轮通过可用的 DOM 导入通道新增 frame/text 层，并保留可点击浏览器原型。不能把设计中的京都示意地图当成正式产品底图。
@@ -63,6 +64,18 @@
 
 网页包存在原有大型地图/Three.js chunk 警告；未以修改警告阈值隐藏。当前 UI 检查不证明首屏性能、真实供应商价格质量或多用户商用容量。
 
+## DSH 原生宿主补充验证
+
+本地原型继续作为设计交付，Figma 额度不阻塞开发。DSH 个人插件现已包含后端授权适配器、原生浏览器模块与共用画布，包中不再只有 MCP 配置。
+
+验证使用官方 npm DSH `0.2.2-rc.1`、独立临时 profile、官方 Web 前端和浏览器真实操作。云端采用既有 HTTP/DSH/PostgreSQL 受控样例；本地开发账号替代生产身份提供方，没有调用真实旅行来源或宿主模型。实际走完 OAuth 同意页表单、回跳及 PKCE 换取凭据后，原生侧栏加载四域摘要，展开读取同一行程并打开候选比较，画布没有第二套聊天。内嵌按钮能请求宿主展开；断开后 iframe 移除，同一工具请求被云端授权适配器拒绝。opaque iframe 的 localStorage 被浏览器拒绝，界面仍正常工作。
+
+原生验证发现并修复了三类合同测试未覆盖的问题：自定义接口必须与 DSH Gateway 并存；OAuth 同意表单的 CSP 必须允许已登记回调的 authority；原生会话需通过官方 SessionController 恢复。画布上下文以非用户请求的 `travel-canvas` 来源保存，不唤醒 Agent。授权取消/保存、断开/刷新、卸载/令牌轮换的竞态另有可重复回归，原生试验曾缺少官方平台持久化可选包，补齐后保存通过。
+
+宿主入口是 owner-only 的 Connection exact Fetch route，不能替换 `/api` 的共享 interceptor。画布只通过消息桥发送有限操作，凭据不进入 iframe、模型上下文或旅行状态。远程部署必须配置精确 HTTPS 回调及云端 allowlist；未配置时明确拒绝，本轮未部署该路径。
+
+最新 `npm run check` 通过类型、项目回归、构建与小程序合同（专用 PG/live 环境用例仍明确跳过）；MCP 和原生 DSH bundle、四类 zip/DSH tgz 打包通过。DSH 宿主/OAuth 聚焦测试还覆盖了完整 HTTP 同意表单与回调源 CSP、跨来源拒绝、冷会话解析和上下文不唤醒。原生 Web 的受控通过不代表其他宿主、供应商或生产邮件已验收。
+
 ## 宿主研究后的实际交付结论
 
 | 宿主 | 仓库中的交付 | 尚未完成的真实条件 |
@@ -71,7 +84,7 @@
 | Claude | 同一 MCP App 优先；额外保留显式 Artifact connector 合同 | 真实消费端 interactive connector、CSP 和权限验收；不能臆造 Artifact 连接器 API |
 | WorkBuddy | 官方 MCP + Skill Connector 元信息、配置、图标与包 | 实际开放平台导入/审核、OAuth 回调登记、客户端 MCP Apps 呈现 |
 | DSH 云端 | 真正原生 Agent、共用后端与 PG 会话恢复 | 真实模型、真实来源、生产负载与运行环境验收 |
-| DSH 个人宿主 | 官方 profile Bundle/MCP client 配置与包 | 个人 OAuth 获取/续期尚非一键；原生 Web 画布挂载仍未实现/验收，不能视为完整首批 Plugin App |
+| DSH 个人宿主 | 原生侧栏/展开画布、一键 OAuth/PKCE、私有凭据续期、官方 MCP client、原生 Session 上下文；隔离官方 Web 宿主受控验证 | 生产登录/来源、真实宿主模型轮次、远程 HTTPS 回调、桌面安装和跨宿主接力 |
 
 官方依据更新于本轮：[OpenAI 插件认证](https://developers.openai.com/plugins/build/auth)、[Codex OAuth 注册](https://learn.chatgpt.com/docs/extend/mcp#oauth-client-registration)、[Claude 交互式连接器](https://support.claude.com/en/articles/13454812-use-interactive-connectors-in-claude)、[WorkBuddy Connector](https://open.workbuddy.cn/docs/connector)、[Buddy 应用](https://open.workbuddy.cn/docs/buddy-app)、[固定 SHA 的 DSH Bundle 规范](https://github.com/deepseek-ai/deepseek-harness/blob/fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159/docs/user/develop/basic/publish.md)。资料建立接入依据，不能证明本产品已经通过这些宿主。
 

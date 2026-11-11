@@ -8,22 +8,7 @@ import { travelOperation } from "./operations.ts";
 const id = z.string().regex(/^[A-Za-z0-9_.:-]{1,128}$/);
 export const WORKSPACE_URI = "ui://travel/workspace.html";
 
-export function createBackendClient({ origin, token, fetchImpl = fetch }) {
-  const url = new URL(origin);
-  if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.pathname !== "/") throw new Error("invalid_backend_origin");
-  return async (path, { method = "GET", body, binary = false } = {}) => {
-    if (!path.startsWith("/api/") || path.includes("..")) throw new Error("backend_path_not_allowed");
-    const response = await fetchImpl(new URL(path, url), { method, headers: { Authorization: `Bearer ${token}`, ...(body !== undefined ? { "Content-Type": "application/json" } : {}) },
-      ...(body !== undefined ? { body: JSON.stringify(body) } : {}), redirect: "error", signal: AbortSignal.timeout(120_000) });
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw Object.assign(new Error(payload.code ?? "travel_backend_unavailable"), { code: payload.code ?? "travel_backend_unavailable", status: response.status });
-    }
-    if (response.status === 204) return null;
-    if (binary) { const data = Buffer.from(await response.arrayBuffer()); if (data.length > 5_000_000) throw new Error("travel_media_too_large"); return { mimeType: response.headers.get("content-type"), data: data.toString("base64") }; }
-    return response.json();
-  };
-}
+export { createBackendClient } from "./backend-client.mjs";
 
 export function createTravelMcpApp({ backend, uiRoot = resolve("dist-mcp"), publicOrigin = "" }) {
   const server = new McpServer({ name: "travel-agent-workspace", version: "0.2.0" }, { instructions: "Open and operate the same persistent global trip. Submit planning requests to the backend Travel Parent Agent; it owns research, evidence, validation and commits. Keep conversationId and requestId on retries. Only confirmed actions may adopt a draft. Never buy, pay or modify social services." });

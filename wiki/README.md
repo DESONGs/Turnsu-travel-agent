@@ -18,7 +18,7 @@ Travel Agent 的文档总入口。三层结构：
 - [Figma 设计稿](https://www.figma.com/design/82SFdSrzhxPby3T44L8ZGx)：可编辑核心界面；原型跳转连接受本次 MCP 套餐额度限制，交互规则以计划正文为准。
 - [Odessia 深度研究](./research/2026-11-11-odessia-deep-product-ux-tech-research.md)：能力、UI/UX、技术及证据边界。
 
-**用户已授权完善设计、开发与仓库交付。** 主方案/比较/局部修改、长期偏好、价格关注和原生 DSH 后端已进入实现并完成本地受控验证；尚未生产部署，真实供应商、邮件和原生宿主验收仍未完成。DSH 个人宿主目前仅工具 Bundle，原生画布挂载与一键授权仍有缺口。
+**用户已授权完善设计、开发与仓库交付。** 主方案/比较/局部修改、长期偏好、价格关注和原生 DSH 后端已进入实现并完成本地受控验证；尚未生产部署，真实供应商、邮件和原生宿主验收仍未完成。DSH 个人宿主已补齐一键授权、凭据续期与原生画布；隔离官方 Web 宿主已做受控验证，桌面包与生产接入仍待验收。
 
 当前阅读入口：[17 Plugin App 与 DSH](./current/17-plugin-app-and-dsh.md) → [本轮实现与验证记录](./research/2026-11-11-plugin-app-implementation.md) → [可点击设计原型](../design/plugin-app/README.md)。以下早期状态保留作历史背景，不覆盖本轮逐项证据。
 

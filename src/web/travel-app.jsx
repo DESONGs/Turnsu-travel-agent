@@ -46,7 +46,7 @@ function initialUiLocale() {
   const requested = new URLSearchParams(window.location.search).get("lang");
   if (requested === "en" || requested === "en-US") return "en";
   if (requested === "zh" || requested === "zh-CN") return "zh-CN";
-  const stored = window.localStorage.getItem("travel-agent-ui-locale");
+  let stored; try { stored = window.localStorage.getItem("travel-agent-ui-locale"); } catch { /* Opaque host sandboxes have no persistent browser storage. */ }
   if (stored === "en" || stored === "zh-CN") return stored;
   return String(window.navigator.language || "zh-CN").toLowerCase().startsWith("zh") ? "zh-CN" : "en";
 }
@@ -2209,7 +2209,7 @@ export function TravelApp() {
   const [desktopEvidenceOpen, setDesktopEvidenceOpen] = useState(false);
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en" : "zh-CN";
-    window.localStorage.setItem("travel-agent-ui-locale", locale);
+    try { window.localStorage.setItem("travel-agent-ui-locale", locale); } catch { /* Keep the chosen locale for this mounted app. */ }
   }, [locale]);
   useEffect(() => {
     let active = true;

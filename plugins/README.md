@@ -7,7 +7,7 @@
 | `travel-agent-openai` | Codex / ChatGPT 插件声明、MCP OAuth 和同一 MCP App |
 | `travel-agent-claude` | Claude 标准交互式 MCP App 优先；Artifact 需宿主真实连接器绑定 |
 | `travel-agent-workbuddy` | WorkBuddy 官方 MCP + Skill Connector，需开放平台导入与审核 |
-| `travel-agent-dsh` | DSH profile Bundle，使用官方 MCP client；个人 OAuth 凭据/续期与原生画布接入仍有缺口，见包内 README |
+| `travel-agent-dsh` | DSH 原生侧栏画布 + 一键 OAuth/续期 + 官方 MCP client；已做隔离 Web 宿主受控验证，生产/桌面验收见包内 README |
 | `travel-agent` | 原有业务 Skills，继续由内部旅行 Agent 使用 |
 
 先部署共享 HTTPS 旅行服务并登记宿主的实际 OAuth callback，再运行：

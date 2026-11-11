@@ -1,2 +1,1 @@
-// This bundle contributes the MCP client row declared in cordis.patch.yml.
-export {};
+export {name,inject,apply} from './lib/server.js';

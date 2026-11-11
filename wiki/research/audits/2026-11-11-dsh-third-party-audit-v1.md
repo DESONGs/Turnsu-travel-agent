@@ -44,3 +44,11 @@ Agent/Executor 只能执行旅行工具注册表；业务提交仍由旅行服�
 ### 原生上下文压缩补充审计
 
 追加 `dsh-compaction-basic`、`dsh-token-meter` 同版本 `0.2.2-rc.1`。临时静态安装的 23 包均 MIT、无安装生命周期脚本；与既有核心组合重叠，项目实际新增 7 包。未挂载图片落盘、Shell、命令执行、Goal 或原生 Schedule。已在无网络、非 root、只读 Docker 容器通过这两个发布包的 import smoke。压缩调用仍走旅行模型适配和同一任务配额，当前旅行事实在每个步骤从业务服务重新读取。
+
+### 个人 DSH Web 插件补充
+
+个人宿主扩展复用官方 `dsh-client-connection`、`dsh-client-ui-sidebar-right`、`dsh-client-ui-session`、`dsh-client-ui-renderer`、`dsh-client-ui-conversation`、`dsh-api-session-controller`、`dsh-credentials`、`dsh-mcp-client` 与 LLM 消息构造器，版本固定 `0.2.2-rc.1`，这些官方接口包均 MIT。旅行服务生产依赖没有引入完整 Coding/Web profile。
+
+用于原生验收的完整官方 CLI/Web 宿主另装在临时目录，先按 lockfile 静态审计、再 `npm ci --ignore-scripts`，无用户凭据。其 725 项锁记录含 MIT/Apache/BSD、MPL 与 LGPL 组件；没有发现 AGPL、非商业或缺少许可的第三方包，唯一无许可记录是临时项目根节点。五项依赖声明安装脚本，均未执行。为本机验收另装锁定的预构建平台包 `node-addon-require-builtin-darwin-arm64@0.1.9`（MIT）与 `@deepseek-ai/node-addon-system-darwin-arm64@0.1.2`（BSD-3-Clause），均无安装脚本；PTY/任意 Shell 未使用。完整宿主未被打入旅行服务或插件。
+
+本次完整 Web 宿主是本机非 root、临时 profile 的受控试验，并非无网络/只读容器验收。其凭据写面限于官方个人存储，旅行插件仅保存 grant、托管引用和 Session 上下文；官方 owner/Shell 的 OS 信任边界仍存在。生产后台继续使用前述经过隔离 smoke 的最小 DSH 组合。

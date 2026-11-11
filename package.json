@@ -57,7 +57,8 @@
     "plugins:pack": "node scripts/package-travel-plugins.mjs",
     "test:dsh": "node --import tsx --test tests/dsh-recovery.test.mjs",
     "test:dsh:upstream": "node scripts/check-dsh-upstream-contracts.mjs",
-    "design:preview": "vite --host 127.0.0.1 --port 5179 --open /design/plugin-app/index.html"
+    "design:preview": "vite --host 127.0.0.1 --port 5179 --open /design/plugin-app/index.html",
+    "dsh:build": "node scripts/build-dsh-plugin.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "7.6.8",

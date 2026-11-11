@@ -146,7 +146,10 @@ export function registerMcpOAuth({ app, oauth, currentSession, authService, asyn
     if (!value) return response.status(400).type("text").send("Authorization expired. Reconnect Travel Agent.");
     const session = await currentSession(request);
     const returnTo = `/mcp/consent?request=${encodeURIComponent(pending)}`;
-    response.set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+    // Browsers also apply form-action to the POST's redirect. Allow only this
+    // request's prevalidated callback authority so consent can return to its host.
+    const callbackOrigin = new URL(value.redirectUri).origin;
+    response.set("Content-Security-Policy", `default-src 'none'; style-src 'unsafe-inline'; form-action 'self' ${callbackOrigin}; base-uri 'none'; frame-ancestors 'none'`);
     if (!session || session.provider === "guest") {
       const providers = authService.providerSummary({ origin: oauth.origin }).providers.filter(p => p.available);
       return response.type("html").send(`<!doctype html><meta charset="utf-8"><title>Connect Travel Agent</title><main><h1>Connect your Travel Agent account</h1>${providers.map(p => `<p><a href="/api/auth/${escapeHtml(p.id)}/start?returnTo=${encodeURIComponent(returnTo)}">Sign in with ${escapeHtml(p.id)}</a></p>`).join("") || "<p>No production sign-in provider is configured.</p>"}</main>`);
