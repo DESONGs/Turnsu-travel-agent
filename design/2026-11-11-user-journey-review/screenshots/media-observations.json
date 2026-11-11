@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-11",
+  "browser": "in-app browser; final editor and sharing rechecked in Chrome",
+  "viewports": [
+    {
+      "domWidth": 1440,
+      "domHeight": 1000
+    },
+    {
+      "domWidth": 390,
+      "domHeight": 844
+    },
+    {
+      "domWidth": 861,
+      "domHeight": 1000
+    }
+  ],
+  "captureNote": "JPEG captures may exclude scrollbar pixels; no image rescaling was applied.",
+  "design": "synthetic trip and accounts, in-memory preview only",
+  "service": "real Java MCP HTTP with temporary PostgreSQL; synthetic verified identities and place source",
+  "passed": [
+    "upload two licensed JPEGs via browser chooser",
+    "save and full reload with same record and photos",
+    "save relief; reopen with same style; source image DOM value unchanged",
+    "reorder stable photo identities without source upload",
+    "registered account lookup and third-party email notice",
+    "viewer can read, no edit/share controls",
+    "owner changes role; editor saves record",
+    "revocation followed by a fresh photo read clears inaccessible trip",
+    "desktop, phone and pane layout inspected",
+    "focused editor unsaved close keeps typed content on continue",
+    "clean delivery build date-only text record save and full reload",
+    "actual sharing sheet retains destination and date"
+  ],
+  "notVerified": [
+    "Google login",
+    "native Codex or ChatGPT host",
+    "physical phone",
+    "authorized live travel sources",
+    "public directory publication"
+  ],
+  "limits": [
+    "Chrome extension file upload permission was unavailable for the final supplemental photo check. Earlier full two-photo upload/save/effect/reorder flow passed through the in-app browser."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "third-party-audit-v1",
+  "candidate": "Travel Agent 自研高德 Web 服务适配器（天气、地点与步行路线）",
+  "commit": "d676c3138259db170ce8435bbb27f0e896842493",
+  "commitScope": "项目工作树的基线提交，不包含本次尚未提交的适配器；不是高德服务的版本或提交。适配器以 adapterSha256 固定。远程 API 没有可固定的客户端仓库提交。",
+  "adapterSha256": {
+    "services/travel-service/src/main/java/app/travelagent/provider/AmapPlaceClient.java": "4848fc53485ccd94eb8c3e4d9c727bebbdb2e24800701fe645885e638cfacc48",
+    "services/travel-service/src/main/java/app/travelagent/provider/AmapWeatherClient.java": "3ecaa790ee87f19374c80be5d55240b6fbbc94cff0a2d07d432888398fb67a41",
+    "services/travel-service/src/main/java/app/travelagent/provider/AmapWalkingRouteClient.java": "bb2df889fd815b6e456d1b2d21a5aeb559a3572033eef26b8937709b6c640488"
+  },
+  "reviewedAt": "2026-11-06",
+  "license": "高德专有在线服务协议；本项目商业许可及结果存储、展示和助手使用范围尚未核实。未引入高德第三方仓库代码。",
+  "contractSource": "https://lbs.amap.com/pages/terms/",
+  "documentation": [
+    "https://lbs.amap.com/api/webservice/guide/api-advanced/newpoisearch",
+    "https://lbs.amap.com/api/webservice/guide/api/weatherinfo",
+    "https://lbs.amap.com/api/webservice/guide/api/newroute"
+  ],
+  "maintenance": "active",
+  "maintenanceEvidence": "官方文档和服务可访问；没有核实服务 SLA 或未来兼容承诺。",
+  "installMode": "no-new-provider-package",
+  "dependencies": ["Spring Boot 4.1.2 WebFlux WebClient", "Java 17+", "PostgreSQL 结果引用存储"],
+  "outboundDomains": ["restapi.amap.com"],
+  "endpoints": ["GET /v5/place/text", "GET /v3/geocode/geo", "GET /v3/weather/weatherInfo", "GET /v5/direction/walking"],
+  "credentials": "服务端环境变量 TRAVEL_AMAP_API_KEY；可选签名密钥 TRAVEL_AMAP_API_SECRET。Key 按官方协议放在上游请求参数中，代理和诊断日志不得记录完整 URL。",
+  "writeSurface": ["第三方请求仅查询，不执行预订或其他远端写操作", "本地服务会在有权限和版本校验后保存来源结果，过期清理"],
+  "risks": [
+    "来源结果保存、展示、模型和执行器使用是否属于具体授权范围尚未确认；过期时间不是授权依据。",
+    "上游配额、数据完整度、实时性和中国境外覆盖未通过真实调用验证。",
+    "来源文本不可信，不能作为工具指令；不能将地图资料表述为营业、库存或报价事实。"
+  ],
+  "disabledByDefault": ["TRAVEL_AMAP_PLACES_ENABLED", "TRAVEL_AMAP_WEATHER_ENABLED", "TRAVEL_AMAP_WALKING_ENABLED"],
+  "disabledPaths": ["未取得授权时禁用高德地点、天气和步行路线请求；没有购买、变更或退订接口"],
+  "staticReview": "pending",
+  "isolatedSmoke": "not-run",
+  "testEvidence": "本机临时 PostgreSQL 与模拟 HTTP 来源通过合同和故障测试；没有使用真实凭据或请求高德，不能作为真实只读 smoke。",
+  "adoption": "blocked",
+  "unblock": "先取得并核实适用商业许可和资料保存/展示/助手使用范围；完成无凭据隔离静态审查与专用账号只读真实 smoke，复核来源条款、限额与失败恢复后重新评估。"
+}

@@ -1,0 +1,28 @@
+import { h } from "preact";
+import ArrowCounterClockwise from "./icons/ArrowCounterClockwise.svg?raw";
+import ArrowLeft from "./icons/ArrowLeft.svg?raw";
+import ArrowRight from "./icons/ArrowRight.svg?raw";
+import ArrowSquareOut from "./icons/ArrowSquareOut.svg?raw";
+import CalendarBlank from "./icons/CalendarBlank.svg?raw";
+import Camera from "./icons/Camera.svg?raw";
+import CaretDown from "./icons/CaretDown.svg?raw";
+import CaretRight from "./icons/CaretRight.svg?raw";
+import Check from "./icons/Check.svg?raw";
+import CheckCircle from "./icons/CheckCircle.svg?raw";
+import Clock from "./icons/Clock.svg?raw";
+import CornersOut from "./icons/CornersOut.svg?raw";
+import Eye from "./icons/Eye.svg?raw";
+import Globe from "./icons/Globe.svg?raw";
+import Images from "./icons/Images.svg?raw";
+import Info from "./icons/Info.svg?raw";
+import Lock from "./icons/Lock.svg?raw";
+import MagnifyingGlass from "./icons/MagnifyingGlass.svg?raw";
+import MapPin from "./icons/MapPin.svg?raw";
+import Notebook from "./icons/Notebook.svg?raw";
+import Plus from "./icons/Plus.svg?raw";
+import ShareNetwork from "./icons/ShareNetwork.svg?raw";
+import Users from "./icons/Users.svg?raw";
+import Warning from "./icons/Warning.svg?raw";
+import X from "./icons/X.svg?raw";
+const shapes = { ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowSquareOut, CalendarBlank, Camera, CaretDown, CaretRight, Check, CheckCircle, Clock, CornersOut, Eye, Globe, Images, Info, Lock, MagnifyingGlass, MapPin, Notebook, Plus, ShareNetwork, Users, Warning, X };
+export function Icon({ name, class: extra = "" }) { return <span class={`ui-icon ${extra}`} aria-hidden="true" dangerouslySetInnerHTML={{ __html: shapes[name] || shapes.Info }} />; }

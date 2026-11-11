@@ -1,0 +1,34 @@
+// Generated from contracts/travel-workbench.json by the workbench build.
+export const catalog = {
+  "schemaVersion": "travel-workbench-v1",
+  "components": [
+    {
+      "type": "itinerary",
+      "label": "每日行程",
+      "version": 1,
+      "fixed": true,
+      "binding": "trip-and-drafts"
+    },
+    {
+      "type": "map",
+      "label": "地图",
+      "version": 1,
+      "fixed": true,
+      "binding": "trip-places-and-routes"
+    },
+    {
+      "type": "requirements",
+      "label": "旅行要求",
+      "version": 1,
+      "fixed": false,
+      "binding": "trip"
+    },
+    {
+      "type": "places",
+      "label": "候选地点",
+      "version": 1,
+      "fixed": false,
+      "binding": "result-references"
+    }
+  ]
+};

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "third-party-audit-v1",
+  "candidate": "Travel Agent 自研 Cirium FlightStats 航班状态只读适配器",
+  "commit": "d676c3138259db170ce8435bbb27f0e896842493",
+  "commitScope": "项目工作树的基线提交，不包含本次尚未提交的适配器；不是 Cirium 服务的版本或提交。适配器以 adapterSha256 固定。远程 API 没有可固定的客户端仓库提交。",
+  "adapterSha256": {"services/travel-service/src/main/java/app/travelagent/provider/CiriumFlightStatusClient.java": "f5d130b95acf4f7c5a32e13b2d4212f60f0f721608969e6d7f21e8bf6946abfc"},
+  "reviewedAt": "2026-11-06",
+  "license": "Cirium 专有在线服务；本项目订阅、商业许可、调用限额和结果保存/展示/助手使用范围尚未核实。未引入 Cirium 第三方仓库代码。",
+  "contractSource": "https://www.cirium.com/terms-and-conditions/",
+  "documentation": ["https://developer.flightstats.com/api-docs/flightstatus/v2/flight", "https://developer.flightstats.com/api-docs/flightstatus/v2/flightstatusresponse"],
+  "maintenance": "active",
+  "maintenanceEvidence": "官方文档和服务可访问；具体订阅的 SLA、覆盖和兼容承诺未核实。",
+  "installMode": "no-new-provider-package",
+  "dependencies": ["Spring Boot 4.1.2 WebFlux WebClient", "Java 17+", "PostgreSQL 结果引用存储"],
+  "outboundDomains": ["api.flightstats.com"],
+  "endpoints": ["GET /flex/flightstatus/rest/v2/json/flight/status/{carrier}/{flight}/dep/{year}/{month}/{day}"],
+  "credentials": "服务端环境变量 TRAVEL_CIRIUM_APP_ID 和 TRAVEL_CIRIUM_APP_KEY；按上游协议放在查询参数中，网关、代理、追踪和诊断日志不得记录完整 URL、请求/响应回显或凭据。",
+  "writeSurface": ["第三方请求仅查询，不执行预订或其他远端写操作", "本地服务经旅行权限和版本校验后可保存短期来源结果"],
+  "risks": [
+    "官方说明状态通常仅覆盖起飞前约三天至到达后约七天，窗口不是精确可用性保证；空结果、来源失败、超出典型窗口与无变化不能混为一谈。",
+    "同一班次号码可能对应多个记录或共享航班；结果必须由用户核对，不得自动视为与其预订匹配。",
+    "订阅、结果存储与展示权限、配额、时效和真实 API 返回尚未验收；查询 URL 和响应 request 可能带有凭据。"
+  ],
+  "disabledByDefault": ["TRAVEL_CIRIUM_STATUS_ENABLED"],
+  "disabledPaths": ["未取得授权时禁用 Cirium 航班状态请求；没有购买、变更或退订接口"],
+  "staticReview": "pending",
+  "isolatedSmoke": "not-run",
+  "testEvidence": "本机模拟 HTTP 和隔离 PostgreSQL 检查只用于验证合同与访问控制；没有使用真实凭据或请求 Cirium。",
+  "adoption": "blocked",
+  "unblock": "先取得并核实 Cirium 订阅、商业许可、结果保存/展示/助手使用范围与限额；完成无凭据静态审查和专用账号只读真实 smoke 后重新评估。"
+}

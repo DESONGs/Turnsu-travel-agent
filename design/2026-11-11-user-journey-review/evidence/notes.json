@@ -1,0 +1,44 @@
+{
+  "scope": "Current standalone design prototype, planning and decision flow",
+  "source": "http://127.0.0.1:5175/?world=lake",
+  "date": "2026-11-11",
+  "steps": [
+    {
+      "step": 1,
+      "file": "01-day-itinerary.jpg",
+      "task": "Understand this day",
+      "health": "insufficient",
+      "observed": "Visit names, time windows and generic unknown checkboxes are visible; meal, hotel, transport completeness and a recommendation rationale are not presented in the day context.",
+      "direction": "Show the day as an understandable travel plan, with traveler fit, paced sequence, missing arrangements and specific next actions."
+    },
+    {
+      "step": 2,
+      "file": "02-compare-options.jpg",
+      "task": "Choose a better lunch plan",
+      "health": "insufficient",
+      "observed": "Two broad areas are described separately; straight-line distance, unknown costs and unverified access do not establish the outcome of switching.",
+      "direction": "Compare concrete equivalent options with one recommendation, meaningful tradeoffs, source/estimate states and the change to the rest of the day."
+    },
+    {
+      "step": 3,
+      "file": "03-adoption-review.jpg",
+      "task": "Understand what adoption commits",
+      "health": "insufficient",
+      "observed": "Fourteen unknown acknowledgments dominate the review; the user must leave to inspect local conditions and cannot assess a whole-trip decision from this screen.",
+      "direction": "Summarize the plan being adopted, budget coverage, unresolved practical decisions and exact follow-up coverage; preserve contextual individual acknowledgments."
+    },
+    {
+      "step": 4,
+      "file": "04-edit-time.jpg",
+      "task": "Change a visit time",
+      "health": "limited",
+      "observed": "The form explicitly updates only one visit and leaves overlap resolution to the user. It does not preview connected timing, transport or cost changes.",
+      "direction": "Decide the propagation behavior with the user, then design a before/after impact preview that protects booked and locked items."
+    }
+  ],
+  "limits": [
+    "Design prototype and synthetic data only; no production adoption or external action was performed.",
+    "This audit used the current desktop pane; mobile behavior and full accessibility were not assessed.",
+    "Only opening, comparing, reviewing and opening the time form were performed; no inputs or itinerary choices were saved."
+  ]
+}

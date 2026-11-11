@@ -1,0 +1,9 @@
+{
+  "source": "OpenStreetMap Standard tiles, direct browser display",
+  "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "license": "ODbL-1.0 map data; standard tile usage policy applies",
+  "attributionUrl": "https://www.openstreetmap.org/copyright",
+  "policyUrl": "https://operations.osmfoundation.org/policies/tiles/",
+  "scope": "Local design review of fictional trip coordinates; normal viewport only, no offline download or bulk prefetch; not a production travel Provider",
+  "library": "Existing leaflet 1.9.4 from workspace dependencies"
+}

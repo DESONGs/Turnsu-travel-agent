@@ -1,4 +1,5 @@
 node_modules/
+services/travel-service/target/
 .npm-cache/
 dist/
 .desktop-package-stage/
@@ -24,3 +25,7 @@ third_party/
 research-checkouts/
 *.log
 .DS_Store
+
+# Shared embedded app and per-host install packages
+dist-mcp/
+dist-plugins/

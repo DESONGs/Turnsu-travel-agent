@@ -1,0 +1,8 @@
+{
+  "type": "local-browser-screenshot",
+  "surface": "standalone interactive design prototype",
+  "source": "http://127.0.0.1:5175/",
+  "syntheticTrip": true,
+  "productionUi": false,
+  "map": "Visible OpenStreetMap attribution retained; screenshots are review evidence, not a tile archive."
+}
