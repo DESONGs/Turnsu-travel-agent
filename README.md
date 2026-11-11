@@ -1,5 +1,12 @@
 # zhuanshu Travel Agent
 
+## 当前开发主线：OpenAI 旅行插件
+
+当前在隔离分支推进 Java／PostgreSQL 服务与 Preact 插件工作台。请先阅读 [技术方案](wiki/current/17-openai-travel-architecture.md) 和 [开发与验收计划](wiki/current/18-openai-travel-development.md)。宿主适配、组件合同、构建和插件打包已接入新主线；照片手账、浮雕、目的地沉浸与共享交互已接线，设计稿见 [旅行决策与记录](design/2026-11-11-user-journey-review/README.md)；已接入逐项确认后的首次暂定采用与目的地天气跟进；完整已核验采用、其他跟进来源及真实宿主与来源验收仍未完成。
+
+以下介绍和历史运行命令属于旧版本，不能作为新主线已经实现或验收的证明。新入口 `npm run mcp:build` 构建标准 MCP 与 OpenAI 两份页面，`npm run plugins:pack -- --origin=实际HTTPS地址` 生成 OpenAI 插件候选；配置和原生回调参数见开发计划。
+
+
 一个从自然语言开始、面向真实旅行执行的 AI 旅行助手。
 
 用户可以直接用文字、语音转写或图片描述旅行需求。Travel Agent 会持续理解目的地、日期、同行人、预算和体力限制，在同一份旅行状态上联合研究吃、住、行、玩，并把候选地点、地图、路线、来源和取舍说明放回同一个旅行工作台。

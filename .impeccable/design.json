@@ -1,7 +1,369 @@
 {
-  "sourceVisual": "design/reference/map-pulse-mobile.png",
-  "designDocument": "DESIGN.md",
-  "direction": "map-pulse",
-  "iconLibrary": "@phosphor-icons/react",
-  "assetPolicy": "generated-raster-for-brand-and-imagery; icon-library-for-functional-icons"
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T05:34:07Z",
+  "title": "Design System: Travel Agent OpenAI 工作台",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "石墨",
+        "tonalRamp": [
+          "oklch(15% 0.0034 240.1)",
+          "oklch(27% 0.0061 240.1)",
+          "oklch(39% 0.0079 240.1)",
+          "oklch(51% 0.0079 240.1)",
+          "oklch(63% 0.0079 240.1)",
+          "oklch(75% 0.0079 240.1)",
+          "oklch(87% 0.0041 240.1)",
+          "oklch(95% 0.0016 240.1)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "辅助灰",
+        "tonalRamp": [
+          "oklch(15% 0.0055 226.2)",
+          "oklch(27% 0.0098 226.2)",
+          "oklch(39% 0.0128 226.2)",
+          "oklch(51% 0.0128 226.2)",
+          "oklch(63% 0.0128 226.2)",
+          "oklch(75% 0.0128 226.2)",
+          "oklch(87% 0.0066 226.2)",
+          "oklch(95% 0.0026 226.2)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "细线灰",
+        "tonalRamp": [
+          "oklch(15% 0.0036 121.6)",
+          "oklch(27% 0.0064 121.6)",
+          "oklch(39% 0.0084 121.6)",
+          "oklch(51% 0.0084 121.6)",
+          "oklch(63% 0.0084 121.6)",
+          "oklch(75% 0.0084 121.6)",
+          "oklch(87% 0.0043 121.6)",
+          "oklch(95% 0.0017 121.6)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "纯白",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.0)",
+          "oklch(27% 0.0000 0.0)",
+          "oklch(39% 0.0000 0.0)",
+          "oklch(51% 0.0000 0.0)",
+          "oklch(63% 0.0000 0.0)",
+          "oklch(75% 0.0000 0.0)",
+          "oklch(87% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "瓷白",
+        "tonalRamp": [
+          "oklch(15% 0.0017 106.5)",
+          "oklch(27% 0.0031 106.5)",
+          "oklch(39% 0.0040 106.5)",
+          "oklch(51% 0.0040 106.5)",
+          "oklch(63% 0.0040 106.5)",
+          "oklch(75% 0.0040 106.5)",
+          "oklch(87% 0.0021 106.5)",
+          "oklch(95% 0.0008 106.5)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "朱红",
+        "tonalRamp": [
+          "oklch(15% 0.0668 30.5)",
+          "oklch(27% 0.1202 30.5)",
+          "oklch(39% 0.1558 30.5)",
+          "oklch(51% 0.1558 30.5)",
+          "oklch(63% 0.1558 30.5)",
+          "oklch(75% 0.1558 30.5)",
+          "oklch(87% 0.0810 30.5)",
+          "oklch(95% 0.0312 30.5)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "深朱红",
+        "tonalRamp": [
+          "oklch(15% 0.0573 31.8)",
+          "oklch(27% 0.1031 31.8)",
+          "oklch(39% 0.1337 31.8)",
+          "oklch(51% 0.1337 31.8)",
+          "oklch(63% 0.1337 31.8)",
+          "oklch(75% 0.1337 31.8)",
+          "oklch(87% 0.0695 31.8)",
+          "oklch(95% 0.0267 31.8)"
+        ]
+      },
+      "soft": {
+        "role": "primary",
+        "displayName": "浅朱红底",
+        "tonalRamp": [
+          "oklch(15% 0.0063 44.2)",
+          "oklch(27% 0.0113 44.2)",
+          "oklch(39% 0.0147 44.2)",
+          "oklch(51% 0.0147 44.2)",
+          "oklch(63% 0.0147 44.2)",
+          "oklch(75% 0.0147 44.2)",
+          "oklch(87% 0.0076 44.2)",
+          "oklch(95% 0.0029 44.2)"
+        ]
+      },
+      "green": {
+        "role": "neutral",
+        "displayName": "成功绿",
+        "tonalRamp": [
+          "oklch(15% 0.0231 168.7)",
+          "oklch(27% 0.0415 168.7)",
+          "oklch(39% 0.0538 168.7)",
+          "oklch(51% 0.0538 168.7)",
+          "oklch(63% 0.0538 168.7)",
+          "oklch(75% 0.0538 168.7)",
+          "oklch(87% 0.0280 168.7)",
+          "oklch(95% 0.0108 168.7)"
+        ]
+      },
+      "warning": {
+        "role": "neutral",
+        "displayName": "注意赭色",
+        "tonalRamp": [
+          "oklch(15% 0.0368 71.2)",
+          "oklch(27% 0.0663 71.2)",
+          "oklch(39% 0.0859 71.2)",
+          "oklch(51% 0.0859 71.2)",
+          "oklch(63% 0.0859 71.2)",
+          "oklch(75% 0.0859 71.2)",
+          "oklch(87% 0.0447 71.2)",
+          "oklch(95% 0.0172 71.2)"
+        ]
+      },
+      "error": {
+        "role": "neutral",
+        "displayName": "错误红",
+        "tonalRamp": [
+          "oklch(15% 0.0621 28.8)",
+          "oklch(27% 0.1117 28.8)",
+          "oklch(39% 0.1448 28.8)",
+          "oklch(51% 0.1448 28.8)",
+          "oklch(63% 0.1448 28.8)",
+          "oklch(75% 0.1448 28.8)",
+          "oklch(87% 0.0753 28.8)",
+          "oklch(95% 0.0290 28.8)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "键盘焦点蓝",
+        "tonalRamp": [
+          "oklch(15% 0.0354 250.5)",
+          "oklch(27% 0.0637 250.5)",
+          "oklch(39% 0.0826 250.5)",
+          "oklch(51% 0.0826 250.5)",
+          "oklch(63% 0.0826 250.5)",
+          "oklch(75% 0.0826 250.5)",
+          "oklch(87% 0.0430 250.5)",
+          "oklch(95% 0.0165 250.5)"
+        ]
+      },
+      "tag-background": {
+        "role": "neutral",
+        "displayName": "标签浅底",
+        "tonalRamp": [
+          "oklch(15% 0.0037 128.6)",
+          "oklch(27% 0.0066 128.6)",
+          "oklch(39% 0.0086 128.6)",
+          "oklch(51% 0.0086 128.6)",
+          "oklch(63% 0.0086 128.6)",
+          "oklch(75% 0.0086 128.6)",
+          "oklch(87% 0.0045 128.6)",
+          "oklch(95% 0.0017 128.6)"
+        ]
+      },
+      "tag-text": {
+        "role": "neutral",
+        "displayName": "标签文字",
+        "tonalRamp": [
+          "oklch(15% 0.0137 153.2)",
+          "oklch(27% 0.0247 153.2)",
+          "oklch(39% 0.0320 153.2)",
+          "oklch(51% 0.0320 153.2)",
+          "oklch(63% 0.0320 153.2)",
+          "oklch(75% 0.0320 153.2)",
+          "oklch(87% 0.0166 153.2)",
+          "oklch(95% 0.0064 153.2)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "页面标题",
+        "purpose": "手账等扩展页面的主标题；手机降到 25px。"
+      },
+      "title": {
+        "displayName": "侧层任务标题",
+        "purpose": "编辑、浮雕、沉浸和共享的唯一任务标题；手机降到 20px。"
+      },
+      "body": {
+        "displayName": "正文",
+        "purpose": "记录摘录、说明和章节内容。"
+      },
+      "reading": {
+        "displayName": "完整手账内容",
+        "purpose": "较长的个人记录，保留换行与宽松行距。"
+      },
+      "label": {
+        "displayName": "字段标签",
+        "purpose": "可见表单标签与选填上下文。"
+      },
+      "control": {
+        "displayName": "控件文字",
+        "purpose": "动作文字的基础尺寸和行距；主按钮字重为 600。"
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "-12px 0 40px #18221b20",
+        "purpose": "仅在覆盖页面的右侧侧层上使用；遮罩为 #24302a59，层级为 2000。"
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "background .15s,border-color .15s,color .15s",
+        "purpose": "按钮颜色与边框的短过渡；记录卡仅过渡边框与底色。"
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "prefers-reduced-motion: reduce 时关闭相关过渡，并限制三维自动导览。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "gallery-two-column-and-wide-sheet",
+        "value": "1020px"
+      },
+      {
+        "name": "immersion-stacked",
+        "value": "820px"
+      },
+      {
+        "name": "phone",
+        "value": "650px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "主按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "保存记录或确认共享等主要动作；成功状态由服务结果决定。",
+      "html": "<button class=\"ds-primary\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z\"></path></svg>新建记录</button>",
+      "css": ".ds-primary{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:8px;text-decoration:none;cursor:pointer;line-height:1.5;transition:background .15s,border-color .15s,color .15s;background:var(--travel-accent,#b84232);border-color:var(--travel-accent,#b84232);color:var(--travel-paper,#fff);font-weight:600;}.ds-primary:hover:not(:disabled){background:var(--travel-accent-hover,#963525);border-color:var(--travel-accent-hover,#963525);}.ds-primary:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-primary:disabled{opacity:.45;cursor:not-allowed;}@media(max-width:650px){.ds-primary{font-size:13px;padding:10px 14px;}}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}}.ds-primary>svg{display:block;flex:0 0 auto;}"
+    },
+    {
+      "name": "次按钮",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "取消、返回或打开工具的次要动作。",
+      "html": "<button class=\"ds-secondary\" type=\"button\">取消编辑</button>",
+      "css": ".ds-secondary{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:8px;text-decoration:none;cursor:pointer;line-height:1.5;transition:background .15s,border-color .15s,color .15s;background:var(--travel-paper,#fff);border-color:#cdd2cb;color:var(--travel-ink,#282c2f);}.ds-secondary:hover:not(:disabled){background:#f1f3ef;border-color:#9ca79f;}.ds-secondary:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-secondary:disabled{opacity:.45;cursor:not-allowed;}@media(max-width:650px){.ds-secondary{font-size:13px;padding:10px 14px;}}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none;}}"
+    },
+    {
+      "name": "删除确认按钮",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "明确影响后的删除或撤权确认。",
+      "html": "<button class=\"ds-danger\" type=\"button\">删除记录与照片</button>",
+      "css": ".ds-danger{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:8px;text-decoration:none;cursor:pointer;line-height:1.5;transition:background .15s,border-color .15s,color .15s;background:var(--travel-error,#a1352b);color:var(--travel-paper,#fff);border-color:var(--travel-error,#a1352b);}.ds-danger:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-danger:disabled{opacity:.45;cursor:not-allowed;}@media(max-width:650px){.ds-danger{font-size:13px;padding:10px 14px;}}@media(prefers-reduced-motion:reduce){.ds-danger{transition:none;}}"
+    },
+    {
+      "name": "文字动作",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "返回列表或刷新等轻量动作，保留完整可操作区域。",
+      "html": "<button class=\"ds-text\" type=\"button\">全部记录</button>",
+      "css": ".ds-text{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:8px;text-decoration:none;cursor:pointer;line-height:1.5;transition:background .15s,border-color .15s,color .15s;background:transparent;border-color:transparent;color:var(--travel-accent,#b84232);padding:8px 0;font-weight:500;}.ds-text:hover:not(:disabled){text-decoration:underline;text-underline-offset:4px;}.ds-text:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-text:disabled{opacity:.45;cursor:not-allowed;}@media(prefers-reduced-motion:reduce){.ds-text{transition:none;}}"
+    },
+    {
+      "name": "日期字段",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "可见标签与选填状态；空日期不妨碍先写文字记录。",
+      "html": "<label class=\"ds-field\">记录日期<span>选填</span><input type=\"date\" /></label>",
+      "css": ".ds-field{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:13px;font-weight:500;color:var(--travel-ink,#282c2f);margin:0 0 20px;line-height:1.6;}.ds-field>span{font-size:11px;color:var(--travel-muted,#60696d);font-weight:400;}.ds-field>input{display:block;flex-basis:100%;width:100%;min-width:0;border:1px solid #c9d0c7;background:var(--travel-paper,#fff);border-radius:7px;font:inherit;font-weight:400;color:var(--travel-ink,#282c2f);padding:11px 12px;min-height:45px;caret-color:var(--travel-accent,#b84232);}.ds-field>input:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-field>input:disabled{background:#f3f3ee;color:#68736e;}@media(max-width:650px){.ds-field{margin-bottom:18px;}.ds-field>input{font-size:14px;padding:11px;}}"
+    },
+    {
+      "name": "目的地章节导航",
+      "kind": "nav",
+      "refersTo": "chapter-current",
+      "description": "当前章节在桌面列表与手机横向入口中使用同一选中态。",
+      "html": "<nav class=\"ds-chapters\" aria-label=\"探索章节\"><button type=\"button\" aria-current=\"step\">入口</button><button type=\"button\">主建筑</button></nav>",
+      "css": ".ds-chapters{display:flex;flex-direction:column;border-top:1px solid var(--travel-line,#dcded8);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;}.ds-chapters button{display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;border-bottom:1px solid var(--travel-line,#dcded8);padding:14px 11px;background:transparent;color:#596b5b;min-height:48px;font:inherit;font-size:13px;text-align:left;cursor:pointer;border-radius:0;}.ds-chapters button[aria-current=step]{background:var(--travel-soft,#fbefea);color:#9a4231;font-weight:600;}.ds-chapters button:focus-visible{outline:3px solid #365f89;outline-offset:3px;}@media(max-width:820px){.ds-chapters{flex-direction:row;border-top:0;gap:7px;overflow-x:auto;}.ds-chapters button{border:1px solid var(--travel-line,#dcded8);border-radius:7px;flex-shrink:0;padding:10px 12px;min-height:43px;}}@media(max-width:650px){.ds-chapters button{font-size:12px;min-height:44px;}}"
+    },
+    {
+      "name": "文字状态标签",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "已到访等状态用文字表达，底色只辅助识别。",
+      "html": "<span class=\"ds-tag\">已到访</span>",
+      "css": ".ds-tag{display:inline-flex;padding:4px 8px;background:#eef1eb;color:#526557;border-radius:4px;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;font-size:12px;line-height:1.5;}"
+    },
+    {
+      "name": "纯文字旅行记录",
+      "kind": "card",
+      "refersTo": "record-card",
+      "description": "无照片时直接展示文字摘录；整张记录可打开详情。",
+      "html": "<button class=\"ds-record\" type=\"button\"><div class=\"ds-record-excerpt\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M184,112a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h64A8,8,0,0,1,184,112Zm-8,24H112a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm48-88V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM48,208H72V48H48Zm160,0V48H88V208H208Z\"></path></svg><p>走了一段河边的路，记下今天想留住的片刻。</p></div><div class=\"ds-record-caption\"><span>未注明日期</span><h3>旅行手记</h3></div></button>",
+      "css": ".ds-record{display:block;text-align:left;width:100%;padding:0;background:var(--travel-paper,#fff);border:1px solid var(--travel-line,#dcded8);border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Noto Sans CJK SC\",sans-serif;color:var(--travel-ink,#282c2f);cursor:pointer;transition:border-color .15s,background .15s;}.ds-record:hover{border-color:#ae8c7d;background:#fffdfa;}.ds-record:focus-visible{outline:3px solid #365f89;outline-offset:3px;}.ds-record-excerpt{padding:25px 22px;background:#f0f1e9;color:#5e685e;min-height:205px;}.ds-record-excerpt>svg{display:block;width:24px;height:24px;margin-bottom:14px;}.ds-record-excerpt p{font-size:15px;line-height:2;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;margin:0;white-space:pre-wrap;}.ds-record-caption{padding:17px 18px 19px;}.ds-record-caption>span{font-size:11px;color:var(--travel-muted,#60696d);font-variant-numeric:tabular-nums;line-height:1.7;}.ds-record-caption h3{font-size:18px;line-height:1.6;margin:7px 0 0;letter-spacing:-.015em;color:var(--travel-ink,#282c2f);overflow-wrap:anywhere;}@media(max-width:650px){.ds-record-excerpt{min-height:170px;padding:23px;}.ds-record-excerpt p{font-size:14px;}.ds-record-caption h3{font-size:20px;}}@media(prefers-reduced-motion:reduce){.ds-record{transition:none;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "当代博物馆访客信息",
+    "overview": "清楚的标题、可辨认的选项和安静的界面，让旅行照片、地点和实际决定成为主角。瓷白背景、石墨文字与克制的朱红强调形成日常工具的秩序，不模拟纸张或展板。\n\n本文件记录当前 OpenAI 插件公共控件及手账、浮雕、沉浸、共享四项扩展的实现。宿主承担对话，工作台承担查看、编辑与确认。六个核心规划场景仍是独立设计稿；范围与证据见[界面说明](.impeccable/surfaces/travel-journey-redesign.md)。当前视觉来源为 [media-workspace.css](plugins/travel-agent-openai/workbench/src/media-workspace.css) 和 [workbench.css](plugins/travel-agent-openai/workbench/src/workbench.css)，旧版 map-pulse 和被否定的蓝绿原型不再指导新界面。",
+    "keyCharacteristics": [
+      "中性色组织信息，朱红明确主动作和当前选择。",
+      "一套系统无衬线字体，依靠字号、字重和留白形成层级。",
+      "照片与可操作的三维内容承担表达，边框和分隔线承担结构。",
+      "侧层保持上下文，保存、权限与恢复状态清楚可见。"
+    ],
+    "rules": [
+      {
+        "name": "The Quiet Frame Rule",
+        "body": "中性色承担结构，朱红用于主动作和选中状态；照片和三维内容承担目的地表达。",
+        "section": "colors"
+      },
+      {
+        "name": "The One Typeface Rule",
+        "body": "用同一字体的字号、字重和间距区分任务层级，不新增装饰字体或重复标题。",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "普通内容通过留白、底色与细边框区分；阴影只用于覆盖当前页面的侧层。",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do 让照片、文字和实际选择先于界面装饰，沿用瓷白、石墨与朱红的层级。",
+      "Do 保留可见字段标签、键盘焦点、手机操作栏与具体恢复动作。",
+      "Do 区分本地预览、未保存、保存结果未知和服务确认后的已保存。",
+      "Do 在共享确认中同时展示账号、权限及对旅行和照片的影响。"
+    ],
+    "donts": [
+      "Don't 继承被否定的蓝绿页面主题、旧 map-pulse 布局或并列的产品聊天框。",
+      "Don't 用玻璃效果、渐变、大数字面板或层层卡片填补内容。",
+      "Don't 在编辑侧层重复外层页面标题，或把技术验收文字写进产品流程。",
+      "Don't 将风格化三维、设计情景或本机服务结果说成真实来源或宿主验收。"
+    ]
+  }
 }

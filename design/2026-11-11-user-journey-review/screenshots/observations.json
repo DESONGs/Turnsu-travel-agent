@@ -1,0 +1,142 @@
+{
+  "scope": "Local design prototype only; synthetic travel data. No production host, persistence, identity, provider or physical-device validation.",
+  "observations": [
+    {
+      "file": "phone-today.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=today&route=a&day=2&after=1&adopted=1&ack=7",
+      "viewport": {
+        "height": 844,
+        "overflow": false,
+        "width": 390
+      }
+    },
+    {
+      "file": "phone-directions.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=directions&route=a",
+      "viewport": {
+        "height": 844,
+        "overflow": false,
+        "width": 390
+      }
+    },
+    {
+      "file": "phone-comparison.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=compare&route=a&day=2&after=0",
+      "viewport": {
+        "height": 844,
+        "overflow": false,
+        "width": 390
+      }
+    },
+    {
+      "file": "phone-impact.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=impact&route=a&day=2&choice=museum",
+      "viewport": {
+        "height": 844,
+        "overflow": false,
+        "width": 390
+      }
+    },
+    {
+      "file": "phone-condition.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=condition&route=a&day=2&after=1&condition=admission",
+      "viewport": {
+        "height": 844,
+        "overflow": false,
+        "width": 390
+      }
+    },
+    {
+      "file": "desktop-directions.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=directions",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "desktop-daily.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=days&day=2",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "desktop-comparison.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=compare&day=2",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "desktop-impact.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=impact&day=2&choice=museum",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "desktop-review.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=review&day=2&after=1",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "desktop-today.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=today&day=2&after=1&adopted=1&ack=7",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "direction-experience.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=directions&variant=experience",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "direction-familiar.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&route=a&stage=directions&variant=familiar",
+      "viewport": {
+        "height": 1000,
+        "overflow": false,
+        "width": 1440
+      }
+    },
+    {
+      "file": "pane-daily.jpg",
+      "url": "http://127.0.0.1:5176/?frame=1&stage=days&day=2",
+      "viewport": {
+        "height": 1110,
+        "overflow": false,
+        "width": 861
+      }
+    }
+  ],
+  "interactions": [
+    "Choose route A, expand day 1, open day 2, compare, preview connected changes, update trial only",
+    "Acknowledge admission, departure transfer and lunch transfer individually; adopt tentative scenario only after all three",
+    "Switch all three mobile candidates without removing candidates",
+    "Escape closes the side layer and returns focus to the original change trigger on the same day"
+  ],
+  "limitations": [
+    "Time edit and Today adjustment stop at impact preview",
+    "Sharing, photo relief and immersion include entry sketches, not full detailed flows",
+    "No real cloud save, source execution or host messages"
+  ]
+}

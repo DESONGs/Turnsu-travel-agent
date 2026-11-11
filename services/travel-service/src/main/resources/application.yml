@@ -1,0 +1,17 @@
+server:
+  address: ${TRAVEL_BIND_ADDRESS:127.0.0.1}
+  port: ${TRAVEL_PORT:8798}
+spring:
+  application:
+    name: travel-agent-service
+  datasource:
+    url: ${TRAVEL_DATABASE_URL}
+    username: ${TRAVEL_DATABASE_USER}
+    password: ${TRAVEL_DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${TRAVEL_DATABASE_POOL_SIZE:16}
+  flyway:
+    enabled: true
+  http:
+    codecs:
+      max-in-memory-size: 2MB

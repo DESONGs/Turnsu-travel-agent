@@ -45,7 +45,11 @@
     "miniapp:weapp": "node scripts/check-miniapps.mjs wechat",
     "miniapp:alipay": "node scripts/check-miniapps.mjs alipay",
     "miniapp:check": "node scripts/check-miniapps.mjs",
-    "native:sync": "npm run web:build && cap sync"
+    "native:sync": "npm run web:build && cap sync",
+    "mcp:build": "node scripts/build-mcp-app.mjs",
+    "mcp:serve": "java -jar services/travel-service/target/travel-service-0.1.0-SNAPSHOT.jar",
+    "plugins:pack": "node scripts/package-travel-plugins.mjs",
+    "design:review": "node plugins/travel-agent-openai/workbench/node_modules/vite/bin/vite.js --config design/2026-11-11-user-journey-review/vite.config.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "7.6.8",
