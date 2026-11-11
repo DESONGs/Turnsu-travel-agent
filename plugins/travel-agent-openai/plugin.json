@@ -7,10 +7,10 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "Travel Agent",
+        "displayName": "Turnsu 旅行",
         "shortDescription": "Plan and continue one trip across places, stays and transport.",
         "defaultPrompt": [
-          "Open my Travel Agent workspace.",
+          "Open my Turnsu travel workspace.",
           "Plan this trip and show the map and alternatives."
         ]
       }

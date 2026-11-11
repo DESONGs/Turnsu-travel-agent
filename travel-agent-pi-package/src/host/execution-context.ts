@@ -20,6 +20,9 @@ export interface TravelExecutionContext {
 }
 
 const execution = new AsyncLocalStorage<TravelExecutionContext>();
+const travelActor = new AsyncLocalStorage<string>();
+export const currentTravelActor = (): string | undefined => travelActor.getStore();
+export function withTravelActor<T>(userId: string, task: () => T): T { return travelActor.run(userId, task); }
 
 export function withTravelExecution<T>(context: TravelExecutionContext, task: () => T): T {
   return execution.run(context, task);

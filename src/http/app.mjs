@@ -14,7 +14,12 @@ import { AccountService, sessionDevice } from "./account-service.mjs";
 import { createAmapJsSecurityProxy } from "./amap-js-security-proxy.mjs";
 import { httpError, sendError } from "./http-errors.mjs";
 import { TravelJournalRepository } from "../persistence/travel-journal-repository.mjs";
-import { registerTravelJournalRoutes } from "./travel-journal.mjs";
+import { registerTravelJournalRoutes, sanitizeJournalJpeg } from "./travel-journal.mjs";
+import { WorkspaceRepository } from "../persistence/workspace-repository.mjs";
+import { WorkspaceService } from "../../travel-agent-pi-package/src/core/workspace-service.ts";
+import { workspaceRole, workspaceReadActions } from "../../travel-agent-pi-package/src/core/workspace.ts";
+import { withTravelActor } from "../../travel-agent-pi-package/src/host/execution-context.ts";
+import { validatePhotoRelief } from "../media/photo-relief-recipe.mjs";
 import { registerTravelRuntimeRoutes } from "./travel-runtime-routes.mjs";
 import { registerTravelExecutionRoutes } from "./travel-execution-routes.mjs";
 import { ExecutionRepository } from "../persistence/execution-repository.mjs";
@@ -156,6 +161,10 @@ export function createHttpApp({
     filename: sessionStore && !ownsConversations ? ":memory:" : resolve(runtimeEnv.TRAVEL_AGENT_DATA_DIR ?? "runtime-data", "executions", "runs.sqlite") });
   const executionService = new TravelExecutionService({ repository: executionRepository, conversationAgent: travelConversationAgent, conversationRepository, env: runtimeEnv });
   const app = express();
+  const workspaceRepository = new WorkspaceRepository({ store: travelService.store });
+  const workspaceService = new WorkspaceService({ repository: workspaceRepository, clock, sanitizeImage: sanitizeJournalJpeg, validateRelief: validatePhotoRelief,
+    readPreview: id => travelService.readMobilityPreview?.(id) ?? null, previewFingerprint: state => travelService.workspacePreviewFingerprint(state) });
+  app.locals.workspaceService = workspaceService;
   let continuityResources;
   app.locals.executionService = executionService;
   app.locals.close = async () => {
@@ -209,7 +218,9 @@ export function createHttpApp({
 
   const currentSession = async (request) => {
     const token = sessionTokenFromRequest(request);
-    if (String(token ?? "").startsWith("mcp_")) return mcpOAuth?.session(token, !["GET", "HEAD", "OPTIONS"].includes(request.method) && !/^\/api\/maps\/google\/(tiles|photo)$/.test(request.path) && request.path !== "/api/mcp/connection") ?? null;
+    const path = String(request.originalUrl ?? request.path).split("?")[0];
+    const privateRead = workspaceReadActions.has(path.match(/^\/api\/trips\/[^/]+\/workspace\/([a-z_]+)$/)?.[1]);
+    if (String(token ?? "").startsWith("mcp_")) return mcpOAuth?.session(token, !privateRead && !["GET", "HEAD", "OPTIONS"].includes(request.method) && !/^\/api\/maps\/google\/(tiles|photo)$/.test(path) && path !== "/api/mcp/connection") ?? null;
     const session = await sessionStore.read(token);
     return session?.provider === "email_otp" && !developmentAuthEnabled ? null : session;
   };
@@ -245,12 +256,13 @@ export function createHttpApp({
     if (!session) throw httpError("authentication_required", 401);
     return session;
   };
-  const requireTripMember = async (request, tripId) => {
+  const requireTripMember = async (request, tripId, { write = !["GET", "HEAD"].includes(request.method) } = {}) => {
     const session = await requireSession(request);
     const state = await travelService.store.get(tripId);
     if (!state) throw httpError("trip_not_found", 404, { tripId });
     const members = state.collaboration?.memberUserIds;
     if ((!members && (session.provider === "mcp" || runtimeEnv.NODE_ENV === "production")) || (members && !members.includes(session.userId))) throw httpError("trip_access_denied", 403, { tripId });
+    if (members && workspaceRole(state, session.userId) === "viewer" && write) throw httpError("trip_read_only", 403, { tripId });
     if (session.provider === "guest" && state.collaboration?.guestExpiresAt && new Date(state.collaboration.guestExpiresAt).getTime() <= clock().getTime()) {
       throw httpError("guest_trip_expired", 410, { tripId });
     }
@@ -259,7 +271,8 @@ export function createHttpApp({
   const requireConversationOwner = async (request, conversationId) => {
     const session = await requireSession(request);
     try {
-      await travelConversationAgent.getConversation({ conversationId, userId: session.userId });
+      const conversation = await travelConversationAgent.getConversation({ conversationId, userId: session.userId });
+      if (conversation.tripId && request.method === "POST" && /\/(runs|messages)$/.test(request.path)) await requireTripMember(request, conversation.tripId);
     } catch (error) {
       if (error?.code === "conversation_not_found") throw httpError("conversation_not_found", 404, { conversationId });
       if (error?.code === "conversation_access_denied") throw httpError("conversation_access_denied", 403, { conversationId });
@@ -267,6 +280,10 @@ export function createHttpApp({
     }
     return session;
   };
+
+  app.use("/api/trips/:tripId", (request, response, next) => {
+    void requireSession(request).then(session => withTravelActor(session.userId, () => next())).catch(error => sendError(response, error));
+  });
 
   const requireAccount = async (request, { fresh = false, verified = false } = {}) => {
     const session = await requireSession(request);
@@ -537,7 +554,7 @@ export function createHttpApp({
   app.post("/api/conversations", asyncRoute(async (request, response) => {
     const session = await requireSession(request);
     const tripId = request.body?.tripId ?? null;
-    if (tripId) await requireTripMember(request, tripId);
+    if (tripId) await requireTripMember(request, tripId, { write: false });
     response.status(201).json(await travelConversationAgent.createConversation({ userId: session.userId, tripId, modelId: request.body?.modelId }));
   }));
   app.get("/api/conversations/:conversationId", asyncRoute(async (request, response) => {
@@ -581,8 +598,9 @@ export function createHttpApp({
     response.status(201).json(await travelService.createTrip({ ...request.body, ownerUserId: session.userId }));
   }));
   app.get("/api/trips/:tripId/control", asyncRoute(async (request, response) => {
-    await requireTripMember(request, request.params.tripId);
-    response.json(await travelService.getTripControlView(request.params.tripId));
+    const session = await requireTripMember(request, request.params.tripId);
+    const state = await travelService.store.get(request.params.tripId);
+    response.json({ ...await travelService.getTripControlView(request.params.tripId), access: { role: workspaceRole(state, session.userId) } });
   }));
   app.get("/api/trips/:tripId/plan", asyncRoute(async (request, response) => {
     await requireTripMember(request, request.params.tripId);
@@ -592,7 +610,11 @@ export function createHttpApp({
     await requireTripMember(request, request.params.tripId);
     response.json(await evidenceCompanionService.presentationForNode({ tripId: request.params.tripId, nodeId: request.params.nodeId, targetLanguage: request.query.targetLanguage }));
   }));
-  registerTravelJournalRoutes({ app, asyncRoute, requireTripMember, travelService, repository: journalRepository, clock });
+  registerTravelJournalRoutes({ app, asyncRoute, requireTripMember, travelService, repository: journalRepository, clock, workspaceService });
+  app.post("/api/trips/:tripId/workspace/:action", asyncRoute(async (request, response) => {
+    const session = await requireSession(request);
+    response.json(await workspaceService.execute(request.params.action, { ...request.body, tripId: request.params.tripId }, session.userId));
+  }));
   registerTravelRuntimeRoutes({ app, asyncRoute, requireTripMember, travelService });
   app.post("/api/trips/:tripId/evidence/resolve", asyncRoute(async (request, response) => {
     await requireTripMember(request, request.params.tripId);

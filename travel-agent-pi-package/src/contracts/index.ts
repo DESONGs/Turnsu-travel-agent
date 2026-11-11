@@ -968,6 +968,8 @@ export const TripPatchProposalSchema = Type.Object({
 export type TripPatchProposal = Static<typeof TripPatchProposalSchema>;
 
 export const SavedPlanSchema = Type.Object({
+  adoptionStatus: Type.Optional(Type.Union([Type.Literal("tentative"), Type.Literal("verified")])),
+  unverifiedConditions: Type.Optional(Type.Array(Type.Object({ conditionId: IdentifierSchema, label: Type.String(), stopIds: Type.Array(IdentifierSchema), basisHash: Type.String() }, { additionalProperties: false }))),
   planId: IdentifierSchema,
   version: Type.Integer({ minimum: 1 }),
   lifecycle: Type.String({ enum: ["draft", "adopted", "discarded", "superseded"] }),
@@ -1061,6 +1063,8 @@ export const TripStateSchema = Type.Object({
   collaboration: Type.Optional(Type.Object({
     ownerUserId: Type.String(),
     memberUserIds: Type.Array(Type.String()),
+    roles: Type.Optional(Type.Record(Type.String(), Type.Union([Type.Literal("viewer"), Type.Literal("editor")]))),
+    accessRevision: Type.Optional(Type.Integer({ minimum: 0 })),
     accessMode: Type.Optional(Type.Union([Type.Literal("guest"), Type.Literal("account")])),
     guestExpiresAt: Type.Optional(Type.Union([IsoTimestampSchema, Type.Null()])),
   }, { additionalProperties: false })),

@@ -1,7 +1,9 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { currentTravelExecution } from '../host/execution-context.js';
+import { currentTravelExecution, currentTravelActor } from '../host/execution-context.js';
 import { executionError } from '../host/execution-contract.js';
 import type { SqlPool, SqlResult } from './postgres-session.js';
+import { workspaceRole } from '../core/workspace.js';
+import type { TripState } from '../contracts/index.js';
 interface Operation { id:string; argsHash:string; mutation:number; toolName:string }
 const operations=new AsyncLocalStorage<Operation>();
 export function withTravelOperation<T>(id:string,argsHash:string,task:()=>T,toolName="unknown"):T { return operations.run({id,argsHash,mutation:0,toolName},task); }
@@ -14,15 +16,19 @@ ALTER TABLE travel_operation_receipts ADD COLUMN IF NOT EXISTS tool_name TEXT NO
 /** The authoritative run lock, mutation and receipt share one database commit. */
 export async function fencedExecutionWrite(pool:SqlPool,action:(db:SqlPool|Awaited<ReturnType<SqlPool['connect']>>)=>Promise<SqlResult>,{productWrite=false,tripId=null}:{productWrite?:boolean;tripId?:string|null}={}):Promise<SqlResult>{
  const context=currentTravelExecution();const operation=operations.getStore();
- if(!context){if(operation)throw executionError('execution_context_required');return action(pool);}
+ if(!context){
+  if(operation)throw executionError('execution_context_required');
+  const actor=currentTravelActor();if(!actor||!productWrite||!tripId)return action(pool);
+  const db=await pool.connect();try{await db.query('BEGIN');const row=(await db.query('SELECT state_json FROM trip_states WHERE trip_id=$1 FOR UPDATE',[tripId])).rows[0];if(row){const role=workspaceRole(row.state_json as TripState,actor);if(!role||role==='viewer')throw executionError('trip_access_denied');}const value=await action(db);await db.query('COMMIT');return value;}catch(error){await db.query('ROLLBACK').catch(()=>{});throw error;}finally{db.release();}
+ }
  context.signal.throwIfAborted();const mutation=operation ? operation.mutation++ : undefined;const client=await pool.connect();
  try{
   await client.query('BEGIN');await client.query("SET LOCAL statement_timeout='8000ms'");
   const result=await client.query("SELECT run_id FROM travel_runs WHERE run_id=$1 AND user_id=$2 AND status='running' AND worker_id=$3 AND fence=$4 AND lease_until>(extract(epoch from clock_timestamp())*1000)::bigint FOR UPDATE",[context.runId,context.userId,context.workerId,context.fence]);
   if(!result.rowCount)throw executionError('execution_ownership_lost');context.signal.throwIfAborted();
   if(productWrite&&tripId){
-   const state=(await client.query("SELECT state_json->'collaboration'->'memberUserIds' AS members FROM trip_states WHERE trip_id=$1 FOR UPDATE",[tripId])).rows[0];
-   if(state&&(!Array.isArray(state.members)||!state.members.includes(context.userId)))throw executionError('trip_access_denied');
+   const state=(await client.query("SELECT state_json FROM trip_states WHERE trip_id=$1 FOR UPDATE",[tripId])).rows[0];
+   if(state){const role=workspaceRole(state.state_json as TripState,context.userId ?? '');if(!role||role==='viewer')throw executionError('trip_access_denied');}
   }
   if(productWrite&&operation){
    const receipt=await client.query('SELECT args_hash,result_json FROM travel_operation_receipts WHERE user_id=$1 AND operation_id=$2 AND mutation_index=$3',[context.userId,operation.id,mutation]);

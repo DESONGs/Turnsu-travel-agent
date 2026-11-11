@@ -35,26 +35,16 @@ test("trying a place preserves other choices and never navigates away from compa
   assert.equal(state.selections.stay, "hotel-b");
 });
 
-test("route confirmation needs current positive feasibility and is not submitted while busy", () => {
+test("review opens only a current draft, never directly adopts, and respects read-only and busy states", () => {
   const calls = [];
-  const state = { previewModel: { agentTrial: null, routeCanConfirm: false, activeSelections: { stay: "hotel" }, previewId: "preview", routeModes: {} },
-    proposal: { proposalId: "proposal" }, plan: { revision: 2 }, loading: false,
-    onAcceptProposal: (...args) => calls.push(args),
-  };
+  const state = { previewModel: { agentTrial: null, previewId: "preview" }, proposal: { proposalId: "proposal" }, loading: true, canEdit: true, setReviewTarget: value => calls.push(value) };
   const start = source.indexOf("  const confirmDraft =", source.indexOf("function PlanCanvas("));
-  const end = source.indexOf('  return <section className="atlas-canvas"', start);
+  const end = source.indexOf('  return <section className={`atlas-canvas', start);
   const confirm = vm.runInNewContext(source.slice(start, end) + "; confirmDraft;", state);
-  confirm();
-  assert.equal(calls.length, 0);
-  state.previewModel.routeCanConfirm = true;
-  state.loading = true;
-  confirm();
-  assert.equal(calls.length, 0);
-  state.loading = false;
-  confirm();
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0][2].previewId, "preview");
-  assert.equal(calls[0][2].baseRevision, 2);
+  confirm(); assert.equal(calls.length, 0);
+  state.loading = false; state.canEdit = false; confirm(); assert.equal(calls.length, 0);
+  state.canEdit = true; confirm(); assert.equal(calls.length, 1); assert.equal(calls[0].previewId, "preview");
+  state.previewModel.previewId = null; confirm(); assert.equal(calls.length, 1);
 });
 
 test("candidate analysis topics are not promoted to verified budget, route or independent-source claims", () => {

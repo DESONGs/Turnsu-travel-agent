@@ -32,6 +32,7 @@ export function operationForPath(path, method = "GET") {
   if (match) {
     const args = { tripId: decodeURIComponent(match[1]) }; const tail = match[2];
     const routes = [
+      [/^workspace\/([a-z_]+)$/, "POST", m => { args.tool = m[1]; return "workspace"; }],
       [/^(control|plan|decisions|map)$/, "GET", m => m[1]],
       [/^transit\/([^/]+)$/, "GET", (_m, a) => { args.nodeId = decodeURIComponent(a); return "transit"; }],
       [/^local-choice$/, "POST", () => "previewLocalChoice"],

@@ -1,5 +1,6 @@
 import { localChoicePlan } from "../../travel-agent-pi-package/src/product/local-change.ts";
 import { withRecentTripChange, restoreRecentTripChange, recentTripChangeAvailable } from "../../travel-agent-pi-package/src/product/trip-undo.ts";
+import { workspaceRole } from "../../travel-agent-pi-package/src/core/workspace.ts";
 import { destinationContext, localDateTime } from "../../travel-agent-pi-package/src/core/global-travel.ts";
 import { containsGoogleContent } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { createHash, randomUUID } from "node:crypto";
@@ -1136,6 +1137,7 @@ export class TravelService {
         tripId: state.tripId,
         revision: state.revision,
         destination: state.brief?.destination ?? null,
+        role: userId ? workspaceRole(state, userId) : null,
         dates: state.brief?.dates ?? null,
         travelerCount: state.travelers.length,
         updatedAt: state.updatedAt,
@@ -1218,6 +1220,8 @@ export class TravelService {
     view.brief = state.brief;
     return view;
   }
+
+  workspacePreviewFingerprint(state) { return planningStateFingerprint(state); }
 
   async updateTripReadiness({ tripId, signalId, status } = {}) {
     if (!READINESS_SIGNAL_IDS.has(signalId)) throw serviceError("invalid_readiness_signal", { signalId });
@@ -1440,6 +1444,7 @@ export class TravelService {
     };
     await this.saveMobilityPreview(previewResult.previewId, {
       tripId: state.tripId,
+      planningFingerprint: planningStateFingerprint(state),
       revision: state.revision,
       selections: JSON.stringify(Object.entries(selections).sort(([left], [right]) => left.localeCompare(right))),
       selectionValues: structuredClone(selections),

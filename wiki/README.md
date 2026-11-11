@@ -1,6 +1,6 @@
 # Travel Agent V2 Wiki
 
-两条并行实现的范围与接入差异见[旅行 UI 同步说明](./research/2026-11-11-ui-implementation-alignment.md)。PR #7 的主画布仍调用旧手账；PR #6 中新版记录、浮雕、沉浸和共享的完整交互尚未迁入，不能将两条 PR 的独立验证视为整合完成。
+主工作台已统一到 React／DSH，迁入新版手账、照片浮雕、目的地沉浸、共享与逐项确认，并采用 Turnsu 品牌。见[统一实现及验收边界](./research/2026-11-11-unified-turnsu-workbench.md)与[设计稿](../design/unified-workbench/README.md)；真实宿主、来源及公开发布仍待验收。
 
 Travel Agent 的文档总入口。三层结构：
 

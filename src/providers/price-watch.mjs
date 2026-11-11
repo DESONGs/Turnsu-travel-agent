@@ -22,6 +22,8 @@ export function createWatchQuoteSource(travelService){return {async check(watch,
   const brief={...state.brief,dates:c.dates,party:{adults:c.adults,childrenAges:c.childrenAges,...(c.rooms?{rooms:c.rooms}:{})},currency:c.currency};
   const result=await provider.research({tripId:state.tripId,brief,travelers:state.travelers,domains:[c.kind==='hotel'?'stay':'transport'],criteria:{},includeWeather:false,signal});
   signal.throwIfAborted();
+  const current = await travelService.store.get(watch.tripId);
+  if (!current?.collaboration?.memberUserIds?.includes(watch.ownerUserId)) fail('trip_access_revoked');
   const rows=Object.values(result.byDomain??{}).flat();
   const node=rows.find(n=>n.operability?.provider===c.provider&&n.operability?.providerRef===c.providerRef);
   if(!node)fail('quote_unavailable');const quote=watchOffer(node,brief);if(!quote.eligible)fail('quote_unavailable');

@@ -295,7 +295,8 @@ test('native host RPC rejects non-owner peers and arbitrary operations, shares t
       }
     }, signal, owner);
     assert.equal(r.ok, true, JSON.stringify(r));
-    return r.value.structuredContent;
+    assert.deepEqual(r.value.structuredContent, { status: "completed" });
+    return r.value._meta["travel/uiData"];
   };
   const created = await call('createConversation', {}, {});
   await registered('context', {

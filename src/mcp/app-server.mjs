@@ -14,7 +14,7 @@ export function createTravelMcpApp({ backend, uiRoot = resolve("dist-mcp"), publ
   const server = new McpServer({ name: "travel-agent-workspace", version: "0.2.0" }, { instructions: "Open and operate the same persistent global trip. Submit planning requests to the backend Travel Parent Agent; it owns research, evidence, validation and commits. Keep conversationId and requestId on retries. Only confirmed actions may adopt a draft. Never buy, pay or modify social services." });
   const result = value => ({ content: [{ type: "text", text: JSON.stringify(value) }], structuredContent: value });
   const register = (name, config, handler) => server.registerTool(name, { ...config, _meta: { ...config._meta, securitySchemes: [{ type: "oauth2", scopes: config.annotations?.readOnlyHint ? ["travel:read"] : ["travel:read", "travel:write"] }] } }, async input => {
-    try { const value = await handler(input); return result(name === "travel_app_action" ? value : stripGoogleContent(value)); }
+    try { const value = await handler(input); return name === "travel_app_action" ? { ...result({ status: "completed" }), _meta: { "travel/uiData": value } } : result(stripGoogleContent(value)); }
     catch (error) { return { isError: true, content: [{ type: "text", text: JSON.stringify({ status: "error", code: error.code ?? error.message ?? "travel_operation_failed" }) }] }; }
   });
   const read = { readOnlyHint: true, openWorldHint: false };

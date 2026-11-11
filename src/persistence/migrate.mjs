@@ -5,6 +5,7 @@ import { ExecutionRepository } from "./execution-repository.mjs";
 import { ContinuityRepository } from "./continuity-repository.mjs";
 import { DSH_SESSION_SQL } from "../../travel-agent-pi-package/src/dsh/postgres-session.ts";
 import { MCP_OAUTH_SQL } from "../mcp/oauth.mjs";
+import { WorkspaceRepository } from "./workspace-repository.mjs";
 
 if (!process.env.DATABASE_URL) {
   process.stderr.write("DATABASE_URL is required for db:migrate\n");
@@ -12,6 +13,7 @@ if (!process.env.DATABASE_URL) {
 } else {
   const repository = new PostgresTripRepository({ databaseUrl: process.env.DATABASE_URL });
   await repository.migrate();
+  await new WorkspaceRepository({ store: repository }).migrate();
   await repository.close();
   const auth = new AuthRepository({ databaseUrl: process.env.DATABASE_URL });
   await auth.migrate();

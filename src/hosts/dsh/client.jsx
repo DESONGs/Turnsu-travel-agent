@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import turnsuSymbol from '../../web/brand/turnsu-symbol.svg';
 export const name = 'turnsu-travel-agent-client';
 export const inject = ['slots', 'sidebarRight', 'sidebarRightTabs', 'connection'];
 const TYPE = 'turnsu-travel-agent';
@@ -13,7 +14,7 @@ const errors = {
   travel_revocation_pending: '本机已断开，正在确认服务端撤销。'
 };
 const message = e => errors[e.code ?? e.message] ?? '操作暂未完成，请重试。已保存的旅行会保留。';
-const css = `.dsh-travel{height:100%;min-height:220px;background:var(--color-bg-1,#fafaf8);color:var(--color-text-1,#17191c);display:flex;flex-direction:column;font:14px system-ui}.dsh-travel-top{display:flex;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid #d9dce0;font-size:12px}.dsh-travel-top strong{margin-right:auto;font-size:13px}.dsh-travel button{border:0;border-radius:7px;padding:9px 13px;font:inherit;cursor:pointer}.dsh-travel button:focus-visible{outline:3px solid #c9443b;outline-offset:3px}.dsh-travel .primary{background:#c9443b;color:white}.dsh-travel button:disabled{opacity:.5;cursor:not-allowed}.dsh-travel .quiet{background:transparent;color:inherit}.dsh-travel-connect{margin:auto;padding:38px 26px;max-width:480px}.dsh-travel-connect h2{font-size:23px;line-height:1.4;margin:0 0 15px}.dsh-travel-connect p{font-size:13px;line-height:1.8;margin:0 0 24px;color:var(--color-text-2,#60656e)}.dsh-travel [role=alert]{padding:12px 16px;color:#a52d26;font-size:12px;line-height:1.7}.dsh-travel iframe{border:0;width:100%;min-height:0;flex:1;background:white}.dsh-travel-open{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:5px 9px;display:flex;gap:6px;align-items:center}.dsh-travel-open svg{width:17px;height:17px}`;
+const css = `.dsh-travel{height:100%;min-height:220px;background:var(--color-bg-1,#fafaf8);color:var(--color-text-1,#17191c);display:flex;flex-direction:column;font:14px system-ui}.dsh-travel-top{display:flex;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid #d9dce0;font-size:12px}.dsh-travel-top strong{margin-right:auto;font-size:13px}.dsh-travel button{border:0;border-radius:7px;padding:9px 13px;font:inherit;cursor:pointer}.dsh-travel button:focus-visible{outline:3px solid #a44300;outline-offset:3px}.dsh-travel .primary{background:#a44300;color:white}.dsh-travel button:disabled{opacity:.5;cursor:not-allowed}.dsh-travel .quiet{background:transparent;color:inherit}.dsh-travel-connect{margin:auto;padding:38px 26px;max-width:480px}.dsh-travel-connect h2{font-size:23px;line-height:1.4;margin:0 0 15px}.dsh-travel-connect p{font-size:13px;line-height:1.8;margin:0 0 24px;color:var(--color-text-2,#60656e)}.dsh-travel [role=alert]{padding:12px 16px;color:#a52d26;font-size:12px;line-height:1.7}.dsh-travel iframe{border:0;width:100%;min-height:0;flex:1;background:white}.dsh-travel-open{border:0;background:none;color:inherit;cursor:pointer;font:inherit;padding:5px 9px;display:flex;gap:6px;align-items:center}.dsh-travel-open img{width:17px;height:17px}`;
 export function TravelNativeTab({
   sessionId,
   useTabInfo,
@@ -84,7 +85,7 @@ export function TravelNativeTab({
           if (m.method === 'ui/initialize') result = {
             protocolVersion: '2026-01-26',
             hostInfo: {
-              name: 'DSH Travel Agent',
+              name: 'Turnsu 旅行',
               version: '0.2.0'
             },
             hostCapabilities: {},
@@ -213,7 +214,7 @@ export function TravelNativeTab({
           await invoke('disconnect');
           setHtml('');
           popup.current?.close();
-        })}>断开连接</button></header>{contextError ? <div role="alert">对话上下文暂未同步。<button onClick={() => void refresh()}>重试同步</button></div> : null}{html ? <iframe ref={frame} title="Travel Agent 旅行画布" srcDoc={html} sandbox="allow-scripts allow-forms allow-popups allow-downloads" /> : <p role="status">正在打开已保存的旅行…</p>}</> : <div className="dsh-travel-connect"><h2>{waiting ? '等待你完成授权' : '连接旅行账户'}</h2><p>{waiting ? '在刚打开的安全页面完成登录与授权。已保存的旅行会保留。' : '连接后，在这里继续规划、比较和调整同一趟旅行；对话仍留在 DSH。授权凭据由宿主保存。'}</p>{waiting ? <><button className="primary" disabled={busy} onClick={() => void refresh()}>检查连接状态</button><button className="quiet" disabled={busy} onClick={() => run(async () => {
+        })}>断开连接</button></header>{contextError ? <div role="alert">对话上下文暂未同步。<button onClick={() => void refresh()}>重试同步</button></div> : null}{html ? <iframe ref={frame} title="Turnsu 旅行画布" srcDoc={html} sandbox="allow-scripts allow-forms allow-popups allow-downloads" /> : <p role="status">正在打开已保存的旅行…</p>}</> : <div className="dsh-travel-connect"><h2>{waiting ? '等待你完成授权' : '连接旅行账户'}</h2><p>{waiting ? '在刚打开的安全页面完成登录与授权。已保存的旅行会保留。' : '连接后，在这里继续规划、比较和调整同一趟旅行；对话仍留在 DSH。授权凭据由宿主保存。'}</p>{waiting ? <><button className="primary" disabled={busy} onClick={() => void refresh()}>检查连接状态</button><button className="quiet" disabled={busy} onClick={() => run(async () => {
           await invoke('cancel-connect');
           popup.current?.close();
           setWaiting(false);
@@ -222,7 +223,7 @@ export function TravelNativeTab({
 function TravelHeaderButton({
   open
 }) {
-  return <button className="dsh-travel-open" onClick={open} aria-label="打开旅行画布"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16m6-14v16" /></svg>旅行</button>;
+  return <button className="dsh-travel-open" onClick={open} aria-label="打开旅行画布"><img src={turnsuSymbol} width="20" height="20" alt="" />旅行</button>;
 }
 export function apply(ctx) {
   const invoke = async (endpoint, payload = {}) => {

@@ -159,10 +159,11 @@ export function createDshTravelHost(ctx, config, {
             binary: op.binary
           });
           return {
-            structuredContent: value,
+            structuredContent: { status: "completed" },
+            _meta: { "travel/uiData": value },
             content: [{
               type: 'text',
-              text: JSON.stringify(value)
+              text: JSON.stringify({ status: "completed" })
             }]
           };
         }

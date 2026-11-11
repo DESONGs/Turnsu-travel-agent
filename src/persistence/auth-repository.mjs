@@ -13,6 +13,11 @@ CREATE TABLE IF NOT EXISTS travel_auth_identities (
   UNIQUE(provider, subject)
 );
 CREATE INDEX IF NOT EXISTS travel_auth_identities_user ON travel_auth_identities(user_id);
+CREATE TABLE IF NOT EXISTS travel_google_profiles (
+ subject TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES travel_auth_users(user_id),
+ email_hash TEXT NOT NULL, email_authoritative INTEGER NOT NULL, verified_at BIGINT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS travel_google_profiles_email ON travel_google_profiles(email_hash);
 CREATE TABLE IF NOT EXISTS travel_auth_sessions (
   session_id TEXT PRIMARY KEY, token_hash TEXT NOT NULL UNIQUE,
   user_id TEXT NOT NULL REFERENCES travel_auth_users(user_id), provider TEXT NOT NULL,

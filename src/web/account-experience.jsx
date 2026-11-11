@@ -3,6 +3,7 @@ import { AppleLogo, ArrowRight, Check, CheckCircle, CircleNotch, Devices, Globe,
 import { OverlaySurface } from "./ui/overlay.jsx";
 import { api, apiPublicUrl, desktopSessionPersistence } from "./api-client.js";
 import "./account-experience.css";
+import { TurnsuBrand } from "./workspace/TurnsuFrame.jsx";
 
 const providers = [
   { id: "google", label: "Google", Icon: GoogleLogo },
@@ -72,7 +73,7 @@ export function LoginScreen({ onSession, developmentAuthEnabled, providerStatus,
       <div className="account-travel-caption"><span>TRAVEL, CONTINUED.</span><h2>{pick(<>每一段旅程，<br />都能接着走。</>, <>A little further.<br />Together.</>)}</h2><p>{pick("从此刻的灵感，到下一站的日常。", "From your first idea to your next everyday adventure.")}</p></div>
     </aside>
     <section className="account-login-main">
-      <div className="account-wordmark"><MapPin weight="fill" /><span>Travel Agent</span></div>
+      <div className="account-wordmark"><TurnsuBrand animate={false} /></div>
       <div className="account-login-heading"><span className="account-kicker">{pick("你的旅行，随时继续", "PICK UP WHERE YOU LEFT OFF")}</span><h1 id={headingId}>{pick("把旅程留在身边", "Keep your trip with you")}</h1><p>{pick("登录后，将这次临时旅行和对话归入账号，在其他设备继续。", "Sign in to save this guest trip and conversation, and continue on another device.")}</p></div>
       {error ? <AccountNotice error message={feedback(error, pick)} /> : null}
       {!status ? <AccountNotice error message={pick("暂时无法获取登录方式。", "Unable to load sign-in methods.")}><button type="button" className="account-text-button" disabled={Boolean(busy)} onClick={() => run("reload", async () => setStatus(await api.authProviders()))}>{pick("重新加载", "Reload")}</button></AccountNotice> : null}
@@ -122,7 +123,7 @@ export function AccountCenter({ session, locale = "zh-CN", onClose, onSession, o
     return linked.length ? linked.map((identity) => ({ provider, identity })) : [{ provider, identity: null }];
   });
   return <OverlaySurface onClose={onClose} overlayClassName="account-overlay" surfaceClassName="account-dialog account-center" labelledBy={headingId}>
-    <aside className="account-sidebar"><div className="account-wordmark"><MapPin weight="fill" /><span>Travel Agent</span></div><div className="account-person"><div className="account-avatar">{Array.from(session.displayName || pick("旅", "T"))[0]}</div><strong>{session.displayName || pick("旅行者", "Traveler")}</strong><span>{session.provider === "email_otp" ? pick("本地开发账号", "Local development") : pick("你的旅行账号", "Your travel account")}</span></div><nav aria-label={pick("账号设置", "Account settings")}>{sections.map(({ id, Icon, label }) => <button key={id} type="button" className={tab === id ? "is-active" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => { setTab(id); setConfirmation(null); setNotice(null); }}><Icon />{label}</button>)}</nav><div className="account-sidebar-foot"><ShieldCheck /><span>{pick("旅行属于你，登录由你管理。", "Your trips. Your access.")}</span></div></aside>
+    <aside className="account-sidebar"><div className="account-wordmark"><TurnsuBrand animate={false} /></div><div className="account-person"><div className="account-avatar">{Array.from(session.displayName || pick("旅", "T"))[0]}</div><strong>{session.displayName || pick("旅行者", "Traveler")}</strong><span>{session.provider === "email_otp" ? pick("本地开发账号", "Local development") : pick("你的旅行账号", "Your travel account")}</span></div><nav aria-label={pick("账号设置", "Account settings")}>{sections.map(({ id, Icon, label }) => <button key={id} type="button" className={tab === id ? "is-active" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => { setTab(id); setConfirmation(null); setNotice(null); }}><Icon />{label}</button>)}</nav><div className="account-sidebar-foot"><ShieldCheck /><span>{pick("旅行属于你，登录由你管理。", "Your trips. Your access.")}</span></div></aside>
     <section className="account-content"><header className="account-content-header"><span className="account-kicker">{pick("账号与安全", "ACCOUNT & SECURITY")}</span><button type="button" className="account-close" onClick={onClose} aria-label={pick("关闭账号设置", "Close account settings")}><X /></button><h1 id={headingId}>{active.title}</h1><p>{active.description}</p></header>
       {error ? <AccountNotice error message={feedback(error, pick)}>{["authentication_required", "recent_login_required", "verified_login_required"].includes(error) ? <button className="account-text-button" type="button" onClick={onLogin}>{pick("重新登录", "Sign in again")}</button> : <button className="account-text-button" type="button" disabled={Boolean(busy)} onClick={() => run("retry", load)}>{pick("重试", "Retry")}</button>}</AccountNotice> : null}
       {notice ? <AccountNotice message={notice} /> : null}

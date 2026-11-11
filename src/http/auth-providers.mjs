@@ -160,7 +160,8 @@ async function exchangeGoogle({ config, code, nonce, fetchImpl, clock }) {
     nonce,
     clock,
   });
-  return { provider: "google", subject: claims.sub, displayName: claims.name ?? null };
+  return { provider: "google", subject: claims.sub, displayName: claims.name ?? null,
+    email: claims.email, emailVerified: claims.email_verified === true, hostedDomain: claims.hd };
 }
 
 async function exchangeWechatWeb({ config, code, fetchImpl }) {

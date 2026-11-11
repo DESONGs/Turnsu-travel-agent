@@ -4,6 +4,7 @@ const unwrap = result => {
     let code = "travel_tool_failed"; try { code = JSON.parse(value).code ?? code; } catch { /* Do not surface raw tool output as HTML. */ }
     throw Object.assign(new Error(code), { code });
   }
+  if (result?._meta?.["travel/uiData"] !== undefined) return result._meta["travel/uiData"];
   if (result?.structuredContent !== undefined) return result.structuredContent;
   const value = result?.content?.find(c => c.type === "text")?.text;
   if (value) { try { return JSON.parse(value); } catch { /* A connector may return a direct JSON value. */ } }

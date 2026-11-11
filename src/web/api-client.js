@@ -141,6 +141,7 @@ async function executionResult(run) {
 }
 
 export const api = {
+  workspaceAction: (tripId, action, body) => request(`/api/trips/${encodeURIComponent(tripId)}/workspace/${encodeURIComponent(action)}`, { method: "POST", body }),
   preferences: () => request("/api/preferences"),
   confirmPreference: (id, revision) => request(`/api/preferences/${encodeURIComponent(id)}/confirm`, { method: "POST", body: { revision } }),
   savePreferences: body => request("/api/preferences", { method: "POST", body }),

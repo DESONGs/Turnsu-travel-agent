@@ -66,14 +66,7 @@ test("Three.js geometry is finite and disposable; remote photos are not fetched 
   await assert.rejects(readReliefPixels("file:///private/photo.jpg"), /relief_source_not_local/);
 });
 
-test("the real journal consumer connects draft and saved-photo previews, and preserves explicit food exclusion", async () => {
-  const journal = await readFile(new URL("../src/web/travel-photo-journal.jsx", import.meta.url), "utf8");
-  assert.match(journal, /src=\{photos\[active\]\.url\}/);
-  assert.match(journal, /onRecipeChange=/); assert.match(journal, /canPreviewPhotoRelief\(subject\)/);
-  assert.match(journal, /onPaste=\{pastePhotos\}/); assert.match(journal, /onDrop=/);
-  const preview = await readFile(new URL("../src/web/photo-relief-preview.jsx", import.meta.url), "utf8");
-  assert.match(preview, /aria-label=\{pick\("远近分界", "Horizon"\)\}/);
-  assert.match(preview, /aria-label=\{pick\("立体强度", "Depth strength"\)\}/);
+test("the shared journal renderer bounds camera movement and disposes its browser resources", async () => {
   const renderer = await readFile(new URL("../src/web/photo-relief-renderer.js", import.meta.url), "utf8");
   assert.match(renderer, /minAzimuthAngle = -0\.38/);
   assert.match(renderer, /document\.removeEventListener\("visibilitychange", visibility\)/);

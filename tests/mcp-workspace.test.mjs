@@ -66,10 +66,12 @@ test("MCP App and Artifact transports share real authenticated API state and rej
     const resources = await client.listResources(); assert.equal(resources.resources[0].uri, "ui://travel/workspace.html");
     const actions = await client.callTool({ name: "travel_app_action", arguments: { action: "createConversation", body: {} } });
     assert.equal(actions.isError, undefined);
-    const conversationId = actions.structuredContent.conversationId;
+    assert.deepEqual(actions.structuredContent, { status: "completed" });
+    assert.equal(JSON.stringify(actions.content).includes("conversationId"), false);
+    const conversationId = actions._meta["travel/uiData"].conversationId;
     assert.ok(conversationId);
     // The Artifact adapter calls the same tool against the same API, rather than holding its own trip copy.
-    const artifact = createMcpTravelClient({ callTool: async (name, args) => (await client.callTool({ name, arguments: args })).structuredContent });
+    const artifact = createMcpTravelClient({ callTool: async (name, args) => (await client.callTool({ name, arguments: args }))._meta["travel/uiData"] });
     assert.equal((await artifact.request(`/api/conversations/${conversationId}`)).conversationId, conversationId);
     const workspace = await client.callTool({ name: "get_travel_workspace", arguments: { conversationId } });
     assert.equal(workspace.structuredContent.conversation.conversationId, conversationId);
@@ -100,4 +102,15 @@ test('MCP host bridge retains an early tool result and follows host display-mode
 
 test('Codex DCR accepts a variable loopback port while preserving exact callback paths and token redirects',async()=>{
  const repository=new AuthRepository({filename:':memory:'});const oauth=new TravelMcpOAuth({repository,origin:'https://travel.test',redirectUris:['http://127.0.0.1/callback']});try{const redirect='http://127.0.0.1:39871/callback';const c=await oauth.registerClient({redirect_uris:[redirect]});assert.ok(c.client_id);for(const uri of ['http://127.0.0.1:39871/callback/evil','http://127.0.0.1:39871/callback?next=evil','http://127.0.0.2:39871/callback','http://localhost:39871/callback','http://user@127.0.0.1:39871/callback','https://evil.test/callback'])await assert.rejects(oauth.registerClient({redirect_uris:[uri]}),/redirect_uri_not_allowed/);const verifier='fixture-verifier-abcdefghijklmnopqrstuvwxyz-123456789';let consent;await oauth.authorize(c,{redirectUri:redirect,codeChallenge:createHash('sha256').update(verifier).digest('base64url'),resource:new URL(oauth.resource),scopes:['travel:read'],state:'fixture'}, {redirect:v=>{consent=v}});const callback=new URL(await oauth.approve(new URL(consent).searchParams.get('request'),{userId:'fixture-owner',provider:'google'}));assert.equal(callback.origin,'http://127.0.0.1:39871');assert.equal(callback.searchParams.get('iss'),'https://travel.test/');const grant=await oauth.exchangeAuthorizationCode(c,callback.searchParams.get('code'),verifier,redirect,new URL(oauth.resource));assert.equal((await oauth.session(grant.access_token)).userId,'fixture-owner');}finally{await repository.close()}
+});
+
+test("the shared host operation contract bundles and executes in a browser without Node builtins", async () => {
+  const { build } = await import("vite"), { runInNewContext } = await import("node:vm");
+  const result = await build({ configFile: false, logLevel: "silent", build: { write: false, minify: false, target: "es2022", lib: { entry: new URL("../src/mcp/operations.ts", import.meta.url).pathname, name: "TravelOperations", formats: ["iife"] } } });
+  const output = Array.isArray(result) ? result.flatMap(item => item.output) : result.output;
+  const contract = runInNewContext(output.find(item => item.type === "chunk").code + ";TravelOperations;", {});
+  const read = contract.travelOperation("workspace", { tripId: "trip_browser", tool: "list_trip_journal" });
+  assert.equal(read.path, "/api/trips/trip_browser/workspace/list_trip_journal"); assert.equal(read.scope, "travel:read");
+  assert.equal(contract.travelOperation("workspace", { tripId: "trip_browser", tool: "save_trip_photo_relief" }).scope, "travel:write");
+  assert.throws(() => contract.travelOperation("workspace", { tripId: "trip_browser", tool: "shell" }), /workspace_operation_not_allowed/);
 });

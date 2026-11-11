@@ -58,8 +58,38 @@ export function buildJournalEntry(body, { node, clock }) {
   return { id: body.id, ...content, placeTitle: node.title, visibility: "trip_only", model, createdAt: clock().toISOString(), contentHash: createHash("sha256").update(JSON.stringify(content)).digest("hex") };
 }
 
-export function registerTravelJournalRoutes({ app, asyncRoute, requireTripMember, travelService, repository, clock }) {
+export function registerTravelJournalRoutes({ app, asyncRoute, requireTripMember, travelService, repository, clock, workspaceService }) {
   const base = "/api/trips/:tripId/journal";
+  if (repository.pool && workspaceService) {
+    const run = async (request, action, input = {}) => { const session = await requireTripMember(request, request.params.tripId); return workspaceService.execute(action, { ...input, tripId: request.params.tripId }, session.userId); };
+    const legacy = entry => ({ ...entry, id: entry.entryId, photos: entry.photos.map(photo => ({ ...photo, id: photo.photoId })), model: { status: entry.photos.some(photo => photo.relief) ? "recipe_saved" : "not_generated", kind: "photo-relief-v1", processing: "on_device", reconstruction: false } });
+    app.get(base, asyncRoute(async (request, response) => {
+      const result = await run(request, "list_trip_journal"); response.json({ entries: result.items.map(legacy) });
+    }));
+    app.post(base, asyncRoute(async (request, response) => {
+      await requireTripMember(request, request.params.tripId);
+      const state = await travelService.store.get(request.params.tripId), plan = await travelService.getTripPlanView(request.params.tripId);
+      const nodes = [...Object.values(plan.byDomain ?? {}).flat(), ...(plan.pendingProposals ?? []).flatMap(proposal => Object.values(proposal.byDomain ?? {}).flat())];
+      let saved; try { saved = (await run(request, "get_trip_journal_entry", { entryId: request.body?.id })).entry; } catch (error) { if (error.code !== "journal_entry_not_found") throw error; }
+      const node = nodes.find(item => item.nodeId === request.body?.nodeId) ?? (saved ? { nodeId: request.body.nodeId, title: saved.placeTitle || saved.title } : null);
+      if (!node) throw httpError("journal_node_not_found", 404);
+      const record = buildJournalEntry(request.body, { node, clock });
+      const result = await run(request, "save_trip_journal_entry", { entryId: record.id, expectedRevision: state.revision, expectedEntryRevision: -1, requestId: `legacy_${record.id}`, legacyNodeId: request.body.nodeId,
+        title: record.placeTitle, note: record.note, subject: record.subject, stage: record.stage, takenOn: record.takenOn, photos: record.photos.map((photo, index) => ({ photoId: `photo_${createHash("sha256").update(`${request.params.tripId}:${record.id}:${index}`).digest("hex").slice(0,32)}`, data: photo.data, relief: photo.relief ?? null })) });
+      if (!result.entry) throw httpError("journal_entry_not_found", 410);
+      response.status(201).json(legacy(result.entry));
+    }));
+    app.get(`${base}/:entryId/photos/:photoId`, asyncRoute(async (request, response) => {
+      if (/^\d+$/.test(request.params.photoId)) throw httpError("journal_photo_identity_updated", 410);
+      const result = await run(request, "read_trip_journal_image", request.params);
+      response.type("image/jpeg").send(Buffer.from(result.data, "base64"));
+    }));
+    app.delete(`${base}/:entryId`, asyncRoute(async (request, response) => {
+      if (!Number.isSafeInteger(request.body?.expectedEntryRevision) || !request.body?.requestId) throw httpError("journal_client_update_required", 409);
+      await run(request, "delete_trip_journal", { ...request.body, entryId: request.params.entryId }); response.status(204).end();
+    }));
+    return;
+  }
   const requireJournalMember = async (request) => {
     const session = await requireTripMember(request, request.params.tripId);
     const state = await travelService.store.get(request.params.tripId);

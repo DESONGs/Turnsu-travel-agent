@@ -1,5 +1,8 @@
 # Plugin App 与 DSH 旅行服务
 
+2026-11-11 补充：工作台已统一采用 React／DSH 和 Turnsu 品牌，新手账、浮雕、沉浸、共享及逐项确认接入同一 PostgreSQL 旅行；设计与数据行为、迁移和验证边界见[统一实现记录](../research/2026-11-11-unified-turnsu-workbench.md)。
+
+
 更新：2026-11-11。本文承接已确认的产品迭代与架构选择。实现及证据边界见[本轮交付记录](../research/2026-11-11-plugin-app-implementation.md)；本文不代表上线或真实宿主已经验收。
 
 ## 用户会看到什么

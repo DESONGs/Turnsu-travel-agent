@@ -1,0 +1,3 @@
+import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowSquareOut, CalendarBlank, Camera, CaretDown, CaretRight, Check, CheckCircle, Clock, CornersOut, Eye, Globe, Images, Info, Lock, MagnifyingGlass, MapPin, Notebook, Plus, ShareNetwork, Users, Warning, X } from "@phosphor-icons/react";
+const icons = { ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowSquareOut, CalendarBlank, Camera, CaretDown, CaretRight, Check, CheckCircle, Clock, CornersOut, Eye, Globe, Images, Info, Lock, MagnifyingGlass, MapPin, Notebook, Plus, ShareNetwork, Users, Warning, X };
+export function Icon({ name, className = "" }) { const Shape = icons[name] || Info; return <span className={`ui-icon ${className}`} aria-hidden="true"><Shape /></span>; }

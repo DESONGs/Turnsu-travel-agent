@@ -1,3 +1,4 @@
+import { workspaceActions, workspaceReadActions } from "../../travel-agent-pi-package/src/core/workspace-actions.ts";
 export interface TravelOperation { method: "GET" | "POST" | "DELETE"; path: string; scope: "travel:read" | "travel:write"; binary?: boolean }
 const segment = (value: unknown): string => {
   if (typeof value !== "string" || !/^[A-Za-z0-9_.:-]{1,128}$/.test(value)) throw Object.assign(new Error("invalid_resource_id"), { code: "invalid_resource_id" });
@@ -55,6 +56,10 @@ export function travelOperation(action: string, args: Record<string, unknown> = 
   }
   const trip = `/api/trips/${segment(args.tripId)}`;
   switch (action) {
+    case "workspace": {
+      if (typeof args.tool !== "string" || !workspaceActions.has(args.tool)) throw Object.assign(new Error("workspace_operation_not_allowed"), { code: "workspace_operation_not_allowed" });
+      return { ...write(`${trip}/workspace/${segment(args.tool)}`), scope: workspaceReadActions.has(args.tool) ? "travel:read" : "travel:write" };
+    }
     case "previewLocalChoice": return write(`${trip}/local-choice`);
     case "undoChange": return write(`${trip}/undo`);
     case "watchOffers": return read(`${trip}/watch-offers`);
