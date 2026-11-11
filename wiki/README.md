@@ -1,5 +1,7 @@
 # Travel Agent V2 Wiki
 
+两条并行实现的范围与接入差异见[旅行 UI 同步说明](./research/2026-11-11-ui-implementation-alignment.md)。PR #7 的主画布仍调用旧手账；PR #6 中新版记录、浮雕、沉浸和共享的完整交互尚未迁入，不能将两条 PR 的独立验证视为整合完成。
+
 Travel Agent 的文档总入口。三层结构：
 
 - `current/`：唯一工作基准（产品、架构、交付规范），随用户决策持续修订；
