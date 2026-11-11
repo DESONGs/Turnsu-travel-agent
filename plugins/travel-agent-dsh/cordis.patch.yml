@@ -11,7 +11,7 @@
         url: __TRAVEL_MCP_URL__
         expandTemplates: true
         headers:
-          Authorization: 'Bearer ${credential:TRAVEL_AGENT_DSH_OAUTH_TOKEN}'
+          Authorization: 'Bearer ${credential:__TRAVEL_DSH_TOKEN_REF__}'
         toolCallTimeoutMs: 60000
         startupTimeoutMs: 20000
         failOnStartupError: false

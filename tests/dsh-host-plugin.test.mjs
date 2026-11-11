@@ -8,7 +8,7 @@ import { AuthRepository } from '../src/persistence/auth-repository.mjs';
 import { AccountService } from '../src/http/account-service.mjs';
 import { createHttpApp } from '../src/http/app.mjs';
 import { createTravelService } from '../src/api/create-travel-service.mjs';
-import { DshTravelAuthorization, MANAGED_TOKEN_REF } from '../src/hosts/dsh/oauth.mjs';
+import { DshTravelAuthorization } from '../src/hosts/dsh/oauth.mjs';
 import { createDshTravelHost } from '../src/hosts/dsh/server.mjs';
 /** Test boundary for a DSH credential provider; no values leave status/RPC results. */
 class Credentials {
@@ -149,7 +149,7 @@ test('native DSH one-click OAuth uses real PKCE callbacks, persists refresh and 
   assert.equal(result.state, 'disconnected');
   assert.equal(await f.app.locals.mcpOAuth.session(a), null);
   assert.equal((await f.auth.publicStatus()).connected, false);
-  assert.equal(f.credentials.refs.get(MANAGED_TOKEN_REF), 'travel-account-disconnected');
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), 'travel-account-disconnected');
 });
 test('a cancelled or mismatched callback cannot connect a native host', async t => {
   const f = await fixture(t);
@@ -190,7 +190,7 @@ test('cancelling during credential persistence prevents a late grant from reconn
   await assert.rejects(completion);
   await cancelled;
   assert.equal((await f.auth.publicStatus()).connected, false);
-  assert.equal(f.credentials.refs.get(MANAGED_TOKEN_REF), 'travel-account-disconnected');
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), 'travel-account-disconnected');
 });
 test('native host RPC rejects non-owner peers and arbitrary operations, shares the real cloud workspace and injects context without waking', async t => {
   const f = await fixture(t);
@@ -364,7 +364,7 @@ test('disconnect waits for refresh persistence and revokes the rotated grant wit
   assert.equal((await disconnect).state, 'disconnected');
   assert.equal(await f.app.locals.mcpOAuth.session(old), null);
   assert.equal((await f.auth.publicStatus()).connected, false);
-  assert.equal(f.credentials.refs.get(MANAGED_TOKEN_REF), 'travel-account-disconnected');
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), 'travel-account-disconnected');
 });
 test('plugin unload during refresh preserves the rotated private grant for a new instance', async t => {
   const f = await fixture(t);
@@ -411,7 +411,7 @@ test('plugin unload during refresh preserves the rotated private grant for a new
   const token = await restarted.accessToken();
   assert.notEqual(token, old);
   assert.equal((await f.app.locals.mcpOAuth.session(token)).userId, 'native-owner');
-  assert.equal(f.credentials.refs.get(MANAGED_TOKEN_REF), 'travel-account-disconnected');
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), 'travel-account-disconnected');
 });
 test('a queued managed credential write cannot overtake disconnect', async t => {
   const f = await fixture(t);
@@ -437,7 +437,7 @@ test('a queued managed credential write cannot overtake disconnect', async t => 
   release();
   await sync;
   await disconnect;
-  assert.equal(f.credentials.refs.get(MANAGED_TOKEN_REF), 'travel-account-disconnected');
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), 'travel-account-disconnected');
 });
 test('remote DSH connections require a configured HTTPS OAuth callback', async t => {
   const f = await fixture(t);
@@ -518,4 +518,16 @@ test('browser consent permits only its registered callback origin and completes 
   assert.equal(new URL(approved.headers.get('location')).origin, start.callbackOrigin);
   assert.equal((await fetch(approved.headers.get('location'))).status, 200);
   assert.equal((await f.auth.publicStatus()).connected, true);
+});
+
+test("another service origin cannot overwrite this host's managed MCP credential", async t => {
+  const f = await fixture(t);
+  await f.auth.complete(await f.approve(await f.auth.start()));
+  const token = await f.auth.accessToken();
+  const other = new DshTravelAuthorization({ credentials: f.credentials, origin: 'https://other.example' });
+  t.after(() => other.dispose());
+  await other.sync();
+  assert.notEqual(other.tokenRef, f.auth.tokenRef);
+  assert.equal(f.credentials.refs.get(f.auth.tokenRef), token);
+  assert.equal(f.credentials.refs.get(other.tokenRef), 'travel-account-disconnected');
 });

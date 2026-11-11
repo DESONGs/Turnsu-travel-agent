@@ -27,10 +27,10 @@ DSH 本身需按官方说明完成平台依赖安装，包括凭据与会话持�
 ## 授权、接续与断开
 
 - OAuth 使用动态客户端注册、PKCE、一次性 state 和 issuer 校验；用户不需要复制 token。
-- 访问/刷新凭据保存在 DSH 凭据服务的私有 grant record。官方 MCP client 只引用 `TRAVEL_AGENT_DSH_OAUTH_TOKEN`，插件自动刷新；画布 iframe 不接触凭据。该引用由插件管理，不要手工填写或设置同名环境变量。
+- 访问/刷新凭据保存在 DSH 凭据服务的私有 grant record。官方 MCP client 引用按服务地址生成的专用凭据名，插件自动刷新；画布 iframe 不接触凭据。该引用由插件管理，不要手工填写或设置同名环境变量。
 - 原生右侧标签页承载 opaque iframe，没有 `allow-same-origin`；画布只能调用有限旅行操作。宿主接口沿用 DSH Connection 的 owner 校验，云端再校验当前旅行权限。
 - 当前画布的旅行引用作为 `travel-canvas` 上下文进入同一宿主 Session，先从云端核对真实行程与 revision；上下文同步不会唤醒新对话。宿主 Session 由官方 SessionController 解析和恢复，不接管其子 Agent。
-- 一个私有 DSH owner profile 连接一个旅行账户。多人共享服务器应使用各自独立的 DSH profile/凭据存储，不能共用 owner 登录。
+- 同一旅行服务在一份私有 DSH 凭据存储中连接一个账户。DSH profile 本身不隔离凭据；多人使用须分别设置 DSH_HOME 或独立凭据文件，并使用各自 OS 账户，不能共用 owner 登录。
 - 「断开连接」立即使托管引用失效，并撤销云端连接。若撤销回执未知，界面保留「重试确认断开」；不报告假成功。卸载插件停止刷新并移除本次挂载；需要撤销授权时先断开。
 
 DSH 本地凭据文件遵循宿主的 OS 用户权限；同一 OS 用户运行的 Shell 工具能够读取该文件，这是 DSH 的信任边界。不要将包含凭据的诊断、整个 profile 或授权链接上传。

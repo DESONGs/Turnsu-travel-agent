@@ -6,7 +6,7 @@ const fail = code => {
   });
 };
 const disconnected = 'travel-account-disconnected';
-export const MANAGED_TOKEN_REF = 'TRAVEL_AGENT_DSH_OAUTH_TOKEN';
+export const managedTokenRef = origin => `TRAVEL_AGENT_DSH_OAUTH_${createHash('sha256').update(new URL(origin).origin).digest('hex').slice(0, 12).toUpperCase()}`;
 export function travelOrigin(raw, {
   development = false
 } = {}) {
@@ -15,7 +15,7 @@ export function travelOrigin(raw, {
   return u.origin;
 }
 
-/** One cloud account per private DSH owner profile. Grants stay in its credential provider. */
+/** One cloud account per origin and private DSH credential store. Grants stay in its credential provider. */
 export class DshTravelAuthorization {
   constructor({
     credentials,
@@ -34,6 +34,7 @@ export class DshTravelAuthorization {
       clock
     });
     this.key = `turnsu-travel-agent/oauth-${createHash('sha256').update(origin).digest('hex').slice(0, 12)}`;
+    this.tokenRef = managedTokenRef(origin);
     this.epoch = 0;
     this.closed = false;
     this.pending = null;
@@ -65,7 +66,7 @@ export class DshTravelAuthorization {
   // must finish before a later disconnect can shadow ambient credential fallback.
   managed(value, epoch = this.epoch) {
     const task = this.managedWrites.then(() => {
-      if (epoch === this.epoch && (value === disconnected || !this.closed)) return this.credentials.set(MANAGED_TOKEN_REF, value);
+      if (epoch === this.epoch && (value === disconnected || !this.closed)) return this.credentials.set(this.tokenRef, value);
     });
     this.managedWrites = task.catch(() => {});
     return task;
