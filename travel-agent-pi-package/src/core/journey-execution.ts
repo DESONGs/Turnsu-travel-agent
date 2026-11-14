@@ -1,18 +1,22 @@
 import { createHash } from "node:crypto";
+import { localDateTime, validTimeZone } from "./global-travel.js";
 import type { DecisionNodeInput, ItineraryPlanMode, JourneyRequest, MobilityLeg, MobilityObservation, TripBrief, TripFeasibility, TripItinerary, TripItineraryStop, Traveler } from "../contracts/index.js";
 
 type Candidate = DecisionNodeInput & { nodeId: string };
 type RecordValue = Record<string, unknown>;
 const obj = (value: unknown): RecordValue => value && typeof value === "object" && !Array.isArray(value) ? value as RecordValue : {};
 const number = (value: unknown): number | null => typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
-const stamp = (value: unknown, date?: string): string | null => {
+const stamp = (value: unknown, date?: string, zone?: unknown, legacyChina = true): string | null => {
   const text = String(value ?? "");
-  const full = /^20\d{2}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(text) ? text.replace(" ", "T") : date && /^\d{2}:\d{2}$/.test(text) ? `${date}T${text}:00+08:00` : null;
-  if (!full) return null;
-  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/.test(full) ? full : `${full}+08:00`;
-  return Number.isFinite(Date.parse(zoned)) ? zoned : null;
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/.test(text)) return Number.isFinite(Date.parse(text)) ? text : null;
+  const timeZone = validTimeZone(zone) ? zone : legacyChina ? "Asia/Shanghai" : null;
+  return timeZone ? localDateTime(value, date ?? null, timeZone) : null;
 };
-export const shiftTime = (value: string, minutes: number): string => new Date(Date.parse(value) + (minutes + 480) * 60_000).toISOString().replace("Z", "+08:00");
+export const shiftTime = (value: string, minutes: number): string => {
+  const offset = value.match(/([+-])(\d{2}):(\d{2})$/);
+  const zoneMinutes = offset ? (offset[1] === "-" ? -1 : 1) * (Number(offset[2]) * 60 + Number(offset[3])) : 0;
+  return new Date(Date.parse(value) + (minutes + zoneMinutes) * 60_000).toISOString().replace("Z", offset?.[0] ?? "+00:00");
+};
 
 export function tagJourneyCandidate<T extends { candidateId: string; operability?: RecordValue }>(candidate: T, request: JourneyRequest): T {
   return { ...candidate, candidateId: `${candidate.candidateId}_${createHash("sha256").update(`${request.journeyId}:${request.origin}:${request.destination}:${request.date}`).digest("hex").slice(0, 12)}`,
@@ -31,14 +35,18 @@ export function transportFacts(node: Candidate) {
   const timing = obj(op.transportTiming);
   const mode = ({ TRAIN: "train", FLIGHT: "flight", SHUTTLE: "shuttle", CABLE_CAR: "cable_car", FERRY: "ferry" } as Record<string, ItineraryPlanMode>)[String(op.transportType ?? "").toUpperCase()];
   const date = typeof op.serviceDate === "string" ? op.serviceDate : undefined;
-  const departureAt = stamp(op.departureAt, date), arrivalAt = stamp(op.arrivalAt, date);
+  const departurePlace = obj(op.departurePlace), arrivalPlace = obj(op.arrivalPlace);
+  const legacyChina = op.provider !== "skyscanner" && !op.countryCode && !departurePlace.countryCode && !arrivalPlace.countryCode;
+  const departureZone = op.departureTimeZone ?? departurePlace.timeZone ?? op.timeZone;
+  const arrivalZone = op.arrivalTimeZone ?? arrivalPlace.timeZone ?? op.timeZone;
+  const departureAt = stamp(op.departureAt, date, departureZone, legacyChina), arrivalAt = stamp(op.arrivalAt, date, arrivalZone, legacyChina);
   const sourceRefs = (node.sourceRefs ?? []).filter(Boolean);
   return {
     journeyId: typeof op.journeyId === "string" ? op.journeyId : null,
     mode, departureAt, arrivalAt,
-    departurePlace: obj(op.departurePlace), arrivalPlace: obj(op.arrivalPlace),
+    departurePlace, arrivalPlace,
     beforeMinutes: number(timing.beforeMinutes), afterMinutes: number(timing.afterMinutes),
-    boardingClosesAt: stamp(timing.boardingClosesAt, date), lastDepartureAt: stamp(timing.lastDepartureAt, date),
+    boardingClosesAt: stamp(timing.boardingClosesAt, date, departureZone, legacyChina), lastDepartureAt: stamp(timing.lastDepartureAt, date, departureZone, legacyChina),
     timingSource: typeof timing.source === "string" && sourceRefs.includes(timing.source) ? timing.source : null,
     includedComponents: Array.isArray(timing.includedComponents) ? timing.includedComponents.map(String) : [],
     sourceRefs, checkedAt: typeof op.checkedAt === "string" ? op.checkedAt : null,
@@ -76,7 +84,7 @@ export function selectRoute(leg: MobilityLeg, requested?: string): MobilityLeg {
   if (!selected) return { ...leg, alternatives };
   const changed = Boolean(requested && requested !== leg.selectedAlternativeId && requested !== leg.recommendedMode);
   return { ...leg, alternatives, selectedAlternativeId: selected.alternativeId, recommendedMode: selected.mode,
-    ...(changed ? { rationale: `按本次选择采用${selected.mode}：约 ${selected.totalMinutes} 分钟，步行 ${selected.walkingMeters ?? "待核验"} 米，换乘 ${selected.transfers ?? "待核验"} 次；费用 ${selected.estimatedFareCny ?? "待核验"} 元。`, recommendationAudit: { selectedAlternativeId: selected.alternativeId, selectionSource: "requested", previousSelection: leg.selectedAlternativeId ?? leg.recommendedMode } } : {}) };
+    ...(changed ? { rationale: `按本次选择采用${selected.mode}：约 ${selected.totalMinutes} 分钟，步行 ${selected.walkingMeters ?? "待核验"} 米，换乘 ${selected.transfers ?? "待核验"} 次；费用 ${selected.fare ? `${selected.fare.amount} ${selected.fare.currency}` : selected.estimatedFareCny != null ? `${selected.estimatedFareCny} CNY` : "待核验"}。`, recommendationAudit: { selectedAlternativeId: selected.alternativeId, selectionSource: "requested", previousSelection: leg.selectedAlternativeId ?? leg.recommendedMode } } : {}) };
 }
 
 export function explicitPriceTotal(node: Candidate, nodes: Candidate[], brief: TripBrief, partySize: number, itinerary?: TripItinerary | null) {
@@ -104,7 +112,8 @@ export function scheduledRideLeg(from: TripItineraryStop, to: TripItineraryStop,
   const minutes = (Date.parse(facts.arrivalAt!) - Date.parse(facts.departureAt!)) / 60_000;
   return selectRoute({ legId: `ride_${createHash("sha256").update(`${from.stopId}:${to.stopId}`).digest("hex").slice(0, 24)}`, origin: place(from, facts.departurePlace), destination: place(to, facts.arrivalPlace), recommendedMode: facts.mode!, rationale: "所选班次的来源时刻；出发前复核班次、检票与运营变化。", alternatives: [{
     mode: facts.mode!, totalMinutes: minutes, distanceMeters: null, walkingMeters: null, transfers: 0,
-    estimatedFareCny: node.price?.amount ?? null, fareIncludedByNodeId: node.nodeId,
+    estimatedFareCny: (!node.price?.currency || node.price.currency === "CNY") ? node.price?.amount ?? null : null,
+    fare: node.price?.amount != null ? { amount: node.price.amount, currency: node.price.currency, quality: node.price.quality } : null, fareIncludedByNodeId: node.nodeId,
     sourceRefs: facts.sourceRefs, checkedAt: facts.checkedAt, departureAt: facts.departureAt, arrivalAt: facts.arrivalAt,
     scheduleBasis: "scheduled_service", realTimeArrival: false, navigationUrl: null, polyline: [],
     steps: [{ kind: "ride", instruction: String(node.title ?? "所选班次"), line: null, origin: String(facts.departurePlace.label ?? "出发站"), destination: String(facts.arrivalPlace.label ?? "抵达站"), distanceMeters: null, durationMinutes: minutes, walkType: null, accessibilityFeatures: [] }], accessibilityFeatures: [],

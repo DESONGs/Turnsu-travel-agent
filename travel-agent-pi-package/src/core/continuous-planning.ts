@@ -201,6 +201,7 @@ export function continuousPlanningContext(state: TripState) {
   const journal = state.changeJournal as Array<Record<string, unknown>>;
   const summarize = (document: SavedPlan | null) => document ? {
     planId: document.planId, version: document.version, lifecycle: document.lifecycle,
+    adoptionStatus: document.adoptionStatus ?? null, unverifiedConditions: document.unverifiedConditions ?? [],
     itinerary: document.itinerary, plan: document.plan,
     validation: { status: document.validation.status, checkedAt: document.validation.checkedAt, freshUntil: document.validation.freshUntil, invalidatedBy: document.validation.invalidatedBy },
     lastEstimate: document.lastEstimate,

@@ -110,6 +110,13 @@ export function providerStatusSummary(env = process.env) {
       kimiVision: configured(env.MOONSHOT_API_KEY) ? liveState(env, "TRAVEL_AGENT_KIMI_SMOKE_STATUS", "credential_configured_pending_smoke") : "blocked",
       kimiChild: configured(env.MOONSHOT_API_KEY) && env.TRAVEL_AGENT_KIMI_CHILD_SMOKE_STATUS === "passed_live_smoke" ? "available_child_fallback" : "fallback_unavailable",
     },
+    global: {
+      googleMaps: env.TRAVEL_AGENT_GOOGLE_MAPS_ENABLED !== "true" ? "disabled" : env.TRAVEL_AGENT_GOOGLE_MAPS_DATA_POLICY !== "approved" ? "blocked_pending_policy_review" : configured(env.GOOGLE_MAPS_API_KEY) ? liveState(env, "TRAVEL_AGENT_GOOGLE_MAPS_SMOKE_STATUS", "configured_pending_live_acceptance") : "blocked_missing_key",
+      skyscanner: env.TRAVEL_AGENT_SKYSCANNER_ENABLED === "true" && configured(env.SKYSCANNER_API_KEY) ? liveState(env, "TRAVEL_AGENT_SKYSCANNER_SMOKE_STATUS", "configured_pending_live_acceptance") : "blocked_pending_authorized_provider",
+      viator: env.TRAVEL_AGENT_VIATOR_ENABLED === "true" && configured(env.VIATOR_API_KEY) ? liveState(env, "TRAVEL_AGENT_VIATOR_SMOKE_STATUS", "configured_pending_live_acceptance") : "blocked_pending_authorized_provider",
+      viatorDatedAvailability: env.TRAVEL_AGENT_VIATOR_ACCESS === "full",
+      currencyConversion: "ecb_daily_supported_currencies_only",
+    },
     data: {
       amapOfficialMcp: configured(env.AMAP_API_KEY) ? liveState(env, "TRAVEL_AGENT_AMAP_SMOKE_STATUS", "credential_configured_pending_smoke") : "blocked",
       weather: weatherState(env),

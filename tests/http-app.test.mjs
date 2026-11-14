@@ -338,7 +338,7 @@ test("default file repositories keep trips and conversations under the configure
     assert.equal(tripResponse.status, 201);
     const conversationResponse = await fetch(`http://127.0.0.1:${port}/api/conversations`, { method: "POST", headers, body: "{}" });
     assert.equal(conversationResponse.status, 201);
-    assert.deepEqual((await readdir(rootDir)).filter((name) => !name.startsWith("auth.sqlite-")).sort(), ["auth.sqlite", "conversations", "executions", "trip_shared_root.json"]);
+    assert.deepEqual((await readdir(rootDir)).filter((name) => !name.startsWith("auth.sqlite-")).sort(), ["auth.sqlite", "continuity.sqlite", "continuity.sqlite-shm", "continuity.sqlite-wal", "conversations", "executions", "trip_shared_root.json"]);
     assert.equal((await readdir(join(rootDir, "conversations"))).length, 1);
   } finally {
     await new Promise((resolveClose) => server.close(resolveClose));

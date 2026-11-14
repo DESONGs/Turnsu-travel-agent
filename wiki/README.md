@@ -1,5 +1,7 @@
 # Travel Agent V2 Wiki
 
+主工作台已统一到 React／DSH，迁入新版手账、照片浮雕、目的地沉浸、共享与逐项确认，并按 Turnsu Design System 统一设计语言。最新变更见[规范接入与受控验收](./research/2026-11-14-turnsu-design-system-refinement.md)。见[统一实现及验收边界](./research/2026-11-11-unified-turnsu-workbench.md)与[设计稿](../design/unified-workbench/README.md)；真实宿主、来源及公开发布仍待验收。
+
 Travel Agent 的文档总入口。三层结构：
 
 - `current/`：唯一工作基准（产品、架构、交付规范），随用户决策持续修订；
@@ -8,11 +10,27 @@ Travel Agent 的文档总入口。三层结构：
 
 文档之间冲突时以最新用户决策为准并同步修订；文档更新不代表相应代码已实现。
 
+## 当前迭代：Plugin App、产品体验与 DSH（2026-11-11）
+
+用户确认产品以跨宿主插件应用为主要形态，采用宿主对话＋动态画布、共享云端旅行服务，深化酒店与交通，并完整交付四域联动、跨旅行偏好、机酒价格关注及站内/邮件提醒。首批明确 Codex、ChatGPT、DSH；Claude 与 WorkBuddy 按接入研究和实际验收确定支持。
+
+- [产品迭代计划](./research/2026-11-11-plugin-app-product-iteration-plan.md)：能力、交互、现有复用、依赖顺序和完成标准。
+- [架构评估 v0.3：DSH 全后端基座](./research/2026-11-11-plugin-app-architecture-assessment.md)：目标方向已确认；DSH 统一承载应用与 Agent，现有业务内核和 PostgreSQL 继续复用，首版支持跨实例安全接续。
+- [DSH 跨实例验证方案](./research/2026-11-11-dsh-backend-validation-plan.md)：保留原验证要求；已执行部分与未通过的真实条件以交付记录为准。
+- [Figma 设计稿](https://www.figma.com/design/82SFdSrzhxPby3T44L8ZGx)：可编辑核心界面；原型跳转连接受本次 MCP 套餐额度限制，交互规则以计划正文为准。
+- [Odessia 深度研究](./research/2026-11-11-odessia-deep-product-ux-tech-research.md)：能力、UI/UX、技术及证据边界。
+
+**用户已授权完善设计、开发与仓库交付。** 主方案/比较/局部修改、长期偏好、价格关注和原生 DSH 后端已进入实现并完成本地受控验证；尚未生产部署，真实供应商、邮件和原生宿主验收仍未完成。DSH 个人宿主已补齐一键授权、凭据续期与原生画布；隔离官方 Web 宿主已做受控验证，桌面包与生产接入仍待验收。
+
+当前阅读入口：[17 Plugin App 与 DSH](./current/17-plugin-app-and-dsh.md) → [本轮实现与验证记录](./research/2026-11-11-plugin-app-implementation.md) → [可点击设计原型](../design/plugin-app/README.md)。以下早期状态保留作历史背景，不覆盖本轮逐项证据。
+
 ## 当前优先迭代：可执行行程与完整交通链（2026-09-30）
 
 用户满意现有地图，要求参考见好旅行规划器改善行程形成与交通安排，并交由主线程审查必要架构调整后开发。新增 [16 迭代与开发交接](./current/16-executable-itinerary-and-transport-iteration.md)规定完整往返/转场、方式比较、时间衔接、自驾/景交、费用、每日路书和验收路径；[参考研究与 QA 基线](./research/2026-09-30-transport-itinerary-reference-research.md)保存固定参考版本、代码位置、本轮真实模型加模拟旅行来源的用户测试、工程失败及未验证范围。
 
-**开发方向已授权，主线程已接入基础修复和交通链服务层，完整用户路径仍未验收。** 否定重排、13 次到访 PostgreSQL 回读和 Journal 并发初始化的工程回归已通过；新增两日往返等六项受控测试通过。真实模型/浏览器复测、完整交通客户端与容量门槛仍开，不能将修复前的 QA 基线改写为修复后的通过证据。代码提交范围、检查记录和待办见[本轮代码提交记录](./research/2026-09-30-runtime-implementation-pr.md)。
+**开发方向已授权，主线程已接入基础修复和交通链服务层，完整用户路径仍未验收。** 否定重排、13 次到访 PostgreSQL 回读和 Journal 并发初始化的工程回归已通过；新增两日往返等六项受控测试通过。代码提交范围、检查记录和待办见[本轮代码提交记录](./research/2026-09-30-runtime-implementation-pr.md)。
+
+**PR #5 同版本用户复测已执行，完整验收未通过。** 在 `ecb69989` 上使用真实 Parent/Child、HTTP、PostgreSQL 与电脑操作，旅行来源明确模拟：预算保存、局部换酒店、采用和多站回读通过；往返时间锚点、第二条同方式路线选择、已订车事实接续、候选展示、复杂流程预算与多会话刷新仍有问题。资料缺失后的补餐饮需要人工重试；轮椅约束下原时间线保留、违规采用被阻止，但核验结果交付失败。详见[2026-09-30 PR #5 QA 与代码核查](./research/2026-09-30-pr5-real-user-qa.md)。本轮 78 项聚焦回归及类型/构建/小程序合同检查通过，远端 PR 为 `Checks (0)`；真实高德、Jev、完整交通客户端及容量门槛仍开。
 
 本轮阅读顺序：16 → 配套研究的代码/QA 证据 → 14/15 → 对应实现。具体主线程入口与交接状态见 16 的最后一节。
 

@@ -1,6 +1,9 @@
+import { googleSafeDurableValue } from "../../travel-agent-pi-package/src/core/provider-content.ts";
+const durableJson = value => JSON.stringify(googleSafeDurableValue(value));
 import { DatabaseSync } from "node:sqlite";
 import { chmodSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { OPERATION_RECEIPT_SQL } from "../../travel-agent-pi-package/src/dsh/fenced-write.ts";
 import { randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import { executionError, publicExecutionEvent, RUN_TERMINAL } from "../../travel-agent-pi-package/src/host/execution-contract.ts";
@@ -99,6 +102,7 @@ export class ExecutionRepository {
         await client.query("BEGIN");
         await client.query("SELECT pg_advisory_xact_lock(715803125)");
         await client.query(EXECUTION_MIGRATION_SQL);
+        await client.query(OPERATION_RECEIPT_SQL);
         await client.query("ALTER TABLE travel_runs ADD COLUMN IF NOT EXISTS product_write_count INTEGER NOT NULL DEFAULT 0");
         await client.query("ALTER TABLE travel_runs ADD COLUMN IF NOT EXISTS trip_id TEXT");
         for (const [name, type] of Object.entries({ not_before: "BIGINT NOT NULL DEFAULT 0", expires_at: "BIGINT NOT NULL DEFAULT 0", wait_reason: "TEXT", continuation_json: "TEXT", queue_class: "TEXT NOT NULL DEFAULT 'continuation'" })) await client.query(`ALTER TABLE travel_runs ADD COLUMN IF NOT EXISTS ${name} ${type}`);
@@ -210,21 +214,23 @@ export class ExecutionRepository {
       if (sourceQuestionRun) {
         const result = sourceQuestionRun.result;
         result.question = { ...result.question, status: "answered", consumedByRunId: runId, answerHash };
-        await db.query("UPDATE travel_runs SET result_json=$2 WHERE run_id=$1", [sourceQuestionRun.runId, JSON.stringify(result)]);
+        await db.query("UPDATE travel_runs SET result_json=$2 WHERE run_id=$1", [sourceQuestionRun.runId, durableJson(result)]);
         await this.append(db, sourceQuestionRun.runId, { type: "question_answered", status: "awaiting_input" });
       }
       await db.query("INSERT INTO travel_run_events(run_id,seq,event_json) VALUES($1,1,$2)", [runId, JSON.stringify({ type: "run_queued", status: "queued", sequence: 1, at: now })]);
       return { run: record(row), duplicate: false };
     }, { admission: true });
   }
+  async databaseNow(db) { return this.mode === "postgres" ? Number((await db.query("SELECT (extract(epoch from clock_timestamp())*1000)::bigint AS now")).rows[0].now) : this.clock(); }
   async claim(options) { return (await this.claimMany({ ...options, count: 1 }))[0] ?? null; }
   async claimMany({ workerId, leaseMs, globalLimit, perUserLimit, count = 32, imagesOnly = false }) {
     return this.transaction(async (db) => {
-      const now = this.clock();
-      const expired = await db.query("SELECT run_id,status,fence,requires_image,product_write_count FROM travel_runs WHERE (status IN ('running','cancelling') AND lease_until<$1) OR (status='queued' AND expires_at<=$1) FOR UPDATE", [now]);
+      const now = await this.databaseNow(db);
+      const expired = await db.query("SELECT run_id,status,fence,requires_image,product_write_count,checkpoint_json FROM travel_runs WHERE (status IN ('running','cancelling') AND lease_until<$1) OR (status='queued' AND expires_at<=$1) FOR UPDATE", [now]);
       for (const row of expired.rows) {
         const unsafe = await db.query("SELECT 1 FROM travel_run_calls WHERE run_id=$1 AND tool_name NOT IN ('get_trip_control_view','get_trip_plan_view','calculate_trip_budget','read_analysis_context','read_analysis_evidence') LIMIT 1", [row.run_id]);
-        const recoverable = this.mode === "postgres" && row.status === "running" && Number(row.fence) === 1 && !row.requires_image && !Number(row.product_write_count) && !unsafe.rowCount;
+        const nativeCheckpoint = row.checkpoint_json && JSON.parse(row.checkpoint_json).schemaVersion === "travel-dsh-session-v1";
+        const recoverable = this.mode === "postgres" && row.status === "running" && Number(row.fence) < 7 && !row.requires_image && (nativeCheckpoint || (!Number(row.product_write_count) && !unsafe.rowCount));
         const status = recoverable ? "queued" : row.status === "cancelling" ? "cancelled" : "interrupted";
         await db.query("UPDATE travel_runs SET status=$2, fence=fence+1 WHERE run_id=$1", [row.run_id, status]);
         await this.append(db, row.run_id, { type: recoverable ? "run_recovering" : "run_interrupted", status, code: row.status === "queued" ? "execution_queue_timeout" : "worker_lease_expired" });
@@ -264,35 +270,35 @@ export class ExecutionRepository {
   async assertOwner(db, run) {
     const found = await db.query("SELECT status,worker_id,fence,lease_until FROM travel_runs WHERE run_id=$1 FOR UPDATE", [run.runId]);
     const row = found.rows[0];
-    if (!row || row.status !== "running" || row.worker_id !== run.workerId || Number(row.fence) !== run.fence || Number(row.lease_until) <= this.clock()) throw executionError("execution_ownership_lost");
+    if (!row || row.status !== "running" || row.worker_id !== run.workerId || Number(row.fence) !== run.fence || Number(row.lease_until) <= await this.databaseNow(db)) throw executionError("execution_ownership_lost");
   }
   async assertCurrent(run) { return this.transaction((db) => this.assertOwner(db, run)); }
   async heartbeat(run, leaseMs) {
-    return this.transaction(async (db) => { await this.assertOwner(db, run); await db.query("UPDATE travel_runs SET lease_until=$2 WHERE run_id=$1", [run.runId, this.clock() + leaseMs]); });
+    return this.transaction(async (db) => { await this.assertOwner(db, run); await db.query("UPDATE travel_runs SET lease_until=$2 WHERE run_id=$1", [run.runId, await this.databaseNow(db) + leaseMs]); });
   }
   async renewWorker(workerId, leaseMs) {
-    const now = this.clock();
+    const now = this.mode === "postgres" ? await this.databaseNow(this.pool) : this.clock();
     const result = await this.query("UPDATE travel_runs SET lease_until=$2 WHERE worker_id=$1 AND status='running' AND lease_until>$3 RETURNING run_id,fence", [workerId, now + leaseMs, now]);
     return new Map(result.rows.map((row) => [row.run_id, Number(row.fence)]));
   }
   async event(run, event) { return this.transaction(async (db) => { await this.assertOwner(db, run); return this.append(db, run.runId, event); }); }
   async checkpoint(run, checkpoint) {
-    const value = JSON.stringify(checkpoint);
+    const value = durableJson(checkpoint);
     if (value.length > 1_000_000) throw executionError("execution_context_too_large");
     return this.transaction(async (db) => { await this.assertOwner(db, run); await db.query("UPDATE travel_runs SET checkpoint_json=$2 WHERE run_id=$1", [run.runId, value]); });
   }
   async continuation(run, continuation) {
-    const value = JSON.stringify(continuation);
+    const value = durableJson(continuation);
     if (Buffer.byteLength(value) > 2_000_000) throw executionError("execution_context_too_large");
     return this.transaction(async db => { await this.assertOwner(db, run); await db.query("UPDATE travel_runs SET continuation_json=$2 WHERE run_id=$1", [run.runId, value]); });
   }
   async defer(run, { notBefore, waitReason, checkpoint, continuation }) {
     if (!Number.isFinite(notBefore) || !/^[a-z_]{1,60}$/.test(waitReason)) throw executionError("invalid_execution_defer");
-    const payload = JSON.stringify(continuation);
+    const payload = durableJson(continuation);
     if (Buffer.byteLength(payload) > 2_000_000) throw executionError("execution_context_too_large");
     return this.transaction(async db => {
       await this.assertOwner(db, run);
-      await db.query("UPDATE travel_runs SET status='queued',not_before=$2,wait_reason=$3,checkpoint_json=$4,continuation_json=$5,queue_class=$6,worker_id=NULL,lease_until=0,fence=fence+1 WHERE run_id=$1", [run.runId, notBefore, waitReason, checkpoint ? JSON.stringify(checkpoint) : null, payload, continuation?.turn?.hasPrompt ? "continuation" : "interactive"]);
+      await db.query("UPDATE travel_runs SET status='queued',not_before=$2,wait_reason=$3,checkpoint_json=$4,continuation_json=$5,queue_class=$6,worker_id=NULL,lease_until=0,fence=fence+1 WHERE run_id=$1", [run.runId, notBefore, waitReason, checkpoint ? durableJson(checkpoint) : null, payload, continuation?.turn?.hasPrompt ? "continuation" : "interactive"]);
       await this.append(db, run.runId, { type: "run_deferred", status: "queued", waitReason, notBefore });
     });
   }
@@ -402,7 +408,7 @@ export class ExecutionRepository {
       if (!current || RUN_TERMINAL.has(current.status) || current.workerId !== run.workerId || current.fence !== run.fence) return current;
       const next = current.status === "cancelling" ? "cancelled" : current.leaseUntil <= this.clock() ? "interrupted" : status;
       const safeResult = next === "cancelled" || next === "interrupted" ? null : result;
-      await db.query("UPDATE travel_runs SET status=$2,result_json=$3,lease_until=0 WHERE run_id=$1", [run.runId, next, safeResult ? JSON.stringify(safeResult) : null]);
+      await db.query("UPDATE travel_runs SET status=$2,result_json=$3,lease_until=0 WHERE run_id=$1", [run.runId, next, safeResult ? durableJson(safeResult) : null]);
       await this.append(db, run.runId, { type: "run_finished", status: next });
       return record((await db.query("SELECT * FROM travel_runs WHERE run_id=$1", [run.runId])).rows[0]);
     });

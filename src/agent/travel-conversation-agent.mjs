@@ -1,6 +1,7 @@
+import { containsGoogleContent } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { contentText, createModels, Type } from "@earendil-works/pi-ai";
-import { createTravelAgentSession } from "../../travel-agent-pi-package/src/host/travel-agent-session.ts";
+import { createDshTravelSession as createTravelAgentSession } from "./dsh-session.mjs";
 import { planningRouteEvidence, TRAVEL_DELIVERY_RULES } from "../../travel-agent-pi-package/src/host/travel-planning-delivery.ts";
 import { assertTravelExecutionCurrent, currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
 import { createTravelQuestion, questionFacts, nextPlanningQuestion, planningQuestionAction, budgetTradeoffQuestion, decideTravelAdvance, completePlanningRequested, selectPlanningContext, TravelExecutionDeferred } from "../../travel-agent-pi-package/src/host/travel-decision-policy.ts";
@@ -521,6 +522,7 @@ function inputHasSensitiveSecret(text) {
 function conversationView(record) {
   return {
     schemaVersion: "travel-conversation-view-v1",
+    usesGoogleMaps: record.usesGoogleMaps === true,
     conversationId: record.conversationId,
     tripId: record.tripId,
     modelId: record.modelId,
@@ -603,8 +605,10 @@ function tripBriefForPrompt(control) {
 }
 
 function parentSystemPrompt({ conversation, control, referenceTime, hasVisualInput = false, activeSkills = [], planningRunId = null, planningContext = null }) {
-  const referenceDate = new Date(referenceTime ?? Date.now()).toLocaleDateString("zh-CN", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" });
+  const referenceDate = new Date(referenceTime ?? Date.now()).toLocaleDateString("zh-CN", { timeZone: control?.brief?.timeZone ?? control?.brief?.destinationContext?.timeZone ?? "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" });
   return `你是用户正在交谈的旅行顾问。你的任务是理解整段对话，把零散想法持续整理成一趟旅行，并协调吃、住、行、玩之间的取舍。你不是问卷、关键词分类器或行程录入表单。
+
+全球旅行：目的地不受国家或城市限制。保存明确目的地的 ISO countryCode、IANA timeZone、用户报价/预算的 ISO currency；省略时保留已有值，不将预算强制转换为人民币。国家不明确或重名时先澄清；来源按每段目的地覆盖选择。Google 地点不等于酒店房态或机票库存；驾车路线不等于打车供给和价格。跨时区交通分别使用两端当地时间。来华准备事项只对中国大陆相关行程适用。
 
 今天是 ${referenceDate}。用户没有明确说年份时，不得凭模型记忆补写年份，也不得生成过去日期；把用户原本的“10月3日”“3月1日至3日”等无年份表达原样交给 save_trip_understanding，由旅行状态按今天推断最近一次未来日期。用户明确说出年份时才保留该年份。
 
@@ -668,7 +672,7 @@ ${TRAVEL_DELIVERY_RULES}
 }
 
 function itineraryPlanningSystemPrompt({ control, referenceTime, activeSkills, planningRunId, planningContext, planningDigest }) {
-  const referenceDate = new Date(referenceTime ?? Date.now()).toLocaleDateString("zh-CN", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" });
+  const referenceDate = new Date(referenceTime ?? Date.now()).toLocaleDateString("zh-CN", { timeZone: control?.brief?.timeZone ?? control?.brief?.destinationContext?.timeZone ?? "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" });
   return `你是 Travel Parent Agent，本轮只完成一件事：把当前候选与已确认事实组织成一份可撤销的按天路线试排，并用 plan_itinerary_trial 核验。今天是 ${referenceDate}。
 
 ${renderTravelSkillsForPrompt(activeSkills.filter((skill) => skill.skillId === "plan-trip"))}
@@ -852,6 +856,12 @@ export class TravelConversationAgent {
     if (!stored) throw agentError("conversation_not_found", { conversationId });
     if (stored.userId !== userId) throw agentError("conversation_access_denied", { conversationId });
     if (stored.deletedAt) throw agentError("conversation_not_found", { conversationId });
+    const assertTripAccess = async tripId => {
+      if (!tripId) return;
+      const state=await this.travelService.store.get(tripId);
+      if(state?.collaboration&&!state.collaboration.memberUserIds.includes(userId))throw agentError("trip_access_denied");
+    };
+    await assertTripAccess(stored.tripId);
     const selectedModelId = modelId || stored.modelId || DEFAULT_USER_MODEL_ID;
     if (!userModelOption(selectedModelId)) throw agentError("model_selection_unsupported", { modelId: selectedModelId });
     let conversation = { ...validateConversation(stored), modelId: selectedModelId };
@@ -1037,6 +1047,13 @@ export class TravelConversationAgent {
           language: Type.Optional(Type.String({ maxLength: 24 })),
           foreignGuestRequired: Type.Optional(Type.Boolean()),
           totalBudget: Type.Optional(Type.Number({ minimum: 0 })),
+          currency: Type.Optional(Type.String({ pattern: "^[A-Z]{3}$" })),
+          countryCode: Type.Optional(Type.String({ pattern: "^[A-Z]{2}$" })),
+          market: Type.Optional(Type.String({ pattern: "^[A-Z]{2}$", description: "用户所在购票市场，不是目的地国家；未知时询问，不能猜测。" })),
+          locale: Type.Optional(Type.String({ maxLength: 24 })),
+          party: Type.Optional(Type.Object({ adults: Type.Integer({ minimum: 1, maximum: 12 }), childrenAges: Type.Array(Type.Integer({ minimum: 0, maximum: 17 }), { maxItems: 12 }), rooms: Type.Optional(Type.Integer({ minimum: 1, maximum: 12 })) })),
+          carHire: Type.Optional(Type.Object({ pickUpAt: Type.String(), dropOffAt: Type.String(), driverAge: Type.Integer({ minimum: 21, maximum: 99 }), pickUpLocation: Type.Optional(Type.String()), dropOffLocation: Type.Optional(Type.String()) })),
+          timeZone: Type.Optional(Type.String({ maxLength: 100 })),
         }),
         executionMode: "sequential",
         execute: async (_toolCallId, params) => {
@@ -1046,6 +1063,7 @@ export class TravelConversationAgent {
             if (["save_only", "comparison"].includes(requestedWork)) planningPhase = false;
           }
           const brief = {
+            ...Object.fromEntries(["market", "locale", "party", "carHire"].filter(key => params[key] !== undefined).map(key => [key, params[key]])),
             ...(params.journeys !== undefined ? { journeys: params.journeys } : {}),
             ...(params.vehicle !== undefined ? { vehicle: params.vehicle } : {}),
             ...(params.destination !== undefined ? { destination: params.destination } : {}),
@@ -1063,7 +1081,9 @@ export class TravelConversationAgent {
             ...(params.lodgingPreference !== undefined ? { lodgingPreference: params.lodgingPreference } : {}),
             ...(params.foodPreferences !== undefined ? { foodPreferences: params.foodPreferences } : {}),
             ...(params.totalBudget !== undefined ? { totalBudget: params.totalBudget } : {}),
-            currency: "CNY",
+            ...(params.currency !== undefined ? { currency: params.currency } : {}),
+            ...(params.countryCode !== undefined ? { countryCode: params.countryCode } : {}),
+            ...(params.timeZone !== undefined ? { timeZone: params.timeZone } : {}),
           };
           if (!activeTripId) {
             if (!params.destination) return toolFailure("destination_required_before_saving_trip");
@@ -1094,6 +1114,18 @@ export class TravelConversationAgent {
             ...(params.travelerProfiles !== undefined ? { travelerProfiles: params.travelerProfiles } : {}),
           });
           return toolResult({ status: "updated", tripId: trip.tripId, understood: trip.brief, travelers: trip.travelers, preservedSelections: trip.nodes, preservedItinerary: trip.itinerary, routeStatus: trip.mobility?.status ?? "not_checked", routeNeedsRecheck: trip.nodes?.length > 0 && !trip.mobility?.feasibility?.canConfirm, message: trip.nodes?.length ? "已采用项目保留。要求变化可能使旧路线失效，请按 routeStatus 和 preservedItinerary 解释；保留项目不代表新要求已核验。仅改预算无需再次确认原安排。" : "当前没有已采用安排。" }, { status: "saved", tripId: trip.tripId });
+        },
+      },
+      {
+        name: "remember_travel_preference", label: "记住旅行偏好",
+        description: "Only save an explicitly stated long-term travel preference after the user enabled memory in this product. A per-trip exception is not a long-term preference. Quote the exact relevant words from this user message; inferred choices require confirmation in the preference view.",
+        parameters: Type.Object({text:Type.String({maxLength:400}),userExpression:Type.String({minLength:2,maxLength:400}),context:Type.Optional(Type.String({maxLength:200}))}),
+        execute:async(_callId,params)=>{
+          if(!this.travelService.continuity||!userId||!input.includes(params.userExpression))return toolFailure("explicit_preference_expression_required");
+          const p=await this.travelService.continuity.preferences(userId);
+          if(!p.enabled)return toolResult({status:"memory_disabled",message:"旅行偏好尚未开启。只用于本次旅行，不保存为长期偏好。"},{status:"memory_disabled"});
+          const saved=await this.travelService.continuity.changePreferences(userId,{revision:p.revision,text:params.text,context:params.context,origin:"explicit"});
+          return toolResult({status:"saved",preference:saved.items.at(-1)},{status:"saved"});
         },
       },
       {
@@ -1329,6 +1361,7 @@ export class TravelConversationAgent {
             researchCompletionText = `${analysisLeadText(digest.analysis)}${available.length ? `${available.join("、")}候选已经放入方案区。` : "本轮仍没有足够可靠的候选。"}${coverageText}${revisionText}${domainAvailabilityText(digest.domainStatuses)}你可以先比较，不会自动写入行程。`;
 
           }
+          if (containsGoogleContent(result)) conversation = { ...conversation, usesGoogleMaps: true };
           return toolResult(digest, { status: accountLimited ? "ACCOUNT_LIMITED" : result.status, capability: "linked_travel_research", tripId: activeTripId, proposalId: result.proposal?.proposalId ?? null });
         },
       },
@@ -1370,19 +1403,24 @@ export class TravelConversationAgent {
     if (embeddedPlanningDigest) systemPrompt += `\n当前可用规划上下文（只提供事实，不代表用户要求重排；按原话中的否定、范围和 requestedWork 决定操作）：${JSON.stringify(embeddedPlanningDigest)}`;
     if (planningPhase) systemPrompt = completePlanningSystemPrompt({ activeSkills, planningRunId, originalRequest: planningObjective });
     const native = await createTravelAgentSession({
+      pool: this.travelService.store?.pool, production: this.env.NODE_ENV === "production",
       conversationId, models, model, systemPrompt: () => `${systemPrompt}\nWhen one essential fact blocks useful work, use ask_travel_question if available; its question and choices are saved for the next turn. It never grants permission to commit or purchase.${continuationObjective ? `\n<original-objective>${JSON.stringify(continuationObjective)}</original-objective>\nThe current message answers the saved question. Save only changed facts, then continue this original objective automatically unless the user cancels or changes it. Read current candidates; research only missing or invalidated evidence. Do not end after saving the answer.` : ""}`,
       thinkingLevel: planningTurn || planningPhase ? "low" : configuration.thinkingLevel ?? (configuration.provider === "deepseek" ? "high" : "low"),
       checkpoint: execution?.checkpoint,
       isSensitive: inputHasSensitiveSecret,
       facts: async () => {
         if (!activeTripId) return { status: "trip_not_created", nextAction: "save_trip_understanding" };
+        await assertTripAccess(activeTripId);
         const facts = JSON.parse(tripBriefForPrompt(await this.travelService.getPlanningContext(activeTripId)));
-        return { ...facts, currentRequest: { originalObjective: continuationObjective ?? input, changeRequest: input, runId: execution?.runId ?? null },
+        const preferences = userId && this.travelService.continuity ? await this.travelService.continuity.preferences(userId) : null;
+        const receipts = currentTravelExecution()?.sessionPool ? await currentTravelExecution().sessionPool.query("SELECT operation_id,mutation_index,trip_id FROM travel_operation_receipts WHERE run_id=$1 ORDER BY created_at LIMIT 40", [execution.runId]) : null;
+        return { ...facts, travelPreferences: preferences?.enabled ? preferences.items.filter(p => p.confirmed) : [], preferenceInstruction: "Apply a saved preference only in its stated context. This trip's explicit exceptions take precedence and do not change long-term preferences. If recovering, read current state and receipts before any mutation. Completed operations must not be repeated.", committedOperations: receipts?.rows ?? [], currentRequest: { originalObjective: continuationObjective ?? input, changeRequest: input, runId: execution?.runId ?? null },
           executionProgress: { deadlineAt: execution?.deadlineAt ?? null, completedReadSteps: Object.entries(execution?.continuation?.steps ?? {}).map(([operationId, step]) => ({ operationId, hash: step.hash, expiresAt: step.expiresAt })), previousFailure: execution?.continuation?.pending ?? null } };
       },
       tools: activeTools.map((tool) => ({ ...tool, parameters: tool.parameters.properties ? { ...tool.parameters, additionalProperties: false } : tool.parameters, execute: async (callId, args, signal, onUpdate) => {
         execution?.signal.throwIfAborted();
         await assertTravelExecutionCurrent();
+        await assertTripAccess(activeTripId);
         if (inputHasSensitiveSecret(JSON.stringify(args))) throw agentError("sensitive_tool_input_blocked");
         await execution?.call({ callId, toolName: tool.name, argsHash: createHash("sha256").update(JSON.stringify(args)).digest("hex"), status: "running" });
         try {
@@ -1407,6 +1445,7 @@ export class TravelConversationAgent {
         }
       } })),
     });
+    await execution?.saveCheckpoint(native.checkpoint());
     const session = native.session;
     if (planningPhase) session.setActiveToolsByName(activeTools.map(tool => tool.name));
     const agent = session.agent;
@@ -1441,6 +1480,7 @@ export class TravelConversationAgent {
       if (event.type === "tool_execution_start") activities.push({ toolName: event.toolName, status: "running" });
       if (event.type === "tool_execution_end") {
         const current = activities.findLast((item) => item.toolName === event.toolName && item.status === "running");
+        if (!current && event.isError) activities.push({ toolName: event.toolName, status: "failed" });
         if (current) {
           current.status = event.isError ? "failed" : (event.result?.details?.status ?? "completed");
           if (event.result?.details?.attempt != null) current.attempt = event.result.details.attempt;
@@ -1608,7 +1648,7 @@ export class TravelConversationAgent {
       return { schemaVersion: "travel-conversation-turn-v1", status: "agent_failed", code: error?.code ?? "agent_turn_failed", conversation: conversationView(saved), activities };
     } finally {
       execution?.signal.removeEventListener("abort", cancel);
-      session.dispose();
+      await session.dispose();
     }
   }
 }

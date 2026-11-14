@@ -176,7 +176,7 @@ export class TravelExecutionService {
       continuationWrites = pending.catch(() => {});
       return pending;
     };
-    const context = { ...run, signal: controller.signal, assertCurrent: () => this.repository.assertCurrent(run), emit: (event) => this.repository.event(run, event),
+    const context = { ...run, sessionPool: this.repository.pool, signal: controller.signal, assertCurrent: () => this.repository.assertCurrent(run), emit: (event) => this.repository.event(run, event),
       deadlineAt, defer: null,
       retryAttempt: async (key, mark = false) => {
         continuation.retries ??= {};

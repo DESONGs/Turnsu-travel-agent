@@ -3,7 +3,8 @@ import { mkdir, open, readFile, readdir, rename, unlink } from "node:fs/promises
 import { join, resolve } from "node:path";
 import type { TripFeedbackRecord, TripState } from "../contracts/index.js";
 import { hydrateStoredTripState } from "./trip-state-hydration.js";
-import { assertTravelExecutionCurrent } from "../host/execution-context.js";
+import { assertTravelExecutionCurrent, currentTravelActor } from "../host/execution-context.js";
+import { workspaceRole } from "./workspace.js";
 
 const SAFE_ID = /^[A-Za-z0-9_.:-]{1,128}$/;
 
@@ -160,6 +161,8 @@ export class TripStore implements TripRepository {
     return this.withWriteQueue(tripId, async () => {
       const current = await this.get(tripId);
       if (!current) throw storageError("trip_not_found");
+      const actor = currentTravelActor();
+      if (actor && current.collaboration) { const role = workspaceRole(current, actor); if (!role || role === "viewer") throw storageError("trip_access_denied"); }
       if (current.storageVersion !== expectedStorageVersion) throw storageError("storage_conflict");
 
       const persisted = structuredClone(state);

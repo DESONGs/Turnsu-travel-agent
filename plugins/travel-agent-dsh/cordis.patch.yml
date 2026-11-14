@@ -1,0 +1,17 @@
+- insert:
+    - id: turnsu-travel-app
+      name: dsh-turnsu-travel-agent
+      config:
+        origin: __TRAVEL_PUBLIC_ORIGIN__
+    - id: turnsu-travel-agent
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: travel-agent
+        transport: streamable-http
+        url: __TRAVEL_MCP_URL__
+        expandTemplates: true
+        headers:
+          Authorization: 'Bearer ${credential:__TRAVEL_DSH_TOKEN_REF__}'
+        toolCallTimeoutMs: 60000
+        startupTimeoutMs: 20000
+        failOnStartupError: false

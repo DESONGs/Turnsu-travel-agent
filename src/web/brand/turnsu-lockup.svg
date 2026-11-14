@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="160 350 1200 320" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">turnsu</title>
+  <desc id="desc">A cat with a complete raised foreleg and small standing foot plays with the first t of the turnsu wordmark. All artwork is editable vector paths, with no fonts or embedded images.</desc>
+  <g id="cat-and-t" stroke="#FD7106" stroke-linecap="round" stroke-linejoin="round">
+    <path id="cat-contour" stroke-width="8.5" d="M360 464 C365 457 365 449 361 443 C353 435 343 428 330 427 L313 407 L305 434 L285 427 C289 447 294 465 300 477 C307 491 296 505 285 518 C268 537 259 552 259 568 C259 593 279 611 314 611 H239 C219 611 208 604 208 590 C208 579 215 571 224 571"/>
+    <path id="cat-raised-paw" stroke-width="8.5" d="M344 489 C366 483 381 466 393 447 C399 436 407 429 416 426"/>
+    <path id="cat-foreleg-and-foot" stroke-width="8.5" d="M414 446 C406 459 405 476 394 491 C384 506 372 516 362 528 C350 542 344 558 345 575 C345 584 343 590 341 595 C350 596 357 601 356 611 H334"/>
+    <path id="t-stem" stroke-width="14" d="M462 382 V556 C462 589 473 605 501 605 H512"/>
+    <path id="t-crossbar" stroke-width="14" d="M416 425 H512"/>
+  </g>
+  <g id="urnsu" stroke="#121211" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path id="u-first" d="M554 445 V534 C554 579 575 605 620.5 605 C666 605 687 579 687 534 V445"/>
+    <path id="r" d="M742 604 V510 C742 471 770 444 809 444 H816"/>
+    <path id="n" d="M850 604 V510 C850 467 870 444 914 444 C956 444 978 467 978 510 V604"/>
+    <path id="s" d="M1135 458 C1118 446 1101 442 1080 442 C1049 442 1033 457 1033 479 C1033 499 1048 505 1081 515 C1118 526 1145 536 1145 561 C1145 589 1126 605 1088 605 C1067 605 1046 599 1033 587"/>
+    <path id="u-last" d="M1194 445 V534 C1194 579 1215 605 1260.5 605 C1306 605 1327 579 1327 534 V445"/>
+  </g>
+</svg>

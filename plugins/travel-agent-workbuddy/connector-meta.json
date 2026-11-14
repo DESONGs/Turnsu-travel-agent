@@ -1,0 +1,19 @@
+{
+  "name": "旅行画布",
+  "name_zh": "旅行画布",
+  "name_en": "Travel Agent",
+  "description": "Plan and continue a shared trip across stays, transport, dining and experiences.",
+  "description_zh": "在同一份旅行中比较机酒、安排吃住行玩，核对每次修改，保存偏好并关注价格。",
+  "description_en": "Compare stays and transport, review itinerary changes, remember preferences and watch prices.",
+  "source": "turnsu-travel-agent",
+  "type": "mcp",
+  "version": "0.2.0",
+  "examples_zh": [
+    "打开我保存的旅行，继续比较酒店",
+    "换一家酒店，先核对对路线和预算的影响"
+  ],
+  "examples_en": [
+    "Open my saved trip and compare hotels.",
+    "Preview a hotel change and check routes and budget."
+  ]
+}

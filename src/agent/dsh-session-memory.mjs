@@ -1,0 +1,15 @@
+import { LiveSessionWrites } from "../../travel-agent-pi-package/src/dsh/live-session-writes.ts";
+import { SessionPersistence, SessionPersistenceRevision, SessionAlreadyExistsError, SessionPersistenceNotFoundError, SessionAlreadyOwnedError, SessionReadOnlyError, SessionHandleClosedError, assertVersion, assertContiguous, materializeCreateHeader, materializeAppendBatch, validateStoredEvents } from '@deepseek-ai/dsh-session-persistence';
+import { SessionLogOffset } from '@deepseek-ai/dsh-session';
+/** Explicit development-only native store. No filesystem or attachment persistence. */
+export function createMemorySessionPersistence(seed) {
+  return class extends SessionPersistence {
+    constructor(ctx){super(ctx);this.live=new LiveSessionWrites(ctx);this.rows=new Map();this.handles=new Set(); if(seed?.header)this.rows.set(seed.header.id,{header:materializeCreateHeader(seed.header),events:validateStoredEvents(seed.header,structuredClone(seed.events)),owned:false,inherited:seed.inherited??0});}
+    snapshotNative(id){const row=this.rows.get(id);if(!row)throw new SessionPersistenceNotFoundError(id);return {header:structuredClone(row.header),events:structuredClone(row.events),inherited:row.inherited};}
+    async create(header,options={}){options.signal?.throwIfAborted();assertVersion(header);if(this.rows.has(header.id))throw new SessionAlreadyExistsError(header.id);this.rows.set(header.id,{header:materializeCreateHeader(header),events:[],owned:false,inherited:Number(options.inheritedEventCount??0)});return this.open(header.id,'write');}
+    async open(id,access,options={}){options.signal?.throwIfAborted();const row=this.rows.get(id);if(!row)throw new SessionPersistenceNotFoundError(id);if(access==='write'&&row.owned)throw new SessionAlreadyOwnedError(id);if(access==='write')row.owned=true;let closed=false;const check=(op,write=false)=>{if(closed)throw new SessionHandleClosedError(id,op);if(write&&access!=='write')throw new SessionReadOnlyError(id,op)};const h={id,header:row.header,access,inheritedEventCount:SessionLogOffset(row.inherited),read:async(offset=0,length=Number.MAX_SAFE_INTEGER)=>{check('read');return{eventState:'detached',events:structuredClone(row.events.slice(offset,offset+length))}},append:async events=>{check('append',true);const batch=materializeAppendBatch(events);assertContiguous(id,batch,row.events.length);row.events.push(...batch)},flush:async()=>check('flush',true),close:async()=>{if(closed)return;closed=true;if(access==='write')row.owned=false;this.handles.delete(h)},[Symbol.asyncDispose]:async()=>h.close()};this.handles.add(h);return this.live.attach(h);}
+    async flush(){await Promise.all([...this.handles].filter(h=>h.access==='write').map(h=>h.flush()))}
+    async stat(id){const r=this.rows.get(id);return r?{header:structuredClone(r.header),eventCount:r.events.length,revision:SessionPersistenceRevision(`${id}:${r.events.length}`)}:undefined}
+    async list(){return Promise.all([...this.rows.keys()].map(id=>this.stat(id)))}
+  };
+}

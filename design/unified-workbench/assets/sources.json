@@ -1,0 +1,31 @@
+{
+  "usage": "Design reference only; original photos kept unchanged. Not a booking, live condition or current-travel verification.",
+  "assets": [
+    {
+      "file": "kiyomizu.jpg",
+      "original": "Kiyomizu-dera_panorama.jpg",
+      "title": "Kiyomizu-dera panorama",
+      "creator": "lumoplank",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Kiyomizu-dera_panorama.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Kiyomizu-dera_panorama.jpg/1280px-Kiyomizu-dera_panorama.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+      "sha256": "7a0abc3da6cbe87a0de39ec88a48663d25d4683b4b9d281e4652dea81b6ac84d",
+      "bytes": 244552,
+      "retrievedAt": "2026-11-11"
+    },
+    {
+      "file": "kyoto-museum.jpg",
+      "original": "Kyoto National Museum (2020) - img 01.jpg",
+      "title": "Kyoto National Museum (2020) - img 01",
+      "creator": "Chainwit.",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Kyoto_National_Museum_(2020)_-_img_01.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Kyoto_National_Museum_%282020%29_-_img_01.jpg/1280px-Kyoto_National_Museum_%282020%29_-_img_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+      "sha256": "d13691cc4616ebc5fcd476664a886e1e3bd69218a707f8db5c70791ea93bc411",
+      "bytes": 381593,
+      "retrievedAt": "2026-11-11"
+    }
+  ]
+}

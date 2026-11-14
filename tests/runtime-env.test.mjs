@@ -121,3 +121,8 @@ test("visual helper options use the provider-supported reasoning mode", () => {
   assert.equal(Object.hasOwn(visualCompletionOptions("kimi-k3", { maxTokens: 1200 }), "onPayload"), false);
   assert.equal(visualCompletionOptions("deepseek-v4-flash-vision-exp", { maxTokens: 1200, reasoning: "low" }).reasoning, "high");
 });
+
+test('hosted MCP, global providers and alert email settings survive the explicit env-file loader',()=>{
+ const values=parseTravelEnvFile('TRAVEL_AGENT_MCP_PORT=8798\nTRAVEL_AGENT_MCP_REDIRECT_URIS=https://host.example/callback\nTRAVEL_AGENT_GOOGLE_MAPS_ENABLED=false\nTRAVEL_NOTIFICATION_EMAIL_KEY=fixture-mail-key\nTRAVEL_NOTIFICATION_EMAIL_FROM=Travel <alerts@example.test>\nUNREGISTERED_PROVIDER_SECRET=ignored');
+ assert.equal(values.TRAVEL_AGENT_MCP_PORT,'8798');assert.equal(values.TRAVEL_AGENT_MCP_REDIRECT_URIS,'https://host.example/callback');assert.equal(values.TRAVEL_AGENT_GOOGLE_MAPS_ENABLED,'false');assert.equal(values.TRAVEL_NOTIFICATION_EMAIL_KEY,'fixture-mail-key');assert.equal(values.TRAVEL_NOTIFICATION_EMAIL_FROM,'Travel <alerts@example.test>');assert.equal(values.UNREGISTERED_PROVIDER_SECRET,undefined);
+});

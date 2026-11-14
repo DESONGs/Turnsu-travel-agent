@@ -1,3 +1,4 @@
+import { googleSafeConversation } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { Pool } from "pg";
 import { executionWrite } from "./execution-write.mjs";
 import { validateConversation } from "./conversation-repository.mjs";
@@ -28,7 +29,7 @@ export class PostgresConversationRepository {
     try {
       await this.pool.query(
         "INSERT INTO travel_conversations (conversation_id, user_id, trip_id, storage_version, record_json) VALUES ($1, $2, $3, $4, $5::jsonb)",
-        [persisted.conversationId, persisted.userId, persisted.tripId, persisted.storageVersion, JSON.stringify(persisted)],
+        [persisted.conversationId, persisted.userId, persisted.tripId, persisted.storageVersion, JSON.stringify(googleSafeConversation(persisted))],
       );
       return persisted;
     } catch (error) {
@@ -38,11 +39,13 @@ export class PostgresConversationRepository {
   }
 
   async get(conversationId) {
+    await this.migrate();
     const result = await this.pool.query("SELECT record_json FROM travel_conversations WHERE conversation_id = $1", [conversationId]);
     return result.rowCount ? validateConversation(result.rows[0].record_json, conversationId) : null;
   }
 
   async listByUser(userId, { includeDeleted = false } = {}) {
+    await this.migrate();
     const result = await this.pool.query("SELECT record_json FROM travel_conversations WHERE user_id = $1 ORDER BY updated_at DESC", [userId]);
     return result.rows.map((row) => validateConversation(row.record_json)).filter((record) => includeDeleted || record.deletedAt === null);
   }
@@ -55,7 +58,7 @@ export class PostgresConversationRepository {
       `UPDATE travel_conversations
        SET user_id = $3, trip_id = $4, storage_version = $5, record_json = $6::jsonb, updated_at = now()
        WHERE conversation_id = $1 AND storage_version = $2`,
-      [persisted.conversationId, expectedStorageVersion, persisted.userId, persisted.tripId, nextVersion, JSON.stringify(persisted)],
+      [persisted.conversationId, expectedStorageVersion, persisted.userId, persisted.tripId, nextVersion, JSON.stringify(googleSafeConversation(persisted))],
     ));
     if (!result.rowCount) {
       const exists = await this.pool.query("SELECT 1 FROM travel_conversations WHERE conversation_id = $1", [persisted.conversationId]);

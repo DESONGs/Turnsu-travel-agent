@@ -1,3 +1,5 @@
+import { withGoogleReferences } from "../persistence/google-reference-trip-repository.mjs";
+import { EcbExchangeRates } from "../providers/exchange-rates.mjs";
 import { createTripRepository } from "../persistence/trip-repository.mjs";
 import { createTravelResearchProvider } from "../providers/travel-research-provider.mjs";
 import { createTravelAnalysisFanout } from "../agent/travel-analysis-fanout.mjs";
@@ -18,7 +20,7 @@ export function workflowExecutionPolicy(env = process.env) {
     coordinatorRequested,
     coordinatorSupported: leased,
     semanticFanoutEnabled: singleProcess || leased,
-    backgroundResumeSupported: leased ? "read_only_once" : false,
+    backgroundResumeSupported: leased ? "native_checkpoint_fenced" : false,
     crossInstanceSteerSupported: false,
     status: singleProcess || leased ? "enabled" : "blocked_multi_instance_without_coordinator",
   };
@@ -59,7 +61,7 @@ export function createTravelService(env = process.env, options = {}) {
     return selectedFanout(input);
   } : selectedFanout;
   const service = new TravelService({
-    store,
+    store: withGoogleReferences(store, researchProvider?.google),
     researchProvider,
     clock: options.clock,
     analysisFanout,
@@ -67,6 +69,7 @@ export function createTravelService(env = process.env, options = {}) {
     planningRunCoordinator,
     analysisDegradedReason: executionPolicy.semanticFanoutEnabled ? null : executionPolicy.status,
   });
+  service.exchangeRateProvider = options.exchangeRateProvider ?? new EcbExchangeRates(options.exchangeRateOptions);
   service.workflowExecution = executionPolicy;
   service.judgment = judgment;
   return service;

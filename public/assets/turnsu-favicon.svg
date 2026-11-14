@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="184 319 352 352"><title>turnsu</title><rect x="184" y="319" width="352" height="352" rx="76" fill="#FD7106"/><g fill="none"><g id="cat-and-t" stroke="#17100A" stroke-linecap="round" stroke-linejoin="round">
+    <path id="cat-contour" stroke-width="8.5" d="M360 464 C365 457 365 449 361 443 C353 435 343 428 330 427 L313 407 L305 434 L285 427 C289 447 294 465 300 477 C307 491 296 505 285 518 C268 537 259 552 259 568 C259 593 279 611 314 611 H239 C219 611 208 604 208 590 C208 579 215 571 224 571"/>
+    <path id="cat-raised-paw" stroke-width="8.5" d="M344 489 C366 483 381 466 393 447 C399 436 407 429 416 426"/>
+    <path id="cat-foreleg-and-foot" stroke-width="8.5" d="M414 446 C406 459 405 476 394 491 C384 506 372 516 362 528 C350 542 344 558 345 575 C345 584 343 590 341 595 C350 596 357 601 356 611 H334"/>
+    <path id="t-stem" stroke-width="14" d="M462 382 V556 C462 589 473 605 501 605 H512"/>
+    <path id="t-crossbar" stroke-width="14" d="M416 425 H512"/>
+  </g></g></svg>

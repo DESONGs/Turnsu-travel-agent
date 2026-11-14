@@ -3,14 +3,15 @@ import { loadTravelRuntimeEnv } from "./runtime-env.mjs";
 
 const runtimeEnv = await loadTravelRuntimeEnv();
 const port = Number(runtimeEnv.PORT ?? 8797);
+const bindHost = runtimeEnv.TRAVEL_AGENT_BIND_HOST ?? "127.0.0.1";
 const app = createHttpApp({
   runtimeEnv,
   developmentAuthEnabled: runtimeEnv.NODE_ENV !== "production" && runtimeEnv.TRAVEL_AGENT_ALLOW_DEVELOPMENT_AUTH === "true",
   allowedOrigins: new Set(String(runtimeEnv.TRAVEL_AGENT_CORS_ORIGINS ?? "").split(",").map((origin) => origin.trim()).filter(Boolean)),
 });
 
-const server = app.listen(port, "127.0.0.1", () => {
-  process.stdout.write(`Travel Agent API listening on http://127.0.0.1:${port}\n`);
+const server = app.listen(port, bindHost, () => {
+  process.stdout.write(`Travel Agent API listening on http://${bindHost}:${port}\n`);
 });
 
 // Keep the CLI entrypoint attached to the listening socket even when an optional

@@ -1,0 +1,41 @@
+services:
+  api:
+    build: .
+    command: npm run api
+    env_file: env_travel.local
+    environment:
+      NODE_ENV: production
+      TRAVEL_AGENT_BIND_HOST: 0.0.0.0
+      TRAVEL_AGENT_EXECUTION_ROLE: api
+      TRAVEL_AGENT_WORKFLOW_EXECUTION_MODE: postgres_run
+      DATABASE_URL: postgresql://travel_agent:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/travel_agent
+    ports: ["127.0.0.1:8797:8797"]
+    volumes: ["travel-agent-runtime:/app/runtime-data"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+  worker:
+    build: .
+    command: npm run worker
+    env_file: env_travel.local
+    environment:
+      NODE_ENV: production
+      TRAVEL_AGENT_WORKFLOW_EXECUTION_MODE: postgres_run
+      DATABASE_URL: postgresql://travel_agent:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/travel_agent
+    volumes: ["travel-agent-runtime:/app/runtime-data"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+  mcp:
+    build: .
+    command: npm run mcp:serve
+    env_file: env_travel.local
+    environment:
+      NODE_ENV: production
+      TRAVEL_AGENT_BIND_HOST: 0.0.0.0
+      TRAVEL_AGENT_BACKEND_ORIGIN: http://api:8797
+    ports: ["127.0.0.1:8798:8798"]
+    depends_on: [api]
+    restart: unless-stopped
+volumes:
+  travel-agent-runtime:

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { runWorkflow } from "@quintinshaw/pi-dynamic-workflows";
 import { contentText, createModels, Type } from "@earendil-works/pi-ai";
-import { createTravelAgentSession } from "../../travel-agent-pi-package/src/host/travel-agent-session.ts";
+import { createDshTravelSession as createTravelAgentSession } from "./dsh-session.mjs";
 import { analysisAssignment, analysisContentIssue, acceptAnalysisHandoff } from "../../travel-agent-pi-package/src/host/analysis-handoff.ts";
 import { emitTravelExecution, currentTravelExecution } from "../../travel-agent-pi-package/src/host/execution-context.ts";
 import { TravelExecutionDeferred } from "../../travel-agent-pi-package/src/host/travel-decision-policy.ts";
@@ -257,16 +257,12 @@ export async function createTravelAnalysisAgentRunner(env = process.env, options
           const outputTemplate = '{"schemaVersion":"travel-analysis-lane-v1","analysisId":"copy from input","lane":"copy from input","findings":[{"findingId":"stable_id","summary":"supported finding","reasonCode":"reason_code","candidateIds":[],"evidenceRefs":[]}],"recommendedCandidateIds":[],"rejectedCandidateIds":[],"reasonCodes":[],"unknowns":[],"needsContext":[],"evidenceRefs":[],"skillId":"copy active skill","skillVersion":"copy active version"}';
           native = await createTravelAgentSession({ conversationId: `child_${input?.runId ?? randomUUID()}_${task?.lane ?? "analysis"}`, models, model,
             systemPrompt: `You are a bounded read-only Travel Agent child. Inspect only assigned context using the available tools. Do not delegate or commit. Finish with one compact JSON object: ${outputTemplate}`,
-            thinkingLevel: "off", tools, isSensitive: (text) => /(?:cookie|authorization|password|api[_ -]?key)\s*[:=]/i.test(text),
+            thinkingLevel: "off", maxModelCalls: 4, tools, isSensitive: (text) => /(?:cookie|authorization|password|api[_ -]?key)\s*[:=]/i.test(text),
           });
           const session = native.session;
           let modelCalls = 0;
           let toolCalls = 0;
-          session.agent.toolExecution = "parallel";
-          session.agent.streamFunction = (selected, context, settings) => {
-            if (++modelCalls > 4) throw new Error("analysis_model_budget_exhausted");
-            return streamTravelModel(models, selected, context, visualCompletionOptions(selected.id, { ...settings, reasoning: "minimal", maxTokens: 2200, maxRetries: 0 }));
-          };
+          session.subscribe(event => { if(event.type === "turn_start") modelCalls += 1; });
           const toolHook = session.agent.beforeToolCall;
           session.agent.beforeToolCall = async (event) => {
             if (++toolCalls > 4) return { block: true, reason: "analysis_tool_budget_exhausted", terminate: true };
@@ -300,7 +296,7 @@ export async function createTravelAnalysisAgentRunner(env = process.env, options
           if (waiting) throw new TravelExecutionDeferred(waiting.notBefore, waiting.waitReason);
           lastError = error; if (runOptions.signal?.aborted || error?.code === "analysis_context_stale") throw error;
         }
-        finally { native?.session.dispose(); }
+        finally { await native?.session.dispose(); }
       }
       throw lastError ?? Object.assign(new Error("travel_analysis_model_unavailable"), { code: "travel_analysis_model_unavailable" });
     },

@@ -1,3 +1,4 @@
+import { localDateTime, zonedIso, destinationContext } from "./global-travel.js";
 import { createHash } from "node:crypto";
 import {
   TripFeasibilitySchema,
@@ -7,6 +8,7 @@ import {
   type ItineraryPlan,
   type MobilityObservation,
   type TripBrief,
+  type DecisionNodeInput,
   type ItineraryStopRole,
   type ItineraryPlanMode,
 } from "../contracts/index.js";
@@ -19,6 +21,7 @@ type ScheduleNode = {
   time?: string | null;
   selected?: boolean;
   operability?: Record<string, unknown>;
+  location?: Exclude<DecisionNodeInput["location"], undefined>;
 };
 
 type ItineraryRole = ItineraryStopRole;
@@ -28,6 +31,7 @@ type TimeSource = "provider_schedule" | "user_confirmed" | "agent_suggested" | "
 export interface ItineraryStopValue {
   stopId: string;
   mealPurpose?: string;
+  timeZone?: string;
   nodeId: string;
   domain: ItineraryDomain;
   title: string;
@@ -102,34 +106,24 @@ function objectValue(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
 
-function normalizedDateTime(value: unknown, fallbackDate: string | null): string | null {
-  const raw = String(value ?? "").trim();
-  if (!raw) return null;
-  const full = raw.match(/^(20\d{2}-\d{2}-\d{2})[ T](\d{1,2}:\d{2})(?::\d{2})?(?:([+-]\d{2}:?\d{2}|Z))?/);
-  if (full) {
-    const zone = full[3] ? (full[3] === "Z" ? "Z" : full[3].includes(":") ? full[3] : `${full[3].slice(0, 3)}:${full[3].slice(3)}`) : "+08:00";
-    return `${full[1]}T${full[2]!.padStart(5, "0")}:00${zone}`;
-  }
-  const time = raw.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
-  return time && fallbackDate ? `${fallbackDate}T${time[1]!.padStart(2, "0")}:${time[2]}:00+08:00` : null;
+function normalizedDateTime(value: unknown, fallbackDate: string | null, timeZone = "Asia/Shanghai"): string | null {
+  return localDateTime(value, fallbackDate, timeZone);
+}
+function zoneFor(brief: TripBrief, node?: ScheduleNode): string | null {
+  const context = destinationContext(brief);
+  return String(node?.operability?.timeZone ?? objectValue(node?.location).timeZone ?? context.timeZone ?? (!context.countryCode || context.countryCode === "CN" ? "Asia/Shanghai" : "")) || null;
 }
 
 function addMinutes(value: string, minutes: number): string {
   return new Date(new Date(value).getTime() + minutes * 60_000).toISOString().replace(".000Z", "+00:00");
 }
 
-function localIso(value: string): string {
-  const date = new Date(value);
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
-  });
-  const parts = Object.fromEntries(formatter.formatToParts(date).map((part) => [part.type, part.value]));
-  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}+08:00`;
-}
-
-function shifted(value: string, minutes: number): string {
-  return localIso(new Date(new Date(value).getTime() + minutes * 60_000).toISOString());
+function shifted(value: string, minutes: number, timeZone?: string): string {
+  const instant = new Date(value).getTime() + minutes * 60_000;
+  if (timeZone) return zonedIso(instant, timeZone);
+  const match = value.match(/([+-])(\d{2}):(\d{2})$/);
+  const offset = match ? (match[1] === "-" ? -1 : 1) * (Number(match[2]) * 60 + Number(match[3])) : 0;
+  return new Date(instant + offset * 60_000).toISOString().slice(0, 19) + (match?.[0] ?? "+00:00");
 }
 
 function stopId(nodeId: string, dayIndex: number, role: string): string {
@@ -187,6 +181,7 @@ function roleMatchesDomain(role: ItineraryRole, domain: ItineraryDomain): boolea
 export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief, nodes: ScheduleNode[]): ItineraryDraftResult {
   const plan = assertSchema(ItineraryPlanSchema, planInput, "invalid_itinerary_plan") as ItineraryPlan;
   const dates = tripDates(brief.dates);
+  if (!zoneFor(brief)) return { itinerary: null, feasibility: needsContext("The destination time zone is required before scheduling.") };
   if (!dates.length) return { itinerary: null, feasibility: needsContext("先补充具体旅行日期，才能核验每天的时间顺序。") };
   const byNodeId = new Map(nodes.map((node) => [node.nodeId, node]));
   const issues: FeasibilityIssueValue[] = plan.needsContext.slice(0, 6).map((item) => ({ code: "planner_context_note", severity: "warning", message: item, stopIds: [], dayIndex: null, allowedRepairDirections: ["request_context"] }));
@@ -219,12 +214,16 @@ export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief,
         continue;
       }
       const transport = transportStopWindow(node, plannedRole, planned.durationMinutes);
-      const startAt = transport?.startAt ?? planned.timeWindow.startAt ?? null;
-      const endAt = transport?.endAt ?? planned.timeWindow.endAt ?? (startAt ? shifted(startAt, planned.durationMinutes) : null);
+      const endpoint = objectValue(node.operability?.[planned.role === "transport_departure" ? "departurePlace" : "arrivalPlace"]);
+      const endpointZone = node.operability?.[planned.role === "transport_departure" ? "departureTimeZone" : "arrivalTimeZone"] ?? endpoint.timeZone;
+      const zone = typeof endpointZone === "string" ? endpointZone : zoneFor(brief, node);
+      const startAt = zone ? normalizedDateTime(transport?.startAt ?? planned.timeWindow.startAt, day.date, zone) : null;
+      const endAt = zone ? normalizedDateTime(transport?.endAt ?? planned.timeWindow.endAt, day.date, zone) ?? (startAt ? shifted(startAt, planned.durationMinutes, zone) : null) : null;
       const visitKey = `${planned.nodeId}:${day.dayIndex}:${plannedRole}`;
       const visitIndex = visits.get(visitKey) ?? 0;
       visits.set(visitKey, visitIndex + 1);
       const stop = makeStop({
+        ...(zone ? { timeZone: zone } : {}),
         nodeId: planned.nodeId,
         domain: node.domain,
         title: String(node.title ?? node.nodeId).slice(0, 200),
@@ -290,47 +289,49 @@ export function itineraryPlanToDraft(planInput: ItineraryPlan, brief: TripBrief,
   return { itinerary, feasibility: needsContext("路线完成后才能确认这份按天安排。") };
 }
 
-function primarySchedule(node: ScheduleNode, dates: string[]) {
+function primarySchedule(node: ScheduleNode, dates: string[], timeZone = "Asia/Shanghai") {
   const operability = objectValue(node.operability);
   const planningWindow = objectValue(operability.planningWindow);
   const firstDate = dates[0]!;
   if (node.domain === "transport" && ["intercity_inventory", "user_confirmed_arrival"].includes(String(operability.mobilityRole ?? ""))) {
     const userAnchor = objectValue(operability.arrivalRouteAnchor);
-    const arrivalAt = normalizedDateTime(operability.arrivalAt ?? planningWindow.endAt ?? userAnchor.time ?? node.time, firstDate);
+    const arrivalAt = normalizedDateTime(operability.arrivalAt ?? planningWindow.endAt ?? userAnchor.time ?? node.time, firstDate, String(operability.arrivalTimeZone ?? objectValue(operability.arrivalPlace).timeZone ?? timeZone));
     if (!arrivalAt) return null;
     const arrivalPlace = objectValue(operability.arrivalPlace);
     const title = String(userAnchor.label ?? arrivalPlace.label ?? node.title ?? "抵达点").slice(0, 200);
     const date = datePart(arrivalAt, firstDate);
     return makeStop({
-      nodeId: node.nodeId, domain: node.domain, title, dayIndex: dayIndexFor(date, dates), date,
+      timeZone, nodeId: node.nodeId, domain: node.domain, title, dayIndex: dayIndexFor(date, dates), date,
       role: "intercity_arrival", startAt: arrivalAt, endAt: arrivalAt,
       timeSource: operability.mobilityRole === "user_confirmed_arrival" ? "user_confirmed" : "provider_schedule", fixed: true,
     });
   }
-  const startAt = normalizedDateTime(planningWindow.startAt ?? node.time, node.domain === "play" ? dates[1] ?? firstDate : firstDate);
-  const endAt = normalizedDateTime(planningWindow.endAt, datePart(startAt, node.domain === "play" ? dates[1] ?? firstDate : firstDate))
-    ?? (startAt ? shifted(startAt, node.domain === "stay" ? 30 : node.domain === "food" ? 90 : 120) : null);
+  const startAt = normalizedDateTime(planningWindow.startAt ?? node.time, node.domain === "play" ? dates[1] ?? firstDate : firstDate, timeZone);
+  const endAt = normalizedDateTime(planningWindow.endAt, datePart(startAt, node.domain === "play" ? dates[1] ?? firstDate : firstDate), timeZone)
+    ?? (startAt ? shifted(startAt, node.domain === "stay" ? 30 : node.domain === "food" ? 90 : 120, timeZone) : null);
   const date = datePart(startAt, node.domain === "play" ? dates[1] ?? firstDate : firstDate);
   const role = node.domain === "stay" ? "stay_check_in" : node.domain === "food" ? "meal" : node.domain === "play" ? "activity" : "local_transport";
   // `openToday` is tied to the Provider query date, not a future trip date. Only a
   // reusable weekly schedule may constrain a future itinerary.
   const openingHours = String(operability.openWeek ?? "").trim().slice(0, 300) || null;
   return makeStop({
-    nodeId: node.nodeId, domain: node.domain, title: String(node.title ?? node.nodeId).slice(0, 200), dayIndex: dayIndexFor(date, dates), date,
+    timeZone, nodeId: node.nodeId, domain: node.domain, title: String(node.title ?? node.nodeId).slice(0, 200), dayIndex: dayIndexFor(date, dates), date,
     role, startAt, endAt, timeSource: "agent_suggested", fixed: false, openingHours,
   });
 }
 
 function preferredLocalWindow(stop: ItineraryStopValue, date: string): { startAt: string; endAt: string } {
-  const startAt = `${date}T${stop.role === "meal" ? "12:30" : "10:00"}:00+08:00`;
-  return { startAt, endAt: shifted(startAt, stop.role === "meal" ? 90 : 120) };
+  const offset = stop.startAt?.match(/(?:Z|[+-]\d{2}:\d{2})$/)?.[0] ?? "+00:00";
+  const startAt = stop.timeZone ? normalizedDateTime(stop.role === "meal" ? "12:30" : "10:00", date, stop.timeZone)! : `${date}T${stop.role === "meal" ? "12:30" : "10:00"}:00${offset}`;
+  return { startAt, endAt: shifted(startAt, stop.role === "meal" ? 90 : 120, stop.timeZone) };
 }
 
 export function buildItineraryDraft(brief: TripBrief, nodes: ScheduleNode[]): ItineraryDraftResult {
   const dates = tripDates(brief.dates);
+  if (!zoneFor(brief)) return { itinerary: null, feasibility: needsContext("The destination time zone is required before scheduling.") };
   if (!dates.length) return { itinerary: null, feasibility: needsContext("先补充具体旅行日期，才能核验每天的时间顺序。") };
   const selected = nodes.filter((node) => node.selected !== false);
-  const baseStops = selected.map((node) => primarySchedule(node, dates)).filter((stop): stop is ItineraryStopValue => Boolean(stop));
+  const baseStops = selected.map((node) => primarySchedule(node, dates, zoneFor(brief, node) ?? "")).filter((stop): stop is ItineraryStopValue => Boolean(stop));
   if (baseStops.length < 2) return { itinerary: null, feasibility: needsContext("至少试排两个可定位环节，才能核验路线是否可执行。") };
   const arrival = baseStops.find((stop) => stop.role === "intercity_arrival") ?? null;
   const stay = baseStops.find((stop) => stop.role === "stay_check_in") ?? null;
@@ -366,7 +367,7 @@ export function buildItineraryDraft(brief: TripBrief, nodes: ScheduleNode[]): It
     if (dayArrival) stops.push(dayArrival);
     if (dayStay) stops.push(dayStay);
     if (stay && dayIndex > 1 && dayLocal.length) {
-      const firstStart = dayLocal[0]?.startAt ?? `${date}T10:00:00+08:00`;
+      const firstStart = dayLocal[0]?.startAt ?? normalizedDateTime("10:00", date, zoneFor(brief)!)!;
       stops.push(makeStop({
         nodeId: stay.nodeId, domain: "stay", title: stay.title, dayIndex, date, role: "stay_departure",
         startAt: shifted(firstStart, -60), endAt: shifted(firstStart, -55), timeSource: "derived_route", fixed: false,
@@ -375,7 +376,7 @@ export function buildItineraryDraft(brief: TripBrief, nodes: ScheduleNode[]): It
     stops.push(...dayLocal);
     if (stay && dayLocal.length) {
       const last = dayLocal.at(-1)!;
-      const startAt = last.endAt ? shifted(last.endAt, 60) : `${date}T20:00:00+08:00`;
+      const startAt = last.endAt ? shifted(last.endAt, 60) : normalizedDateTime("20:00", date, zoneFor(brief)!)!;
       stops.push(makeStop({
         nodeId: stay.nodeId, domain: "stay", title: stay.title, dayIndex, date, role: "stay_return",
         startAt, endAt: shifted(startAt, 15), timeSource: "derived_route", fixed: false,
@@ -442,11 +443,11 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
       continue;
     }
     if (!previous.endAt) continue;
-    const earliest = shifted(previous.endAt, minutes);
+    const earliest = shifted(previous.endAt, minutes, current.timeZone);
     if (!current.startAt) {
       if (!current.fixed && !preserveSchedule) {
         current.startAt = earliest;
-        current.endAt = shifted(earliest, current.role === "meal" ? 90 : current.role === "activity" ? 120 : 30);
+        current.endAt = shifted(earliest, current.role === "meal" ? 90 : current.role === "activity" ? 120 : 30, current.timeZone);
       }
       continue;
     }
@@ -458,7 +459,7 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
     }
     const duration = current.endAt ? Math.max(0, Math.round((new Date(current.endAt).getTime() - new Date(current.startAt).getTime()) / 60_000)) : 30;
     current.startAt = earliest;
-    current.endAt = shifted(earliest, duration);
+    current.endAt = shifted(earliest, duration, current.timeZone);
     const newDate = datePart(current.startAt, current.date);
     const newIndex = itinerary.tripDates.indexOf(newDate);
     if (newIndex < 0) {
@@ -489,7 +490,7 @@ export function finalizeItinerarySchedule(draft: ItineraryDraftResult, mobility:
       issues.push({ code: "opening_hours_not_verified", severity: "warning", message: `${stop.title}的对应日期营业时间仍待核验。`, stopIds: [stop.stopId], dayIndex: stop.dayIndex });
       continue;
     }
-    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Shanghai", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(stop.startAt));
+    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: stop.timeZone ?? "Asia/Shanghai", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(stop.startAt));
     const currentMinutes = Number(parts.find((part) => part.type === "hour")?.value ?? 0) * 60 + Number(parts.find((part) => part.type === "minute")?.value ?? 0);
     const insideAnyWindow = intervals.some((interval) => {
       const opens = Number(interval[1]) * 60 + Number(interval[2]);

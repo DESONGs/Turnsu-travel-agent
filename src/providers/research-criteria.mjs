@@ -1,3 +1,4 @@
+import { destinationContext } from "../../travel-agent-pi-package/src/core/global-travel.ts";
 import { createHash } from "node:crypto";
 import {
   TravelResearchCriteriaSchema,
@@ -163,7 +164,11 @@ export function buildTravelResearchCriteria({ brief = {}, travelers = [], questi
     destination,
     dates: safeText(brief.dates) || null,
     partySize: travelers.length || null,
-    budgetCny: Number.isFinite(brief.totalBudget) ? Number(brief.totalBudget) : null,
+    budgetCny: (!brief.currency || brief.currency === "CNY") && Number.isFinite(brief.totalBudget) ? Number(brief.totalBudget) : null,
+    countryCode: destinationContext(brief).countryCode ?? null,
+    timeZone: destinationContext(brief).timeZone ?? null,
+    currency: brief.currency ?? null,
+    totalBudget: Number.isFinite(brief.totalBudget) ? Number(brief.totalBudget) : null,
     travelerConstraintHints: travelerHints,
     byDomain,
     intercityIntent: intercityIntent(brief, question, input.intercityIntent),
@@ -177,6 +182,7 @@ export function buildTravelResearchCriteria({ brief = {}, travelers = [], questi
     dates: shared.dates,
     partySize: shared.partySize,
     budgetCny: shared.budgetCny,
+    countryCode: shared.countryCode, currency: shared.currency, timeZone: shared.timeZone, totalBudget: shared.totalBudget,
     travelerConstraintHints: shared.travelerConstraintHints,
     criteria: byDomain[domain],
     ...(domain === "transport" ? { journeys: brief.journeys ?? [], intercityIntent: shared.intercityIntent, localMobilityIntent: shared.localMobilityIntent, arrival } : {}),

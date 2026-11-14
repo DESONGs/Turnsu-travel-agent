@@ -1,10 +1,17 @@
 {
-  "name": "Travel Agent",
-  "short_name": "Travel Agent",
+  "name": "Turnsu 旅行",
+  "short_name": "Turnsu",
   "description": "在同一趟旅程里协调吃、住、行、玩。",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f8f9",
-  "theme_color": "#ff5a4f",
-  "icons": [{ "src": "/assets/travel-agent-icon.png", "sizes": "1254x1254", "type": "image/png", "purpose": "any" }]
+  "background_color": "#f5f2ed",
+  "theme_color": "#FD7106",
+  "icons": [
+    {
+      "src": "/assets/turnsu-app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }

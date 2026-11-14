@@ -1,3 +1,4 @@
+import { containsGoogleContent } from "../../travel-agent-pi-package/src/core/provider-content.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, open, readFile, readdir, rename, unlink } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -66,6 +67,7 @@ export class FileEvidenceProjectionRepository {
   }
 
   async put(bundle, { cacheKey } = {}) {
+    if (containsGoogleContent(bundle)) return validateBundle(structuredClone(bundle));
     const validated = validateBundle(structuredClone(bundle));
     const key = normalizedCacheKey(cacheKey);
     const path = this.pathFor(validated.bundleId);
@@ -158,6 +160,7 @@ export class PostgresEvidenceProjectionRepository {
   }
 
   async put(bundle, { cacheKey } = {}) {
+    if (containsGoogleContent(bundle)) return validateBundle(structuredClone(bundle));
     const validated = validateBundle(structuredClone(bundle));
     const key = normalizedCacheKey(cacheKey);
     await this.migrate();

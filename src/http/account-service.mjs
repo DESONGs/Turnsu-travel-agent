@@ -24,14 +24,26 @@ export class AccountService {
     await connection.query("INSERT INTO travel_auth_users (user_id, display_name, created_at) VALUES ($1,$2,$3) ON CONFLICT(user_id) DO NOTHING", [userId, display(displayName), this.now()]);
   }
 
+  async rememberGoogleProfile(db, userId, identity) {
+    if (identity.provider !== "google") return;
+    if (!identity.emailVerified || typeof identity.email !== "string" || !identity.email.includes("@")) {
+      await db.query("DELETE FROM travel_google_profiles WHERE subject=$1 AND user_id=$2", [identity.subject, userId]); return;
+    }
+    const at = identity.email.lastIndexOf("@"), domain = identity.email.slice(at + 1).normalize("NFC").toLowerCase();
+    const local = identity.email.slice(0, at), email = `${domain === "gmail.com" ? local.toLowerCase() : local}@${domain}`;
+    const digest = hash(`travel-share-email-v1:${email}`);
+    await db.query("INSERT INTO travel_google_profiles(subject,user_id,email_hash,email_authoritative,verified_at) VALUES($1,$2,$3,$4,$5) ON CONFLICT(subject) DO UPDATE SET email_hash=excluded.email_hash,email_authoritative=excluded.email_authoritative,verified_at=excluded.verified_at WHERE travel_google_profiles.user_id=excluded.user_id", [identity.subject, userId, digest, domain === "gmail.com" || identity.hostedDomain === domain ? 1 : 0, this.now()]);
+  }
+
   async resolveIdentity(identity) {
     const legacyId = authenticatedUserId(identity);
     return this.repository.transaction(async (db) => {
       const existing = await db.query("SELECT user_id FROM travel_auth_identities WHERE provider=$1 AND subject=$2", [identity.provider, identity.subject]);
-      if (existing.rowCount) return existing.rows[0].user_id;
+      if (existing.rowCount) { await this.rememberGoogleProfile(db, existing.rows[0].user_id, identity); return existing.rows[0].user_id; }
       await this.ensureUser(db, legacyId, identity.displayName);
       await db.query("INSERT INTO travel_auth_identities (identity_id,user_id,provider,subject,created_at) VALUES ($1,$2,$3,$4,$5) ON CONFLICT(provider,subject) DO NOTHING", [randomUUID(), legacyId, identity.provider, identity.subject, this.now()]);
       const result = await db.query("SELECT user_id FROM travel_auth_identities WHERE provider=$1 AND subject=$2", [identity.provider, identity.subject]);
+      await this.rememberGoogleProfile(db, result.rows[0].user_id, identity);
       return result.rows[0].user_id;
     });
   }
@@ -94,6 +106,7 @@ export class AccountService {
       await db.query("INSERT INTO travel_auth_identities (identity_id,user_id,provider,subject,created_at) VALUES ($1,$2,$3,$4,$5) ON CONFLICT(provider,subject) DO NOTHING", [randomUUID(), session.userId, identity.provider, identity.subject, this.now()]);
       const existing = await db.query("SELECT user_id FROM travel_auth_identities WHERE provider=$1 AND subject=$2", [identity.provider, identity.subject]);
       if (existing.rows[0].user_id !== session.userId) fail("identity_already_linked", 409);
+      await this.rememberGoogleProfile(db, session.userId, identity);
     });
   }
 
@@ -106,6 +119,7 @@ export class AccountService {
       if (result.rows.length <= 1) fail("last_login_method_required", 409);
       if (identity.provider === session.provider) fail("current_login_method_required", 409);
       await db.query("DELETE FROM travel_auth_identities WHERE identity_id=$1 AND user_id=$2", [identityId, session.userId]);
+      if (identity.provider === "google") await db.query("DELETE FROM travel_google_profiles WHERE user_id=$1 AND subject NOT IN (SELECT subject FROM travel_auth_identities WHERE user_id=$1 AND provider='google')", [session.userId]);
       await db.query("UPDATE travel_auth_sessions SET revoked_at=$1 WHERE user_id=$2 AND provider=$3 AND revoked_at IS NULL", [this.now(), session.userId, identity.provider]);
     });
   }

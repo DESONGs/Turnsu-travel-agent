@@ -56,8 +56,8 @@ test("a retried command runs one native Parent; its tool receipts and checkpoint
   const reopened = new ExecutionRepository({ filename: join(f.root, "runs.sqlite") });
   t.after(() => reopened.close());
   const persisted = await reopened.get(a.runId);
-  assert.equal(persisted.checkpoint.schemaVersion, "travel-agent-session-v1");
-  assert.ok(persisted.checkpoint.entries.some((entry) => entry.type === "message" && entry.message.role === "toolResult"));
+  assert.equal(persisted.checkpoint.schemaVersion, "travel-dsh-session-v1");
+  assert.ok(persisted.checkpoint.events.events.some((event) => event.type === "tool/result"));
   const replay = await reopened.events(a.runId, final.events[1].sequence);
   assert.ok(replay.every((event) => event.sequence > final.events[1].sequence));
   assert.doesNotMatch(JSON.stringify(final), /thinking|toolCall.*arguments|apiKey/);

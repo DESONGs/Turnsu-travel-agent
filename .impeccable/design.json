@@ -1,7 +1,554 @@
 {
-  "sourceVisual": "design/reference/map-pulse-mobile.png",
-  "designDocument": "DESIGN.md",
-  "direction": "map-pulse",
-  "iconLibrary": "@phosphor-icons/react",
-  "assetPolicy": "generated-raster-for-brand-and-imagery; icon-library-for-functional-icons"
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T06:51:29Z",
+  "title": "Design System: Turnsu 统一旅行工作台",
+  "extensions": {
+    "colorMeta": {
+      "brand-orange": {
+        "role": "primary",
+        "displayName": "Turnsu 品牌橙",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "brand-ink": {
+        "role": "neutral",
+        "displayName": "正文与品牌墨色",
+        "tonalRamp": [
+          "oklch(15% 0.0005 106.60)",
+          "oklch(27% 0.0011 106.60)",
+          "oklch(39% 0.0016 106.60)",
+          "oklch(51% 0.0020 106.60)",
+          "oklch(63% 0.0020 106.60)",
+          "oklch(75% 0.0016 106.60)",
+          "oklch(87% 0.0009 106.60)",
+          "oklch(95% 0.0003 106.60)"
+        ]
+      },
+      "travel-accent": {
+        "role": "primary",
+        "displayName": "白字按钮操作色",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "travel-accent-hover": {
+        "role": "primary",
+        "displayName": "操作悬停色",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "travel-accent-active": {
+        "role": "primary",
+        "displayName": "操作按下色",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "travel-link": {
+        "role": "primary",
+        "displayName": "浅底链接色",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "travel-soft": {
+        "role": "primary",
+        "displayName": "浅橙选中底",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "selection-ground": {
+        "role": "primary",
+        "displayName": "文字选择底",
+        "tonalRamp": [
+          "#803200",
+          "#A74300",
+          "#C45200",
+          "#FD7106",
+          "#FF9B50",
+          "#FFC694",
+          "#FFE4CC",
+          "#FFF5EB"
+        ]
+      },
+      "travel-muted": {
+        "role": "neutral",
+        "displayName": "辅助暖灰",
+        "tonalRamp": [
+          "oklch(15% 0.0032 76.51)",
+          "oklch(27% 0.0070 76.51)",
+          "oklch(39% 0.0102 76.51)",
+          "oklch(51% 0.0127 76.51)",
+          "oklch(63% 0.0127 76.51)",
+          "oklch(75% 0.0102 76.51)",
+          "oklch(87% 0.0057 76.51)",
+          "oklch(95% 0.0019 76.51)"
+        ]
+      },
+      "travel-caption": {
+        "role": "neutral",
+        "displayName": "说明暖灰",
+        "tonalRamp": [
+          "oklch(15% 0.0036 75.26)",
+          "oklch(27% 0.0079 75.26)",
+          "oklch(39% 0.0116 75.26)",
+          "oklch(51% 0.0144 75.26)",
+          "oklch(63% 0.0144 75.26)",
+          "oklch(75% 0.0116 75.26)",
+          "oklch(87% 0.0065 75.26)",
+          "oklch(95% 0.0022 75.26)"
+        ]
+      },
+      "travel-ground": {
+        "role": "neutral",
+        "displayName": "暖白画布",
+        "tonalRamp": [
+          "oklch(15% 0.0018 80.72)",
+          "oklch(27% 0.0041 80.72)",
+          "oklch(39% 0.0059 80.72)",
+          "oklch(51% 0.0074 80.72)",
+          "oklch(63% 0.0074 80.72)",
+          "oklch(75% 0.0059 80.72)",
+          "oklch(87% 0.0033 80.72)",
+          "oklch(95% 0.0011 80.72)"
+        ]
+      },
+      "travel-paper": {
+        "role": "neutral",
+        "displayName": "纯白表面",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(27% 0.0000 89.88)",
+          "oklch(39% 0.0000 89.88)",
+          "oklch(51% 0.0000 89.88)",
+          "oklch(63% 0.0000 89.88)",
+          "oklch(75% 0.0000 89.88)",
+          "oklch(87% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      },
+      "travel-subtle": {
+        "role": "neutral",
+        "displayName": "浅暖白内层",
+        "tonalRamp": [
+          "oklch(15% 0.0014 84.57)",
+          "oklch(27% 0.0031 84.57)",
+          "oklch(39% 0.0046 84.57)",
+          "oklch(51% 0.0057 84.57)",
+          "oklch(63% 0.0057 84.57)",
+          "oklch(75% 0.0046 84.57)",
+          "oklch(87% 0.0026 84.57)",
+          "oklch(95% 0.0009 84.57)"
+        ]
+      },
+      "travel-line": {
+        "role": "neutral",
+        "displayName": "内容边界",
+        "tonalRamp": [
+          "oklch(15% 0.0035 78.26)",
+          "oklch(27% 0.0077 78.26)",
+          "oklch(39% 0.0111 78.26)",
+          "oklch(51% 0.0139 78.26)",
+          "oklch(63% 0.0139 78.26)",
+          "oklch(75% 0.0111 78.26)",
+          "oklch(87% 0.0063 78.26)",
+          "oklch(95% 0.0021 78.26)"
+        ]
+      },
+      "control-line": {
+        "role": "neutral",
+        "displayName": "控件边界",
+        "tonalRamp": [
+          "oklch(15% 0.0046 79.29)",
+          "oklch(27% 0.0101 79.29)",
+          "oklch(39% 0.0147 79.29)",
+          "oklch(51% 0.0184 79.29)",
+          "oklch(63% 0.0184 79.29)",
+          "oklch(75% 0.0147 79.29)",
+          "oklch(87% 0.0083 79.29)",
+          "oklch(95% 0.0028 79.29)"
+        ]
+      },
+      "tag-ground": {
+        "role": "neutral",
+        "displayName": "标签浅灰",
+        "tonalRamp": [
+          "oklch(15% 0.0023 78.28)",
+          "oklch(27% 0.0050 78.28)",
+          "oklch(39% 0.0073 78.28)",
+          "oklch(51% 0.0091 78.28)",
+          "oklch(63% 0.0091 78.28)",
+          "oklch(75% 0.0073 78.28)",
+          "oklch(87% 0.0041 78.28)",
+          "oklch(95% 0.0014 78.28)"
+        ]
+      },
+      "travel-green": {
+        "role": "secondary",
+        "displayName": "成功绿",
+        "tonalRamp": [
+          "oklch(15% 0.0279 160.48)",
+          "oklch(27% 0.0613 160.48)",
+          "oklch(39% 0.0892 160.48)",
+          "oklch(51% 0.1115 160.48)",
+          "oklch(63% 0.1115 160.48)",
+          "oklch(75% 0.0892 160.48)",
+          "oklch(87% 0.0502 160.48)",
+          "oklch(95% 0.0167 160.48)"
+        ]
+      },
+      "success-ground": {
+        "role": "secondary",
+        "displayName": "成功浅底",
+        "tonalRamp": [
+          "oklch(15% 0.0084 170.79)",
+          "oklch(27% 0.0184 170.79)",
+          "oklch(39% 0.0268 170.79)",
+          "oklch(51% 0.0335 170.79)",
+          "oklch(63% 0.0335 170.79)",
+          "oklch(75% 0.0268 170.79)",
+          "oklch(87% 0.0151 170.79)",
+          "oklch(95% 0.0050 170.79)"
+        ]
+      },
+      "travel-warning": {
+        "role": "secondary",
+        "displayName": "提醒棕",
+        "tonalRamp": [
+          "oklch(15% 0.0292 60.18)",
+          "oklch(27% 0.0643 60.18)",
+          "oklch(39% 0.0936 60.18)",
+          "oklch(51% 0.1170 60.18)",
+          "oklch(63% 0.1170 60.18)",
+          "oklch(75% 0.0936 60.18)",
+          "oklch(87% 0.0526 60.18)",
+          "oklch(95% 0.0175 60.18)"
+        ]
+      },
+      "warning-ground": {
+        "role": "secondary",
+        "displayName": "提醒浅底",
+        "tonalRamp": [
+          "oklch(15% 0.0041 70.54)",
+          "oklch(27% 0.0090 70.54)",
+          "oklch(39% 0.0131 70.54)",
+          "oklch(51% 0.0164 70.54)",
+          "oklch(63% 0.0164 70.54)",
+          "oklch(75% 0.0131 70.54)",
+          "oklch(87% 0.0074 70.54)",
+          "oklch(95% 0.0025 70.54)"
+        ]
+      },
+      "travel-error": {
+        "role": "secondary",
+        "displayName": "错误红",
+        "tonalRamp": [
+          "oklch(15% 0.0475 23.50)",
+          "oklch(27% 0.1045 23.50)",
+          "oklch(39% 0.1520 23.50)",
+          "oklch(51% 0.1900 23.50)",
+          "oklch(63% 0.1900 23.50)",
+          "oklch(75% 0.1520 23.50)",
+          "oklch(87% 0.0855 23.50)",
+          "oklch(95% 0.0285 23.50)"
+        ]
+      },
+      "error-ground": {
+        "role": "secondary",
+        "displayName": "错误浅底",
+        "tonalRamp": [
+          "oklch(15% 0.0061 11.29)",
+          "oklch(27% 0.0133 11.29)",
+          "oklch(39% 0.0194 11.29)",
+          "oklch(51% 0.0242 11.29)",
+          "oklch(63% 0.0242 11.29)",
+          "oklch(75% 0.0194 11.29)",
+          "oklch(87% 0.0109 11.29)",
+          "oklch(95% 0.0036 11.29)"
+        ]
+      },
+      "overlay": {
+        "role": "neutral",
+        "displayName": "覆盖层遮罩",
+        "tonalRamp": [
+          "oklch(15% 0.0005 106.60)",
+          "oklch(27% 0.0011 106.60)",
+          "oklch(39% 0.0016 106.60)",
+          "oklch(51% 0.0020 106.60)",
+          "oklch(63% 0.0020 106.60)",
+          "oklch(75% 0.0016 106.60)",
+          "oklch(87% 0.0009 106.60)",
+          "oklch(95% 0.0003 106.60)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "page-heading": {
+        "displayName": "旅行主标题",
+        "purpose": "桌面旅行身份标题；窄栏缩到任务标题大小。"
+      },
+      "task-heading": {
+        "displayName": "任务标题",
+        "purpose": "比较、媒体页和宽侧层的主要标题。"
+      },
+      "compact-heading": {
+        "displayName": "紧凑标题",
+        "purpose": "窄侧层与局部子标题。"
+      },
+      "content-heading": {
+        "displayName": "内容标题",
+        "purpose": "章节、共享范围与审阅到访标题。"
+      },
+      "body": {
+        "displayName": "正文与关键事实",
+        "purpose": "基础正文、手账长文和地点事实值；局部阅读场景另有宽松行距。"
+      },
+      "control": {
+        "displayName": "控件与密集正文",
+        "purpose": "主要操作、表单标签与密集内容。"
+      },
+      "support": {
+        "displayName": "辅助说明",
+        "purpose": "来源、日期、字段说明和任务上下文。"
+      }
+    },
+    "shadows": [
+      {
+        "name": "overlay",
+        "value": "0px 1px 2px rgba(128, 138, 157, 0.12), 0px 8px 32px rgba(128, 138, 157, 0.24)",
+        "purpose": "右侧任务层、地点详情与账号对话框的共享覆盖层阴影。"
+      },
+      {
+        "name": "local-edit-dialog",
+        "value": "0 20px 100px #0003",
+        "purpose": "现有居中局部修改对话框；不作为普通卡片阴影。"
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "150ms",
+        "purpose": "按钮、导航与手账卡片的颜色或边界状态过渡；减少动态效果时取消。"
+      },
+      {
+        "name": "brand-entrance",
+        "value": "1000ms cubic-bezier(.16,1,.3,1)",
+        "purpose": "每次重新打开工作台时，Logo 居中出现、放大、回缩并停靠应用导航；减少动态效果时跳过。"
+      },
+      {
+        "name": "brand-veil",
+        "value": "620ms ease-out",
+        "purpose": "品牌进入时的背景淡出，与内容读取并行。"
+      },
+      {
+        "name": "place-detail-entry",
+        "value": "180ms ease-out",
+        "purpose": "既有地点详情侧层的进入过渡；减少动态效果沿用基础层约束。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "daily-stack",
+        "value": "1100px"
+      },
+      {
+        "name": "journal-two-column-and-wide-sheet",
+        "value": "1020px"
+      },
+      {
+        "name": "comparison-auto-grid",
+        "value": "1000px"
+      },
+      {
+        "name": "immersion-stack",
+        "value": "820px"
+      },
+      {
+        "name": "navigation-header-and-compact-content",
+        "value": "760px"
+      },
+      {
+        "name": "media-single-column-and-compact-sheet",
+        "value": "650px"
+      },
+      {
+        "name": "review-footer-stack",
+        "value": "640px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "主要按钮",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "保存、确认或继续当前主要任务。",
+      "html": "<button type=\"button\" class=\"ds-primary\">保存效果</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;background:var(--turnsu-action, #C45200);border-color:var(--turnsu-action, #C45200);color:var(--turnsu-on-action, #FFFFFF)}.ds-primary:hover:not(:disabled){background:var(--turnsu-action-hover, #A74300);border-color:var(--turnsu-action-hover, #A74300)}.ds-primary:active:not(:disabled){background:var(--turnsu-action-active, #803200);border-color:var(--turnsu-action-active, #803200)}.ds-primary:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-primary:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "次要按钮",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "返回或保留当前编辑。",
+      "html": "<button type=\"button\" class=\"ds-secondary\">返回照片</button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;background:var(--turnsu-surface-1, #FFFFFF);border-color:var(--travel-control-border, #857E73);color:var(--turnsu-text-primary, #121211)}.ds-secondary:hover:not(:disabled){background:var(--turnsu-surface-2, #F8F6F2);border-color:var(--turnsu-text-secondary, #625D56)}.ds-secondary:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-secondary:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none}}"
+    },
+    {
+      "name": "危险按钮",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "用户明确放弃未保存内容。",
+      "html": "<button type=\"button\" class=\"ds-danger\">放弃未保存内容</button>",
+      "css": ".ds-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;background:var(--turnsu-negative, #C92532);border-color:var(--turnsu-negative, #C92532);color:var(--turnsu-on-action, #FFFFFF)}.ds-danger:hover:not(:disabled){background:color-mix(in srgb, var(--turnsu-negative, #C92532) 85%, var(--turnsu-ink, #121211))}.ds-danger:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-danger:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-danger{transition:none}}"
+    },
+    {
+      "name": "文字按钮",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "低强调的返回、刷新和共享动作，保留可触区域。",
+      "html": "<button type=\"button\" class=\"ds-text\">刷新记录</button>",
+      "css": ".ds-text{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;padding:8px 0;background:transparent;border-color:transparent;color:var(--turnsu-text-hyperlink, #A74300);text-underline-offset:4px}.ds-text:hover:not(:disabled){text-decoration:underline}.ds-text:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-text:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-text{transition:none}}"
+    },
+    {
+      "name": "图标按钮",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "带可访问名称的关闭操作。",
+      "html": "<button type=\"button\" class=\"ds-icon-button\" aria-label=\"关闭照片浮雕\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"></path></svg></button>",
+      "css": ".ds-icon-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;width:44px;padding:10px;background:var(--turnsu-surface-1, #FFFFFF);border-color:var(--travel-control-border, #857E73);color:var(--turnsu-text-primary, #121211)}.ds-icon-button svg{width:20px;height:20px}.ds-icon-button:hover:not(:disabled){background:var(--turnsu-surface-2, #F8F6F2);border-color:var(--turnsu-text-secondary, #625D56)}.ds-icon-button:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-icon-button:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-icon-button{transition:none}}"
+    },
+    {
+      "name": "文本字段",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "带可见标签的手账标题字段。",
+      "html": "<label class=\"ds-field\">记录标题<input type=\"text\" placeholder=\"给这一刻起个名字\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:7px;font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.6;color:var(--turnsu-text-primary, #121211)}.ds-field input{min-width:0;min-height:45px;padding:11px 12px;border:1px solid var(--travel-control-border, #857E73);border-radius:var(--turnsu-radius-default, 8px);background:var(--turnsu-surface-1, #FFFFFF);font:inherit;font-weight:400;color:var(--turnsu-text-primary, #121211);caret-color:var(--turnsu-text-hyperlink, #A74300)}.ds-field input::placeholder{color:var(--turnsu-text-caption, #6F6961);opacity:1}.ds-field input:hover{border-color:var(--turnsu-text-secondary, #625D56)}.ds-field input:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-field input:disabled{background:var(--turnsu-gray-200, #F0ECE6);color:var(--turnsu-text-secondary, #625D56)}"
+    },
+    {
+      "name": "旅行导航",
+      "kind": "nav",
+      "refersTo": "navigation-current",
+      "description": "当前页同时改变底色、字重、边界与图标色。",
+      "html": "<nav class=\"ds-navigation\" aria-label=\"旅行导航\"><button type=\"button\" aria-current=\"page\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z\"></path></svg><span>每日行程</span></button><button type=\"button\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M184,112a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h64A8,8,0,0,1,184,112Zm-8,24H112a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm48-88V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM48,208H72V48H48Zm160,0V48H88V208H208Z\"></path></svg><span>照片手账</span></button></nav>",
+      "css": ".ds-navigation{display:grid;gap:4px;padding:16px;background:var(--turnsu-surface-2, #F8F6F2);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif)}.ds-navigation button{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:11px 12px;text-align:left;border:0;border-radius:var(--turnsu-radius-default, 8px);background:transparent;color:var(--turnsu-text-secondary, #625D56);font:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:background-color 150ms,color 150ms}.ds-navigation button:hover{background:var(--turnsu-gray-200, #F0ECE6)}.ds-navigation button[aria-current]{background:var(--turnsu-surface-1, #FFFFFF);color:var(--turnsu-text-hyperlink, #A74300);font-weight:600;box-shadow:inset 0 0 0 1px var(--turnsu-border-strong, #D9D3CA)}.ds-navigation svg{width:20px;height:20px;flex:none}.ds-navigation [aria-current] svg{color:var(--turnsu-action, #C45200)}.ds-navigation button:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-navigation button:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-navigation button{transition:none}}"
+    },
+    {
+      "name": "权限标签",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "静态标签用文字表达查看权限。",
+      "html": "<span class=\"ds-tag\">仅查看</span>",
+      "css": ".ds-tag{display:inline-flex;padding:4px 8px;background:var(--turnsu-gray-200, #F0ECE6);color:var(--turnsu-text-secondary, #625D56);border-radius:var(--turnsu-radius-50, 4px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:12px;line-height:1.5}"
+    },
+    {
+      "name": "文字手账卡片",
+      "kind": "card",
+      "refersTo": "journal-card",
+      "description": "没有照片的记录仍有完整入口；内容仅为组件示例。",
+      "html": "<button type=\"button\" class=\"ds-memory\"><div class=\"ds-excerpt\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M184,112a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h64A8,8,0,0,1,184,112Zm-8,24H112a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm48-88V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM48,208H72V48H48Zm160,0V48H88V208H208Z\"></path></svg><p>今天不赶路，沿着江边散步。先记下这一刻，地点以后再补。</p></div><div class=\"ds-caption\"><span>未注明日期</span><h3>秋日，慢慢走</h3></div></button>",
+      "css": ".ds-memory{display:block;text-align:left;width:100%;padding:0;background:var(--turnsu-surface-1, #FFFFFF);border:1px solid var(--turnsu-border-strong, #D9D3CA);border-radius:var(--turnsu-radius-container, 16px);overflow:hidden;color:var(--turnsu-text-primary, #121211);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);cursor:pointer;transition:border-color 150ms,background 150ms}.ds-memory:hover{border-color:var(--turnsu-gray-500, #857E73);background:var(--turnsu-surface-1, #FFFFFF)}.ds-excerpt{padding:25px 22px;background:var(--turnsu-surface-2, #F8F6F2);color:var(--turnsu-text-secondary, #625D56);min-height:205px}.ds-excerpt svg{width:24px;height:24px;margin-bottom:14px}.ds-excerpt p{font-size:16px;line-height:2;margin:0;white-space:pre-wrap}.ds-caption{padding:17px 18px 19px}.ds-caption span{font-size:12px;line-height:1.7;color:var(--turnsu-text-secondary, #625D56)}.ds-caption h3{font-size:18px;line-height:1.6;margin:7px 0 0;letter-spacing:-.015em;color:var(--turnsu-text-primary, #121211);overflow-wrap:anywhere}.ds-memory:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-memory{transition:none}}"
+    },
+    {
+      "name": "任务侧层",
+      "kind": "custom",
+      "refersTo": "sheet",
+      "description": "标题、上下文、可滚动正文与固定操作区；示例展示视觉结构。",
+      "html": "<section class=\"ds-sheet\" aria-label=\"照片浮雕\"><header><div><h2>照片浮雕</h2><p>建筑光影</p></div><button class=\"ds-close\" type=\"button\" aria-label=\"关闭照片浮雕\"><svg viewBox=\"0 0 256 256\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"></path></svg></button></header><div class=\"ds-sheet-body\"><p>源照片保留，效果单独保存。</p></div><footer><button type=\"button\" class=\"ds-sheet-save\">保存效果</button></footer></section>",
+      "css": ".ds-sheet{display:flex;flex-direction:column;width:min(680px,100%);height:100dvh;background:var(--turnsu-background, #F5F2ED);color:var(--turnsu-text-primary, #121211);box-shadow:var(--turnsu-shadow-overlay, 0px 1px 2px rgba(128, 138, 157, 0.12), 0px 8px 32px rgba(128, 138, 157, 0.24));overflow:hidden;font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px}.ds-sheet header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 32px;background:var(--turnsu-surface-1, #FFFFFF);border-bottom:1px solid var(--turnsu-border-strong, #D9D3CA);flex-shrink:0}.ds-sheet h2{font-size:25px;line-height:1.4;letter-spacing:-.02em;margin:0;font-weight:600}.ds-sheet header p{font-size:12px;line-height:1.6;color:var(--turnsu-text-secondary, #625D56);margin:5px 0 0}.ds-close{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;width:44px;padding:10px;background:var(--turnsu-surface-1, #FFFFFF);border-color:var(--travel-control-border, #857E73);color:var(--turnsu-text-primary, #121211)}.ds-close svg{width:20px;height:20px}.ds-sheet-body{padding:24px 32px;background:var(--turnsu-surface-2, #F8F6F2);overflow-y:auto;min-height:0;flex:1}.ds-sheet-body p{font-size:14px;line-height:1.8;margin:0}.ds-sheet footer{display:flex;justify-content:flex-end;gap:20px;padding:16px 32px;background:var(--turnsu-surface-1, #FFFFFF);border-top:1px solid var(--turnsu-border-strong, #D9D3CA);flex-shrink:0}.ds-sheet-save{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:var(--turnsu-radius-default, 8px);font-family:var(--turnsu-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif);font-size:14px;font-weight:500;line-height:1.4;text-decoration:none;cursor:pointer;transition:background-color 150ms,border-color 150ms,color 150ms;background:var(--turnsu-action, #C45200);border-color:var(--turnsu-action, #C45200);color:var(--turnsu-on-action, #FFFFFF)}.ds-close:hover:not(:disabled){background:var(--turnsu-surface-2, #F8F6F2);border-color:var(--turnsu-text-secondary, #625D56)}.ds-close:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-close:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-close{transition:none}}.ds-sheet-save:hover:not(:disabled){background:var(--turnsu-action-hover, #A74300);border-color:var(--turnsu-action-hover, #A74300)}.ds-sheet-save:active:not(:disabled){background:var(--turnsu-action-active, #803200);border-color:var(--turnsu-action-active, #803200)}.ds-sheet-save:focus-visible{outline:2px solid var(--turnsu-action, #C45200);outline-offset:3px}.ds-sheet-save:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-sheet-save{transition:none}}@media(max-width:650px){.ds-sheet header{padding:16px}.ds-sheet h2{font-size:20px}.ds-sheet-body{padding:24px 16px}.ds-sheet footer{padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Turnsu 统一旅行工作台",
+    "overview": "以真实旅行内容构成清楚、有人情味的工作空间：安排、地点、照片和随记始终围绕同一次云端旅行。暖白底色与克制的分隔线提供秩序，原版 Turnsu 标识保留个性，深橙色引导操作。界面以完成任务为主（Operate），通过标题、留白、分组和可达控件降低理解与操作成本。\n\n照片和目的地场景可以成为内容主角，控件保持安静。保存结果、未知条件、冲突和恢复动作紧邻相关内容，并保留明确文字。主标题先说明当前任务，旅行名称与必要上下文随后出现；不同页面与侧层保持同一工作台的连续感。\n\n本文件记录已实现的 React／DSH 统一工作台及复用同一画布的 Web 界面。视觉基础为 Turnsu Design System 1.1.2 插件随包提供的 1.1.1 规范，实际实现见 [旅行适配层](src/web/design-system/travel-theme.css)和 [工作台组件](src/web/workspace/)。固定来源、文件哈希和 Inter 许可证见 [资源说明](src/web/design-system/README.md)。本记录覆盖浅色产品界面；旧原生客户端、完整深色适配、真实供应商与原生宿主的验收结论由对应交付记录说明。",
+    "keyCharacteristics": [
+      "原版完整 Logo，保持比例；品牌橙、操作色与链接色各有职责。",
+      "暖白画布、墨色文字、Inter 字体与中文系统回退。",
+      "以内容、底色和细边界建立层级，覆盖层采用共享阴影。",
+      "桌面左导航、窄栏顶部导航与任务侧层共享同一旅行上下文。"
+    ],
+    "rules": [
+      {
+        "name": "The Original Logo Rule",
+        "body": "完整 Logo 直接使用原素材并保持比例；品牌橙、白字按钮操作色与浅底链接色分别使用对应语义变量。",
+        "section": "colors"
+      },
+      {
+        "name": "The Visible State Rule",
+        "body": "保存、待核验和已知冲突保持不同语义色与可读文字；知悉未知条件不等于条件已经核实。",
+        "section": "colors"
+      },
+      {
+        "name": "The Readable Context Rule",
+        "body": "主标题说明当前任务，必要上下文紧随其下；来源、状态与权限使用可读名称，关键事实和恢复说明不缩成难读的小字。",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "普通内容以底色、留白和边界建立层级；阴影用于真正覆盖内容的任务层与对话框。",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** 使用用户提供的完整 Turnsu Logo，保留比例、原色与素材来源。",
+      "**Do** 使用旅行适配层的 Turnsu 语义变量，让暖白表面、墨色文字和操作层级保持一致。",
+      "**Do** 在手机和窄插件栏提供同一导航、可达操作与可独立滚动的侧层正文。",
+      "**Do** 将保存、未知、冲突和恢复动作放在相关内容旁，同时保留文字含义。",
+      "**Do** 支持减少动态效果、键盘操作与可见焦点。"
+    ],
+    "donts": [
+      "**Don't** 用 Logo 原橙直接替换白字按钮操作色或浅底小字链接色。",
+      "**Don't** 将内部枚举、实现说明或开发指令当作产品标题与来源名称。",
+      "**Don't** 为普通卡片添加宽大装饰阴影、玻璃效果或与品牌无关的渐变。",
+      "**Don't** 在切页、切旅行或展开界面时重播品牌进入动画。",
+      "**Don't** 用颜色、场景或图片暗示尚未核实的旅行事实已经确认。",
+      "**Don't** 因基础包带有深色变量，就把产品写成已完成全界面深色适配。"
+    ]
+  }
 }

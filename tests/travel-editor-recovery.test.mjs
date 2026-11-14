@@ -10,7 +10,7 @@ import { runJourneyAction } from "../src/web/journey-interaction.js";
 const source = await readFile(new URL("../src/web/travel-app.jsx", import.meta.url), "utf8");
 test("trying a place preserves other choices and never navigates away from comparison", () => {
   const state = {
-    selections: { stay: "hotel-a" }, agentTrial: null, loading: false, clearedAgentTrial: false,
+    selections: { stay: "hotel-a" }, baselineDocument: null, agentTrial: null, loading: false, clearedAgentTrial: false,
     onClearAgentTrial: () => { state.clearedAgentTrial = true; },
     onMobileViewChange: () => { throw new Error("selection must not navigate"); },
     window: { matchMedia: () => ({ matches: true }) },
@@ -28,28 +28,23 @@ test("trying a place preserves other choices and never navigates away from compa
   state.loading = true;
   select("stay", "stale-hotel");
   assert.equal(state.selections.stay, "hotel-a");
+  state.loading = false;
+  state.baselineDocument = { plan: { days: [] } };
+  select("stay", "hotel-b");
+  assert.deepEqual(Object.keys(state.selections), ["stay"], "a complete plan changes one target at a time; its other stops belong to the saved plan");
+  assert.equal(state.selections.stay, "hotel-b");
 });
 
-test("route confirmation needs current positive feasibility and is not submitted while busy", () => {
+test("review opens only a current draft, never directly adopts, and respects read-only and busy states", () => {
   const calls = [];
-  const state = { previewModel: { agentTrial: null, routeCanConfirm: false, activeSelections: { stay: "hotel" }, previewId: "preview", routeModes: {} },
-    proposal: { proposalId: "proposal" }, plan: { revision: 2 }, loading: false,
-    onAcceptProposal: (...args) => calls.push(args),
-  };
+  const state = { previewModel: { agentTrial: null, previewId: "preview" }, proposal: { proposalId: "proposal" }, loading: true, canEdit: true, setReviewTarget: value => calls.push(value) };
   const start = source.indexOf("  const confirmDraft =", source.indexOf("function PlanCanvas("));
-  const end = source.indexOf('  return <section className="atlas-canvas"', start);
+  const end = source.indexOf('  return <section className={`atlas-canvas', start);
   const confirm = vm.runInNewContext(source.slice(start, end) + "; confirmDraft;", state);
-  confirm();
-  assert.equal(calls.length, 0);
-  state.previewModel.routeCanConfirm = true;
-  state.loading = true;
-  confirm();
-  assert.equal(calls.length, 0);
-  state.loading = false;
-  confirm();
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0][2].previewId, "preview");
-  assert.equal(calls[0][2].baseRevision, 2);
+  confirm(); assert.equal(calls.length, 0);
+  state.loading = false; state.canEdit = false; confirm(); assert.equal(calls.length, 0);
+  state.canEdit = true; confirm(); assert.equal(calls.length, 1); assert.equal(calls[0].previewId, "preview");
+  state.previewModel.previewId = null; confirm(); assert.equal(calls.length, 1);
 });
 
 test("candidate analysis topics are not promoted to verified budget, route or independent-source claims", () => {

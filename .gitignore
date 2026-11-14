@@ -24,3 +24,9 @@ third_party/
 research-checkouts/
 *.log
 .DS_Store
+
+# Shared embedded app and per-host install packages
+dist-mcp/
+dist-plugins/
+dist-dsh/
+/.impeccable/review/
