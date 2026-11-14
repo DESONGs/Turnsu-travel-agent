@@ -1,0 +1,282 @@
+@import "./colors_and_type.css";
+
+/* Travel adapters for the pinned Turnsu foundation. No provider or data semantics. */
+:root {
+  color-scheme: light;
+  --ink: var(--turnsu-text-primary);
+  --ink-soft: var(--turnsu-text-secondary);
+  --muted: var(--turnsu-text-secondary);
+  --quiet: var(--turnsu-text-caption);
+  --canvas: var(--turnsu-background);
+  --surface: var(--turnsu-surface-1);
+  --surface-subtle: var(--turnsu-surface-2);
+  --line: var(--turnsu-border-strong);
+  --line-strong: var(--turnsu-gray-500);
+  --blue: var(--turnsu-action);
+  --blue-soft: var(--turnsu-brand-100);
+  --coral: var(--turnsu-action);
+  --coral-action: var(--turnsu-action);
+  --coral-soft: var(--turnsu-brand-100);
+  --coral-deep: var(--turnsu-action-hover);
+  --green: var(--turnsu-positive);
+  --green-soft: var(--turnsu-positive-bg);
+  --amber: var(--turnsu-reminder);
+  --amber-soft: var(--turnsu-reminder-bg);
+  --red: var(--turnsu-negative);
+  --travel-control-border: var(--turnsu-gray-500);
+}
+
+body {
+  margin: 0;
+  font-family: var(--turnsu-font-sans);
+  color: var(--turnsu-text-primary);
+  background: var(--turnsu-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+.turnsu-app, .ui-sheet-backdrop, .turnsu-app-summary,
+.decision-modal-overlay, .account-overlay {
+  font-family: var(--turnsu-font-sans);
+  --travel-ink: var(--turnsu-text-primary);
+  --travel-muted: var(--turnsu-text-secondary);
+  --travel-line: var(--turnsu-border-strong);
+  --travel-paper: var(--turnsu-surface-1);
+  --travel-ground: var(--turnsu-background);
+  --travel-accent: var(--turnsu-action);
+  --travel-accent-hover: var(--turnsu-action-hover);
+  --travel-soft: var(--turnsu-brand-100);
+  --travel-green: var(--turnsu-positive);
+  --travel-warning: var(--turnsu-reminder);
+  --travel-error: var(--turnsu-negative);
+}
+
+.turnsu-app .atlas-shell {
+  --ink: var(--turnsu-text-primary);
+  --ink-soft: var(--turnsu-text-secondary);
+  --muted: var(--turnsu-text-secondary);
+  --quiet: var(--turnsu-text-caption);
+  --canvas: var(--turnsu-background);
+  --surface-subtle: var(--turnsu-surface-2);
+  --line: var(--turnsu-border-strong);
+  --line-strong: var(--travel-control-border);
+}
+
+:is(.turnsu-app, .ui-sheet, .turnsu-app-summary, .decision-modal, .account-overlay)
+:is(button, input, select, textarea) { font-family: var(--turnsu-font-sans); }
+
+:is(.turnsu-app, .ui-sheet, .turnsu-app-summary, .decision-modal)
+:is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--c-colors-focus-ring);
+  outline-offset: 3px;
+}
+
+.turnsu-app *, .ui-sheet * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--turnsu-gray-400) transparent;
+}
+.turnsu-app ::selection, .ui-sheet ::selection {
+  background: var(--turnsu-brand-200);
+  color: var(--turnsu-ink);
+}
+.turnsu-app input, .turnsu-app textarea, .ui-sheet input, .ui-sheet textarea {
+  caret-color: var(--turnsu-text-hyperlink);
+  accent-color: var(--turnsu-action);
+}
+.turnsu-app ::placeholder, .ui-sheet ::placeholder { color: var(--turnsu-text-caption); opacity: 1; }
+
+/* Same interaction hierarchy in the canvas, side layers and embedded summary. */
+body :is(.ui-primary, .ui-secondary, .ui-danger, .ui-text, .ui-icon-button, .button.primary, .button.secondary) {
+  border-radius: var(--turnsu-radius-default);
+  font-size: var(--turnsu-font-label);
+  font-weight: var(--turnsu-fw-medium);
+  min-height: 44px;
+  line-height: 1.4;
+  gap: var(--turnsu-space-100);
+  transition: background-color var(--turnsu-duration-fast), border-color var(--turnsu-duration-fast), color var(--turnsu-duration-fast);
+}
+body :is(.ui-primary, .button.primary) {
+  background: var(--turnsu-action);
+  color: var(--turnsu-on-action);
+  border: 1px solid var(--turnsu-action);
+}
+body :is(.ui-primary, .button.primary):hover:not(:disabled) {
+  background: var(--turnsu-action-hover);
+  border-color: var(--turnsu-action-hover);
+}
+body :is(.ui-primary, .button.primary):active:not(:disabled) {
+  background: var(--turnsu-action-active);
+  border-color: var(--turnsu-action-active);
+}
+body :is(.ui-secondary, .ui-icon-button, .button.secondary) {
+  background: var(--turnsu-surface-1);
+  color: var(--turnsu-text-primary);
+  border: 1px solid var(--travel-control-border);
+}
+body :is(.ui-secondary, .ui-icon-button, .button.secondary):hover:not(:disabled) {
+  background: var(--turnsu-surface-2);
+  border-color: var(--turnsu-text-secondary);
+}
+body .ui-danger { background: var(--turnsu-negative); color: var(--turnsu-on-action); border-color: var(--turnsu-negative); }
+body .ui-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--turnsu-negative) 85%, var(--turnsu-ink)); }
+body :is(.ui-text, .decision-link, .atlas-text-button) {
+  color: var(--turnsu-text-hyperlink);
+  text-underline-offset: 4px;
+}
+body :is(.ui-text, .decision-link, .atlas-text-button):hover:not(:disabled) { text-decoration: underline; }
+body .ui-danger-text { color: var(--turnsu-negative); }
+body :is(.ui-primary, .ui-secondary, .ui-danger, .ui-icon-button, .button):disabled { opacity: .5; cursor: not-allowed; }
+
+body :is(.ui-field > input, .ui-field > select, .ui-field > textarea,
+.decision-modal input, .decision-modal textarea, .journal-filter select, .immersion-place-switch select) {
+  border: 1px solid var(--travel-control-border);
+  border-radius: var(--turnsu-radius-default);
+  background: var(--turnsu-surface-1);
+  color: var(--turnsu-text-primary);
+  font-size: var(--turnsu-font-label);
+  min-height: 44px;
+}
+body :is(.ui-field > input, .ui-field > select, .ui-field > textarea,
+.decision-modal input, .decision-modal textarea):hover { border-color: var(--turnsu-text-secondary); }
+
+.turnsu-navigation { padding: var(--turnsu-space-400) var(--turnsu-space-200) var(--turnsu-space-300); }
+.turnsu-brand-slot { padding: 0 var(--turnsu-space-100) var(--turnsu-space-400); }
+.turnsu-navigation nav button, .turnsu-mobile-menu nav button {
+  font-size: var(--turnsu-font-label);
+  font-weight: var(--turnsu-fw-medium);
+  transition: background-color var(--turnsu-duration-fast), color var(--turnsu-duration-fast);
+}
+.turnsu-navigation nav button[aria-current], .turnsu-mobile-menu nav button[aria-current] {
+  background: var(--turnsu-surface-1);
+  color: var(--turnsu-text-hyperlink);
+  font-weight: var(--turnsu-fw-semibold);
+  box-shadow: inset 0 0 0 1px var(--turnsu-border-strong);
+}
+.turnsu-mobile-menu nav button[aria-current] svg { color: var(--turnsu-action); }
+.turnsu-navigation nav button:disabled { opacity: .5; cursor: not-allowed; }
+.turnsu-navigation-footer { border-top: 1px solid var(--turnsu-border-strong); padding-top: var(--turnsu-space-200); }
+.turnsu-app .atlas-topbar { background: var(--turnsu-background); }
+.turnsu-app .atlas-trip-heading h1, .unified-trip-heading h1 { font-size: var(--turnsu-font-section-title); letter-spacing: -.02em; }
+.turnsu-app .atlas-trip-identity h1 > span { font-size: var(--turnsu-font-subsection); color: var(--turnsu-text-secondary); }
+.turnsu-app .atlas-trip-facts { margin-top: var(--turnsu-space-100); }
+.turnsu-app .atlas-trip-heading { padding-block: var(--turnsu-space-300); }
+.turnsu-app :is(.atlas-trip-facts button, .atlas-account, .atlas-locale, .atlas-history) { color: var(--turnsu-text-secondary); }
+
+.turnsu-app :is(.decision-section-head h2, .media-page-heading h2, .atlas-section-heading h2) {
+  font-size: var(--turnsu-font-h3);
+  line-height: 1.4;
+  font-weight: var(--turnsu-fw-semibold);
+  letter-spacing: -.02em;
+}
+.turnsu-app :is(.decision-section-head p, .media-page-heading p) { line-height: 1.8; max-width: 70ch; }
+.turnsu-app .decision-day { padding-block: var(--turnsu-space-300); }
+.turnsu-app .decision-day h4 { font-size: var(--turnsu-font-label); font-weight: var(--turnsu-fw-semibold); color: var(--turnsu-text-secondary); }
+.turnsu-app .decision-day li > time { color: var(--turnsu-text-secondary); font-size: var(--turnsu-font-label); }
+.turnsu-app .decision-day li > button { border-radius: var(--turnsu-radius-default); padding: var(--turnsu-space-100) var(--turnsu-space-150); }
+.turnsu-app .decision-day li > button:hover { background: var(--turnsu-surface-1); }
+.turnsu-app .decision-day li > button > span { color: var(--turnsu-text-secondary); font-size: var(--turnsu-font-caption); }
+.turnsu-app .decision-day li strong { font-size: var(--turnsu-font-body); font-weight: var(--turnsu-fw-semibold); }
+.turnsu-app .decision-day li small { font-size: var(--turnsu-font-label); line-height: 1.7; }
+.turnsu-app .decision-domain-summary { border-block-color: var(--turnsu-border-strong); }
+.turnsu-app .decision-domain-summary button { border-radius: var(--turnsu-radius-default); }
+.turnsu-app .decision-domain-summary button:hover { background: var(--turnsu-surface-1); }
+.turnsu-app :is(.decision-option, .atlas-place, .turnsu-daily-map) { border-radius: var(--turnsu-radius-container); }
+.turnsu-app .decision-option.chosen { border-color: var(--turnsu-action); background: var(--turnsu-brand-100); }
+.turnsu-app .decision-facts .unknown { color: var(--turnsu-reminder); }
+.turnsu-app :is(.decision-price, .price-slot, .atlas-trip-facts, time), .ui-sheet time { font-variant-numeric: tabular-nums; }
+.turnsu-app .decision-option-state { color: var(--turnsu-text-secondary); }
+.turnsu-app .decision-option.chosen .decision-option-state { color: var(--turnsu-text-hyperlink); }
+
+/* Joined category controls keep long localized labels scrollable in a narrow host. */
+.turnsu-app :is(.atlas-domain-nav, .decision-compare-tabs) { width: max-content; max-width: 100%; overflow-x: auto; flex-wrap: nowrap; gap: 0; padding: 4px; background: var(--turnsu-surface-2); border: 1px solid var(--turnsu-border-strong); border-radius: var(--turnsu-radius-200); }
+.turnsu-app :is(.atlas-domain-nav, .decision-compare-tabs) button { flex-shrink: 0; min-height: 44px; border: 0; border-radius: var(--turnsu-radius-default); background: transparent; color: var(--turnsu-text-secondary); }
+.turnsu-app :is(.atlas-domain-nav button[data-active], .decision-compare-tabs button[aria-pressed="true"]) { background: var(--turnsu-surface-1); color: var(--turnsu-text-primary); box-shadow: inset 0 0 0 1px var(--turnsu-border-strong); }
+
+.ui-sheet { font-size: var(--turnsu-font-label); }
+.ui-sheet-header { padding: var(--turnsu-space-300) var(--turnsu-space-400); }
+.ui-sheet-header h2 { font-size: var(--turnsu-font-h3); font-weight: var(--turnsu-fw-semibold); }
+.ui-sheet-header p { font-size: var(--turnsu-font-caption); line-height: 1.6; }
+.ui-sheet-body { padding: var(--turnsu-space-300) var(--turnsu-space-400); background: var(--turnsu-surface-2); }
+.ui-sheet-footer { padding: var(--turnsu-space-200) var(--turnsu-space-400); }
+.ui-tag { background: var(--turnsu-gray-200); color: var(--turnsu-text-secondary); border-radius: var(--turnsu-radius-50); }
+.ui-success { background: var(--turnsu-positive-bg); color: var(--turnsu-positive); }
+.ui-error, .review-blockers { background: var(--turnsu-negative-bg); color: var(--turnsu-negative); }
+.review-condition { background: var(--turnsu-reminder-bg); color: var(--turnsu-reminder); }
+.review-condition.acknowledged { background: var(--turnsu-positive-bg); color: var(--turnsu-positive); }
+.ui-confirm { background: var(--turnsu-reminder-bg); color: var(--turnsu-reminder); }
+.journal-gallery { gap: var(--turnsu-space-300); }
+.journal-memory { border-radius: var(--turnsu-radius-container); }
+.journal-memory:hover { border-color: var(--turnsu-gray-500); background: var(--turnsu-surface-1); }
+.journal-memory-copy h3 { font-weight: var(--turnsu-fw-semibold); }
+.journal-empty, .journal-text-cover { background: var(--turnsu-surface-2); }
+.sharing-avatar { background: var(--turnsu-gray-200); color: var(--turnsu-text-secondary); }
+.sharing-confirm-person { background: var(--turnsu-surface-1); }
+.sharing-permission-options > label:has(input:checked) { background: var(--turnsu-brand-100); border-color: var(--turnsu-action); }
+.sharing-permission-options input { accent-color: var(--turnsu-action); }
+.immersion-reading .immersion-chapters button[aria-current] { color: var(--turnsu-text-hyperlink); }
+.immersion-art .destination-sketch-hotspot.selected { color: var(--turnsu-on-action); }
+.relief-range input { accent-color: var(--turnsu-action); }
+
+.turnsu-app-summary { color: var(--turnsu-text-primary); background: var(--turnsu-surface-1); border-radius: var(--turnsu-radius-container); }
+.turnsu-app-summary :is(p, small, .embedded-domains span) { color: var(--turnsu-text-secondary); }
+.embedded-toolbar { background: var(--turnsu-surface-2); border-color: var(--turnsu-border-strong); }
+.embedded-toolbar button { color: var(--turnsu-text-hyperlink); font-family: var(--turnsu-font-sans); }
+.unified-design-notice { background: var(--turnsu-gray-200); color: var(--turnsu-text-secondary); }
+.unified-trip-heading h1 { color: var(--turnsu-text-primary); }
+.unified-trip-heading p, .turnsu-navigation-footer small { color: var(--turnsu-text-secondary); }
+
+@media (max-width: 760px) {
+  .turnsu-mobile-header { background: var(--turnsu-background); }
+  .turnsu-app .atlas-trip-heading h1, .unified-trip-heading h1 { font-size: var(--turnsu-font-h3); }
+  .turnsu-app .decision-section-head { gap: var(--turnsu-space-200); }
+  .turnsu-app .decision-day li > button { padding-inline: var(--turnsu-space-100); }
+}
+@media (max-width: 650px) {
+  .ui-sheet-header { padding: var(--turnsu-space-200); }
+  .ui-sheet-header h2 { font-size: var(--turnsu-font-subsection); }
+  .ui-sheet-body { padding: var(--turnsu-space-300) var(--turnsu-space-200); }
+  .ui-sheet-footer { padding: var(--turnsu-space-200); padding-bottom: max(var(--turnsu-space-200), env(safe-area-inset-bottom)); }
+  .turnsu-app :is(.decision-section-head h2, .media-page-heading h2) { font-size: var(--turnsu-font-subsection); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body :is(.ui-primary, .ui-secondary, .ui-danger, .ui-icon-button, .button) { transition: none; }
+}
+
+/* Account and continuous-service screens use the same controls and status roles. */
+.account-overlay { background: var(--c-colors-overlay-bg); backdrop-filter: none; }
+.account-dialog, .account-fullpage > .account-login-layout { border: 0; border-radius: var(--turnsu-radius-container); box-shadow: var(--turnsu-shadow-overlay); }
+.account-fullpage { background: var(--turnsu-background); }
+.account-dialog, .account-content, .account-login-main { background: var(--turnsu-surface-1); color: var(--turnsu-text-primary); }
+.account-action, .account-secondary, .account-provider, .account-close { border-radius: var(--turnsu-radius-default); min-height: 44px; font-family: var(--turnsu-font-sans); font-weight: var(--turnsu-fw-medium); }
+.account-action { background: var(--turnsu-action); color: var(--turnsu-on-action); }
+.account-action:hover:not(:disabled) { background: var(--turnsu-action-hover); }
+.account-action:active:not(:disabled) { background: var(--turnsu-action-active); }
+.account-secondary, .account-provider { background: var(--turnsu-surface-1); border-color: var(--travel-control-border); color: var(--turnsu-text-primary); }
+.account-provider.is-primary:not(:disabled) { background: var(--turnsu-surface-1); border-color: var(--turnsu-text-primary); color: var(--turnsu-text-primary); }
+.account-provider.is-primary:not(:disabled) > svg:last-child { color: var(--turnsu-text-secondary); }
+.account-provider:not(:disabled):hover { background: var(--turnsu-surface-2); border-color: var(--turnsu-text-primary); }
+.account-provider:disabled { background: var(--turnsu-surface-2); color: var(--turnsu-text-caption); }
+.account-close { width: 44px; background: var(--turnsu-surface-1); border-color: var(--travel-control-border); }
+.account-text-button { color: var(--turnsu-text-hyperlink); }
+.account-notice { color: var(--turnsu-positive); background: var(--turnsu-positive-bg); border-color: transparent; }
+.account-notice.is-error { color: var(--turnsu-negative); background: var(--turnsu-negative-bg); }
+.account-login-main input, .account-content input { border-radius: var(--turnsu-radius-default); border-color: var(--travel-control-border); }
+.continuity-state { font-size: var(--turnsu-font-caption); }
+.continuity-conditions dd, .continuity-list p { font-size: var(--turnsu-font-label); }
+.continuity-price strong { font-variant-numeric: tabular-nums; font-weight: var(--turnsu-fw-semibold); }
+.continuity-email { background: var(--turnsu-surface-1); border: 1px solid var(--turnsu-border-strong); border-radius: var(--turnsu-radius-container); }
+.continuity-email input { border-radius: var(--turnsu-radius-default); min-height: 44px; }
+
+/* Existing place details remain on the same path as the media side layers. */
+.place-detail-overlay { background: var(--c-colors-overlay-bg); backdrop-filter: none; }
+.place-detail-sheet { display: flex; flex-direction: column; border-left: 0; box-shadow: var(--turnsu-shadow-overlay); font-family: var(--turnsu-font-sans); }
+.place-detail-header { flex-shrink: 0; background: var(--turnsu-surface-1); backdrop-filter: none; border-color: var(--turnsu-border-strong); }
+.place-detail-header small { font-size: var(--turnsu-font-caption); color: var(--turnsu-text-secondary); white-space: normal; }
+.place-detail-scroll { flex: 1; min-height: 0; height: auto; background: var(--turnsu-surface-2); }
+.place-detail-sheet .detail-domain { color: var(--turnsu-text-secondary); }
+.place-detail-sheet .detail-media-missing { background: var(--turnsu-surface-2); border-color: var(--turnsu-border-strong); color: var(--turnsu-text-secondary); }
+.place-detail-sheet .detail-media-missing strong { font-size: var(--turnsu-font-label); }
+.place-detail-sheet .detail-media-missing small { font-size: var(--turnsu-font-caption); }
+.place-detail-sheet .place-detail-intro h2 { font-size: var(--turnsu-font-h3); line-height: 1.4; }
+.place-detail-sheet .place-detail-intro > p { color: var(--turnsu-text-secondary); }
+.turnsu-app .journey-place-tools button { background: var(--turnsu-surface-1); border-color: var(--travel-control-border); }
+.turnsu-app .decision-selection-bar[role="status"] { position: static; box-shadow: none; border-radius: var(--turnsu-radius-200); background: var(--turnsu-surface-1); }

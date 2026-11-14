@@ -6,6 +6,7 @@ import { createMcpTravelClient } from "./travel-client.js";
 import { configureTravelClient } from "./api-client.js";
 import { EmbeddedWorkspace } from "./embedded-workspace.jsx";
 import "./styles.css";
+import "./design-system/travel-theme.css";
 let bridge, opening = 0;
 const mount = createRoot(document.getElementById("root"));
 function Bootstrap({ connection, current }) {

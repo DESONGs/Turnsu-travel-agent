@@ -1,0 +1,98 @@
+[
+  {
+    "file": "user-1265.jpg",
+    "account": [
+      {
+        "overflow": "ellipsis",
+        "right": 1212
+      }
+    ],
+    "cards": [
+      {
+        "left": 244,
+        "right": 559.328125
+      },
+      {
+        "left": 575.328125,
+        "right": 890.65625
+      },
+      {
+        "left": 906.65625,
+        "right": 1222
+      }
+    ],
+    "cssViewport": {
+      "height": 900,
+      "width": 1265
+    },
+    "document": {
+      "clientWidth": 1250,
+      "scrollWidth": 1250,
+      "scrollY": 0
+    }
+  },
+  {
+    "file": "narrow-600.jpg",
+    "cssViewport": {
+      "height": 900,
+      "width": 600
+    },
+    "document": {
+      "clientWidth": 585,
+      "scrollWidth": 585,
+      "scrollY": 0
+    },
+    "gallery": {
+      "left": 18,
+      "right": 567
+    }
+  },
+  {
+    "file": "journal-mobile.jpg",
+    "cssViewport": {
+      "height": 844,
+      "width": 390
+    },
+    "document": {
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "scrollY": 0
+    },
+    "gallery": {
+      "left": 18,
+      "right": 357
+    }
+  },
+  {
+    "file": "comparison-desktop.jpg",
+    "account": [
+      {
+        "overflow": "ellipsis",
+        "right": 1387
+      }
+    ],
+    "cards": [
+      {
+        "left": 244,
+        "right": 617.65625
+      },
+      {
+        "left": 633.65625,
+        "right": 1007.328125
+      },
+      {
+        "left": 1023.328125,
+        "right": 1396.984375
+      }
+    ],
+    "cssViewport": {
+      "height": 1000,
+      "width": 1440
+    },
+    "document": {
+      "clientWidth": 1425,
+      "scrollWidth": 1425,
+      "scrollY": 0
+    }
+  }
+]

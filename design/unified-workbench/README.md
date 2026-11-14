@@ -1,6 +1,10 @@
 # Turnsu 统一旅行工作台
 
-2026-11-11。统一设计和正式 React 界面采用同一套组件、导航与品牌。正式数据通过 DSH（旅行助手执行与恢复基座）和 TypeScript 旅行服务保存到 PostgreSQL；设计预览使用明确标注的虚构旅行，不会连接真实账号或修改云端数据。
+2026-11-14。统一设计和正式 React 界面采用同一套组件、导航与 Turnsu Design System。正式数据通过 DSH（旅行助手执行与恢复基座）和 TypeScript 旅行服务保存到 PostgreSQL；设计预览使用明确标注的虚构旅行，不会连接真实账号或修改云端数据。
+
+## 设计语言
+
+工作台采用规范中的暖白表面、Inter 字体、墨色文字、主操作与状态语义，统一字阶、圆角、表单、分组和 44px 触控区域。原始资源固定版本与许可见[样式来源](../../src/web/design-system/README.md)，现行规则见[DESIGN.md](../../DESIGN.md)。本轮验收浅色界面；产品操作继续沿用下述约定。
 
 ## 设计与操作
 
@@ -28,6 +32,8 @@
 
 ## 实际界面
 
-![桌面手账](../../wiki/research/assets/2026-11-11-unified-workbench/journal-desktop.jpg)
+以下为正式 Web 的受控资料截图；设计预览仍使用自己的内存资料。设计规范迭代的源码、代码复核与 UAT 边界见[本轮记录](../../wiki/research/2026-11-14-turnsu-design-system-refinement.md)。
 
-[手机手账](../../wiki/research/assets/2026-11-11-unified-workbench/journal-mobile.jpg) · [手机浮雕](../../wiki/research/assets/2026-11-11-unified-workbench/relief-mobile.jpg) · [共享授权](../../wiki/research/assets/2026-11-11-unified-workbench/sharing-mobile.jpg) · [目的地沉浸](../../wiki/research/assets/2026-11-11-unified-workbench/immersion-mobile.jpg)
+![桌面手账](../../wiki/research/assets/2026-11-14-turnsu-design-system/journal-desktop.jpg)
+
+[手机手账](../../wiki/research/assets/2026-11-14-turnsu-design-system/journal-mobile.jpg) · [手机浮雕](../../wiki/research/assets/2026-11-14-turnsu-design-system/relief-mobile.jpg) · [共享授权](../../wiki/research/assets/2026-11-14-turnsu-design-system/sharing-mobile.jpg) · [目的地沉浸](../../wiki/research/assets/2026-11-14-turnsu-design-system/immersion-mobile.jpg)

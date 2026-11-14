@@ -8,6 +8,7 @@ import { MainPlanOverview, DecisionComparison } from "../../src/web/decision-wor
 import { host, tripId, locations, visits } from "./design-host.mjs";
 import "../../src/web/styles.css";
 import "./preview.css";
+import "../../src/web/design-system/travel-theme.css";
 
 const trip = { destination: "京都与大阪", dates: ["2026-11-20", "2026-11-25"], travelerCount: 3, totalBudget: 26000 };
 const nodes = [

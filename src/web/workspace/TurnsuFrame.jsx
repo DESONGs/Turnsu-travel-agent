@@ -99,7 +99,7 @@ export function TurnsuFrame({ children, active = "overview", onNavigate, onTrips
       {onShare && <button type="button" onClick={() => { setMenu(false); onShare(); }}><Users /><span>共享旅行</span></button>}
     </nav>
   </>;
-  return <div className={`turnsu-app ${compact ? "is-compact" : ""}`}>
+  return <div className={`turnsu-app turnsu-body ${compact ? "is-compact" : ""}`}>
     <aside className="turnsu-navigation"><div className="turnsu-brand-slot"><TurnsuBrand animate={!narrow} /><span>旅行</span></div>{links}{footer && <div className="turnsu-navigation-footer">{footer}</div>}</aside>
     <div className="turnsu-canvas"><header className="turnsu-mobile-header"><div className="turnsu-mobile-brand"><TurnsuBrand compact animate={narrow} /></div><div className="turnsu-header-tools">{tools}<button ref={trigger} className="turnsu-menu-button" type="button" aria-label="打开旅行导航" aria-expanded={menu} onClick={() => setMenu(true)}><List /></button></div></header>{children}</div>
     {menu && <div className="turnsu-menu-backdrop" onClick={event => { if (event.target === event.currentTarget) { setMenu(false); trigger.current?.focus(); } }}><aside ref={panel} className="turnsu-mobile-menu" role="dialog" aria-modal="true" aria-label="旅行导航"><div className="turnsu-menu-heading"><img src={logo} width="132" height="35" alt="Turnsu" /><button ref={closeRef} type="button" aria-label="关闭旅行导航" onClick={() => { setMenu(false); trigger.current?.focus(); }}><X /></button></div>{links}{footer}</aside></div>}

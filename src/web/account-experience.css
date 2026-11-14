@@ -55,15 +55,15 @@
 .account-notice>svg { flex:none; font-size:18px; margin-top:1px; }
 .account-notice .account-text-button { display:block; min-height:28px; padding:4px 0 0; }
 .account-center { display:grid; grid-template-columns:230px minmax(0,1fr); min-height:600px; overflow:hidden; }
-.account-sidebar { display:flex; flex-direction:column; padding:30px 22px 24px; background:#f7f7f3; border-right:1px solid #e9eae2; }
+.account-sidebar { display:flex; flex-direction:column; padding:30px 22px 24px; background:var(--turnsu-surface-2); border-right:1px solid var(--turnsu-border-strong); }
 .account-person { display:flex; align-items:center; flex-direction:column; padding:34px 0 28px; gap:6px; }
-.account-avatar { width:56px; height:56px; border-radius:18px; display:grid; place-items:center; background:#e4e9df; color:#415c49; font-size:24px; margin-bottom:8px; }
+.account-avatar { width:56px; height:56px; border-radius:18px; display:grid; place-items:center; background:var(--turnsu-gray-200); color:var(--turnsu-text-secondary); font-size:24px; margin-bottom:8px; }
 .account-person strong { font-size:15px; max-width:100%; overflow-wrap:anywhere; text-align:center; }
 .account-person>span { color:var(--quiet); font-size:11px; }
 .account-sidebar nav { display:grid; gap:7px; }
 .account-sidebar nav>button { border:1px solid transparent; background:transparent; color:var(--muted); min-height:44px; display:flex; align-items:center; gap:12px; padding:10px 15px; border-radius:10px; font-size:13px; text-align:left; }
-.account-sidebar nav>button:hover { background:#eeeee7; }
-.account-sidebar nav>button.is-active { color:#314b3b; background:#e7eddf; font-weight:650; }
+.account-sidebar nav>button:hover { background:var(--turnsu-gray-200); }
+.account-sidebar nav>button.is-active { color:var(--turnsu-text-hyperlink); background:var(--turnsu-surface-1); border-color:var(--turnsu-border-strong); font-weight:600; }
 .account-sidebar nav>button>svg { font-size:19px; }
 .account-sidebar-foot { display:flex; align-items:flex-start; gap:7px; margin-top:auto; padding-top:36px; color:#75806e; font-size:10px; line-height:1.7; }
 .account-sidebar-foot svg { flex:none; font-size:17px; }

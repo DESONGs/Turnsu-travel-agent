@@ -1,6 +1,6 @@
 # Travel Agent V2 Wiki
 
-主工作台已统一到 React／DSH，迁入新版手账、照片浮雕、目的地沉浸、共享与逐项确认，并采用 Turnsu 品牌。见[统一实现及验收边界](./research/2026-11-11-unified-turnsu-workbench.md)与[设计稿](../design/unified-workbench/README.md)；真实宿主、来源及公开发布仍待验收。
+主工作台已统一到 React／DSH，迁入新版手账、照片浮雕、目的地沉浸、共享与逐项确认，并按 Turnsu Design System 统一设计语言。最新变更见[规范接入与受控验收](./research/2026-11-14-turnsu-design-system-refinement.md)。见[统一实现及验收边界](./research/2026-11-11-unified-turnsu-workbench.md)与[设计稿](../design/unified-workbench/README.md)；真实宿主、来源及公开发布仍待验收。
 
 Travel Agent 的文档总入口。三层结构：
 

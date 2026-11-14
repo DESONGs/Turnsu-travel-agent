@@ -1,0 +1,170 @@
+{
+  "capturedOn": "2026-11-14",
+  "origin": "Unmodified native JPEG captures from CUA; no image resizing or cropping after capture.",
+  "scope": "HTTP, DSH and PostgreSQL are real local execution; identities, model responses and travel facts are explicitly fictional.",
+  "photos": "../../../../design/unified-workbench/assets/sources.json",
+  "files": [
+    {
+      "file": "account-narrow.jpg",
+      "pixels": {
+        "width": 600,
+        "height": 900
+      },
+      "sha256": "c756602729bde597e3a147cbad0c97a63ba602af18874e9289a3951d2f415814",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "comparison-desktop.jpg",
+      "pixels": {
+        "width": 1425,
+        "height": 990
+      },
+      "sha256": "60fcb3b1df65399be9472e6d75ee4925028e06875b2d9c4d105ea8f014a1d261",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "immersion-desktop.jpg",
+      "pixels": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "82444a3b8f79d93de3b00d0da4e3bfd94a5ecfe54c11924659f01d1639b1e157",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "immersion-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "d98908f0238abe37c9e70fc14a0915e7d49fbc3663d2e7236af32a311e63112b",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "itinerary-desktop.jpg",
+      "pixels": {
+        "width": 1425,
+        "height": 990
+      },
+      "sha256": "ad7f92b7bc953399cdfa5e345f22093d350b052cac0907320d32ceee81ea9a1e",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "journal-desktop.jpg",
+      "pixels": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "2c36e135bf90bf0f17708ec795678f592ced85658ab32a50a10c3ea751a8d5d1",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "journal-mobile.jpg",
+      "pixels": {
+        "width": 375,
+        "height": 812
+      },
+      "sha256": "86fcb2b9b8a917ef08e3e15b6be42bf83015b59d66246467e26b6d124497156d",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "mcp-desktop.jpg",
+      "pixels": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "10d402d978f6c95a11830465daf50fee1e1e764cef4f7c5222e87eea52f55320",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "narrow-600.jpg",
+      "pixels": {
+        "width": 585,
+        "height": 878
+      },
+      "sha256": "166e105888ec8301f6c3b2326ca73d80ceb7bb2f4b8d4f80df5d7df545118b35",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "place-detail-desktop.jpg",
+      "pixels": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "62dfd8326450c04a3fce3c18fe8b98be46d48c583cd7d619cd3a13b48d4165d6",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "place-detail-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "f91a819267f73615c77c036b6771081e89ad7aa4791ea7b88ac1be5660c67b55",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "preferences-desktop.jpg",
+      "pixels": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "47d6d64c899025dd16bd767fb51f13c57123e8b5897c44547bee0d700ff2920c",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "relief-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "3fdf8e23e5bcedc0c7c47bf6df34f1a115a02fb9b48834221580b87e3d650f53",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "review-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "aea0be6a0a374d51c09a8e8c677f38ed841951367e101514222da80fa3ac0ea0",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "sharing-controls-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "272394230c0879ec52deba90c9257dbe3bf5a4b54f540a8fd8c79a6c012af648",
+      "surface": "in-memory design preview; controls only"
+    },
+    {
+      "file": "sharing-mobile.jpg",
+      "pixels": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2c2f51da8c0d32d5057173fff48a51271c81a9bb9dbcbddf09f5f5363f313daa",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "user-1265.jpg",
+      "pixels": {
+        "width": 1250,
+        "height": 889
+      },
+      "sha256": "41e93aae91da4eee41d8ce844baa0464e02a90911b4f3c68d6679fdcec2195cf",
+      "surface": "controlled HTTP or local MCP application"
+    },
+    {
+      "file": "watches-desktop.jpg",
+      "pixels": {
+        "width": 1425,
+        "height": 990
+      },
+      "sha256": "960b89872d45d2b5ea1d8f081ba83bf27714a1c575b3f0a9ddfb9e2608061806",
+      "surface": "controlled HTTP or local MCP application"
+    }
+  ]
+}
