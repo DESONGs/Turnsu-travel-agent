@@ -1,15 +1,54 @@
-import { useEffect, useRef, useState } from "react";
-import { Camera, Plus, ArrowRight, Trash, ArrowClockwise } from "@phosphor-icons/react";
-import { api } from "./api-client.js";
+import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
+import { Camera, Plus, ArrowLeft, ArrowRight, Trash, ArrowClockwise } from "@phosphor-icons/react";
+import { api, isEmbeddedTravelClient } from "./api-client.js";
+import { useJournalExit } from "./ui/journal-exit.jsx";
+import { MemoryBook } from "./memory-book.jsx";
 import { blobBase64, prepareJournalPhoto } from "./travel-journal-photo.js";
 import { PhotoReliefPreview } from "./photo-relief-preview.jsx";
 import { canPreviewPhotoRelief, defaultPhotoRelief } from "../media/photo-relief-recipe.mjs";
+import { useContentMotion } from "./ui/content-motion.js";
 import "./travel-photo-journal.css";
+
+const JournalIllustration = lazy(() => import("./ui/hairline-illustration.jsx").then((module) => ({ default: module.HairlineIllustration })));
+
+function JournalEntryCard({ tripId, entry, active, offset, disabled, pick, onSelect }) {
+  const ref = useRef(null);
+  const [cover, setCover] = useState(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (!active || !ref.current) return;
+    const card = ref.current, shelf = card.parentElement;
+    const left = card.getBoundingClientRect().left - shelf.getBoundingClientRect().left + shelf.scrollLeft;
+    if (left < shelf.scrollLeft || left + card.offsetWidth > shelf.scrollLeft + shelf.clientWidth) shelf.scrollTo({ left: Math.max(0, left - (shelf.clientWidth - card.offsetWidth) / 2), behavior: "instant" });
+  }, [active]);
+  useEffect(() => {
+    const controller = new AbortController(); let url;
+    setCover(null); setFailed(false);
+    const load = async () => {
+      try {
+        const blob = await api.journalPhoto(tripId, entry.id, entry.photos[0].id, controller.signal);
+        if (controller.signal.aborted) return;
+        url = URL.createObjectURL(blob); setCover(url);
+      } catch { if (!controller.signal.aborted) setFailed(true); }
+    };
+    const observer = new IntersectionObserver(([item]) => { if (item.isIntersecting) { observer.disconnect(); void load(); } }, { rootMargin: "80px" });
+    observer.observe(ref.current);
+    return () => { observer.disconnect(); controller.abort(); if (url) URL.revokeObjectURL(url); };
+  }, [tripId, entry.id, entry.photos[0]?.id]);
+  return <button ref={ref} type="button" className="journal-memory-card" style={{ "--memory-lean": `${Math.sign(offset) * Math.min(Math.abs(offset), 2) * 0.9}deg` }} aria-pressed={active} disabled={disabled} onClick={onSelect}>
+    <span className="journal-memory-cover">{cover && !failed ? <img src={cover} alt="" onError={() => setFailed(true)} /> : <Camera aria-hidden="true" />}</span>
+    <strong>{entry.placeTitle}</strong>
+    <span className="journal-memory-meta"><span>{entry.stage === "visited" ? pick("已到访", "Visited") : pick("想去", "Wish")}</span><time>{entry.takenOn || entry.createdAt.slice(0, 10)}</time></span>
+    {failed ? <small>{pick("封面暂不可用，仍可打开记录", "Cover unavailable; open the record")}</small> : null}
+  </button>;
+}
 
 function SavedPhotos({ tripId, entry, pick, onPlanPhoto, onDelete }) {
   const [photos, setPhotos] = useState([]), [active, setActive] = useState(0);
   const [error, setError] = useState(false), [attempt, retry] = useState(0), [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const photoRef = useRef(null);
+  useContentMotion(photoRef, `${active}:${photos.length}`, { axis: "x", distance: 14 });
   useEffect(() => {
     const controller = new AbortController(), urls = [];
     setPhotos([]); setError(false); setActive(0); setConfirmDelete(false);
@@ -30,19 +69,29 @@ function SavedPhotos({ tripId, entry, pick, onPlanPhoto, onDelete }) {
   return <article className="journal-record">
     <header><span>{entry.stage === "visited" ? pick("在路上的记录", "On this trip") : pick("想去的灵感", "An idea for later")}</span><time>{entry.takenOn || entry.createdAt.slice(0, 10)}</time></header>
     {photos.length ? <>
-      {canPreviewPhotoRelief(entry.subject) ? <PhotoReliefPreview key={`${entry.id}-${photos[active].id}`} src={photos[active].url} subject={entry.subject} recipe={photos[active].relief} title={entry.placeTitle} english={pick(false, true)} /> : <figure><img src={photos[active].url} onError={() => setError(true)} alt={pick(`${entry.placeTitle}，我的食物照片 ${active + 1}`, `My food photo ${active + 1} at ${entry.placeTitle}`)} /><figcaption>{pick("我的原始视角 · 食物仅作为图文记录", "My perspective · food is kept as a photo record")}</figcaption></figure>}
+      <div className="journal-photo-view" ref={photoRef}>{canPreviewPhotoRelief(entry.subject) ? <PhotoReliefPreview key={`${entry.id}-${photos[active].id}`} src={photos[active].url} subject={entry.subject} recipe={photos[active].relief} title={entry.placeTitle} english={pick(false, true)} /> : <figure><img src={photos[active].url} onError={() => setError(true)} alt={pick(`${entry.placeTitle}，我的食物照片 ${active + 1}`, `My food photo ${active + 1} at ${entry.placeTitle}`)} /><figcaption>{pick("我的原始视角 · 食物仅作为图文记录", "My perspective · food is kept as a photo record")}</figcaption></figure>}</div>
       {photos.length > 1 ? <div className="journal-thumbnails" aria-label={pick("不同拍摄角度", "Photo angles")}>{photos.map((photo, index) => <button key={photo.id} type="button" aria-pressed={active === index} aria-label={pick(`查看照片 ${index + 1}`, `View photo ${index + 1}`)} onClick={() => setActive(index)}><img src={photo.url} alt="" /><span>{index + 1}</span></button>)}</div> : null}
     </> : <p role="status">{error ? pick("照片读取失败，记录仍保留。", "Photos could not load; your record is safe.") : pick("正在读取照片…", "Loading photographs…")}</p>}
     {error ? <div role="alert"><p>{pick("这张照片暂时无法显示，请重新读取。", "This photo could not be displayed. Try loading it again.")}</p><button type="button" className="button secondary" onClick={() => retry(attempt + 1)}><ArrowClockwise />{pick("重新读取", "Retry")}</button></div> : null}
     {entry.note ? <p className="journal-record-note">{entry.note}</p> : null}
-    <p className="journal-model-status">{canPreviewPhotoRelief(entry.subject) ? pick("立体预览使用这条记录的照片，在本机重建深度浮雕；不调用第三方建模服务。", "The relief is rebuilt from this record's photo on your device, without third-party modelling.") : pick("食物保留照片与文字，不参与景色或建筑建模。", "Food is kept as photos and notes, not scenery or building models.")}</p>
+    <p className="journal-model-status">{canPreviewPhotoRelief(entry.subject) ? pick("线稿从这条记录的原照片提取，远近层次可手动调整。", "Outlines come from this record’s photograph, with adjustable depth.") : pick("食物保留照片与文字，不参与景色或建筑建模。", "Food is kept as photos and notes, not scenery or building models.")}</p>
     <div className="journal-record-actions"><button type="button" className="button primary" disabled={!photos.length || busy} onClick={plan}>{pick("拿这张照片继续规划", "Plan with this photo")}<ArrowRight /></button><button type="button" className="button secondary" disabled={busy} onClick={() => setConfirmDelete(true)}><Trash />{pick("删除", "Delete")}</button></div>
     {confirmDelete ? <div className="journal-delete" role="group" aria-label={pick("确认删除记录", "Confirm deletion")}><p>{pick("永久删除这条记录及其照片？不会改变行程。", "Delete this record and its photos permanently? Your itinerary will not change.")}</p><button type="button" className="button secondary" disabled={busy} onClick={async () => { setBusy(true); try { await onDelete(entry.id); } finally { setBusy(false); } }}>{pick("确认删除", "Delete permanently")}</button><button type="button" className="button secondary" disabled={busy} onClick={() => setConfirmDelete(false)}>{pick("保留", "Keep")}</button></div> : null}
   </article>;
 }
 
-export function TravelPhotoJournal({ node = null, tripId, locale, onPlanPhoto, onDirtyChange }) {
+export function TravelPhotoJournal(props) {
+  const mayLeave = useJournalExit();
+  const [legacy, showLegacy] = useState(false);
+  if (!isEmbeddedTravelClient()) return <TripPhotoRecords {...props}/>;
+  if (legacy) return <><button type="button" className="button secondary" onClick={async () => { if (await mayLeave()) showLegacy(false); }}>{props.locale==="en"?"My journal":"回到我的手账"}</button><TripPhotoRecords {...props}/></>;
+  return <MemoryBook tripId={props.tripId} node={props.node} english={props.locale==="en"} onDirtyChange={props.onDirtyChange} onOpenLegacy={()=>showLegacy(true)}/>;
+}
+
+function TripPhotoRecords({ node = null, tripId, locale, onPlanPhoto, onDirtyChange }) {
   const pick = (zh, en) => locale === "en" ? en : zh;
+  const mayLeave = useJournalExit();
+  const titleId = useId();
   const [entries, setEntries] = useState([]), [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true), [loadError, setLoadError] = useState(false), [attempt, retry] = useState(0);
   const [photos, setPhotos] = useState([]), [subject, setSubject] = useState(node?.domain === "food" ? "food" : node?.domain === "play" ? "landscape" : "building");
@@ -52,7 +101,7 @@ export function TravelPhotoJournal({ node = null, tripId, locale, onPlanPhoto, o
   const [writing, setWriting] = useState(false);
   const id = useRef(crypto.randomUUID()), input = useRef(null), operation = useRef(false);
   const dirty = photos.length > 0 || note.length > 0 || takenOn.length > 0 || busy;
-  useEffect(() => { onDirtyChange?.(dirty); return () => onDirtyChange?.(false); }, [dirty, onDirtyChange]);
+  useEffect(() => { onDirtyChange?.(dirty, busy); return () => onDirtyChange?.(false); }, [dirty, busy, onDirtyChange]);
   useEffect(() => {
     const block = (event) => { event.preventDefault(); event.returnValue = ""; };
     if (dirty) window.addEventListener("beforeunload", block);
@@ -92,14 +141,30 @@ export function TravelPhotoJournal({ node = null, tripId, locale, onPlanPhoto, o
   const edit = (setter, value) => { setter(value); id.current = crypto.randomUUID(); };
   const current = entries.find((entry) => entry.id === selected);
   const activePhotoIndex = Math.min(previewIndex, Math.max(0, photos.length - 1)), activePhoto = photos[activePhotoIndex];
+  const selectEntry = async (entryId) => {
+    if (!await mayLeave()) return;
+    setPhotos([]); setNote(""); setTakenOn(""); setSelected(entryId); setWriting(false); setNotice(""); setError("");
+  };
+  const historyKeys = (event) => {
+    const cards = [...event.currentTarget.querySelectorAll(".journal-memory-card")];
+    const index = cards.indexOf(event.target);
+    if (index < 0 || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "Home" ? 0 : event.key === "End" ? cards.length - 1 : Math.max(0, Math.min(cards.length - 1, index + (event.key === "ArrowRight" ? 1 : -1)));
+    cards[next]?.focus();
+  };
   const pastePhotos = (event) => { const files = Array.from(event.clipboardData?.files ?? []); if (files.length) { event.preventDefault(); void choose(files); } };
-  return <section className="travel-photo-journal" aria-labelledby="travel-journal-title">
-    <header className="journal-intro"><span>{pick("我的旅行手账", "MY TRAVEL JOURNAL")}</span><h2 id="travel-journal-title">{node?.title ?? pick("这一路，值得记住", "Moments worth keeping")}</h2><p>{pick("出发前留住灵感，路途中记下自己的发现。", "Keep an idea before you go. Record a discovery while you travel.")}</p></header>
+  return <section className="travel-photo-journal" aria-labelledby={titleId}>
+    <header className="journal-intro"><span>{pick("我的旅行手账", "MY TRAVEL JOURNAL")}</span><h2 id={titleId}>{node?.title ?? pick("这一路，值得记住", "Moments worth keeping")}</h2><p>{pick("出发前留住灵感，路途中记下自己的发现。", "Keep an idea before you go. Record a discovery while you travel.")}</p></header>
     <p className="journal-privacy">{pick("仅这趟旅行的成员可见。保存的是压缩照片，已移除定位等文件元数据；请勿上传证件或他人的私密信息。游客记录随游客行程的有效期可访问，登录合并后继续保留。", "Visible only to this trip's members. Compressed photos have location/file metadata removed. Do not upload IDs or others' private information. Guest records remain accessible while the guest trip is valid; sign in to keep them with your account.")}</p>
     {loading ? <p role="status">{pick("正在打开手账…", "Opening journal…")}</p> : null}
     {!node && !loading && !loadError ? <p className="journal-privacy">{pick(entries.length ? "这里保留整趟旅行的照片，即使原来的候选不再展示。添加新照片请打开对应地点的详情。" : "还没有照片记录。从任意地点详情打开「留下旅行记录」，不必先把地点加入行程。", entries.length ? "Photos stay here even if an earlier option is no longer shown. To add photos, open the place details." : "No photos yet. Open My photos & memories in any place's details. You do not need to adopt the option first.")}</p> : null}
     {loadError ? <div role="alert"><p>{pick("手账暂时读不到，未保存的内容不会替代旧记录。", "Journal unavailable. Unsaved content will not replace existing records.")}</p><button className="button secondary" onClick={() => retry(attempt + 1)}><ArrowClockwise />{pick("重试", "Retry")}</button></div> : null}
-    {entries.length ? <nav className="journal-history" aria-label={pick("已有记录", "Saved records")}>{entries.map((entry) => <button key={entry.id} type="button" aria-pressed={entry.id === selected && !writing} disabled={busy} onClick={() => { if (dirty && !window.confirm(pick("放弃尚未保存的照片和备注？", "Discard unsaved photos and notes?"))) return; setPhotos([]); setNote(""); setTakenOn(""); setSelected(entry.id); setWriting(false); }}>{!node ? <strong>{entry.placeTitle}</strong> : null}<span>{entry.stage === "visited" ? pick("已到访", "Visited") : pick("想去", "Wish")}</span>{entry.takenOn || entry.createdAt.slice(0, 10)}</button>)}{node ? <button type="button" disabled={busy} aria-pressed={writing} onClick={() => setWriting(true)}><Plus />{pick("再记一笔", "New entry")}</button> : null}</nav> : null}
+    {!entries.length && !loading && !loadError ? <div className="journal-empty"><Suspense fallback={null}><JournalIllustration /></Suspense></div> : null}
+    {entries.length ? <>
+      <nav className="journal-history" aria-label={pick("已有记录", "Saved records")} onKeyDown={historyKeys}>{entries.map((entry, index) => <JournalEntryCard key={entry.id} tripId={tripId} entry={entry} offset={index - entries.findIndex((item) => item.id === selected)} active={entry.id === selected && !writing} disabled={busy} pick={pick} onSelect={() => selectEntry(entry.id)} />)}{node ? <button className="journal-new-card" type="button" disabled={busy} aria-pressed={writing} onClick={() => { setNotice(""); setError(""); setWriting(true); }}><Plus />{pick("再记一笔", "New entry")}</button> : null}</nav>
+      {!writing ? <div className="journal-pagination"><button type="button" disabled={busy || entries.findIndex((entry) => entry.id === selected) <= 0} aria-label={pick("上一条旅行记录", "Previous journal entry")} onClick={() => selectEntry(entries[entries.findIndex((entry) => entry.id === selected) - 1]?.id)}><ArrowLeft /></button><span role="status">{entries.findIndex((entry) => entry.id === selected) + 1} / {entries.length}</span><button type="button" disabled={busy || entries.findIndex((entry) => entry.id === selected) >= entries.length - 1} aria-label={pick("下一条旅行记录", "Next journal entry")} onClick={() => selectEntry(entries[entries.findIndex((entry) => entry.id === selected) + 1]?.id)}><ArrowRight /></button></div> : null}
+    </> : null}
     {notice ? <p className="journal-notice" role="status">{notice}</p> : null}
     {error ? <p className="journal-error" role="alert">{error}</p> : null}
     {node && writing && !loading ? <form onSubmit={save} onPaste={pastePhotos} className="journal-form"><fieldset disabled={busy}>

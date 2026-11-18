@@ -1,3 +1,4 @@
+import { createGoogleSceneRenderer } from "./google-map-renderer.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -103,10 +104,15 @@ export function TripDecisionMap({
     const mainlandScene = stops.every((stop) => stop.coordinates.coordinateSystem === "GCJ-02")
       && drawableLegs.every((leg) => leg.polyline.every((point) => point.coordinateSystem === "GCJ-02"));
     if (!mainlandScene) {
-      setRendererMode("leaflet");
-      setRendererReason("amap_js_renderer_outside_mainland_scene");
-      setResolvedSceneKey(key);
-      return undefined;
+      let cancelled = false;
+      const mount = document.createElement("div"); mount.className = "trip-map-sdk-mount";
+      containerRef.current.replaceChildren(mount);
+      setRendererMode("resolving");
+      createGoogleSceneRenderer({ region: nodes.find(n => n.location?.countryCode)?.location.countryCode ?? "US", container: mount, stops, legs: drawableLegs, activeNodeId, activeLegId,
+        onFocusNode: nodeId => focusNodeCallbackRef.current?.(nodeId), onFocusLeg: legId => focusLegCallbackRef.current?.(legId), locale })
+        .then(renderer => { if (cancelled) return renderer.destroy(); amapRendererRef.current = renderer; setRendererMode("amap"); setResolvedSceneKey(key); })
+        .catch(error => { if (!cancelled) { setRendererReason(error.code ?? "google_maps_unavailable"); setInteractiveFailed(true); setRendererMode("unavailable"); setResolvedSceneKey(key); } });
+      return () => { cancelled = true; amapRendererRef.current?.destroy(); amapRendererRef.current = null; };
     }
     let cancelled = false;
     const host = containerRef.current;
@@ -217,7 +223,7 @@ export function TripDecisionMap({
     });
   }, [activeLegId, key, comparisonMobility, english]);
 
-  const useInteractive = Boolean(stops.length && !interactiveFailed && (rendererMode === "amap" || (rendererMode === "leaflet" && tileUrl)));
+  const useInteractive = Boolean(stops.length && !interactiveFailed && (["amap", "google"].includes(rendererMode) || (rendererMode === "leaflet" && tileUrl)));
   const useStatic = !useInteractive && staticMapAvailable && tripId && !staticFailed;
   const showInteractiveSurface = Boolean(stops.length && !interactiveFailed && (
     ["resolving", "amap", "unavailable"].includes(rendererMode)
@@ -229,7 +235,7 @@ export function TripDecisionMap({
     <div className="trip-map-surface">
       {showInteractiveSurface ? <div ref={containerRef} className={rendererMode === "amap" ? "amap-trip-map" : "leaflet-trip-map"} /> : useStatic ? <AuthenticatedMapImage tripId={tripId} alt={english ? (drawableLegs.length ? "Current places and recommended routes" : "Current trip places") : (drawableLegs.length ? "当前地点与推荐路线地图" : "当前旅行地点分布地图")} onError={() => setStaticFailed(true)} /> : <div className="trip-map-unavailable"><MapTrifold weight="duotone" /><span><strong>{english ? "No map is available for these options yet" : "这些候选暂时没有可展示的地图"}</strong><small>{english ? "Addresses and Amap navigation remain available. Places appear here when coordinates are returned." : "仍可查看地址与高德导航；取得坐标后会自动出现在这里。"}</small></span></div>}
       {rendererMode === "resolving" ? <div className="trip-map-resolving"><MapTrifold weight="duotone" />{english ? "Loading the route map" : "正在载入路线地图"}</div> : null}
-      {["amap", "leaflet"].includes(rendererMode) ? <div className="trip-map-zoom-controls" aria-label={english ? "Map zoom" : "地图缩放"}><button type="button" onClick={() => rendererMode === "amap" ? amapRendererRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={english ? "Zoom in" : "放大地图"}>+</button><button type="button" onClick={() => rendererMode === "amap" ? amapRendererRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={english ? "Zoom out" : "缩小地图"}>−</button></div> : null}
+      {["amap", "google", "leaflet"].includes(rendererMode) ? <div className="trip-map-zoom-controls" aria-label={english ? "Map zoom" : "地图缩放"}><button type="button" onClick={() => ["amap", "google"].includes(rendererMode) ? amapRendererRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={english ? "Zoom in" : "放大地图"}>+</button><button type="button" onClick={() => ["amap", "google"].includes(rendererMode) ? amapRendererRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={english ? "Zoom out" : "缩小地图"}>−</button></div> : null}
       {rendererReason && rendererMode === "leaflet" ? <div className="trip-map-fallback-note"><WarningCircle weight="fill" />{rendererReason === "amap_js_renderer_not_configured" ? (english ? "The places and routes are verified; Amap interactive rendering is awaiting authorization, so the basic map is shown." : "路线与地点已核验；高德互动地图授权待配置，当前使用基础地图。") : (english ? "Amap did not load. The checked route remains visible on the basic map." : "高德互动地图未能载入，已在基础地图保留核验路线。")}</div> : null}
       {interactiveFailed ? <div className="trip-map-error"><WarningCircle weight="fill" />{english ? "The base map did not fully load. Place coordinates are still retained." : "底图暂时没有完整载入，地点坐标仍保留。"}</div> : null}
       {stops.length ? <span className="trip-map-count"><MapPin weight="fill" />{english ? `${stops.length} stops · ${drawableLegs.length} route legs${routePathGapCount ? ` · ${routePathGapCount} without drawable geometry` : ""}` : `${stops.length} 站 · ${drawableLegs.length} 段可绘制路线${routePathGapCount ? ` · ${routePathGapCount} 段缺少真实折线` : ""}`}</span> : null}
@@ -288,6 +294,16 @@ export function DestinationExperienceMap({ scene, label = "目的地沉浸预览
     if (!containerRef.current || !scene?.coordinates) {
       setRendererMode("unavailable");
       return undefined;
+    }
+    if (scene.coordinates.coordinateSystem === "WGS-84") {
+      let cancelled = false;
+      const mount = document.createElement("div"); mount.className = "trip-map-sdk-mount";
+      containerRef.current.replaceChildren(mount);
+      setRendererMode("resolving");
+      createGoogleSceneRenderer({ container: mount, region: scene.countryCode ?? "US", locale, stops: [{ ...scene, sequenceLabel: 1 }], legs: scene.routeRelation?.polyline?.length ? [{ ...scene.routeRelation, legId: "destination-relation" }] : [] })
+        .then(renderer => { if (cancelled) return renderer.destroy(); amapRendererRef.current = renderer; setRendererMode("google"); })
+        .catch(error => { if (!cancelled) { setRendererMode("unavailable"); setRendererReason(error.code ?? "google_map_unavailable"); setInteractiveFailed(true); } });
+      return () => { cancelled = true; amapRendererRef.current?.destroy(); amapRendererRef.current = null; };
     }
     if (policy.mode !== "amap_3d") {
       setRendererMode("leaflet");
@@ -361,17 +377,17 @@ export function DestinationExperienceMap({ scene, label = "目的地沉浸预览
     };
   }, [sceneKeyValue, rendererMode, interactiveFailed]);
 
-  const showMapMount = Boolean(scene?.coordinates && !interactiveFailed && (rendererMode === "resolving" || rendererMode === "amap" || (rendererMode === "leaflet" && tileUrl)));
-  const useMap = Boolean(scene?.coordinates && !interactiveFailed && (rendererMode === "amap" || (rendererMode === "leaflet" && tileUrl)));
+  const showMapMount = Boolean(scene?.coordinates && !interactiveFailed && (rendererMode === "resolving" || ["amap", "google"].includes(rendererMode) || (rendererMode === "leaflet" && tileUrl)));
+  const useMap = Boolean(scene?.coordinates && !interactiveFailed && (["amap", "google"].includes(rendererMode) || (rendererMode === "leaflet" && tileUrl)));
   return <section className="destination-experience-map trip-decision-map" aria-label={label} data-destination-renderer={useMap ? rendererMode : "unavailable"} data-destination-status={rendererReason ?? (rendererMode === "amap" ? "amap_destination_ready" : rendererMode)}>
     <div className="trip-map-surface destination-map-surface">
       {showMapMount ? <div ref={containerRef} className={rendererMode === "amap" ? "amap-trip-map destination-amap-map" : "leaflet-trip-map destination-leaflet-map"} /> : <div className="trip-map-unavailable"><MapTrifold weight="duotone" /><span><strong>{english ? "No spatial preview is available yet" : "暂时没有可展示的空间预览"}</strong><small>{english ? "This place needs reliable coordinates before it can enter the map preview." : "需要可靠坐标后，才能进入地图立体预览。"}</small></span></div>}
       {rendererMode === "resolving" ? <div className="trip-map-resolving"><MapTrifold weight="duotone" />{english ? "Loading the 3D spatial view" : "正在载入地图立体视图"}</div> : null}
-      {rendererMode === "amap" ? <div className="destination-camera-note"><MapTrifold weight="fill" />{english ? "Amap 3D spatial view" : "地图立体视图（高德）"}</div> : null}
+      {rendererMode === "google" ? <div className="destination-camera-note">Google Maps</div> : null}{rendererMode === "amap" ? <div className="destination-camera-note"><MapTrifold weight="fill" />{english ? "Amap 3D spatial view" : "地图立体视图（高德）"}</div> : null}
       {rendererReason && rendererMode === "leaflet" ? <div className="trip-map-fallback-note"><WarningCircle weight="fill" />{destinationFallbackReason({ reason: rendererReason }, english)}</div> : null}
       {interactiveFailed ? <div className="trip-map-error"><WarningCircle weight="fill" />{english ? "The map did not fully load. Source photos and facts remain available." : "地图暂时没有完整载入；来源照片与证据仍可查看。"}</div> : null}
-      {["amap", "leaflet"].includes(rendererMode) ? <div className="trip-map-zoom-controls" aria-label={english ? "Spatial preview zoom" : "空间预览缩放"}><button type="button" onClick={() => rendererMode === "amap" ? amapRendererRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={english ? "Zoom in" : "放大空间预览"}>+</button><button type="button" onClick={() => rendererMode === "amap" ? amapRendererRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={english ? "Zoom out" : "缩小空间预览"}>−</button></div> : null}
+      {["amap", "google", "leaflet"].includes(rendererMode) ? <div className="trip-map-zoom-controls" aria-label={english ? "Spatial preview zoom" : "空间预览缩放"}><button type="button" onClick={() => ["amap", "google"].includes(rendererMode) ? amapRendererRef.current?.zoomIn() : mapRef.current?.zoomIn()} aria-label={english ? "Zoom in" : "放大空间预览"}>+</button><button type="button" onClick={() => ["amap", "google"].includes(rendererMode) ? amapRendererRef.current?.zoomOut() : mapRef.current?.zoomOut()} aria-label={english ? "Zoom out" : "缩小空间预览"}>−</button></div> : null}
     </div>
-    <footer><span>{rendererMode === "amap" ? (english ? "Amap 3D spatial relation" : "高德 3D 空间关系") : (english ? "Lightweight spatial fallback" : "轻量空间降级视图")}</span><small>{english ? "The preview is read-only and never changes the trip." : "此预览只读，不会修改旅行状态。"}</small></footer>
+    <footer><span>{rendererMode === "google" ? "Google Maps" : rendererMode === "amap" ? (english ? "Amap 3D spatial relation" : "高德 3D 空间关系") : (english ? "Lightweight spatial fallback" : "轻量空间降级视图")}</span><small>{english ? "The preview is read-only and never changes the trip." : "此预览只读，不会修改旅行状态。"}</small></footer>
   </section>;
 }

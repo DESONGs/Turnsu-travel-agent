@@ -1,0 +1,293 @@
+@import "./colors_and_type.css";
+
+/* Project names are shared by the planner, drawer, journal and account surfaces. */
+:root, .atlas-shell, .journey-shell, .place-detail-sheet, .ui-sheet, .account-overlay, .account-fullpage {
+  --editorial-serif: "New York", "Iowan Old Style", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+  --font-sans: var(--turnsu-font-sans);
+  --ink: var(--turnsu-text-primary);
+  --ink-soft: var(--turnsu-text-secondary);
+  --muted: var(--turnsu-text-secondary);
+  --quiet: var(--turnsu-text-secondary);
+  --canvas: var(--turnsu-canvas);
+  --paper: var(--turnsu-canvas);
+  --surface: var(--turnsu-surface-1);
+  --surface-subtle: var(--turnsu-surface-3);
+  --surface-warm: var(--turnsu-surface-2);
+  --surface-glass: color-mix(in srgb, var(--surface) 94%, transparent);
+  --line: var(--turnsu-border-primary);
+  --line-strong: var(--turnsu-border-strong);
+  --coral: var(--turnsu-brand-cta);
+  --coral-action: var(--turnsu-action);
+  --coral-deep: var(--turnsu-action-hover);
+  --coral-soft: var(--turnsu-brand-tint);
+  --blue: var(--ts-series-info);
+  --blue-deep: var(--turnsu-text-hyperlink);
+  --blue-soft: var(--ts-series-info-bg);
+  --green: var(--turnsu-positive);
+  --green-soft: var(--turnsu-positive-bg);
+  --amber: var(--turnsu-reminder);
+  --amber-soft: var(--turnsu-reminder-bg);
+  --danger: var(--turnsu-negative);
+  --danger-soft: var(--turnsu-negative-bg);
+  --r-pill: var(--turnsu-radius-pill);
+  --r-sm: var(--ts-series-radius-ctrl);
+  --r-md: var(--turnsu-radius-200);
+  --r-lg: var(--ts-series-radius-card);
+  --r-xl: var(--turnsu-radius-sheet);
+  --shadow-card: 0 2px 6px rgb(22 18 13 / 4%);
+  --shadow-card-hover: 0 6px 18px rgb(22 18 13 / 9%);
+  --shadow-float: 0 12px 32px rgb(22 18 13 / 16%);
+  --shadow-popover: var(--shadow-float);
+}
+
+body, .atlas-shell, .place-detail-sheet, .account-overlay {
+  font-family: var(--turnsu-font-sans);
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.num, time, .price-slot strong {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.travel-brand-symbol {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+[data-series="workspace"] :is(.button.primary, .account-action) {
+  background: var(--turnsu-action);
+  color: var(--turnsu-on-action);
+  border: 1px solid var(--turnsu-action);
+  border-radius: var(--turnsu-radius-default);
+  box-shadow: none;
+}
+[data-series="workspace"] :is(.button.primary, .account-action):hover:enabled {
+  background: var(--turnsu-action-hover);
+}
+[data-series="workspace"] .button.brand {
+  background: var(--turnsu-brand-cta);
+  color: var(--turnsu-on-brand-cta);
+  border: 1px solid var(--turnsu-brand-cta);
+  border-radius: var(--turnsu-radius-default);
+  box-shadow: none;
+}
+[data-series="workspace"] .button.brand:hover:enabled {
+  color: var(--turnsu-on-brand-cta);
+  background: var(--turnsu-brand-cta-hover);
+}
+[data-series="workspace"] :is(button, a, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--turnsu-brand-cta);
+  outline-offset: 3px;
+}
+[data-series="workspace"] .button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+/* ── Enforce 12px Typography Floor & Harmonize Legacy Sub-panels ─────── */
+.transport-endpoints small,
+.transport-endpoints em,
+.transport-service-line,
+.transport-fares small,
+.transport-fares em,
+.transport-freshness,
+.evidence-companion-summary small,
+.evidence-companion-summary > em,
+.evidence-media-grid figcaption,
+.evidence-companion-section > header small,
+.evidence-reading > header > button,
+.evidence-translated-state,
+.evidence-sections article > small,
+.evidence-sections summary,
+.evidence-sections details p,
+.evidence-inline-warning,
+.evidence-empty-copy,
+.evidence-claims article small,
+.evidence-sources article small,
+.evidence-claims article > em,
+.evidence-decision-fit > ul li,
+.evidence-unknowns p,
+.evidence-sources article a,
+.evidence-sources article > em,
+.evidence-source-only,
+.evidence-share-link small,
+.evidence-share-link form button,
+.evidence-companion-caveats p,
+.agent-progress-rail > header small,
+.agent-progress-rail li small,
+.price-slot small,
+.budget-board > summary small,
+.budget-domain-rows em,
+.budget-domain-rows > div > small,
+.budget-usage small,
+.route-leg-summary small,
+.route-leg > em,
+.route-leg-steps > summary,
+.route-leg-steps li,
+.route-leg-steps li strong {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+.transport-endpoints strong,
+.transport-fares strong,
+.evidence-claims article strong,
+.evidence-sources article strong,
+.evidence-share-link input,
+.agent-progress-rail li strong,
+.route-stop-main strong,
+.route-leg-summary strong,
+.route-leg-summary span {
+  font-size: 13px !important;
+}
+
+/* Harmonize Evidence Companion & Weather Cards into Warm Editorial Paper */
+.evidence-companion-summary {
+  background: var(--surface-subtle) !important;
+  border: 1px solid var(--line);
+}
+.evidence-companion-summary > span {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+}
+.weather-card,
+.mobility-card,
+.route-weather-disclosure {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: var(--r-md) !important;
+}
+.weather-card > header > span,
+.mobility-card > header > span,
+.route-weather-disclosure > summary > svg {
+  background: var(--blue-soft) !important;
+  color: var(--blue) !important;
+}
+
+/* Map Marker & Route Chip Editorial Polish */
+.trip-map-marker {
+  min-width: 30px !important;
+  height: 30px !important;
+  padding: 0 8px !important;
+  border: 2px solid var(--surface) !important;
+  border-radius: 999px !important;
+  background: var(--ink) !important;
+  color: var(--turnsu-on-action) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(20, 17, 13, 0.24) !important;
+  transition: transform 220ms cubic-bezier(0.175, 0.885, 0.32, 1.15), background-color 180ms ease, box-shadow 220ms ease !important;
+}
+.trip-map-marker.trial {
+  background: var(--coral-action) !important;
+  color: var(--turnsu-on-action) !important;
+}
+.trip-map-marker.active {
+  transform: scale(1.22) translateY(-3px) !important;
+  background: var(--coral-action) !important;
+  color: var(--turnsu-on-action) !important;
+  box-shadow: 0 0 0 5px var(--turnsu-brand-ring), 0 8px 20px rgba(20, 17, 13, 0.3) !important;
+  z-index: 20 !important;
+}
+.trip-map-marker.current-only {
+  background: var(--surface) !important;
+  border-color: var(--quiet) !important;
+  border-style: dashed !important;
+  color: var(--muted) !important;
+}
+.trip-map-route-chip {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line-strong) !important;
+  background: var(--surface-glass) !important;
+  backdrop-filter: blur(8px);
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 12px rgba(20, 17, 13, 0.12) !important;
+}
+.trip-map-route-chip.trial {
+  border-color: var(--turnsu-border-brand) !important;
+  color: var(--coral-action) !important;
+}
+
+[data-travel-embedded] :is(.destination-photo-actions select, .painting-view-controls button, .destination-photo-picker button) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+[data-travel-embedded] .destination-photo-picker button[aria-pressed="true"] {
+  border-color: var(--coral-action);
+}
+[data-travel-embedded] :is(.destination-photo-actions > span, .destination-photo-source, .painting-view-controls > span) {
+  color: var(--muted);
+}
+[data-travel-embedded] :is(.destination-photo-error, .memory-book [role="alert"]) {
+  color: var(--danger);
+}
+
+/* Workspace navigation is shared by the standalone page and embedded canvas. */
+[data-series="workspace"] .atlas-topbar { z-index: var(--turnsu-z-header); }
+[data-series="workspace"] .place-detail-header {
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+.place-detail-header .place-detail-identity .detail-domain {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.place-detail-header .place-detail-subtabs button { min-height: 38px; }
+[data-series="workspace"] .place-detail-sheet .place-detail-sticky-footer,
+[data-series="workspace"] .route-day-switcher { background: var(--surface-glass); }
+[data-series="workspace"] .atlas-route-confirm { border-color: var(--line-strong); }
+[data-series="workspace"] .atlas-domain-nav button[aria-selected="true"] svg { color: var(--turnsu-on-action); }
+[data-series="workspace"] .atlas-draft-count { color: var(--turnsu-on-brand-cta); background: var(--turnsu-brand-cta); }
+[data-series="workspace"] .place-detail-sheet .place-detail-intro h2 { font-family: var(--editorial-serif); }
+[data-series="workspace"] .memory-book .memory-actions .button.primary { color: var(--turnsu-on-action); }
+[data-series="workspace"] .route-day-switcher button[aria-selected="true"] { color: var(--turnsu-on-action); }
+@media (max-width: 720px) {
+  .atlas-shell .atlas-view-nav { display: none; }
+  .place-detail-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .place-detail-header > .icon-button { grid-column: 2; grid-row: 1; min-width: 44px; min-height: 44px; }
+  .place-detail-sheet .place-detail-header > :has(> .place-detail-subtabs) { display: block; grid-column: 1 / -1; grid-row: 2; min-width: 0; width: 100%; }
+  .place-detail-header .place-detail-subtabs { display: flex; width: 100%; box-sizing: border-box; }
+  .place-detail-header .place-detail-subtabs button { flex: 1; min-width: 0; min-height: 40px; padding-inline: 5px; white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sliding-tabs-list .sliding-tabs-indicator { transition: none; }
+}
+
+[data-series="workspace"] .place-detail-sheet .place-detail-intro p { color: var(--ink-soft); }
+[data-series="workspace"] .place-detail-sheet .detail-domain { color: var(--ink-soft); }
+
+.atlas-route-view .route-comparison-legend,
+.atlas-route-view .route-recalculating {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.atlas-shell .workspace-toast.tactile-toast {
+  background: var(--turnsu-action);
+  color: var(--turnsu-on-action);
+}
+@media (max-width: 720px) {
+  .atlas-route-view .atlas-section-heading { flex-wrap: wrap; row-gap: 8px; }
+  .atlas-route-view .atlas-section-heading > div { min-width: 0; }
+  .atlas-shell .atlas-mobile-nav .mobile-badge {
+    background: var(--turnsu-brand-cta);
+    color: var(--turnsu-on-brand-cta);
+  }
+  .atlas-shell .workspace-toast.tactile-toast { top: 70px; bottom: auto; pointer-events: none; }
+  .atlas-shell .workspace-toast.tactile-toast button { pointer-events: auto; }
+}

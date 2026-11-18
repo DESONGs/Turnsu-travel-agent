@@ -1,3 +1,4 @@
+import { registerTravelMemories } from "./travel-memories.mjs";
 import { createHash } from "node:crypto";
 import { httpError } from "./http-errors.mjs";
 import { canPreviewPhotoRelief, validatePhotoRelief } from "../media/photo-relief-recipe.mjs";
@@ -65,7 +66,9 @@ export function registerTravelJournalRoutes({ app, asyncRoute, requireTripMember
     const state = await travelService.store.get(request.params.tripId);
     // Legacy unowned trips may be readable elsewhere, but cannot expose private photos.
     if (!state?.collaboration?.memberUserIds?.includes(session.userId)) throw httpError("trip_access_denied", 403);
+    return session;
   };
+  registerTravelMemories({ app, asyncRoute, requireJournalMember, travelService, repository, clock, sanitizeJournalJpeg });
   app.get(base, asyncRoute(async (request, response) => {
     await requireJournalMember(request);
     response.json({ entries: await repository.list(request.params.tripId, request.query.nodeId) });

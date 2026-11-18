@@ -24,3 +24,6 @@ third_party/
 research-checkouts/
 *.log
 .DS_Store
+
+dist-mcp/
+dist-plugins/

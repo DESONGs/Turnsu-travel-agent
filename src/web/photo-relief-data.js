@@ -6,36 +6,138 @@ function checkPixels({ data, width, height }) {
   if (!Number.isInteger(width) || !Number.isInteger(height) || width < 2 || height < 2 || width > 1280 || height > 1280 || !data || data.length !== width * height * 4) throw new Error("relief_pixels_invalid");
 }
 
-// Flatten small texture detail before outlining strong image edges. Original RGB
-// remains available; no generated buildings, props, or all-triangle wireframes.
-export function createInkPixels(pixels) {
+// A quiet wash beneath the actual vector contours, rather than an edge filter
+// baked into a photograph. The original pixels are never changed.
+export function createPhotoWashPixels(pixels) {
   checkPixels(pixels);
   const { data, width, height } = pixels;
-  const smooth = new Uint8ClampedArray(data.length), result = new Uint8Array(data.length);
+  const result = new Uint8Array(data.length), paper = [249, 247, 239];
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
     const index = (y * width + x) * 4;
     for (let c = 0; c < 3; c++) {
       let total = 0;
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) total += data[(clamp(y + dy, 0, height - 1) * width + clamp(x + dx, 0, width - 1)) * 4 + c];
-      smooth[index + c] = total / 9;
+      result[index + c] = total / 9 * 0.32 + paper[c] * 0.68;
     }
-    smooth[index + 3] = 255;
+    result[index + 3] = 255;
   }
-  const sample = (x, y) => light(smooth, (clamp(y, 0, height - 1) * width + clamp(x, 0, width - 1)) * 4);
+  return result;
+}
+
+// Gaussian smoothing, non-maximum suppression and connected-edge hysteresis.
+// These paths follow the source image, not the triangulation of the depth mesh.
+export function extractPhotoContours(pixels) {
+  checkPixels(pixels);
+  const { data, width, height } = pixels, size = width * height;
+  const grey = new Float32Array(size), temporary = new Float32Array(size), smooth = new Float32Array(size);
+  const magnitude = new Float32Array(size), direction = new Uint8Array(size), thin = new Float32Array(size);
+  const kernel = [1, 4, 6, 4, 1];
+  for (let i = 0; i < size; i++) grey[i] = light(data, i * 4);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-    const i = (y * width + x) * 4;
-    const gx = sample(x + 1, y - 1) + 2 * sample(x + 1, y) + sample(x + 1, y + 1) - sample(x - 1, y - 1) - 2 * sample(x - 1, y) - sample(x - 1, y + 1);
-    const gy = sample(x - 1, y + 1) + 2 * sample(x, y + 1) + sample(x + 1, y + 1) - sample(x - 1, y - 1) - 2 * sample(x, y - 1) - sample(x + 1, y - 1);
-    const ink = clamp((Math.hypot(gx, gy) - 0.3) * 1.3, 0, 0.68);
-    const luminance = light(smooth, i) * 255;
-    for (let c = 0; c < 3; c++) {
-      const softened = smooth[i + c] * 0.8 + luminance * 0.2;
-      // Soft quantization keeps skies smooth instead of producing hard RGB bands.
-      const flat = softened * 0.72 + Math.round(softened / 32) * 32 * 0.28;
-      const tint = [249, 245, 231][c], stroke = [43, 62, 58][c];
-      result[i + c] = clamp((flat * 0.91 + tint * 0.09) * (1 - ink) + stroke * ink, 0, 255);
+    let sum = 0;
+    for (let k = -2; k <= 2; k++) sum += grey[y * width + clamp(x + k, 0, width - 1)] * kernel[k + 2];
+    temporary[y * width + x] = sum / 16;
+  }
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    let sum = 0;
+    for (let k = -2; k <= 2; k++) sum += temporary[clamp(y + k, 0, height - 1) * width + x] * kernel[k + 2];
+    smooth[y * width + x] = sum / 16;
+  }
+  for (let y = 1; y < height - 1; y++) for (let x = 1; x < width - 1; x++) {
+    const i = y * width + x;
+    const gx = (smooth[i - width + 1] + 2 * smooth[i + 1] + smooth[i + width + 1] - smooth[i - width - 1] - 2 * smooth[i - 1] - smooth[i + width - 1]) / 4;
+    const gy = (smooth[i + width - 1] + 2 * smooth[i + width] + smooth[i + width + 1] - smooth[i - width - 1] - 2 * smooth[i - width] - smooth[i - width + 1]) / 4;
+    magnitude[i] = Math.hypot(gx, gy);
+    direction[i] = Math.round((Math.atan2(gy, gx) + Math.PI) / (Math.PI / 4)) % 4;
+  }
+  const offsets = [1, width + 1, width, width - 1], histogram = new Uint32Array(256);
+  let count = 0;
+  for (let y = 1; y < height - 1; y++) for (let x = 1; x < width - 1; x++) {
+    const i = y * width + x, m = magnitude[i], offset = offsets[direction[i]];
+    if (m >= 0.025 && m >= magnitude[i - offset] && m > magnitude[i + offset]) {
+      thin[i] = m; histogram[Math.min(255, Math.floor(m * 255))]++; count++;
     }
-    result[i + 3] = 255;
+  }
+  let total = 0, percentile = 0;
+  for (; percentile < 255; percentile++) { total += histogram[percentile]; if (total >= count * 0.82) break; }
+  const high = clamp(percentile / 255, 0.055, 0.18), low = high * 0.4;
+  const mask = new Uint8Array(size), stack = new Int32Array(size);
+  let top = 0;
+  for (let i = 0; i < size; i++) if (thin[i] >= high) { mask[i] = 1; stack[top++] = i; }
+  while (top) {
+    const i = stack[--top], x = i % width, y = Math.floor(i / width);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy, n = ny * width + nx;
+      if (nx > 0 && nx < width - 1 && ny > 0 && ny < height - 1 && !mask[n] && thin[n] >= low) { mask[n] = 1; stack[top++] = n; }
+    }
+  }
+  // Trace the thin edge graph into paths, then simplify subpixel stair steps.
+  // One combined GPU buffer keeps even detailed architecture cheap to draw.
+  const steps = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+  const links = new Uint8Array(size), visited = new Uint8Array(size), degrees = new Uint8Array(size);
+  for (let i = 0; i < size; i++) if (mask[i]) {
+    const x = i % width, y = Math.floor(i / width);
+    steps.forEach(([dx, dy], d) => {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || nx >= width || ny < 0 || ny >= height || !mask[ny * width + nx]) return;
+      if (dx && dy && (mask[y * width + nx] || mask[ny * width + x])) return;
+      links[i] |= 1 << d; degrees[i]++;
+    });
+  }
+  const simplify = (path) => {
+    const keep = new Uint8Array(path.length); keep[0] = keep[path.length - 1] = 1;
+    const pending = [[0, path.length - 1]];
+    while (pending.length) {
+      const [a, b] = pending.pop(), ax = path[a] % width, ay = Math.floor(path[a] / width), bx = path[b] % width, by = Math.floor(path[b] / width);
+      const dx = bx - ax, dy = by - ay, length = dx * dx + dy * dy;
+      let farthest = -1, distance = 0.65 ** 2;
+      for (let k = a + 1; k < b; k++) {
+        const x = path[k] % width, y = Math.floor(path[k] / width), t = length ? clamp(((x - ax) * dx + (y - ay) * dy) / length) : 0;
+        const d = (x - ax - t * dx) ** 2 + (y - ay - t * dy) ** 2;
+        if (d > distance) { distance = d; farthest = k; }
+      }
+      if (farthest !== -1) { keep[farthest] = 1; pending.push([a, farthest], [farthest, b]); }
+    }
+    return path.filter((_, i) => keep[i]);
+  };
+  const paths = [];
+  const trace = (start, first) => {
+    let i = start, d = first; const path = [i];
+    while (true) {
+      const [dx, dy] = steps[d], next = i + dy * width + dx;
+      visited[i] |= 1 << d; visited[next] |= 1 << ((d + 4) % 8); path.push(next);
+      if (degrees[next] !== 2 || next === start) break;
+      i = next; d = steps.findIndex((_, direction) => (links[i] & ~visited[i]) & (1 << direction));
+      if (d < 0) break;
+    }
+    if (path.length >= 5) paths.push(simplify(path));
+  };
+  for (const junctions of [true, false]) for (let i = 0; i < size; i++) if (mask[i] && (degrees[i] !== 2) === junctions) {
+    for (let d = 0; d < 8; d++) if ((links[i] & ~visited[i]) & (1 << d)) trace(i, d);
+  }
+  // Retain complete long contours first if a very noisy input hits the budget.
+  paths.sort((a, b) => b.length - a.length);
+  const segments = [], strengths = [];
+  for (const path of paths) {
+    if (segments.length / 4 + path.length - 1 > 50000) continue;
+    for (let k = 1; k < path.length; k++) {
+      const a = path[k - 1], b = path[k];
+      segments.push((a % width) / (width - 1), Math.floor(a / width) / (height - 1), (b % width) / (width - 1), Math.floor(b / width) / (height - 1));
+      strengths.push(clamp(Math.max(magnitude[a], magnitude[b]) / (high * 2)));
+    }
+  }
+  return { segments: new Float32Array(segments), strengths: new Float32Array(strengths), width, height };
+}
+
+export function liftPhotoContours(contours, surface) {
+  const { columns, rows, positions, modelWidth, modelHeight } = surface;
+  const result = new Float32Array(contours.segments.length / 2 * 3);
+  for (let i = 0; i < contours.segments.length; i += 2) {
+    const u = contours.segments[i], v = contours.segments[i + 1], x = u * columns, y = v * rows;
+    const col = Math.min(columns - 1, Math.floor(x)), row = Math.min(rows - 1, Math.floor(y)), tx = x - col, ty = y - row;
+    const z = (r, c) => positions[(r * (columns + 1) + c) * 3 + 2];
+    const depth = z(row, col) * (1 - tx) * (1 - ty) + z(row, col + 1) * tx * (1 - ty) + z(row + 1, col) * (1 - tx) * ty + z(row + 1, col + 1) * tx * ty;
+    result.set([(u - 0.5) * modelWidth, (0.5 - v) * modelHeight, depth + 0.008], i / 2 * 3);
   }
   return result;
 }

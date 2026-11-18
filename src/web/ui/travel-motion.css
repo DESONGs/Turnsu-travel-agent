@@ -1,0 +1,373 @@
+:root {
+  --travel-motion-fast: 160ms;
+  --travel-motion-base: 240ms;
+  --travel-motion-view: 300ms;
+  --travel-motion-sheet: 320ms;
+  --travel-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --travel-motion-spring: cubic-bezier(0.175, 0.885, 0.32, 1.08);
+}
+
+.travel-line-illustration {
+  --hairline-plate: #faf7f0;
+  --hairline-hi: #2f2c27;
+  --hairline-edge: #5e584f;
+  --hairline-mid: #8e877c;
+  --hairline-lo: #d8d2c7;
+  --hairline-stroke: 1;
+  width: 188px;
+  max-width: 64%;
+  margin-inline: auto;
+}
+
+/* ── 1. Overlay, Sheet, Dialog & Swipeable Mobile Drawer Physics ─────── */
+.travel-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--turnsu-z-drawer) - 1);
+  background: rgba(18, 17, 15, 0.36);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition:
+    opacity var(--travel-motion-base) var(--travel-motion-ease),
+    backdrop-filter var(--travel-motion-base) var(--travel-motion-ease);
+}
+.travel-overlay-backdrop[data-starting-style],
+.travel-overlay-backdrop[data-ending-style] {
+  opacity: 0;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}
+
+.travel-overlay-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: var(--turnsu-z-drawer);
+  display: flex;
+  pointer-events: none;
+}
+.travel-overlay-viewport[data-placement="center"] {
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.travel-overlay-viewport[data-placement="right"] {
+  justify-content: flex-end;
+}
+.travel-overlay-viewport[data-placement="left"] {
+  justify-content: flex-start;
+}
+.travel-overlay-viewport[data-placement="bottom"] {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.travel-overlay-popup {
+  pointer-events: auto;
+  will-change: transform, opacity;
+  transition:
+    transform var(--travel-motion-sheet) var(--travel-motion-ease),
+    width var(--travel-motion-sheet) var(--travel-motion-ease),
+    opacity var(--travel-motion-base) var(--travel-motion-ease);
+}
+.travel-overlay-popup[data-placement="center"][data-starting-style],
+.travel-overlay-popup[data-placement="center"][data-ending-style] {
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+}
+.travel-overlay-popup[data-placement="right"][data-starting-style],
+.travel-overlay-popup[data-placement="right"][data-ending-style] {
+  opacity: 0.85;
+  transform: translateX(100%);
+}
+.travel-overlay-popup[data-placement="left"][data-starting-style],
+.travel-overlay-popup[data-placement="left"][data-ending-style] {
+  opacity: 0.85;
+  transform: translateX(-100%);
+}
+
+/* Native 1:1 Touch Swipe Physics for Mobile Bottom Sheet */
+.travel-mobile-bottom-sheet {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: min(93dvh, calc(100dvh - 20px)) !important;
+  border-radius: 24px 24px 0 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--line, rgba(24, 21, 17, 0.1)) !important;
+  box-shadow: 0 -18px 48px rgba(18, 17, 15, 0.24) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(var(--drawer-swipe-movement-y, 0px));
+  transition: transform calc(var(--travel-motion-sheet) * var(--drawer-swipe-strength, 1)) var(--travel-motion-ease);
+}
+.travel-mobile-bottom-sheet[data-swiping] {
+  transition: none !important;
+  user-select: none;
+}
+.travel-mobile-bottom-sheet[data-starting-style],
+.travel-mobile-bottom-sheet[data-ending-style] {
+  transform: translateY(100%);
+}
+.sheet-grab-bar {
+  flex: none;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  background: var(--surface, #fff);
+  cursor: grab;
+  touch-action: none;
+}
+.sheet-grab-bar > span {
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(24, 21, 17, 0.2);
+}
+.sheet-drawer-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── 2. Anchored Popover Origin Physics ──────────────────────────────── */
+.trip-popover-positioner {
+  z-index: var(--turnsu-z-dropdown);
+}
+.trip-popover-card {
+  transform-origin: var(--transform-origin, top left);
+  transition:
+    transform 220ms var(--travel-motion-ease),
+    opacity 180ms ease;
+}
+.trip-popover-card[data-starting-style],
+.trip-popover-card[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.95) translateY(-4px);
+}
+.trip-fact-caret {
+  transition: transform 200ms var(--travel-motion-ease);
+}
+.trip-fact-pill[data-popup-open] .trip-fact-caret {
+  transform: rotate(180deg);
+}
+
+/* ── 3. Fluid Sliding Pill Indicator (Base UI Tabs.Indicator) ────────── */
+.sliding-tabs-list {
+  position: relative;
+  isolation: isolate;
+}
+.sliding-tabs-indicator {
+  position: absolute;
+  left: var(--active-tab-left, 0px);
+  top: var(--active-tab-top, 4px);
+  right: calc(100% - var(--active-tab-left, 0px) - var(--active-tab-width, 0px));
+  height: var(--active-tab-height, calc(100% - 8px));
+  z-index: -1;
+  pointer-events: none;
+}
+.sliding-tabs-indicator[data-activation-direction="right"] { transition: right var(--turnsu-tab-lead), left var(--turnsu-tab-trail); }
+.sliding-tabs-indicator[data-activation-direction="left"] { transition: left var(--turnsu-tab-lead), right var(--turnsu-tab-trail); }
+
+/* ── 4. Zero-Snap Smooth Disclosure (Base UI Collapsible) ────────────── */
+.smooth-disclosure-trigger {
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+}
+.smooth-disclosure-caret {
+  flex: none;
+  transition: transform 220ms var(--travel-motion-ease);
+}
+.smooth-disclosure-trigger[data-panel-open] .smooth-disclosure-caret {
+  transform: rotate(180deg);
+}
+.smooth-disclosure-panel {
+  height: var(--collapsible-panel-height);
+  overflow: hidden;
+  transition:
+    height 260ms var(--travel-motion-ease),
+    opacity 200ms ease;
+}
+.smooth-disclosure-panel[data-starting-style],
+.smooth-disclosure-panel[data-ending-style] {
+  height: 0;
+  opacity: 0;
+}
+
+details summary svg {
+  transition: transform 200ms var(--travel-motion-ease);
+}
+details[open] > summary > svg:last-child {
+  transform: rotate(180deg);
+}
+
+/* ── 5. Tactile Slot Counter, Draft Capsule, Toast & Card Stagger ────── */
+.slot-count-badge {
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+.slot-count-digit {
+  display: inline-block;
+  animation: slot-roll-in 260ms var(--travel-motion-spring);
+}
+@keyframes slot-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(65%) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.atlas-draft-tray,
+.workspace-toast {
+  animation: draft-capsule-rise 300ms var(--travel-motion-spring);
+}
+@keyframes draft-capsule-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.atlas-place {
+  animation: editorial-card-enter 340ms var(--travel-motion-ease) backwards;
+  animation-delay: calc(min(var(--card-index, 0), 6) * 42ms);
+  transition:
+    transform 240ms var(--travel-motion-ease),
+    box-shadow 240ms var(--travel-motion-ease),
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+@keyframes editorial-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.atlas-place-status svg,
+.tactile-check-pop {
+  animation: travel-selection-mark 240ms var(--travel-motion-spring);
+}
+@keyframes travel-selection-mark {
+  from {
+    opacity: 0.4;
+    transform: scale(0.55) rotate(-12deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Depth Push / Pop inside PlaceDetailSheet */
+.detail-stage-push {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: detail-push-in 260ms var(--travel-motion-ease);
+}
+.detail-stage-pop {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: detail-pop-in 260ms var(--travel-motion-ease);
+}
+@keyframes detail-push-in {
+  from {
+    opacity: 0.45;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes detail-pop-in {
+  from {
+    opacity: 0.45;
+    transform: translateX(-22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Docked Desktop Assistant Slide */
+.atlas-docked-assistant {
+  animation: assistant-dock-in 280ms var(--travel-motion-ease);
+}
+@keyframes assistant-dock-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── 6. Shared-Element Hero Morphing (View Transitions API) ──────────── */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-group(hero-place-media) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 90;
+}
+::view-transition-old(hero-place-media),
+::view-transition-new(hero-place-media) {
+  border-radius: 16px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+/* ── Reduced Motion Guarantee ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .travel-overlay-backdrop,
+  .travel-overlay-popup,
+  .travel-mobile-bottom-sheet,
+  .trip-popover-card,
+  .trip-fact-caret,
+  .sliding-tabs-indicator,
+  .smooth-disclosure-panel,
+  .smooth-disclosure-caret,
+  .atlas-place {
+    transition: none !important;
+  }
+  .slot-count-digit,
+  .atlas-draft-tray,
+  .workspace-toast,
+  .atlas-place,
+  .atlas-place-status svg,
+  .tactile-check-pop,
+  .detail-stage-push,
+  .detail-stage-pop,
+  .atlas-docked-assistant {
+    animation: none !important;
+  }
+}

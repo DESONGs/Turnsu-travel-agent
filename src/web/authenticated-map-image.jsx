@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "./api-client.js";
 
 export function AuthenticatedMapImage({ tripId, alt, onError, ...props }) {
-  const desktop = typeof window !== "undefined" && Boolean(window.travelDesktop);
+  const desktop = typeof window !== "undefined" && Boolean(window.travelDesktop || window.travelHost);
   const [source, setSource] = useState(desktop ? null : api.mapUrl(tripId));
   useEffect(() => {
     if (!desktop) {

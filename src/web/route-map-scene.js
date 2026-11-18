@@ -1,7 +1,8 @@
-const ROUTE_MODES = new Set(["walk", "transit", "taxi"]);
+const ROUTE_MODES = new Set(["walk", "transit", "taxi", "drive", "bicycle", "train", "flight", "ferry", "shuttle", "cable_car"]);
 
 function coordinate(value) {
   if (!value || !Number.isFinite(Number(value.longitude)) || !Number.isFinite(Number(value.latitude))) return null;
+  if (!["WGS-84", "GCJ-02"].includes(value.coordinateSystem)) return null;
   return {
     longitude: Number(value.longitude),
     latitude: Number(value.latitude),
@@ -118,7 +119,8 @@ export function buildRouteMapScene({
       minutes: Number.isFinite(Number(alternative?.totalMinutes)) ? Number(alternative.totalMinutes) : null,
       walkingMeters: Number.isFinite(Number(alternative?.walkingMeters)) ? Number(alternative.walkingMeters) : null,
       transfers: Number.isFinite(Number(alternative?.transfers)) ? Number(alternative.transfers) : null,
-      estimatedFareCny: Number.isFinite(Number(alternative?.estimatedFareCny)) ? Number(alternative.estimatedFareCny) : null,
+      fare: alternative?.fare ?? null,
+      estimatedFareCny: alternative?.estimatedFareCny != null && Number.isFinite(Number(alternative.estimatedFareCny)) ? Number(alternative.estimatedFareCny) : null,
       steps: alternative?.steps ?? [],
       navigationUrl: alternative?.navigationUrl ?? null,
       rationale: leg?.rationale ?? "",

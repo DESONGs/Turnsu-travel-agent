@@ -1,0 +1,7 @@
+/* Unit-mass spring responses sampled for the leading (620,38) and trailing (185,20) tab edges. */
+:root {
+  --turnsu-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --turnsu-duration-fast:    160ms;
+  --turnsu-tab-lead: 380ms linear(0,.063,.206,.376,.541,.684,.799,.885,.946,.985,1.008,1.02,1.024,1.024,1.021,1.017,1.013,1.009,1.006,1.003,1.002,1.001,1,1,1);
+  --turnsu-tab-trail: 660ms linear(0,.058,.192,.355,.518,.663,.782,.875,.941,.986,1.013,1.027,1.033,1.032,1.029,1.024,1.018,1.013,1.009,1.005,1.003,1.001,1,.999,1);
+}

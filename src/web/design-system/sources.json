@@ -1,0 +1,53 @@
+{
+  "package": "turnsu-design-system",
+  "packageVersion": "3.0.1",
+  "styleVersion": "3.0.1",
+  "source": "https://github.com/DESONGs/turnsu-design-system",
+  "files": [
+    {
+      "path": "colors_and_type.css",
+      "sha256": "00c8e530d00ab47c83e846563cfcc1898f48fff288441811760d47b8300116fc"
+    },
+    {
+      "path": "tokens.css",
+      "sha256": "b040443fbe15ead0763418bfb04b0f1bf8212bc0e838e3cf3e001c9bb72f219f"
+    },
+    {
+      "path": "brand.css",
+      "sha256": "926c5de2c273c3b2707cdc5f5fa7b296e2d6308f7f89c8b15376e0eec121392d"
+    },
+    {
+      "path": "components/bundle.css",
+      "sha256": "079e4a4f116d796d306712a1b083eb3951435dfe07b42bbfce67cbd7bb2db0c7",
+      "upstreamSha256": "a79b25397356840faa1c645cba08541d5a08ae0237b73390718ac0fa4f50754f",
+      "adjustment": "Removed trailing empty line only; CSS declarations unchanged."
+    },
+    {
+      "path": "fonts/InterVariable.woff2",
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
+    },
+    {
+      "path": "fonts/Inter-LICENSE.txt",
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "path": "turnsu-motion.css",
+      "sha256": "3f9d200428a479a53061553a858d12bca4474f3a018ac585806eba1f05a81a54",
+      "upstreamSha256": "e366db720b40e81c378ec107f1bb5bec42a0b215e1e7d869eef00ae0ddbd855c",
+      "adjustment": "Workspace tab spring and type-system transition tokens."
+    },
+    {
+      "path": "turnsu-series.css",
+      "sha256": "12da32f9ff003769f97a7312e1eb571eb2745d206705b264b64c44c9bf45607e",
+      "upstreamSha256": "3b2765acece7df5aef2210b6fa9df33a578c4ccc502a9d6b8919fb68eabd871d",
+      "adjustment": "Workspace, standard density, and shared elevation tokens."
+    }
+  ],
+  "font": {
+    "name": "Inter",
+    "version": "4.1",
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "fonts/Inter-LICENSE.txt",
+    "source": "https://github.com/rsms/inter/tree/v4.1"
+  }
+}

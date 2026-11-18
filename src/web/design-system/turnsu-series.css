@@ -1,0 +1,39 @@
+/* Turnsu workspace profile and the shared layer scale. */
+:root, .light, .DAY, .dark, .NIGHT, [data-theme="light"], [data-theme="dark"] {
+  /* ── 1. Z-Index Spatial Stack ────────────────────────────────────────── */
+  --turnsu-z-base:     1;
+  --turnsu-z-raised:   10;
+  --turnsu-z-sticky:   40;
+  --turnsu-z-header:   60;
+  --turnsu-z-dropdown: 120;
+  --turnsu-z-drawer:   200;
+  --turnsu-z-modal:    300;
+  --turnsu-z-cmdk:     400;
+  --turnsu-z-toast:    500;
+  --turnsu-z-tooltip:  600;
+
+  /* ── 2. Density Modulators (Default = Standard) ──────────────────────── */
+  --turnsu-ctrl-sm:    32px;
+  --turnsu-ctrl-md:    40px;
+  --turnsu-ctrl-lg:    48px;
+  --turnsu-row-py:     12px;
+  --turnsu-row-px:     12px;
+  --turnsu-card-pad:   20px;
+  --turnsu-grid-gap:   16px;
+
+  /* ── 3. Series Modulation Defaults (Core / Workspace) ────────────────── */
+  --ts-series-radius-ctrl: var(--turnsu-radius-default, 10px);
+  --ts-series-radius-card: var(--turnsu-radius-container, 18px);
+  --ts-series-info:        #2563EB;
+  --ts-series-info-bg:     rgba(37, 99, 235, 0.10);
+}
+
+.dark, .NIGHT, [data-theme="dark"] {
+  --ts-series-info:        #60A5FA;
+  --ts-series-info-bg:     rgba(96, 165, 250, 0.15);
+}
+
+[data-series="workspace"] {
+  --turnsu-radius-default:   10px;
+  --turnsu-radius-container: 18px;
+}
