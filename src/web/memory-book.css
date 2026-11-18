@@ -1,6 +1,6 @@
 .memory-book,
 .memory-share {
-  --paper: #fcf9f2;
+  --paper: var(--turnsu-canvas);
   --rule: var(--turnsu-border-strong, #d9d3ca);
   color: var(--turnsu-text-primary, #171715);
   font-family: var(--turnsu-font-sans, system-ui);
@@ -64,7 +64,7 @@
 }
 .memory-book .button.primary,
 .memory-share .button.primary {
-  color: white;
+  color: var(--turnsu-on-action);
   background: var(--turnsu-action);
   border-color: var(--turnsu-action);
 }
@@ -114,7 +114,7 @@
   margin: 0 0 18px;
   background: repeating-linear-gradient(
     transparent 0 calc(1.9em - 1px),
-    rgb(79 64 41/0.13) calc(1.9em - 1px) 1.9em
+    var(--rule) calc(1.9em - 1px) 1.9em
   );
 }
 .memory-book fieldset {
@@ -137,7 +137,7 @@
 .memory-share select {
   width: 100%;
   box-sizing: border-box;
-  background: #fffdf8;
+  background: var(--turnsu-surface-1);
   color: var(--turnsu-text-primary);
   border: 1px solid var(--turnsu-gray-500);
   padding: 9px 12px;

@@ -23,7 +23,7 @@
 .travel-overlay-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 58;
+  z-index: calc(var(--turnsu-z-drawer) - 1);
   background: rgba(18, 17, 15, 0.36);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -41,7 +41,7 @@
 .travel-overlay-viewport {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--turnsu-z-drawer);
   display: flex;
   pointer-events: none;
 }
@@ -133,7 +133,7 @@
 
 /* ── 2. Anchored Popover Origin Physics ──────────────────────────────── */
 .trip-popover-positioner {
-  z-index: 80;
+  z-index: var(--turnsu-z-dropdown);
 }
 .trip-popover-card {
   transform-origin: var(--transform-origin, top left);
@@ -168,8 +168,8 @@
   z-index: -1;
   pointer-events: none;
   transition:
-    transform 280ms var(--travel-motion-ease),
-    width 280ms var(--travel-motion-ease),
+    transform 280ms var(--turnsu-css-spring-settle),
+    width 340ms var(--turnsu-css-spring-settle),
     height 220ms var(--travel-motion-ease),
     opacity 160ms ease;
 }

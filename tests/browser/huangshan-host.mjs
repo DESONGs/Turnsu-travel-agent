@@ -59,10 +59,10 @@ export async function createJournalHost() {
     const resource = (await client.readResource({ uri: WORKSPACE_URI })).contents[0].text;
     const image = (await readFile(landscape)).toString("base64");
     const shapes = [{ depth: 3, points: [[0,.65],[.45,.38],[1,.75],[1,1],[0,1]] }];
-    return { close, async open(page) {
+    return { close, async open(page, { theme = "light" } = {}) {
       await page.exposeFunction("hostCall", async ({ method, params }) => {
         if (method === "tools/call") return client.callTool(params);
-        if (method === "ui/initialize") return { hostContext: { theme: "light" }, hostCapabilities: { sampling: {} } };
+        if (method === "ui/initialize") return { hostContext: { theme }, hostCapabilities: { sampling: {} } };
         if (method === "sampling/createMessage") {
           const depth = params.messages[0].content.some(block => block.text?.includes("Return JSON only"));
           return { role: "assistant", content: depth ? { type: "text", text: JSON.stringify({ shapes }) } :

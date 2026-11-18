@@ -1,12 +1,12 @@
 {
   "package": "turnsu-design-system",
-  "packageVersion": "1.1.2",
-  "styleVersion": "1.1.1",
+  "packageVersion": "3.0.1",
+  "styleVersion": "3.0.1",
   "source": "https://github.com/DESONGs/turnsu-design-system",
   "files": [
     {
       "path": "colors_and_type.css",
-      "sha256": "72bc6cf34b98b7c37b5101e46562caf73ddc54d188b47fc5c7a2dc9a46c0e364"
+      "sha256": "00c8e530d00ab47c83e846563cfcc1898f48fff288441811760d47b8300116fc"
     },
     {
       "path": "tokens.css",
@@ -14,7 +14,7 @@
     },
     {
       "path": "brand.css",
-      "sha256": "0127c6ca6f94be71ae632824ab2de4d218dc8defbff5a38eb0e0ac56cb58fa7e"
+      "sha256": "926c5de2c273c3b2707cdc5f5fa7b296e2d6308f7f89c8b15376e0eec121392d"
     },
     {
       "path": "components/bundle.css",
@@ -29,6 +29,18 @@
     {
       "path": "fonts/Inter-LICENSE.txt",
       "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "path": "turnsu-motion.css",
+      "sha256": "3f9d200428a479a53061553a858d12bca4474f3a018ac585806eba1f05a81a54",
+      "upstreamSha256": "e366db720b40e81c378ec107f1bb5bec42a0b215e1e7d869eef00ae0ddbd855c",
+      "adjustment": "Workspace tab spring and type-system transition tokens."
+    },
+    {
+      "path": "turnsu-series.css",
+      "sha256": "12da32f9ff003769f97a7312e1eb571eb2745d206705b264b64c44c9bf45607e",
+      "upstreamSha256": "3b2765acece7df5aef2210b6fa9df33a578c4ccc502a9d6b8919fb68eabd871d",
+      "adjustment": "Workspace, standard density, and shared elevation tokens."
     }
   ],
   "font": {

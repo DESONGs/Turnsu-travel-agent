@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import "./painting-preview.css";
 import { ArrowLeft, ArrowCounterClockwise, ArrowRight, HandGrabbing } from "@phosphor-icons/react";
 
 export function PaintingPreview({ drawing, title, english }) {
@@ -50,7 +51,7 @@ export function PaintingPreview({ drawing, title, english }) {
     };
   }, [drawing]);
   return <div className="painting-preview">
-    <div className="painting-stage" style={{ aspectRatio: drawing.width / drawing.height, maxWidth: `min(100%, ${drawing.width / drawing.height * 57}vh)` }} ref={mount} role="img" aria-label={pick(`${title}的分层手绘`, `Layered illustration of ${title}`)} />
+    <div className="painting-stage" style={{ aspectRatio: drawing.width / drawing.height, "--painting-ratio": drawing.width / drawing.height }} ref={mount} role="img" aria-label={pick(`${title}的分层手绘`, `Layered illustration of ${title}`)} />
     <div className="painting-view-controls"><span><HandGrabbing />{pick("拖动查看，松手回正", "Drag to explore · release to center")}</span><div role="group" aria-label={pick("手绘视角", "Illustration view")}>
     {[[ArrowLeft,-1,"向左看","Look left"],[ArrowCounterClockwise,0,"回正","Center"],[ArrowRight,1,"向右看","Look right"]].map(([Icon,angle,zh,en])=><button type="button" key={angle} className="button secondary" aria-label={pick(zh,en)} onClick={()=>control.current?.(angle)}><Icon /></button>)}</div></div>
   </div>;

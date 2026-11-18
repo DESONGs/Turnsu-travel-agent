@@ -1,3 +1,4 @@
+import { setHostTheme } from "./design-system/workspace-theme.js";
 import { blobBase64 } from "./travel-journal-photo.js";
 const unwrap = result => {
   if (result?.isError) {
@@ -40,7 +41,7 @@ export function createMcpHostBridge({ target = window.parent, eventSource = wind
   };
   function applyContext(context) {
     if (typeof document === "undefined") return;
-    if (["light", "dark"].includes(context?.theme)) document.documentElement.dataset.hostTheme = context.theme;
+    setHostTheme(context?.theme);
     if (context?.styles?.css?.properties) for (const [key, value] of Object.entries(context.styles.css.properties)) if (key.startsWith("--")) document.documentElement.style.setProperty(key, value);
   }
   eventSource.addEventListener("message", receive);
@@ -83,7 +84,11 @@ export function createClaudeArtifactBridge(connector) {
   return {
     kind: "claude-artifact", publicOrigin: globalThis.TRAVEL_PUBLIC_ORIGIN ?? "",
     ...(typeof connector.generateDestinationArtwork === "function" ? { generateDestinationArtwork: (input, signal) => connector.generateDestinationArtwork(input, signal) } : {}),
-    initialize: async () => connector.initialize?.(),
+    async initialize() {
+      const result = await connector.initialize?.();
+      setHostTheme(result?.hostContext?.theme);
+      return result;
+    },
     callTool: async (name, args) => unwrap(await connector.callTool(name, args)),
     updateContext: context => connector.updateContext?.(context),
     sendMessage: text => connector.sendMessage?.(text),

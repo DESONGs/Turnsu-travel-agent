@@ -97,9 +97,57 @@ test("沉浸页按试排状态显示加入或移出，并执行对应操作", as
   await openView(frame, /先感受这里/);
   await button(frame, "加入路线试排").click();
   await button(trial(frame), "移出试排：黄山风景区").waitFor();
+  await button(frame, "打开按天路书").click();
+  const confirmRoute = button(frame, "确认加入行程");
+  await confirmRoute.waitFor();
+  assert.equal(await confirmRoute.evaluate(el => getComputedStyle(el).backgroundColor), "rgb(253, 113, 6)");
+  await button(frame, "返回发现与比较").click();
   await openView(frame, /先感受这里/);
   await button(frame, "移出路线试排").click();
   await trial(frame).waitFor({ state: "hidden" });
   await openView(frame, /先感受这里/);
   await button(frame, "加入路线试排").waitFor();
+});
+
+test("窄侧栏跟随宿主主题，观画、写手账和路线操作按页面区分", async t => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+  t.after(() => page.close());
+  const frame = await host.open(page, { theme: "dark" });
+  const root = frame.locator("html");
+  await detail(frame);
+  const overview = button(frame, "加入行程试排");
+  await overview.waitFor();
+  const palette = control => control.evaluate(el => {
+    const style = getComputedStyle(el);
+    return [style.backgroundColor, style.color];
+  });
+  const brand = ["rgb(253, 113, 6)", "rgb(23, 16, 10)"];
+  assert.equal(await root.getAttribute("data-theme"), "dark");
+  assert.deepEqual(await palette(overview), brand);
+  await frame.getByRole("button", { name: /先感受这里/ }).click();
+  await frame.getByLabel("选择景点照片文件").setInputFiles(landscape);
+  const journal = button(frame, "做成旅行手账");
+  await journal.waitFor();
+  assert.deepEqual(await palette(journal), brand);
+  assert.notDeepEqual(await palette(button(frame, "加入路线试排")), brand);
+  assert.equal(await root.evaluate(el => el.scrollWidth <= el.clientWidth), true);
+  await button(frame, "对照原照片").click();
+  await frame.getByAltText("你选中的景点照片").waitFor();
+  await button(frame, "回到手绘").click();
+  await button(frame, "向右看").click();
+  const moved = frame.locator(".painting-stage canvas").first();
+  await moved.evaluate(node => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const offset = await moved.evaluate(node => new DOMMatrix(getComputedStyle(node).transform).m41);
+  assert.ok(Math.abs(offset) > 0);
+  await button(frame, "回正").click();
+  await moved.evaluate(node => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert.equal(await moved.evaluate(node => new DOMMatrix(getComputedStyle(node).transform).m41), 0);
+  await journal.click();
+  const note = frame.getByRole("textbox", { name: "我想记住" });
+  await note.fill("云开见石峰");
+  await page.evaluate(() => document.querySelector("iframe").contentWindow.postMessage({
+    jsonrpc: "2.0", method: "ui/notifications/host-context-changed", params: { theme: "light" },
+  }, location.origin));
+  await frame.locator('html[data-theme="light"]').waitFor({ state: "attached" });
+  assert.equal(await note.inputValue(), "云开见石峰");
 });

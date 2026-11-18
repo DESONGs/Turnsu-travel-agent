@@ -6,6 +6,9 @@ import { configureTravelClient } from "./api-client.js";
 import { TravelApp } from "./travel-app.jsx";
 import "./styles.css";
 import "./design-system/travel-theme.css";
+import { initializeWorkspaceTheme } from "./design-system/workspace-theme.js";
+
+initializeWorkspaceTheme();
 
 let bridge;
 async function start() {
