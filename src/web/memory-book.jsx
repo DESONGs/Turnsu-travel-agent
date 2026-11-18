@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Envelope, PencilSimple, ShareNetwork } from "@phosphor-icons/react";
 import { useJournalExit } from "./ui/journal-exit.jsx";
 import { api } from "./api-client.js";
 import { createPaintingPlates } from "./painting-plates.js";
 import { PaintingPreview } from "./painting-preview.jsx";
 import { prepareJournalPhoto } from "./travel-journal-photo.js";
-import { cardCaption, exportPostcard, postcardFrame } from "./postcard-export.js";
+import { cardCaption, exportPostcard, memoryPageDate, postcardFrame } from "./postcard-export.js";
+import { entryTemplate, journalTemplates, suggestedJournalTemplate } from "../media/journal-templates.js";
+import { journalSurface, postcardMaterial } from "./journal-materials.js";
+import { CoverFace, PrivateLabel, TemplatePicker, TurningLeaf } from "./journal-binding.jsx";
 import "./memory-book.css";
 
 function useSavedDrawing(trip, entry) {
@@ -19,7 +22,7 @@ function useSavedDrawing(trip, entry) {
       ctrl.signal.throwIfAborted();
       url = URL.createObjectURL(blob);
       const drawing = await createPaintingPlates({ src: url, shapes: entry.photos[0].shapes }, ctrl.signal);
-      if (!ctrl.signal.aborted) setResult({ entry, drawing });
+      if (!ctrl.signal.aborted) setResult({ entry, drawing, url });
     })().catch(() => {
       if (!ctrl.signal.aborted) setResult({ entry, error: true });
     });
@@ -74,7 +77,12 @@ function ShareCard({ entry, drawing, english, onClose }) {
     }
   }
   useEffect(() => {
-    if (cover.current) cover.current.replaceChildren(postcardFrame(entry, drawing, caption));
+    let current = true;
+    const root = cover.current;
+    if (root) postcardMaterial(entryTemplate(entry)).then(material => {
+      if (current) root.replaceChildren(postcardFrame(entry, drawing, caption, 0, material));
+    }).catch(() => { if (current) setError(t("明信片纸面暂时无法读取，请重新打开。", "Could not load postcard paper. Reopen to retry.")); });
+    return () => { current = false; };
   }, [entry, drawing, caption, showMotion, file]);
   useEffect(
     () => () => {
@@ -221,57 +229,47 @@ function ShareCard({ entry, drawing, english, onClose }) {
   );
 }
 
-export function MemoryBook({
-  tripId,
-  node = null,
-  english = false,
-  drawing = null,
-  source = "",
-  onOpenLegacy,
-  onDirtyChange,
-}) {
-  const t = (zh, en) => (english ? en : zh);
+export function MemoryBook({ tripId, node = null, english = false, drawing = null, source = "",
+  onOpenLegacy, onDirtyChange, onCloseComposer, onTemplateChange }) {
+  const t = (zh, en) => english ? en : zh;
   const mayLeave = useJournalExit();
-  const [entries, setEntries] = useState([]),
-    [load, setLoad] = useState(0),
-    [loading, setLoading] = useState(true);
-  const [selected, select] = useState(null),
-    [edit, setEdit] = useState(false),
-    [sharing, share] = useState(false);
-  const [note, write] = useState(""),
-    [place, setPlace] = useState(""),
-    [date, setDate] = useState("");
-  const [busy, work] = useState(false),
-    [error, fail] = useState(""),
-    [dirty, mark] = useState(false);
-  const editID = useRef(null),
-    version = useRef(null),
-    startedDrawing = useRef(false);
-  const entry = entries.find((e) => e.id === (edit ? editID.current : selected));
-  const saved = useSavedDrawing(tripId, entry);
+  const noteLabel = useId();
+  const inline = Boolean(onCloseComposer);
+  const [entries, setEntries] = useState([]);
+  const [load, setLoad] = useState(0), [loading, setLoading] = useState(!inline);
+  const [opened, setOpened] = useState(false), [selected, select] = useState(null);
+  const [edit, setEdit] = useState(inline), [sharing, share] = useState(false);
+  const [note, write] = useState(""), [place, setPlace] = useState(node?.title ?? ""), [date, setDate] = useState("");
+  const [choice, setChoice] = useState(null);
+  const [pickingPage, setPickingPage] = useState(false);
+  const [pickError, setPickError] = useState(false);
+  const [busy, work] = useState(false), [dirty, mark] = useState(false), [error, fail] = useState("");
+  const [motion, setMotion] = useState(null);
+  const editing = useRef({ id: null, revision: null, attach: inline }), saving = useRef(false);
+  const reader = useRef(null), cover = useRef(null);
+  const entry = entries.find(e => e.id === (edit ? editing.current.id : selected));
+  const saved = useSavedDrawing(tripId, inline ? null : entry);
+  const index = entries.findIndex(e => e.id === selected);
+  const currentTemplate = edit ? choice ?? suggestedJournalTemplate(place, node?.location) : entryTemplate(entry, node);
+  const currentArt = drawing ?? saved?.drawing;
+
   useEffect(() => {
+    if (inline ? !pickingPage : edit) return;
     const ctrl = new AbortController();
     setLoading(true);
-    api
-      .memories(tripId, node?.nodeId, ctrl.signal)
-      .then(({ entries: rows }) => {
-        if (ctrl.signal.aborted) return;
-        setEntries(rows);
-        fail("");
-        if (drawing && !rows.length && !startedDrawing.current) {
-          startedDrawing.current = true;
-          start(null);
-        } else select((prev) => (rows.some((r) => r.id === prev) ? prev : (rows[0]?.id ?? null)));
-      })
-      .catch(() => {
-        if (!ctrl.signal.aborted)
-          fail(t("暂时读不到手账，可以重新读取。", "Could not load journal. Try again."));
-      })
-      .finally(() => {
-        if (!ctrl.signal.aborted) setLoading(false);
-      });
+    api.memories(tripId, node?.nodeId, ctrl.signal).then(({entries: rows}) => {
+      if (ctrl.signal.aborted) return;
+      setEntries(rows);
+      if (inline) { setPickError(false); return; }
+      select(id => rows.some(row => row.id === id) ? id : rows[0]?.id ?? null);
+      fail("");
+    }).catch(() => {
+      if (ctrl.signal.aborted) return;
+      if (inline) setPickError(true);
+      else fail(t("暂时读不到手账，可以重新读取。", "Could not load journal. Try again."));
+    }).finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
-  }, [tripId, node?.nodeId, load]);
+  }, [tripId, node?.nodeId, load, edit, inline, pickingPage]);
   useEffect(() => {
     const warn = event => { event.preventDefault(); event.returnValue = ""; };
     onDirtyChange?.(dirty, busy);
@@ -279,253 +277,173 @@ export function MemoryBook({
     return () => { onDirtyChange?.(false); window.removeEventListener("beforeunload", warn); };
   }, [onDirtyChange, dirty, busy]);
   useEffect(() => {
-    if (dirty || edit || sharing) return;
-    const refresh = () => setLoad((v) => v + 1);
+    if (inline || edit || sharing) return;
+    const refresh = () => setLoad(value => value + 1);
     window.addEventListener("focus", refresh);
     return () => window.removeEventListener("focus", refresh);
-  }, [dirty, edit, sharing]);
-  function start(item) {
-    editID.current = item?.id ?? crypto.randomUUID();
-    version.current = item?.revision ?? null;
+  }, [inline, edit, sharing]);
+
+  function animate(direction) {
+    setMotion(matchMedia("(prefers-reduced-motion: reduce)").matches ? null :
+      { direction, binding: entryTemplate(entry,node), title: entry?.placeTitle, note: entry?.note, key: crypto.randomUUID() });
+  }
+  function openBook() {
+    animate("open");
+    setOpened(true);
+    if (!entries.length) start(null);
+    else {
+      select(entries[0].id);
+      requestAnimationFrame(() => reader.current?.focus({preventScroll:true}));
+    }
+  }
+  function closeBook() {
+    select(entries[0]?.id ?? null);
+    setOpened(false);
+    setMotion(null);
+    requestAnimationFrame(() => cover.current?.focus({preventScroll:true}));
+  }
+  function turn(step) {
+    const target = entries[index + step];
+    if (!target || edit || sharing) return;
+    animate(step > 0 ? "next" : "prev");
+    select(target.id);
+    requestAnimationFrame(() => reader.current?.focus({preventScroll:true}));
+  }
+  function start(item, attach = false) {
+    editing.current = { id: item?.id ?? crypto.randomUUID(), revision: item?.revision ?? null, attach };
     select(item?.id ?? null);
-    write(item?.note ?? "");
-    setDate(item?.takenOn ?? "");
-    setPlace(item?.placeTitle ?? node?.title ?? "");
-    setEdit(true);
-    share(false);
-    fail("");
-    mark(Boolean(drawing));
+    write(item?.note ?? ""); setDate(item?.takenOn ?? ""); setPlace(item?.placeTitle ?? node?.title ?? "");
+    setChoice(item ? entryTemplate(item, node) : null);
+    onTemplateChange?.(item ? entryTemplate(item, node) : null);
+    setPickingPage(false); setEdit(true); share(false); fail(""); mark(attach);
   }
-  async function save() {
-    if (busy || (!note.trim() && !drawing && !entry?.photos.length)) return;
-    work(true);
-    fail("");
+  async function save(event) {
+    event.preventDefault();
+    const form = event.currentTarget.form ?? event.currentTarget;
+    if (saving.current || !form.reportValidity() || (!place.trim() && !node) || (!note.trim() && !drawing && !entry?.photos.length)) return;
+    saving.current = true; work(true); fail("");
     try {
-      const body = { note, takenOn: date || null };
-      if (drawing) body.artwork = await savedArtwork(drawing, source);
-      const record =
-        version.current !== null
-          ? await api.reviseMemory(tripId, editID.current, { ...body, revision: version.current })
-          : await api.saveMemory(tripId, {
-              ...body,
-              id: editID.current,
-              nodeId: node?.nodeId,
-              placeTitle: place.trim(),
-            });
-      setEntries((prev) =>
-        [record, ...prev.filter((e) => e.id !== record.id)].sort((a, b) =>
-          (b.takenOn || b.createdAt).localeCompare(a.takenOn || a.createdAt),
-        ),
-      );
-      select(record.id);
-      setEdit(false);
-      mark(false);
-    } catch (e) {
-      fail(
-        e.code === "memory_revision_conflict"
-          ? t(
-              "这段回忆已在别处更新。请保留你的文字并重新读取，再合并修改。",
-              "Updated elsewhere. Keep your text, reload and merge your changes.",
-            )
-          : t("保存未完成，文字仍在这里。可以重试。", "Could not save. Your text is still here. Retry."),
-      );
-    } finally {
-      work(false);
+      editing.current.id ??= crypto.randomUUID();
+      const { id, revision } = editing.current;
+      const body = { note, takenOn: date || null, templateId: currentTemplate };
+      if (drawing && editing.current.attach) body.artwork = await savedArtwork(drawing, source);
+      const record = revision !== null
+        ? await api.reviseMemory(tripId, id, { ...body, revision })
+        : await api.saveMemory(tripId, { ...body, id, nodeId: node?.nodeId, placeTitle: place.trim() });
+      setEntries(prev => [record, ...prev.filter(e => e.id !== record.id)]);
+      select(record.id); setPickingPage(false); mark(false); setEdit(false);
+      requestAnimationFrame(() => reader.current?.focus({preventScroll:true}));
+    } catch (cause) {
+      fail(cause.code === "memory_revision_conflict"
+        ? t("这段回忆已在别处更新。请保留你的文字并重新读取，再合并修改。", "Updated elsewhere. Keep your text, reload and merge your changes.")
+        : t("保存未完成，文字仍在这里。可以重试。", "Could not save. Your text is still here. Retry."));
+    } finally { saving.current = false; work(false); }
+  }
+  async function cancel() {
+    if (!await mayLeave()) return;
+    if (inline) { onCloseComposer(); return; }
+    mark(false); fail(""); setEdit(false);
+    if (!entries.length) closeBook();
+    else {
+      select(editing.current.revision === null ? entries[0].id : editing.current.id);
+      requestAnimationFrame(() => reader.current?.focus({preventScroll:true}));
     }
   }
-  const closeEdit = async () => {
-    if (await mayLeave()) {
-      setEdit(false);
-      mark(false);
-      fail("");
-      setLoad((v) => v + 1);
-    }
-  };
-  if (sharing && entry)
-    return <ShareCard entry={entry} drawing={saved?.drawing} english={english} onClose={() => share(false)} />;
-  const displayDrawing = edit && drawing ? drawing : saved?.drawing;
-  const index = entries.findIndex((e) => e.id === selected);
-  return (
-    <section className="memory-book" aria-label={t("我的私人手账", "My private journal")}>
-      <header className="memory-book-header">
-        <div>
-          <small>
-            <BookOpen />
-            {t("仅自己可见", "Only you")}
-          </small>
-          <h2>{t("旅行手账", "Travel journal")}</h2>
-        </div>
-        {!edit && (
-          <button className="button secondary" onClick={() => start(null)}>
-            <PencilSimple />
-            {drawing ? t("用这幅画写一页", "Write beside this drawing") : t("写一页", "Write a page")}
-          </button>
-        )}
-      </header>
-      {error && (
-        <div role="alert">
-          {error}{" "}
-          {!edit && (
-            <button
-              onClick={() => {
-                fail("");
-                setLoad((v) => v + 1);
-              }}
-            >
-              {t("重新读取", "Reload")}
-            </button>
-          )}
-        </div>
-      )}
-      {loading && !entry && !edit ? <p role="status">{t("正在翻开手账…", "Opening journal…")}</p> : null}
-      {!loading && !entries.length && !edit && !error && (
-        <p className="memory-empty">
-          {t(
-            "记下一个地点和一句想留下的话。也可以把笔记或口述交给宿主助手，告诉它「记进我的旅行手账」。",
-            "Write down a place and a moment. You can also ask your host assistant to save a note or dictated memory.",
-          )}
-        </p>
-      )}
-      {(entry || edit) && (
-        <div className="memory-spread">
-          <div className="memory-image-leaf">
-            {displayDrawing ? (
-              <>
-                <PaintingPreview
-                  drawing={displayDrawing}
-                  title={edit ? place || node?.title : entry?.placeTitle}
-                  english={english}
-                />
-                <small>{edit && drawing ? source : entry?.photos[0]?.source}</small>
-              </>
-            ) : entry?.photos.length ? (
-              <p role="status">
-                {saved?.error
-                  ? t("画作暂时无法读取。", "Could not load artwork.")
-                  : t("正在展开画作…", "Opening illustration…")}
-              </p>
-            ) : (
-              <div className="memory-place">
-                <span>{edit ? date : entry?.takenOn || entry?.createdAt?.slice(0, 10)}</span>
-                <strong>{edit ? place : entry?.placeTitle}</strong>
-              </div>
-            )}
-          </div>
-          <article className="memory-text-leaf">
-            {edit ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void save();
-                }}
-              >
-                <fieldset disabled={busy}>
-                  {!node && !entry && (
-                    <label>
-                      {t("地点", "Place")}
-                      <input
-                        required
-                        maxLength={150}
-                        value={place}
-                        onChange={(e) => {
-                          setPlace(e.target.value);
-                          mark(true);
-                        }}
-                      />
-                    </label>
-                  )}
-                  <label>
-                    {t("记录日期", "Date")}
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => {
-                        setDate(e.target.value);
-                        mark(true);
-                      }}
-                    />
-                  </label>
-                  <label>
-                    {t("我想记住", "What I want to remember")}
-                    <textarea
-                      className="memory-script"
-                      autoFocus
-                      maxLength={3000}
-                      rows={6}
-                      value={note}
-                      onChange={(e) => {
-                        write(e.target.value);
-                        mark(true);
-                      }}
-                    />
-                  </label>
-                  <div className="memory-actions">
-                    <button
-                      type="submit"
-                      className="button primary"
-                      disabled={
-                        busy || (!place.trim() && !node) || (!note.trim() && !drawing && !entry?.photos.length)
-                      }
-                    >
-                      {busy ? t("保存中…", "Saving…") : t("收进我的手账", "Save memory")}
-                    </button>
-                    <button type="button" onClick={closeEdit}>
-                      {t("取消", "Cancel")}
-                    </button>
-                  </div>
-                </fieldset>
-              </form>
-            ) : (
-              <>
-                <time>{entry.takenOn || entry.createdAt.slice(0, 10)}</time>
-                <h3>{entry.placeTitle}</h3>
-                <p className="memory-script">
-                  {entry.note || t("这一页还留着空白。", "A little room to write.")}
-                </p>
-                <div className="memory-actions">
-                  <button onClick={() => start(entry)}>
-                    <PencilSimple />
-                    {drawing ? t("把画收到这一页", "Add drawing to this page") : t("编辑", "Edit")}
-                  </button>
-                  <button
-                    disabled={Boolean(entry.photos.length && !saved?.drawing)}
-                    onClick={() => share(true)}
-                  >
-                    <ShareNetwork />
-                    {t("做成明信片", "Make postcard")}
-                  </button>
-                </div>
-              </>
-            )}
-          </article>
-        </div>
-      )}
-      {!edit && entries.length > 0 && (
-        <nav className="memory-pages" aria-label={t("翻阅手账", "Browse journal")}>
-          <button
-            disabled={index <= 0}
-            aria-label={t("上一页", "Previous page")}
-            onClick={() => select(entries[index - 1].id)}
-          >
-            <ArrowLeft />
-          </button>
-          <span>
-            {index + 1} / {entries.length}
-          </span>
-          <button
-            disabled={index < 0 || index === entries.length - 1}
-            aria-label={t("下一页", "Next page")}
-            onClick={() => select(entries[index + 1].id)}
-          >
-            <ArrowRight />
-          </button>
-        </nav>
-      )}
-      {!edit && onOpenLegacy && (
-        <button className="memory-legacy" onClick={onOpenLegacy}>
-          {t("查看同行照片记录", "View trip photo records")}
+
+  if (sharing && entry) return <ShareCard entry={entry.templateId ? entry : {...entry,templateId:currentTemplate}}
+    drawing={currentArt} english={english} onClose={() => share(false)}/>;
+  const status = error && <div role="alert">{error} {!edit && !inline &&
+    <button type="button" onClick={() => setLoad(n => n + 1)}>{t("重新读取", "Reload")}</button>}</div>;
+  const legacy = onOpenLegacy && !edit && <button type="button" className="memory-legacy" onClick={onOpenLegacy}>
+    {t("查看同行照片记录", "View trip photo records")}</button>;
+  const sectionLabel = t("我的私人手账", "My private journal");
+
+  if (!inline && !opened) {
+    const latest = entries[0];
+    const binding = entryTemplate(latest, node);
+    return <section className="memory-book book-closed" aria-label={sectionLabel} data-binding={binding} style={journalSurface(binding)}>
+      <PrivateLabel english={english}/>{status}
+      {loading && !entries.length && <p role="status">{t("正在翻开手账…","Opening journal…")}</p>}
+      {(!loading || entries.length > 0) && (!error || entries.length > 0) && <>
+        <button type="button" ref={cover} className="cover-trigger" onClick={openBook}
+          aria-label={entries.length ? t("翻开手账","Open journal") : t("写第一页","Write the first page")}>
+          <span className="book-cover binding-surface"><CoverFace title={latest?.placeTitle || node?.title}
+            thumbnail={saved?.entry?.id === latest?.id ? saved?.url : undefined} count={entries.length} english={english}/></span>
+          <span className="cover-open-label">{entries.length ? t("翻开手账","Open journal") : t("写第一页","Write the first page")}<ArrowRight/></span>
         </button>
-      )}
-    </section>
-  );
+        {!entries.length && <p className="memory-empty">{t("记下一个地点和一句想留下的话。也可以请宿主助手收下你的口述或笔记。","Keep a place and a line you want to remember. Your host can also save a dictated or imported note.")}</p>}
+      </>}
+      {legacy}
+    </section>;
+  }
+
+  const textLeaf = <article className="memory-text-leaf">
+    <PrivateLabel english={english}/>
+    {edit ? <form onSubmit={save}><fieldset disabled={busy}>
+      {!node && !entry ? <label>{t("地点", "Place")}<input required maxLength={150} value={place}
+        onChange={e => {setPlace(e.target.value); mark(true);}}/></label> : <h3>{place}</h3>}
+      <label className="book-date">{t("记录日期", "Date")}<input type="date" value={date} onChange={e => {setDate(e.target.value); mark(true);}}/></label>
+      <label className="handwriting-label"><span id={noteLabel}>{t("我想记住", "What I want to remember")}</span>
+        <textarea className="memory-script" aria-labelledby={noteLabel} autoFocus maxLength={3000} rows={3} value={note}
+          onChange={e => {write(e.target.value); mark(true);}}/></label>
+      <TemplatePicker value={currentTemplate} english={english} disabled={busy}
+        onChange={id => {setChoice(id); onTemplateChange?.(id); mark(true);}}/>
+      <div className="memory-actions"><button type="button" onClick={save} className="button primary"
+        disabled={busy || (!place.trim() && !node) || (!note.trim() && !drawing && !entry?.photos.length)}>
+        {busy ? t("保存中…","Saving…") : editing.current.revision && editing.current.attach ? t("把手绘存入这一页","Save drawing to this page") : t("收进我的手账", "Save memory")}</button>
+        <button type="button" onClick={cancel}>{t("取消","Cancel")}</button></div>
+      {inline && editing.current.revision === null && <details className="book-existing" onToggle={event => setPickingPage(event.currentTarget.open)}>
+        <summary>{t("把画补到已有回忆","Attach to an existing memory")}</summary>
+        {pickingPage && (loading ? <small role="status">{t("正在读取…","Loading…")}</small> : pickError ?
+          <button type="button" onClick={() => setLoad(n=>n+1)}>{t("重新读取","Retry")}</button> : entries.length ?
+          <label>{t("选择要更新插画的篇章","Choose the page whose illustration to update")}
+            <select value="" onChange={async event => {
+              const item = entries.find(row => row.id === event.target.value);
+              if (item && await mayLeave()) start(item, true);
+            }}><option value="">{t("选择一页","Choose a page")}</option>{entries.map(row =>
+              <option key={row.id} value={row.id}>{memoryPageDate(row) + " · " + (row.note || row.placeTitle).slice(0,48)}</option>)}</select></label> :
+          <small>{t("这个地点还没有其他回忆。","No other memories for this place yet.")}</small>)}
+      </details>}
+    </fieldset></form> : entry && <>
+      <time dateTime={entry.takenOn || entry.createdAt}>{!entry.takenOn && t("写于 ","Written ")}{memoryPageDate(entry)}</time>
+      {(inline || entry.photos.length > 0) && <h3>{entry.placeTitle}</h3>}
+      <p className="memory-script">{entry.note || t("这一页还留着空白。", "A little room to write.")}</p>
+      <small className="folio-binding">{journalTemplates[currentTemplate][english ? "en" : "zh"]}</small>
+      {inline && <p className="memory-saved" role="status">{t("已收入私人手账","Saved to your private journal")}</p>}
+      <div className="memory-actions"><button type="button" onClick={() => start(entry)}><PencilSimple/>{t("编辑","Edit")}</button>
+        <button type="button" disabled={Boolean(entry.photos.length && !currentArt)} onClick={() => share(true)}>
+          <ShareNetwork/>{t("做成明信片","Make postcard")}</button>
+        {inline && <button type="button" onClick={onCloseComposer}>{t("收起","Close note")}</button>}</div>
+    </>}
+  </article>;
+
+  if (inline) return <section ref={reader} tabIndex={-1} className="memory-book inline-postcard" aria-label={sectionLabel}
+    data-binding={currentTemplate} style={journalSurface(currentTemplate)}>{status}{textLeaf}</section>;
+
+  return <section className="memory-book book-open" aria-label={sectionLabel} onKeyDown={event => {
+    if (edit || event.defaultPrevented || event.altKey || event.metaKey || event.ctrlKey) return;
+    const step = {ArrowLeft:-1,PageUp:-1,ArrowRight:1,PageDown:1}[event.key];
+    if (step && entries[index + step]) { event.preventDefault(); turn(step); }
+  }}>
+    <header className="memory-book-header"><button type="button" disabled={edit} onClick={closeBook}><BookOpen/>{t("合上手账","Close journal")}</button>
+      {!edit && <button type="button" onClick={() => start(null)}><PencilSimple/>{t("写一页","Write a page")}</button>}</header>
+    {status}
+    <div ref={reader} tabIndex={-1} className="memory-spread notebook-spread" data-binding={currentTemplate} style={journalSurface(currentTemplate)}>
+      <i className="notebook-binding binding-surface" aria-hidden="true"/><i className="folio-ribbon" aria-hidden="true"/>
+      <div className="memory-image-leaf">
+        {currentArt ? <><PaintingPreview drawing={currentArt} title={entry?.placeTitle || place} english={english}/><small>{entry?.photos[0]?.source}</small></>
+          : entry?.photos.length ? <p role="status">{saved?.error ? t("画作暂时无法读取。","Could not load artwork.") : t("正在展开画作…","Opening illustration…")}</p>
+          : <div className="memory-place title-page binding-surface"><strong>{(edit ? place : entry?.placeTitle) || t("旅行手账","Travel journal")}</strong></div>}
+      </div>
+      {textLeaf}
+      {!edit && index > 0 && <button type="button" className="page-corner previous" aria-label={t("从页角翻至上一页","Turn back from the page corner")} onClick={() => turn(-1)}/>}
+      {!edit && index >= 0 && index < entries.length-1 && <button type="button" className="page-corner next" aria-label={t("从页角翻至下一页","Turn forward from the page corner")} onClick={() => turn(1)}/>}
+      <TurningLeaf key={motion?.key} motion={motion} english={english} finish={() => setMotion(null)}/>
+    </div>
+    {!edit && entry && <nav className="memory-pages" aria-label={t("翻阅手账","Browse journal")}>
+      <button type="button" disabled={index <= 0} onClick={() => turn(-1)} aria-label={t("上一页","Previous page")}><ArrowLeft/></button>
+      <span aria-live="polite" aria-atomic="true">{t("第 " + (index+1) + " 页，共 " + entries.length + " 页", "Page " + (index+1) + " of " + entries.length)}</span>
+      <button type="button" disabled={index >= entries.length-1} onClick={() => turn(1)} aria-label={t("下一页","Next page")}><ArrowRight/></button>
+    </nav>}{legacy}
+  </section>;
 }

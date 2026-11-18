@@ -86,6 +86,7 @@ test("MCP App and Artifact transports share real authenticated API state and rej
     const memoryPath = "/api/trips/artwork_trip/memories";
     const mine = (await client.callTool({ name: "list_my_travel_memories", arguments: {tripId: memory.tripId} })).structuredContent.entries;
     assert.deepEqual(mine.map(row => row.note), [memory.note]);
+    assert.equal(mine[0].templateId, "song");
     const peerRequest = (path, method = "GET", body) => fetch(apiServer.origin + path, {
       method, headers: {Authorization: "Bearer " + other.access_token, "Content-Type":"application/json"},
       ...(body ? {body:JSON.stringify(body)} : {})
@@ -95,7 +96,7 @@ test("MCP App and Artifact transports share real authenticated API state and rej
       data: "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABgf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCXAA//2Q==",
       shapes, source: "图像验收"
     };
-    const changes = { revision: 1, note: "傍晚的松树。", artwork: art };
+    const changes = { revision: 1, note: "傍晚的松树。", artwork: art, templateId:"mixtec" };
     const revise = () => client.callTool({name:"travel_app_action", arguments:{action:"reviseMemory", args:{tripId:memory.tripId,entryId:memory.entryId}, body:changes}});
     assert.equal((await revise()).structuredContent.revision, 2);
     assert.equal((await revise()).structuredContent.revision, 2, "retry of the same illustrated revision is idempotent");
@@ -113,6 +114,11 @@ test("MCP App and Artifact transports share real authenticated API state and rej
     assert.match(privateArt.headers.get("Cache-Control"), /no-store/);
     const reopened = (await artifact.request(memoryPath)).entries[0];
     assert.equal(reopened.note, changes.note);
+    assert.equal(reopened.templateId, "mixtec");
+    assert.equal((await write({...memory, revision:2, note:"沿石阶返回。"})).structuredContent.revision, 3);
+    assert.equal((await artifact.request(memoryPath)).entries[0].templateId, "mixtec");
+    assert.equal((await client.callTool({name:"travel_app_action",arguments:{action:"reviseMemory",
+      args:{tripId:memory.tripId, entryId:memory.entryId},body:{revision:3,note:"沿石阶返回。",templateId:"unknown"}}})).isError,true);
     assert.equal(reopened.photos[0].data, undefined);
     assert.equal(reopened.photos[0].digest, undefined);
     const workspace = await client.callTool({ name: "get_travel_workspace", arguments: { conversationId } });

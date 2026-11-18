@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { httpError } from "./http-errors.mjs";
 import { validDepthShapes } from "../media/destination-painting.js";
+import { journalTemplates, suggestedJournalTemplate } from "../media/journal-templates.js";
 
 const invalid = () => {
   throw httpError("memory_input_invalid", 400);
@@ -23,6 +24,12 @@ function memoryDate(value) {
 function shortText(value, max) {
   if (typeof value !== "string" || value.length > max) invalid();
   return value.trim();
+}
+
+function templateFields(templateId) {
+  if (templateId === undefined) return {};
+  if (typeof templateId !== "string" || !Object.hasOwn(journalTemplates, templateId)) invalid();
+  return { templateId };
 }
 
 function memoryArt(artwork, sanitizeJournalJpeg) {
@@ -73,6 +80,7 @@ export function registerTravelMemories({
       const note = memoryText(req.body.note ?? "");
       if (!note && !artwork) invalid();
       let placeTitle = shortText(req.body.placeTitle ?? "", 150);
+      let location;
       if (nodeId != null) {
         if (typeof nodeId !== "string" || nodeId.length > 128) invalid();
         const plan = await travelService.getTripPlanView(trip);
@@ -83,6 +91,7 @@ export function registerTravelMemories({
         const existing = !node && (await repository.get(trip, id, authorId));
         if (!node && existing?.nodeId !== nodeId) throw httpError("journal_node_not_found", 404);
         placeTitle = node?.title ?? existing.placeTitle;
+        location = node?.location;
       }
       if (!placeTitle) invalid();
       const photos = artwork ? [memoryArt(artwork, sanitizeJournalJpeg)] : [];
@@ -93,9 +102,12 @@ export function registerTravelMemories({
         takenOn: memoryDate(req.body.takenOn),
         note,
         photos,
+        ...templateFields(req.body.templateId),
       };
       const result = await repository.create(trip, {
         ...record,
+        // Omitted fields keep the original request hash for retries by older clients.
+        templateId: record.templateId ?? suggestedJournalTemplate(placeTitle, location),
         authorId,
         id,
         revision: 1,
@@ -117,7 +129,7 @@ export function registerTravelMemories({
         !(await repository.get(trip, req.params.entryId, author))?.photos.length
       )
         invalid();
-      const fields = { note: text };
+      const fields = { note: text, ...templateFields(req.body.templateId) };
       if (req.body.artwork) fields.photos = [memoryArt(req.body.artwork, sanitizeJournalJpeg)];
       if (takenOn !== undefined) fields.takenOn = memoryDate(takenOn);
       res.json(await repository.reviseMemory(trip, req.params.entryId, author, revision, fields));

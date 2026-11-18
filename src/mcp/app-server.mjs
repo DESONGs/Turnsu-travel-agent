@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
 import { travelOperation } from "./operations.ts";
+import { journalTemplates } from "../media/journal-templates.js";
 
 const id = z.string().regex(/^[A-Za-z0-9_.:-]{1,128}$/);
 export const WORKSPACE_URI = "ui://travel/workspace.html";
@@ -45,10 +46,12 @@ export function createTravelMcpApp({ backend, uiRoot = resolve("dist-mcp"), publ
   register("list_my_travel_memories", { description:"Read this author's private travel journal when the user asks to find or edit their memories. Use the record ID and revision for edits.", inputSchema:{tripId:id,nodeId:id.optional()},annotations:read },
     ({tripId,nodeId}) => backend(`/api/trips/${tripId}/memories${nodeId ? "?nodeId="+encodeURIComponent(nodeId) : ""}`));
   register("write_travel_memory", { description:"Record the user's own dictated or imported memories in their private journal. Resolve the trip and place, retain their voice, facts and uncertainty. Do not infer visits, dates, companions or feelings. A new entry needs a stable UUID and placeTitle. To edit, supply the existing entryId and revision and the complete revised note. Never publish the note.", inputSchema:{
-    tripId:id, entryId:z.string().uuid(), placeTitle:z.string().min(1).max(150).optional(), nodeId:id.optional(), note:z.string().min(1).max(3000), takenOn:visitDate.optional(), revision:z.number().int().positive().optional()
-  }, annotations:{...write,idempotentHint:true}}, async ({tripId,entryId,revision,note,takenOn,nodeId,placeTitle}) => {
+    tripId:id, entryId:z.string().uuid(), placeTitle:z.string().min(1).max(150).optional(), nodeId:id.optional(), note:z.string().min(1).max(3000), takenOn:visitDate.optional(), revision:z.number().int().positive().optional(),
+    templateId:z.enum(Object.keys(journalTemplates)).optional().describe("Set only when the author chooses a binding. Omit to keep an edited page's current design.")
+  }, annotations:{...write,idempotentHint:true}}, async ({tripId,entryId,revision,note,takenOn,nodeId,placeTitle,templateId}) => {
     const path=`/api/trips/${tripId}/memories`;
-    const saved=revision ? await backend(path+"/"+entryId,{method:"POST",body:{revision,note,takenOn}}) : await backend(path,{method:"POST",body:{id:entryId,nodeId,placeTitle,note,takenOn}});
+    const fields={note,takenOn,templateId};
+    const saved=revision ? await backend(path+"/"+entryId,{method:"POST",body:{revision,...fields}}) : await backend(path,{method:"POST",body:{id:entryId,nodeId,placeTitle,...fields}});
     return {entryId:saved.id,placeTitle:saved.placeTitle,revision:saved.revision,visibility:saved.visibility};
   });
   const artworkRequest = { tripId: id, requestId: z.string().uuid() };

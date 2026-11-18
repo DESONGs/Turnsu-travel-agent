@@ -160,19 +160,15 @@
 }
 .sliding-tabs-indicator {
   position: absolute;
-  left: 0;
+  left: var(--active-tab-left, 0px);
   top: var(--active-tab-top, 4px);
-  width: var(--active-tab-width, 0px);
+  right: calc(100% - var(--active-tab-left, 0px) - var(--active-tab-width, 0px));
   height: var(--active-tab-height, calc(100% - 8px));
-  transform: translateX(var(--active-tab-left, 0px));
   z-index: -1;
   pointer-events: none;
-  transition:
-    transform 280ms var(--turnsu-css-spring-settle),
-    width 340ms var(--turnsu-css-spring-settle),
-    height 220ms var(--travel-motion-ease),
-    opacity 160ms ease;
 }
+.sliding-tabs-indicator[data-activation-direction="right"] { transition: right var(--turnsu-tab-lead), left var(--turnsu-tab-trail); }
+.sliding-tabs-indicator[data-activation-direction="left"] { transition: left var(--turnsu-tab-lead), right var(--turnsu-tab-trail); }
 
 /* ── 4. Zero-Snap Smooth Disclosure (Base UI Collapsible) ────────────── */
 .smooth-disclosure-trigger {

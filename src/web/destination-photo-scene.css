@@ -222,3 +222,16 @@
 @media (min-width: 721px) and (max-height: 900px) {
   .destination-photo-workspace > .painting-preview { --painting-view-height: 46vh; }
 }
+
+.destination-photo-workspace { container-type: inline-size; }
+.painting-desk-image { min-width: 0; }
+.painting-desk.notebook-spread { margin-bottom: 16px; }
+.painting-desk .inline-postcard { align-self: center; }
+.painting-desk .memory-share { min-width: 0; padding: 12px; background: var(--surface); }
+.painting-desk .destination-photo-source { margin-top: 4px; }
+@container (max-width: 620px) {
+  .painting-desk.notebook-spread { grid-template-columns: 1fr; }
+  .painting-desk.notebook-spread .painting-desk-image { padding: 14px; }
+  .painting-desk.notebook-spread .memory-text-leaf { padding: 16px; border-top: 1px solid var(--page-rule); }
+}
+@media (min-width:721px) and (max-height:900px) { .painting-desk { --painting-view-height:46vh; } }

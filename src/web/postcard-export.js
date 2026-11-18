@@ -1,23 +1,40 @@
 import { GIFEncoder, quantize, applyPalette } from "gifenc";
+import { entryTemplate, journalTemplates } from "../media/journal-templates.js";
+import { postcardMaterial } from "./journal-materials.js";
 
 const width = 720,
   height = 540;
-const paper = "#f9f5eb",
-  ink = "#272722";
 const writing = '"Kaiti SC","STKaiti","KaiTi","Songti SC",serif';
 
 const paintingTop = 22, paintingHeight = 340;
 
-export function postcardFrame(entry, drawing, caption, position = 0) {
+export function memoryPageDate(entry) {
+  if (entry?.takenOn) return entry.takenOn;
+  const created = new Date(entry?.createdAt);
+  if (!Number.isFinite(created.valueOf())) return "";
+  return [created.getFullYear(), created.getMonth()+1, created.getDate()].map(n => String(n).padStart(2,"0")).join("-");
+}
+
+export function postcardFrame(entry, drawing, caption, position = 0, material) {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const c = canvas.getContext("2d", { willReadFrequently: true });
+  const binding = entryTemplate(entry);
+  const { paper, ink, accent } = journalTemplates[binding];
   c.fillStyle = paper;
   c.fillRect(0, 0, width, height);
-  c.strokeStyle = "#b6ab95";
+  if (material) {
+    // Leave a real strip of the selected book's binding visible on the printed card.
+    c.drawImage(...material, 0, 0, width, height);
+    const sideBinding = ["ming", "british", "french", "mixtec"].includes(binding);
+    const insetX = sideBinding ? 16 : 8, insetY = sideBinding ? 7 : 13;
+    c.fillRect(insetX,insetY,width-insetX-8,height-insetY*2);
+  }
+  c.strokeStyle = accent;
   c.lineWidth = 1;
-  c.strokeRect(9.5, 9.5, width - 19, height - 19);
+  c.strokeRect(19.5, 16.5, width - 39, height - 33);
+  if (["ming", "safavid", "roman"].includes(binding)) c.strokeRect(23.5,20.5,width-47,height-41);
   if (drawing) {
     const scale = Math.min(660 / drawing.width, paintingHeight / drawing.height);
     const w = drawing.width * scale,
@@ -35,7 +52,7 @@ export function postcardFrame(entry, drawing, caption, position = 0) {
     c.restore();
   }
 
-  const date = entry.takenOn || entry.createdAt?.slice(0, 10);
+  const date = memoryPageDate(entry);
   const headingY = drawing ? 401 : 130;
   c.fillStyle = ink;
   c.font = "bold 29px " + writing;
@@ -45,7 +62,7 @@ export function postcardFrame(entry, drawing, caption, position = 0) {
     c.save();
     c.translate(598, headingY - 7);
     c.rotate(-0.045);
-    c.strokeStyle = "#9f624c";
+    c.strokeStyle = accent;
     c.fillStyle = c.strokeStyle;
     c.lineWidth = 1;
     c.strokeRect(-65, -14, 130, 27);
@@ -66,7 +83,7 @@ export function postcardFrame(entry, drawing, caption, position = 0) {
     if (char !== "\n") line += char;
   }
   if (line) c.fillText(line, 30, y);
-  c.fillStyle = "#625d56";
+  c.fillStyle = ink;
   c.font = "15px sans-serif";
   c.strokeStyle = "#cec5b4";
   c.beginPath();
@@ -83,7 +100,8 @@ export function cardCaption(text) {
 const pause = () => new Promise((resolve) => setTimeout(resolve, 0));
 export async function exportPostcard(entry, drawing, caption, format) {
   // A single card can be shared without including a journal ID, account or other entries.
-  const frame = (angle) => postcardFrame(entry, drawing, caption, angle);
+  const material = await postcardMaterial(entryTemplate(entry));
+  const frame = (angle) => postcardFrame(entry, drawing, caption, angle, material);
   const cover = frame(0);
   if (format === "png")
     return new Promise((resolve, reject) =>

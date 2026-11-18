@@ -1,11 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import "./painting-preview.css";
-import { ArrowLeft, ArrowCounterClockwise, ArrowRight, HandGrabbing } from "@phosphor-icons/react";
+import { ArrowsOutLineHorizontal, ArrowLeft, ArrowCounterClockwise, ArrowRight, HandGrabbing } from "@phosphor-icons/react";
 
-export function PaintingPreview({ drawing, title, english }) {
+function PhotoComparison({ photo, alt, english }) {
+  const [percent, setPercent] = useState(50);
+  return <div className="photo-comparison" style={{ "--revealed": percent + "%" }}>
+    <div className="comparison-original"><img src={"data:image/jpeg;base64," + photo.data} alt={alt} draggable={false}/></div>
+    {percent > 18 && <span className="comparison-legend original" aria-hidden="true">{english ? "Original" : "原照"}</span>}
+    {percent < 82 && <span className="comparison-legend drawing" aria-hidden="true">{english ? "Drawing" : "手绘"}</span>}
+    <div className="comparison-divider" aria-hidden="true"><ArrowsOutLineHorizontal weight="bold"/></div>
+    <input type="range" min="0" max="100" step="1" value={percent}
+      aria-label={english ? "Original photo percentage" : "原照显示比例"}
+      aria-valuetext={english ? percent + "% original" : "原照 " + percent + "%"}
+      onChange={event => setPercent(Number(event.target.value))}/>
+  </div>;
+}
+
+export function PaintingPreview({ drawing, title, english, comparisonPhoto, originalAlt }) {
   const mount = useRef(null), control = useRef(null);
   const pick = (zh, en) => english ? en : zh;
-  useEffect(() => {
+  const comparing = Boolean(comparisonPhoto);
+  useLayoutEffect(() => {
     const stage = mount.current;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     stage.replaceChildren(...drawing.plates.map(p => p.canvas));
@@ -14,7 +29,7 @@ export function PaintingPreview({ drawing, title, english }) {
       const min = Math.min(stage.clientWidth,stage.clientHeight);
       for (const { canvas, depth } of drawing.plates) {
         const z = (depth-2)/2;
-        canvas.style.transform = `translate3d(${x*z*min*.016}px,${y*z*min*.009}px,0) scale(1.038)`;
+        canvas.style.transform = `translate3d(${x*z*min*.016}px,${y*z*min*.009}px,0) scale(var(--painting-scale, 1.038))`;
       }
     }
     function tick(time) {
@@ -44,15 +59,25 @@ export function PaintingPreview({ drawing, title, english }) {
     const events = { pointerdown:start, pointermove:drag, pointerup:end, pointercancel:end, lostpointercapture:end };
     for (const [event,func] of Object.entries(events)) stage.addEventListener(event,func);
     const observer=new ResizeObserver(paint); observer.observe(stage);
-    control.current=move; paint();
+    function reset() {
+      cancelAnimationFrame(frame);
+      if (pointer && stage.hasPointerCapture(pointer.id)) stage.releasePointerCapture(pointer.id);
+      pointer=null; x=0; y=0; tx=0; ty=0; frame=0; lastTime=0; paint();
+    }
+    control.current={ move, reset }; paint();
     return () => {
       for (const [event,func] of Object.entries(events)) stage.removeEventListener(event,func);
       cancelAnimationFrame(frame); observer.disconnect(); stage.replaceChildren(); control.current=null;
     };
   }, [drawing]);
+  useLayoutEffect(() => { if (comparing) control.current?.reset(); }, [comparing]);
   return <div className="painting-preview">
-    <div className="painting-stage" style={{ aspectRatio: drawing.width / drawing.height, "--painting-ratio": drawing.width / drawing.height }} ref={mount} role="img" aria-label={pick(`${title}的分层手绘`, `Layered illustration of ${title}`)} />
-    <div className="painting-view-controls"><span><HandGrabbing />{pick("拖动查看，松手回正", "Drag to explore · release to center")}</span><div role="group" aria-label={pick("手绘视角", "Illustration view")}>
-    {[[ArrowLeft,-1,"向左看","Look left"],[ArrowCounterClockwise,0,"回正","Center"],[ArrowRight,1,"向右看","Look right"]].map(([Icon,angle,zh,en])=><button type="button" key={angle} className="button secondary" aria-label={pick(zh,en)} onClick={()=>control.current?.(angle)}><Icon /></button>)}</div></div>
+    <div className="painting-frame" data-comparing={comparing || undefined} style={{ aspectRatio: drawing.width / drawing.height, "--painting-ratio": drawing.width / drawing.height }}>
+      <div className="painting-stage" ref={mount} role="img" aria-label={pick(`${title}的分层手绘`, `Layered illustration of ${title}`)} />
+      {comparing && <PhotoComparison photo={comparisonPhoto} alt={originalAlt} english={english}/>}
+    </div>
+    <div className="painting-view-controls">{comparing ? <span><ArrowsOutLineHorizontal />{pick("左右拖动分界线", "Slide to compare")}</span> :
+      <><span><HandGrabbing />{pick("拖动查看，松手回正", "Drag to explore · release to center")}</span><div role="group" aria-label={pick("手绘视角", "Illustration view")}>
+      {[[ArrowLeft,-1,"向左看","Look left"],[ArrowCounterClockwise,0,"回正","Center"],[ArrowRight,1,"向右看","Look right"]].map(([Icon,angle,zh,en])=><button type="button" key={angle} className="button secondary" aria-label={pick(zh,en)} onClick={()=>control.current?.move(angle)}><Icon /></button>)}</div></>}</div>
   </div>;
 }

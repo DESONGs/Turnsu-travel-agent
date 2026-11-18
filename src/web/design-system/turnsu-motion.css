@@ -1,9 +1,7 @@
-/* Turnsu spring curve used by the workspace tabs. */
+/* Unit-mass spring responses sampled for the leading (620,38) and trailing (185,20) tab edges. */
 :root {
   --turnsu-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --turnsu-duration-fast:    160ms;
-  --turnsu-css-spring-settle: linear(
-    0, 0.009, 0.035 2.1%, 0.141 4.5%, 0.723 15.5%, 0.938 21.8%,
-    1.017 26.2%, 1.041 30%, 1.037 34.9%, 1.012 43.8%, 0.999 53.9%, 1
-  );
+  --turnsu-tab-lead: 380ms linear(0,.063,.206,.376,.541,.684,.799,.885,.946,.985,1.008,1.02,1.024,1.024,1.021,1.017,1.013,1.009,1.006,1.003,1.002,1.001,1,1,1);
+  --turnsu-tab-trail: 660ms linear(0,.058,.192,.355,.518,.663,.782,.875,.941,.986,1.013,1.027,1.033,1.032,1.029,1.024,1.018,1.013,1.009,1.005,1.003,1.001,1,.999,1);
 }

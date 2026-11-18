@@ -10,9 +10,23 @@ import { createMcpHostBridge } from "../src/web/host-bridge.js";
 import { destinationPaintingStyle, validDepthShapes } from "../src/media/destination-painting.js";
 import { generateDestinationArtwork, artworkHostMode } from "../src/web/destination-artwork.js";
 import { splitPaintingPixels } from "../src/web/painting-plates.js";
+import { entryTemplate, suggestedJournalTemplate } from "../src/media/journal-templates.js";
 
 const shapes = [{ depth: 4, points: [[0,.7],[.6,.55],[1,.88],[1,1],[0,1]] }];
 const style = node => destinationPaintingStyle({domain:"play", ...node});
+
+test("journal bindings use place-specific clues and retain the author's choice", () => {
+  for (const [title, template] of [["黄山风景区","song"],["明孝陵","ming"],["Kew Gardens","british"],
+    ["卢克索神庙","egyptian"],["Musée du Louvre","french"],["Roman Forum","roman"],["東海道","edo"],
+    ["Naqsh-e Jahan","safavid"],["Tilantongo","mixtec"],["Bonwire","asante"]]) {
+    assert.equal(suggestedJournalTemplate(title),template,title);
+  }
+  assert.equal(suggestedJournalTemplate("万神殿",{city:"罗马"}),"roman");
+  assert.equal(suggestedJournalTemplate("市场旁的小巷",{city:"巴黎"}),"plain");
+  assert.equal(suggestedJournalTemplate("黄山主题酒店"),"plain");
+  assert.equal(entryTemplate({placeTitle:"黄山",templateId:"asante"}),"asante");
+  assert.equal(entryTemplate({placeTitle:"黄山"}),"song");
+});
 
 test("the selected trip survives a tool result delivered before the embedded app subscribes", () => {
   const eventSource = new EventTarget();

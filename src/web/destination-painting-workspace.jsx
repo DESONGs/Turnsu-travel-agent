@@ -8,6 +8,8 @@ import { fetchReliefSourcePhoto } from "./photo-relief-source.js";
 import { prepareJournalPhoto } from "./travel-journal-photo.js";
 import { api, isEmbeddedTravelClient } from "./api-client.js";
 import { MemoryBook } from "./memory-book.jsx";
+import { entryTemplate } from "../media/journal-templates.js";
+import { journalSurface } from "./journal-materials.js";
 
 function SourcePicture({ media, alt, onError }) {
   const [source, setSource] = useState("");
@@ -34,6 +36,8 @@ export function DestinationPaintingWorkspace({ scene, node, tripId, english, onD
   const [mediaId, setMediaId] = useState(null), [photo, setPhoto] = useState(null);
   const [drawing, setDrawing] = useState(null), [compare, setCompare] = useState(false);
   const [journaling, setJournaling] = useState(false);
+  const [pageTemplate, setPageTemplate] = useState(null);
+  const writeButton = useRef(null);
   const [phase, setPhase] = useState(""), [error, setError] = useState(""), [broken, setBroken] = useState(false);
   const operation = useRef(null), input = useRef(null);
   useEffect(() => () => operation.current?.abort(), []);
@@ -74,13 +78,16 @@ export function DestinationPaintingWorkspace({ scene, node, tripId, english, onD
   const preview = photo || media;
   const loading = { read: pick("正在读取照片…","Reading photograph…"), draw: pick("宿主正在绘制…","Waiting for the host drawing…"), depth: pick("正在整理前后景…","Preparing depth layers…") };
   const caption = scene.facts.find(fact => fact.label === "此行体验线索")?.value;
-  if (journaling && drawing) return <div className="destination-photo-workspace">
-    <MemoryBook node={node} tripId={tripId} drawing={drawing} source={photo?.kind==="upload"?pick("我的照片","My photograph"):[photo?.source ?? media?.source, ...(media?.authors ?? []).map(a=>a.name)].filter(Boolean).join(" · ").slice(0,500)} english={english} onDirtyChange={onDirtyChange}/>
-    <footer className="painting-page-actions">{trialAction}</footer>
-  </div>;
+  const template = pageTemplate ?? entryTemplate(null, node);
+  const source = photo?.kind === "upload" ? pick("我的照片","My photograph")
+    : [photo?.source ?? media?.source, ...(media?.authors ?? []).map(a => a.name)].filter(Boolean).join(" · ").slice(0,500);
+  const closeEditor = () => {
+    setJournaling(false); setPageTemplate(null);
+    requestAnimationFrame(() => writeButton.current?.focus({preventScroll:true}));
+  };
   return <div className="destination-photo-workspace">
     <header className="destination-photo-heading">
-      <div><h2>{scene.title}</h2><p>{drawing && !compare ? (english ? style.en : style.zh) : pick("景点照片", "Place photograph")}</p></div>
+      <div><h2>{scene.title}</h2><p>{drawing ? (english ? style.en : style.zh) : pick("景点照片", "Place photograph")}</p></div>
       {drawing && <button type="button" className="button secondary painting-compare" aria-pressed={compare}
         onClick={() => setCompare(value => !value)}><ImageSquare aria-hidden="true" />{compare ? pick("回到手绘","View illustration") : pick("对照原照片","View original")}</button>}
     </header>
@@ -88,19 +95,27 @@ export function DestinationPaintingWorkspace({ scene, node, tripId, english, onD
     {available && !drawing && <p className="destination-painting-note">{pick("选中的照片会交给当前宿主绘制","Your selected photo is sent to the current host to draw")} · {english ? style.en : style.zh}</p>}
     {phase && <div className="painting-progress"><span role="status">{loading[phase]}</span><button type="button" onClick={stop}>{pick("停止等待","Stop waiting")}</button></div>}
     {error && <p className="destination-photo-error" role="alert">{error}</p>}
-    {drawing && !compare ? <PaintingPreview drawing={drawing} title={scene.title} english={english} /> :
+    <div className={journaling ? "painting-desk notebook-spread" : "painting-desk"} data-binding={journaling ? template : undefined} style={journaling ? journalSurface(template) : undefined}>
+    {journaling && <i className="notebook-binding binding-surface" aria-hidden="true"/>}
+    <div className="painting-desk-image">
+    {drawing ? <PaintingPreview drawing={drawing} title={scene.title} english={english} comparisonPhoto={compare ? photo : null}
+      originalAlt={photo?.kind === "upload" ? pick("你选中的景点照片","Your selected photo") : media?.alt || scene.title} /> :
       preview && !broken ? <figure className="destination-photo-original">{photo ? <img src={"data:image/jpeg;base64," + photo.data} alt={photo.kind==="upload" ? pick("你选中的景点照片","Your selected photo") : media?.alt} onError={() => setBroken(true)} /> : <SourcePicture key={media.mediaId} media={media} alt={media.alt} onError={() => setBroken(true)} />}</figure> :
       <div className="destination-photo-empty"><Camera /><p>{preview ? pick("照片暂时无法显示","Photo unavailable") : pick("这个地点还没有可展示的照片","No place photo yet")}</p>{preview && <button type="button" className="button secondary" onClick={()=>setBroken(false)}><ArrowClockwise />{pick("重试照片","Retry photo")}</button>}</div>}
     {(photo || media) && <p className="destination-photo-source">{photo?.kind === "upload" ? pick("你的照片","Your photo") : photo?.source ?? media?.source}</p>}
     {photo?.kind !== "upload" && media?.authors?.length>0 && <div className="destination-photo-source">{media.authors.map((a,i)=>a.uri ? <a key={i} href={a.uri} target="_blank" rel="noreferrer">{a.name}</a> : <span key={i}>{a.name}</span>)}</div>}
-    {scene.media.length>0 && (scene.media.length>1 || photo?.kind==="upload") && <div className="destination-photo-picker" role="group" aria-label={pick("选择景点照片","Choose a place photo")}>{scene.media.map((item,index)=><button type="button" key={item.mediaId} aria-pressed={photo?.kind!=="upload" && item.mediaId===media?.mediaId} aria-label={pick(`来源照片 ${index+1}`,`Source photo ${index+1}`)} onClick={()=>select(item)}><SourcePicture media={item} alt="" /><span>{index+1}</span></button>)}</div>}
+    </div>
+    {journaling && <MemoryBook node={node} tripId={tripId} drawing={drawing} source={source} english={english}
+      onDirtyChange={onDirtyChange} onTemplateChange={setPageTemplate} onCloseComposer={closeEditor}/>}
+    </div>
+    {!journaling && scene.media.length>0 && (scene.media.length>1 || photo?.kind==="upload") && <div className="destination-photo-picker" role="group" aria-label={pick("选择景点照片","Choose a place photo")}>{scene.media.map((item,index)=><button type="button" key={item.mediaId} aria-pressed={photo?.kind!=="upload" && item.mediaId===media?.mediaId} aria-label={pick(`来源照片 ${index+1}`,`Source photo ${index+1}`)} onClick={()=>select(item)}><SourcePicture media={item} alt="" /><span>{index+1}</span></button>)}</div>}
     {caption && <p className="painting-caption">{caption}</p>}
     {scene.routeRelation && <p className="painting-route-fact">{scene.routeRelation.label}{scene.routeRelation.minutes != null && pick(` · 约 ${Math.round(scene.routeRelation.minutes)} 分钟`, ` · about ${Math.round(scene.routeRelation.minutes)} min`)}</p>}
     {eligible && !available && <p className="destination-painting-note">{pick("在支持图片生成和回传的宿主中打开，即可绘制这张照片。","Open in a host with image generation to illustrate this photo.")}</p>}
-    <footer className="painting-page-actions is-viewing">
-      {drawing && isEmbeddedTravelClient() && <button className="button brand" type="button" onClick={() => setJournaling(true)}><BookOpen aria-hidden="true" />{pick("做成旅行手账","Make a journal page")}</button>}
+    <footer className={journaling ? "painting-page-actions" : "painting-page-actions is-viewing"}>
+      {drawing && !journaling && isEmbeddedTravelClient() && <button ref={writeButton} className="button brand" type="button" onClick={() => setJournaling(true)}><BookOpen aria-hidden="true" />{pick("记一笔","Write a memory")}</button>}
       {available && !phase && !drawing && (photo || (media && !broken)) && <button type="button" className="button primary" onClick={() => void generate({media}, photo)}><PaintBrush />{error ? pick("重新生成","Try again") : pick("用这张照片生成手绘","Illustrate this photo")}</button>}
-      {available && <button type="button" className="button secondary" onClick={() => input.current?.click()}><UploadSimple />{drawing ? pick("换一张照片","Change photo") : pick("上传照片生成手绘","Illustrate my photo")}</button>}
+      {available && !journaling && <button type="button" className="button secondary" onClick={() => input.current?.click()}><UploadSimple />{drawing ? pick("换一张照片","Change photo") : pick("上传照片生成手绘","Illustrate my photo")}</button>}
       {trialAction}
     </footer>
   </div>;
