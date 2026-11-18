@@ -1,0 +1,318 @@
+.destination-photo-heading {
+  padding: 20px 24px 8px;
+}
+.destination-photo-heading small {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--coral-action, #C45200);
+  margin-bottom: 6px;
+}
+.destination-photo-heading h2 {
+  margin: 0;
+  font-family: var(--editorial-serif, Georgia, "Songti SC", serif);
+  font-size: clamp(24px, 2.8vw, 32px);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--ink, #161513);
+  overflow-wrap: anywhere;
+}
+
+.destination-photo-workspace {
+  padding: 0 24px 18px;
+}
+.destination-photo-original {
+  margin: 8px 0 0;
+}
+.destination-photo-original > img {
+  display: block;
+  width: 100%;
+  height: clamp(280px, 46vh, 480px);
+  object-fit: contain;
+  border-radius: 16px;
+  border: 1px solid var(--line, rgba(24, 21, 17, 0.09));
+  background: var(--surface-subtle, #EFECE5);
+}
+.destination-photo-original figcaption,
+.destination-photo-source {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted, #5C5852);
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+.destination-photo-workspace .photo-relief-preview {
+  margin: 10px 0 0;
+  border-radius: 16px;
+}
+.destination-photo-workspace .photo-relief-stage {
+  height: clamp(300px, 46vh, 480px);
+}
+
+.destination-photo-picker {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0 0;
+  overflow-x: auto;
+}
+.destination-photo-picker button {
+  position: relative;
+  flex: 0 0 88px;
+  height: 64px;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--surface, #FFFFFF);
+  box-shadow: 0 2px 6px rgba(20, 17, 13, 0.06);
+  cursor: pointer;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+.destination-photo-picker button:hover {
+  transform: translateY(-1px);
+}
+.destination-photo-picker img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.destination-photo-picker button[aria-pressed="true"] {
+  border-color: var(--coral-action, #C45200);
+}
+.destination-photo-picker span {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(22, 21, 19, 0.8);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.destination-photo-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 0 10px;
+}
+.destination-photo-actions .button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.destination-photo-actions .button.primary {
+  background: var(--ink, #161513);
+  color: #FFFFFF;
+  border-color: var(--ink, #161513);
+}
+.destination-photo-actions .button.primary:hover:not(:disabled) {
+  background: var(--coral-action, #C45200);
+  border-color: var(--coral-action, #C45200);
+}
+.destination-photo-actions > span {
+  font-size: 12.5px;
+  color: var(--muted, #5C5852);
+}
+.destination-photo-actions label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft, #33312D);
+}
+.destination-photo-actions select {
+  width: auto;
+  min-height: 38px;
+  border: 1px solid var(--line-strong, rgba(24, 21, 17, 0.16));
+  border-radius: 999px;
+  padding: 6px 28px 6px 14px;
+  color: var(--ink, #161513);
+  background: var(--surface, #FFFFFF);
+  font: inherit;
+  font-weight: 600;
+}
+
+.destination-photo-source {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.destination-photo-source button {
+  min-height: 38px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue, #1D5C70);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.destination-photo-error {
+  margin: 12px 0 0;
+  color: var(--danger, #B83227);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.destination-photo-empty {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 16px;
+  border: 1px dashed var(--line-strong, rgba(24, 21, 17, 0.16));
+  background: var(--surface, #FFFFFF);
+  color: var(--muted, #5C5852);
+  padding: 24px;
+  text-align: center;
+}
+.destination-photo-empty > svg {
+  font-size: 34px;
+  color: var(--coral-action, #C45200);
+}
+.destination-photo-empty p {
+  margin: 0;
+  font-size: 13.5px;
+}
+
+.destination-photo-details {
+  padding: 18px 24px;
+  border-top: 1px solid var(--line, rgba(24, 21, 17, 0.09));
+  background: var(--surface, #FFFFFF);
+  display: grid;
+  gap: 10px;
+}
+.destination-photo-details > p {
+  margin: 0;
+  color: var(--ink-soft, #33312D);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.destination-photo-details > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.destination-photo-scene :is(button, select):focus-visible {
+  outline: 2px solid var(--coral-action, #C45200);
+  outline-offset: 2px;
+}
+.photo-relief-header strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.destination-painting-note {
+  margin: 0 0 10px;
+  color: var(--muted, #5C5852);
+  font-size: 13px;
+}
+.painting-stage {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--line, rgba(24, 21, 17, 0.09));
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+.painting-stage:active {
+  cursor: grabbing;
+}
+.painting-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.painting-view-controls,
+.painting-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 0;
+}
+.painting-view-controls > span,
+.painting-view-controls > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.painting-view-controls > span {
+  font-size: 13px;
+  color: var(--muted, #5C5852);
+}
+.painting-view-controls button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong, rgba(24, 21, 17, 0.16));
+  background: var(--surface, #FFFFFF);
+  color: var(--ink, #161513);
+}
+.painting-progress button {
+  min-height: 38px;
+  border: 0;
+  background: transparent;
+  color: var(--blue, #1D5C70);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .destination-photo-heading {
+    padding: 18px 16px 6px;
+  }
+  .destination-photo-workspace {
+    padding: 0 16px 16px;
+  }
+  .destination-photo-original > img {
+    height: 300px;
+  }
+  .destination-photo-workspace .photo-relief-stage {
+    height: 290px;
+  }
+  .destination-photo-actions .button {
+    flex: 1 0 auto;
+    white-space: nowrap;
+  }
+  .destination-photo-actions > span {
+    flex: 1 0 100%;
+    line-height: 1.65;
+  }
+  .destination-photo-details {
+    padding: 16px;
+  }
+  .destination-photo-actions label {
+    flex: 1 0 100%;
+    margin-left: 0;
+  }
+}

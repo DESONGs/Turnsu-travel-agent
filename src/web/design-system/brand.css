@@ -1,0 +1,81 @@
+/* Generated from brand.json. Run python3 tools/build_tokens.py after editing. */
+:root {
+  --c-colors-brand-100: #FFF5EB;
+  --c-colors-brand-200: #FFE4CC;
+  --c-colors-brand-300: #FFC694;
+  --c-colors-brand-400: #FF9B50;
+  --c-colors-brand-500: #FD7106;
+  --c-colors-brand-600: #C45200;
+  --c-colors-brand-700: #A74300;
+  --c-colors-brand-800: #803200;
+  --turnsu-logo-orange: #FD7106;
+  --turnsu-ink: #121211;
+  --turnsu-paper: #F5F2ED;
+  --turnsu-action: #C45200;
+  --turnsu-action-hover: #A74300;
+  --turnsu-action-active: #803200;
+  --turnsu-on-action: #FFFFFF;
+  --c-shadows-ai: 0 1px 2px rgba(196,82,0,.16), 0 8px 24px rgba(196,82,0,.12);
+  --c-colors-ai-light-100-stop1: #FFF5EB;
+  --c-colors-ai-light-100-stop2: #FFF0E4;
+  --c-colors-ai-light-100-stop3: #F5F2ED;
+  --c-colors-ai-light-200-stop1: #FFE4CC;
+  --c-colors-ai-light-200-stop2: #FFD7B5;
+  --c-colors-ai-light-200-stop3: #F5E4D4;
+  --c-colors-ai-light-500-stop1: #C45200;
+  --c-colors-ai-light-500-stop2: #A74300;
+  --c-colors-ai-light-500-stop3: #803200;
+  --c-colors-ai-dark-100-stop1: #2D2118;
+  --c-colors-ai-dark-100-stop2: #30251C;
+  --c-colors-ai-dark-100-stop3: #24221F;
+  --c-colors-ai-dark-200-stop1: #49270F;
+  --c-colors-ai-dark-200-stop2: #4D311D;
+  --c-colors-ai-dark-200-stop3: #3D2D23;
+  --c-colors-ai-dark-500-stop1: #C45200;
+  --c-colors-ai-dark-500-stop2: #A74300;
+  --c-colors-ai-dark-500-stop3: #803200;
+}
+:root, .light, .DAY, [data-theme="light"] {
+  --c-colors-background-1: #FCFBF9;
+  --c-colors-background-2: #F5F2ED;
+  --c-colors-surface-1: #FFFFFF;
+  --c-colors-surface-2: #F8F6F2;
+  --c-colors-text-primary: #121211;
+  --c-colors-text-secondary: #625D56;
+  --c-colors-text-caption: #6F6961;
+  --c-colors-text-hyperlink: #A74300;
+  --c-colors-positive: #08784F;
+  --c-colors-negative: #C92532;
+  --c-colors-reminder: #925000;
+  --c-colors-official-bg: #FFF0E4;
+  --c-colors-focus-ring: #C45200;
+  --c-colors-overlay-bg: rgba(18,18,17,.55);
+  --c-colors-gray-100: var(--c-colors-gray-light-100);
+  --c-colors-gray-200: var(--c-colors-gray-light-200);
+  --c-colors-gray-300: var(--c-colors-gray-light-300);
+  --c-colors-gray-400: var(--c-colors-gray-light-400);
+  --c-colors-gray-500: var(--c-colors-gray-light-500);
+  --c-colors-gray-600: var(--c-colors-gray-light-600);
+}
+.dark, .NIGHT, [data-theme="dark"] {
+  --c-colors-background-1: #191816;
+  --c-colors-background-2: #121211;
+  --c-colors-surface-1: #24221F;
+  --c-colors-surface-2: #2D2A26;
+  --c-colors-text-primary: #F5F2ED;
+  --c-colors-text-secondary: #B9B3AA;
+  --c-colors-text-caption: #A6A096;
+  --c-colors-text-hyperlink: #FFA363;
+  --c-colors-positive: #67E4B5;
+  --c-colors-negative: #FF7B83;
+  --c-colors-reminder: #FFC17A;
+  --c-colors-official-bg: #49270F;
+  --c-colors-focus-ring: #FFA363;
+  --c-colors-overlay-bg: rgba(18,18,17,.7);
+  --c-colors-gray-100: var(--c-colors-gray-dark-100);
+  --c-colors-gray-200: var(--c-colors-gray-dark-200);
+  --c-colors-gray-300: var(--c-colors-gray-dark-300);
+  --c-colors-gray-400: var(--c-colors-gray-dark-400);
+  --c-colors-gray-500: var(--c-colors-gray-dark-500);
+  --c-colors-gray-600: var(--c-colors-gray-dark-600);
+}

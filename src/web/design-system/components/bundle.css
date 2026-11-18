@@ -1,0 +1,238 @@
+/* Turnsu Design System — adapted base tokens; brand overrides in brand.css. */
+/* ==========================================================================
+   Turnsu — Canonical Design Tokens
+   Shared base CSS for Turnsu Design System examples.
+   --------------------------------------------------------------------------
+   Naming scheme:
+     --c-colors-*       raw scale tokens (hue + step)
+     --c-spacing-*      8-pt grid in rem
+     --c-font-sizes-*   type ramp in rem
+     --c-radii-*        radii scale
+     --c-shadows-*      elevation
+     --c-animations-*   motion presets
+   Theme tokens live under `.light` / `.DAY` and `.dark` / `.NIGHT`.
+   ========================================================================== */
+
+:where(:root, :host) {
+
+  /* ── SPACING (rem-based) ────────────────────────────────────────────── */
+  --c-spacing-25:  0.125rem;   /* 2px  */
+  --c-spacing-50:  0.25rem;    /* 4px  */
+  --c-spacing-100: 0.5rem;     /* 8px  */
+  --c-spacing-150: 0.75rem;    /* 12px */
+  --c-spacing-200: 1rem;       /* 16px */
+  --c-spacing-250: 1.25rem;    /* 20px */
+  --c-spacing-300: 1.5rem;     /* 24px */
+  --c-spacing-400: 2rem;       /* 32px */
+  --c-spacing-500: 2.5rem;     /* 40px */
+  --c-spacing-600: 3rem;       /* 48px */
+  --c-spacing-800: 4rem;       /* 64px */
+  /* negatives: same names with n prefix */
+  --c-spacing-n25:  -0.125rem;
+  --c-spacing-n50:  -0.25rem;
+  --c-spacing-n100: -0.5rem;
+  --c-spacing-n150: -0.75rem;
+  --c-spacing-n200: -1rem;
+  --c-spacing-n250: -1.25rem;
+  --c-spacing-n300: -1.5rem;
+  --c-spacing-n400: -2rem;
+  --c-spacing-n500: -2.5rem;
+  --c-spacing-n600: -3rem;
+  --c-spacing-n800: -4rem;
+
+  /* ── FONT SIZES ─────────────────────────────────────────────────────── */
+  --c-font-sizes-50:   0.6875rem;  /* 11px */
+  --c-font-sizes-75:   0.75rem;    /* 12px */
+  --c-font-sizes-100:  0.875rem;   /* 14px */
+  --c-font-sizes-200:  1rem;       /* 16px */
+  --c-font-sizes-300:  1.125rem;   /* 18px */
+  --c-font-sizes-400:  1.25rem;    /* 20px */
+  --c-font-sizes-600:  1.5625rem;  /* 25px */
+  --c-font-sizes-800:  2rem;       /* 32px */
+  --c-font-sizes-1000: 2.5rem;     /* 40px */
+
+  /* ── FONT WEIGHTS ───────────────────────────────────────────────────── */
+  --c-font-weights-300: 300;
+  --c-font-weights-400: 400;
+  --c-font-weights-500: 500;
+  --c-font-weights-600: 600;
+  --c-font-weights-700: 700;
+  --c-font-weights-900: 900;
+  --c-font-weights-light:      300;
+  --c-font-weights-normal:     400;
+  --c-font-weights-medium:     500;
+  --c-font-weights-semi:       600;
+  --c-font-weights-bold:       700;
+  --c-font-weights-extrabold:  900;
+
+  /* ── LINE HEIGHTS ───────────────────────────────────────────────────── */
+  --c-line-heights-body:    1.5;
+  --c-line-heights-heading: 1.3;
+
+  /* ── RADII ──────────────────────────────────────────────────────────── */
+  --c-radii-10:   0.125rem;   /* 2px  */
+  --c-radii-50:   0.25rem;    /* 4px  */
+  --c-radii-100:  0.5rem;     /* 8px  — default */
+  --c-radii-200:  0.75rem;    /* 12px */
+  --c-radii-300:  1rem;       /* 16px — cards / modals */
+  --c-radii-400:  1.25rem;    /* 20px */
+  --c-radii-500:  50%;        /* circle */
+  --c-radii-full: 9999px;     /* pills */
+
+  /* ── BORDER WIDTHS ──────────────────────────────────────────────────── */
+  --c-border-widths-100: 1px;
+  --c-border-widths-200: 2px;
+  --c-border-widths-300: 4px;
+
+  /* ── BREAKPOINTS ────────────────────────────────────────────────────── */
+  --c-breakpoints-sm:  360px;
+  --c-breakpoints-md:  768px;
+  --c-breakpoints-lg:  1024px;
+  --c-breakpoints-xl:  1280px;
+  --c-breakpoints-2xl: 1440px;
+  --c-breakpoints-3xl: 1920px;
+  --c-breakpoints-4xl: 2560px;
+
+  /* ── ANIMATIONS ─────────────────────────────────────────────────────── */
+  --c-animations-fade-in:  fade-in  0.3s ease-in-out;
+  --c-animations-fade-out: fade-out 0.3s ease-in-out;
+
+  /* ── SHADOWS (light defaults) ───────────────────────────────────────── */
+  --c-shadows-tiny:
+    0px 1px 2px 0px rgba(88, 102, 126, 0.12),
+    0px 4px 24px 0px rgba(88, 102, 126, 0.08);
+  --c-shadows-overlay:
+    0px 1px 2px rgba(128, 138, 157, 0.12),
+    0px 8px 32px rgba(128, 138, 157, 0.24);
+  --c-shadows-tooltip:
+    0px 1px 2px rgba(128, 138, 157, 0.12),
+    0px 4px 24px rgba(128, 138, 157, 0.24);
+  --c-shadows-ai:
+    0px 1px 2px rgba(253,113,6, 0.30),
+    0px 8px 32px rgba(253,113,6, 0.20);
+}
+
+/* ====================================================================
+   LIGHT THEME — .light, .DAY  (also applied to :root by default)
+   ==================================================================== */
+:where(:root, .light, .DAY) {
+  --c-colors-gray-100: var(--c-colors-gray-light-100);
+  --c-colors-gray-200: var(--c-colors-gray-light-200);
+  --c-colors-gray-300: var(--c-colors-gray-light-300);
+  --c-colors-gray-400: var(--c-colors-gray-light-400);
+  --c-colors-gray-500: var(--c-colors-gray-light-500);
+  --c-colors-gray-600: var(--c-colors-gray-light-600);
+
+  --c-colors-background-1: #FCFBF9;
+  --c-colors-background-2: #FFFFFF;
+  --c-colors-surface-1:    var(--c-colors-white);
+  --c-colors-surface-2:    #F8F6F2;
+
+  --c-colors-text-primary:   #121211;
+  --c-colors-text-secondary: #625D56;
+  --c-colors-text-caption:   #B6AFA4;
+  --c-colors-text-hyperlink: var(--c-colors-blue-500);
+
+  --c-colors-negative:    var(--c-colors-red-500);
+  --c-colors-negative-bg: var(--c-colors-red-100);
+  --c-colors-positive:    var(--c-colors-green-500);
+  --c-colors-positive-bg: var(--c-colors-green-100);
+  --c-colors-reminder:    var(--c-colors-beige-500);
+  --c-colors-reminder-bg: var(--c-colors-beige-100);
+  --c-colors-official-bg: var(--c-colors-blue-100);
+  --c-colors-no-access:   var(--c-colors-gray-500);
+  --c-colors-no-access-bg:var(--c-colors-gray-200);
+
+  --c-colors-overlay-bg:  rgba(88, 102, 126, 0.6);
+  --c-colors-focus-ring:  var(--c-colors-blue-300);
+
+  --c-colors-gold-border:   #F3E8D1;
+  --c-colors-gold-bg:       #FFFCF7;
+  --c-colors-silver-border: #E3E2ED;
+  --c-colors-silver-bg:     #FAF9FF;
+  --c-colors-bronze-border: #EFDCD6;
+  --c-colors-bronze-bg:     #FFF9F7;
+
+  --c-colors-ai-gradient-100: linear-gradient(92.77deg,
+    var(--c-colors-ai-light-100-stop1) 0.26%,
+    var(--c-colors-ai-light-100-stop2) 100.26%);
+  --c-colors-ai-gradient-200: linear-gradient(92.77deg,
+    var(--c-colors-ai-light-200-stop1) 0.26%,
+    var(--c-colors-ai-light-200-stop2) 50.74%,
+    var(--c-colors-ai-light-200-stop3) 100.26%);
+  --c-colors-ai-gradient-500: linear-gradient(92.77deg,
+    var(--c-colors-ai-light-500-stop1) 0%,
+    var(--c-colors-ai-light-500-stop2) 50%,
+    var(--c-colors-ai-light-500-stop3) 100%);
+}
+
+/* ====================================================================
+   DARK THEME — .dark, .NIGHT
+   ==================================================================== */
+:where(.dark, .NIGHT) {
+  --c-colors-gray-100: var(--c-colors-gray-dark-100);
+  --c-colors-gray-200: var(--c-colors-gray-dark-200);
+  --c-colors-gray-300: var(--c-colors-gray-dark-300);
+  --c-colors-gray-400: var(--c-colors-gray-dark-400);
+  --c-colors-gray-500: var(--c-colors-gray-dark-500);
+  --c-colors-gray-600: var(--c-colors-gray-dark-600);
+
+  --c-colors-background-1: #191816;
+  --c-colors-background-2: #121211;
+  --c-colors-surface-1:    #24221F;
+  --c-colors-surface-2:    #2D2A26;
+
+  --c-colors-text-primary:   var(--c-colors-white);
+  --c-colors-text-secondary: #B9B3AA;
+  --c-colors-text-caption:   #746D63;
+  --c-colors-text-hyperlink: var(--c-colors-blue-400);
+
+  --c-colors-negative:    var(--c-colors-red-500);
+  --c-colors-negative-bg: var(--c-colors-red-800);
+  --c-colors-positive:    var(--c-colors-green-500);
+  --c-colors-positive-bg: var(--c-colors-green-800);
+  --c-colors-reminder:    var(--c-colors-beige-500);
+  --c-colors-reminder-bg: var(--c-colors-beige-800);
+  --c-colors-official-bg: var(--c-colors-blue-800);
+  --c-colors-no-access:   var(--c-colors-gray-500);
+  --c-colors-no-access-bg:var(--c-colors-gray-200);
+
+  --c-colors-overlay-bg:  rgba(23, 25, 36, 0.6);
+  --c-colors-focus-ring:  var(--c-colors-blue-300);
+
+  --c-colors-gold-border:   #554A31;
+  --c-colors-gold-bg:       #2D2921;
+  --c-colors-silver-border: #555469;
+  --c-colors-silver-bg:     #2F2F36;
+  --c-colors-bronze-border: #513A33;
+  --c-colors-bronze-bg:     #2C211E;
+
+  --c-colors-ai-gradient-100: linear-gradient(92.77deg,
+    var(--c-colors-ai-dark-100-stop1) 0.26%,
+    var(--c-colors-ai-dark-100-stop2) 50.74%,
+    var(--c-colors-ai-dark-100-stop3) 100.26%);
+  --c-colors-ai-gradient-200: linear-gradient(92.77deg,
+    var(--c-colors-ai-dark-200-stop1) 0.26%,
+    var(--c-colors-ai-dark-200-stop2) 49.78%,
+    var(--c-colors-ai-dark-200-stop3) 100.26%);
+  --c-colors-ai-gradient-500: linear-gradient(92.77deg,
+    var(--c-colors-ai-dark-500-stop1) 0%,
+    var(--c-colors-ai-dark-500-stop2) 50%,
+    var(--c-colors-ai-dark-500-stop3) 100%);
+
+  --c-shadows-tiny:
+    0px 1px 2px 0px rgba(13, 20, 33, 0.24),
+    0px 4px 24px 0px rgba(13, 20, 33, 0.12);
+  --c-shadows-overlay:
+    0px 1px 2px #121211,
+    0px 8px 32px #121211;
+  --c-shadows-tooltip:
+    0px 1px 2px #121211,
+    0px 4px 24px #121211;
+  --c-shadows-ai:
+    0px 1px 2px rgba(253,113,6, 0.5),
+    0px 8px 32px rgba(253,113,6, 0.4);
+}
+
+@keyframes fade-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fade-out { from { opacity: 1 } to { opacity: 0 } }

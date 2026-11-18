@@ -1,0 +1,41 @@
+{
+  "package": "turnsu-design-system",
+  "packageVersion": "1.1.2",
+  "styleVersion": "1.1.1",
+  "source": "https://github.com/DESONGs/turnsu-design-system",
+  "files": [
+    {
+      "path": "colors_and_type.css",
+      "sha256": "72bc6cf34b98b7c37b5101e46562caf73ddc54d188b47fc5c7a2dc9a46c0e364"
+    },
+    {
+      "path": "tokens.css",
+      "sha256": "b040443fbe15ead0763418bfb04b0f1bf8212bc0e838e3cf3e001c9bb72f219f"
+    },
+    {
+      "path": "brand.css",
+      "sha256": "0127c6ca6f94be71ae632824ab2de4d218dc8defbff5a38eb0e0ac56cb58fa7e"
+    },
+    {
+      "path": "components/bundle.css",
+      "sha256": "079e4a4f116d796d306712a1b083eb3951435dfe07b42bbfce67cbd7bb2db0c7",
+      "upstreamSha256": "a79b25397356840faa1c645cba08541d5a08ae0237b73390718ac0fa4f50754f",
+      "adjustment": "Removed trailing empty line only; CSS declarations unchanged."
+    },
+    {
+      "path": "fonts/InterVariable.woff2",
+      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
+    },
+    {
+      "path": "fonts/Inter-LICENSE.txt",
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    }
+  ],
+  "font": {
+    "name": "Inter",
+    "version": "4.1",
+    "license": "SIL Open Font License 1.1",
+    "licenseFile": "fonts/Inter-LICENSE.txt",
+    "source": "https://github.com/rsms/inter/tree/v4.1"
+  }
+}

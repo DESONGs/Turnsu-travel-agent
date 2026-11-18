@@ -1,0 +1,7 @@
+{
+  "name": "travel-agent-workspace",
+  "version": "0.2.0",
+  "description": "Global Travel Agent plugin with a shared MCP App and an Artifact presentation adapter.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "skills": "./skills/"
+}

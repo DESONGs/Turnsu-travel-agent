@@ -25,6 +25,27 @@ export function createSketchFrameLoop({ requestFrame, cancelFrame, render, step 
 const mix = (a, b, t) => a + (b - a) * t;
 const ease = (t) => t * t * (3 - 2 * t);
 
+// One interruptible camera move, separate from the user-started guided tour.
+export function createSketchFocus({ readCamera, writeCamera, reducedMotion = false, duration = 420 }) {
+  let move = null;
+  return {
+    start(to, now) {
+      if (reducedMotion) { move = null; writeCamera(to); return; }
+      move = { from: readCamera(), to, startedAt: now };
+    },
+    step(now) {
+      if (!move) return false;
+      const progress = Math.min(1, Math.max(0, (now - move.startedAt) / duration));
+      const t = 1 - (1 - progress) ** 4;
+      const { from, to } = move;
+      writeCamera({ position: from.position.map((n, i) => mix(n, to.position[i], t)), target: from.target.map((n, i) => mix(n, to.target[i], t)), zoom: mix(from.zoom, to.zoom, t) });
+      if (progress === 1) move = null;
+      return Boolean(move);
+    },
+    stop() { move = null; },
+  };
+}
+
 export function createSketchTour({ readCamera, writeCamera, onChapter, onState, reducedMotion = false, duration = 7200 }) {
   let run = null;
   let disposed = false;

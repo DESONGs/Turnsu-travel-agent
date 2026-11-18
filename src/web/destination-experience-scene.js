@@ -26,12 +26,15 @@ function mediaDisplayUrl(media) {
   const source = String(media?.source || media?.provider || "");
   const url = safeDisplayUrl(media?.url);
   if (!url) return null;
+  // Commons source rows carry their photographer and license in the persisted attribution.
+  if (url.startsWith("https://upload.wikimedia.org/wikipedia/commons/") &&
+      /\bWikimedia Commons\b/i.test(source) && /\bCC BY(?:-SA)? \d\.\d\s*$/i.test(source)) return url;
   if (media?.rights === "provider_display" || media?.display === true || TRUSTED_MEDIA_SOURCE.test(source)) return url;
   return null;
 }
 
 function mediaRows(node) {
-  return (node?.media ?? []).map((media, index) => {
+  const direct = (node?.media ?? []).map((media, index) => {
     const displayUrl = mediaDisplayUrl(media);
     if (!displayUrl) return null;
     return {
@@ -40,7 +43,12 @@ function mediaRows(node) {
       alt: String(media.alt || media.title || `${node.title} 来源图片`).slice(0, 240),
       source: String(media.source || media.provider || node.operability?.sourceLabel || "来源图片").slice(0, 120),
     };
-  }).filter(Boolean).slice(0, 4);
+  }).filter(Boolean);
+  const google = (node?.operability?.photos ?? []).filter(p => /^places\/[\w-]+\/photos\/[\w-]{1,3000}$/.test(p?.name)).map(p => ({
+    mediaId: p.name, googlePhotoName: p.name, alt: String(node.title), source: "Google Maps",
+    authors: (p.authorAttributions ?? []).map(a => ({ name: String(a.displayName || ""), uri: safeDisplayUrl(a.uri) })),
+  }));
+  return [...direct, ...google].slice(0, 4);
 }
 
 function mobilityPlaceForNode(plan, nodeId) {

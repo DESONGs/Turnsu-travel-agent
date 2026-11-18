@@ -29,3 +29,11 @@ Read-only Fliggy inventory research invokes @fly-ai/flyai-cli 1.0.16, licensed
 under the MIT License, in a restricted child process. Source provenance and
 the production authorization boundary are recorded in the third-party audit
 ledger. No 12306 community client source is included.
+
+The interactive empty-state line illustrations use @lucasmarkes/hairline 0.5.1
+by Lucas Marques under the MIT License. Its license is distributed in
+public/licenses/hairline-MIT.txt (licenses/hairline-MIT.txt in the Web build).
+Source: https://github.com/lucasmarkes/hairline, inspected at revision
+034f4bf9902c6adcf3cf39d82f85e6010cb4e094. The npm artifact is pinned by
+version and integrity in package-lock.json. Photo and 3D scene interactions
+use the project's own React and Three.js implementation.

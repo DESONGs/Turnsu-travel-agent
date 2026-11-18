@@ -1,0 +1,381 @@
+/* Turnsu Design System — shared colors, typography and component tokens. */
+
+
+@import url('./tokens.css');
+@import url('./components/bundle.css');
+@import url('./brand.css');  /* 本地补:2026-09-17 迁移后语义色、深色主题、间距、圆角、阴影在这里 */
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('./fonts/InterVariable.woff2') format('woff2'); }
+
+:root, .light, .DAY, .dark, .NIGHT, [data-theme="light"], [data-theme="dark"] {
+  /* ── BRAND ─────────────────────────────────────────────────────────── */
+  --turnsu-brand-500: var(--c-colors-brand-500); /* exact logo orange */
+  --turnsu-brand-600: var(--c-colors-brand-600); /* accessible action color */
+  --turnsu-brand-700: var(--c-colors-brand-700); /* action hover */
+  --turnsu-brand-100: var(--c-colors-brand-100);
+  --turnsu-brand-200: var(--c-colors-brand-200);
+  --turnsu-brand-300: var(--c-colors-brand-300);
+  --turnsu-brand-400: var(--c-colors-brand-400);
+  --turnsu-brand-800: var(--c-colors-brand-800);
+
+  /* ── NEUTRAL / GRAY (theme-aware) ──────────────────────────────────── */
+  --turnsu-white:     var(--c-colors-white);
+  --turnsu-black:     var(--c-colors-black);
+  --turnsu-gray-100:  var(--c-colors-gray-100);
+  --turnsu-gray-200:  var(--c-colors-gray-200);
+  --turnsu-gray-300:  var(--c-colors-gray-300);
+  --turnsu-gray-400:  var(--c-colors-gray-400);
+  --turnsu-gray-500:  var(--c-colors-gray-500);
+  --turnsu-gray-600:  var(--c-colors-gray-600);
+  --turnsu-gray-700:  var(--c-colors-gray-600);       /* deprecated alias */
+  --turnsu-gray-900:  var(--c-colors-text-primary);
+
+  /* ── SURFACES (theme-aware) ────────────────────────────────────────── */
+  --turnsu-surface-1:  var(--c-colors-surface-1);
+  --turnsu-surface-2:  var(--c-colors-surface-2);
+  --turnsu-background: var(--c-colors-background-2);
+
+  /* ── BORDERS ───────────────────────────────────────────────────────── */
+  --turnsu-border-primary: var(--c-colors-gray-200);   /* #F0ECE6 light */
+  --turnsu-border-strong:  var(--c-colors-gray-300);
+
+  /* ── TEXT ──────────────────────────────────────────────────────────── */
+  --turnsu-text-primary:   var(--c-colors-text-primary);
+  --turnsu-text-secondary: var(--c-colors-text-secondary);
+  --turnsu-text-caption:   var(--c-colors-text-caption);
+  --turnsu-text-hyperlink: var(--c-colors-text-hyperlink);
+  --turnsu-text-inverse:   var(--c-colors-white);
+
+  /* ── SEMANTIC ──────────────────────────────────────────────────────── */
+  --turnsu-positive:     var(--c-colors-positive);
+  --turnsu-positive-bg:  var(--c-colors-positive-bg);
+  --turnsu-negative:     var(--c-colors-negative);
+  --turnsu-negative-bg:  var(--c-colors-negative-bg);
+  --turnsu-reminder:     var(--c-colors-reminder);
+  --turnsu-reminder-bg:  var(--c-colors-reminder-bg);
+  --turnsu-no-access:    var(--c-colors-no-access);
+  --turnsu-no-access-bg: var(--c-colors-no-access-bg);
+  --turnsu-official-bg:  var(--c-colors-official-bg);
+  --turnsu-green-500:    var(--c-colors-green-500);   /* alias */
+  --turnsu-red-500:      var(--c-colors-red-500);     /* alias */
+
+  /* ── TIER (gold / silver / bronze) ─────────────────────────────────── */
+  --turnsu-gold:          var(--c-colors-gold);
+  --turnsu-gold-bg:       var(--c-colors-gold-bg);
+  --turnsu-gold-border:   var(--c-colors-gold-border);
+  --turnsu-silver:        var(--c-colors-silver);
+  --turnsu-silver-bg:     var(--c-colors-silver-bg);
+  --turnsu-silver-border: var(--c-colors-silver-border);
+  --turnsu-bronze:        var(--c-colors-bronze);
+  --turnsu-bronze-bg:     var(--c-colors-bronze-bg);
+  --turnsu-bronze-border: var(--c-colors-bronze-border);
+
+  /* ── AI GRADIENTS (theme-aware) ────────────────────────────────────── */
+  --turnsu-ai-gradient-100: var(--c-colors-ai-gradient-100);
+  --turnsu-ai-gradient-200: var(--c-colors-ai-gradient-200);
+  --turnsu-ai-gradient-500: var(--c-colors-ai-gradient-500);
+
+  /* ── ACCENT (chart originals) ──────────────────────────────────────── */
+  --turnsu-accent-azure:  var(--c-colors-blue-500);
+  --turnsu-accent-green:  var(--c-colors-green-500);
+  --turnsu-accent-beige:  var(--c-colors-beige-500);
+  --turnsu-accent-orange: var(--c-colors-orange-500);
+  --turnsu-accent-teal:   var(--c-colors-teal-500);
+  --turnsu-accent-purple: var(--c-colors-purple-500);
+  --turnsu-accent-navy:   var(--c-colors-blue-600);
+
+  /* ── CHART HUES — 4-shade aliases ──────────────────────────────────── */
+  --turnsu-azure-100: var(--c-colors-blue-100);
+  --turnsu-azure-200: var(--c-colors-blue-200);
+  --turnsu-azure-300: var(--c-colors-blue-300);
+  --turnsu-azure-400: var(--c-colors-blue-400);
+  --turnsu-azure-500: var(--c-colors-blue-500);
+  --turnsu-azure-600: var(--c-colors-blue-600);
+  --turnsu-azure-700: var(--c-colors-blue-700);
+  --turnsu-azure-800: var(--c-colors-blue-800);
+  --turnsu-green-400:  var(--c-colors-green-400);
+  --turnsu-green-600:  var(--c-colors-green-600);
+  --turnsu-green-700:  var(--c-colors-green-700);
+  --turnsu-beige-400:  var(--c-colors-beige-400);
+  --turnsu-beige-500:  var(--c-colors-beige-500);
+  --turnsu-beige-600:  var(--c-colors-beige-600);
+  --turnsu-beige-700:  var(--c-colors-beige-700);
+  --turnsu-orange-400: var(--c-colors-orange-400);
+  --turnsu-orange-500: var(--c-colors-orange-500);
+  --turnsu-orange-600: var(--c-colors-orange-600);
+  --turnsu-orange-700: var(--c-colors-orange-700);
+  --turnsu-teal-400:   var(--c-colors-teal-400);
+  --turnsu-teal-500:   var(--c-colors-teal-500);
+  --turnsu-teal-600:   var(--c-colors-teal-600);
+  --turnsu-teal-700:   var(--c-colors-teal-700);
+  --turnsu-purple-400: var(--c-colors-purple-400);
+  --turnsu-purple-500: var(--c-colors-purple-500);
+  --turnsu-purple-600: var(--c-colors-purple-600);
+  --turnsu-purple-700: var(--c-colors-purple-700);
+
+  /* ── SPACING — 8-pt grid (px aliases) ──────────────────────────────── */
+  --turnsu-space-50:  4px;
+  --turnsu-space-100: 8px;
+  --turnsu-space-150: 12px;
+  --turnsu-space-200: 16px;
+  --turnsu-space-250: 20px;
+  --turnsu-space-300: 24px;
+  --turnsu-space-400: 32px;
+  --turnsu-space-500: 40px;
+  --turnsu-space-600: 48px;
+  --turnsu-space-800: 64px;
+
+  /* ── RADII ─────────────────────────────────────────────────────────── */
+  --turnsu-radius-none:      0px;
+  --turnsu-radius-10:        2px;
+  --turnsu-radius-50:        4px;
+  --turnsu-radius-default:   8px;    /* buttons, fields, images (radii.100) */
+  --turnsu-radius-200:       12px;
+  --turnsu-radius-container: 16px;   /* cards, modals, sheets (radii.300) */
+  --turnsu-radius-400:       20px;
+  --turnsu-radius-circle:    50%;    /* radii.500 */
+  --turnsu-radius-pill:      9999px; /* tags, toggles, chips (radii.full) */
+
+  /* ── SHADOWS ───────────────────────────────────────────────────────── */
+  --turnsu-shadow-card:    var(--c-shadows-tiny);
+  --turnsu-shadow-overlay: var(--c-shadows-overlay);
+  --turnsu-shadow-tooltip: var(--c-shadows-tooltip);
+  --turnsu-shadow-ai:      var(--c-shadows-ai);
+  --turnsu-shadow-focus:   0 0 0 3px var(--c-colors-focus-ring);
+
+  /* ── MOTION ────────────────────────────────────────────────────────── */
+  --turnsu-duration-fast: 150ms;
+  --turnsu-duration-base: 200ms;
+  --turnsu-duration-slow: 300ms;
+  --turnsu-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ── TYPOGRAPHY BASE ───────────────────────────────────────────────── */
+  --turnsu-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --turnsu-font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  --turnsu-fw-light:     300;
+  --turnsu-fw-regular:   400;
+  --turnsu-fw-medium:    500;
+  --turnsu-fw-semibold:  600;
+  --turnsu-fw-bold:      700;
+  --turnsu-fw-extrabold: 900;
+
+  /* Type scale — px aliases mapped to Panda --c-font-sizes-*  */
+  --turnsu-font-page-title:    40px; /* fontSizes.1000 */
+  --turnsu-font-section-title: 32px; /* fontSizes.800  */
+  --turnsu-font-h3:            25px; /* fontSizes.600  */
+  --turnsu-font-subsection:    20px; /* fontSizes.400  */
+  --turnsu-font-body-lg:       18px; /* fontSizes.300  */
+  --turnsu-font-body:          16px; /* fontSizes.200  */
+  --turnsu-font-label:         14px; /* fontSizes.100  */
+  --turnsu-font-caption:       12px; /* fontSizes.75   */
+  --turnsu-font-small:         12px; /* fontSizes.75   */
+  --turnsu-font-token:         11px; /* fontSizes.50   */
+  --turnsu-font-micro:         11px; /* fontSizes.50   */
+}
+
+/* ==========================================================================
+   SEMANTIC TYPE CLASSES
+   ========================================================================== */
+
+.turnsu-body,
+body.turnsu-body {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-body);
+  font-weight: var(--turnsu-fw-regular);
+  line-height: var(--c-line-heights-body);
+  color: var(--turnsu-text-primary);
+  background: var(--turnsu-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.turnsu-page-title {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-page-title);
+  font-weight: var(--turnsu-fw-bold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--turnsu-text-primary);
+  margin: 0;
+}
+
+.turnsu-section-title {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-section-title);
+  font-weight: var(--turnsu-fw-bold);
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: -0.01em;
+  color: var(--turnsu-text-primary);
+  margin: 0;
+}
+
+.turnsu-h3 {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-h3);
+  font-weight: var(--turnsu-fw-bold);
+  line-height: var(--c-line-heights-heading);
+  color: var(--turnsu-text-primary);
+  margin: 0;
+}
+
+.turnsu-section-number {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-label);
+  font-weight: var(--turnsu-fw-bold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--turnsu-text-secondary);
+}
+
+.turnsu-subsection {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-subsection);
+  font-weight: var(--turnsu-fw-bold);
+  line-height: var(--c-line-heights-heading);
+  color: var(--turnsu-text-primary);
+  margin: 0;
+}
+
+.turnsu-body-lg {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-body-lg);
+  font-weight: var(--turnsu-fw-regular);
+  line-height: var(--c-line-heights-body);
+  color: var(--turnsu-text-primary);
+}
+
+.turnsu-p {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-body);
+  font-weight: var(--turnsu-fw-regular);
+  line-height: var(--c-line-heights-body);
+  color: var(--turnsu-text-primary);
+  margin: 0;
+}
+
+.turnsu-label {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-label);
+  font-weight: var(--turnsu-fw-semibold);
+  line-height: 1.4;
+  color: var(--turnsu-text-primary);
+}
+
+.turnsu-caption {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-caption);
+  font-weight: var(--turnsu-fw-regular);
+  line-height: var(--c-line-heights-body);
+  color: var(--turnsu-text-secondary);
+}
+
+.turnsu-small {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-small);
+  font-weight: var(--turnsu-fw-regular);
+  color: var(--turnsu-text-secondary);
+}
+
+.turnsu-micro {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--turnsu-font-micro);
+  font-weight: var(--turnsu-fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--turnsu-text-caption);
+}
+
+.turnsu-num {
+  font-feature-settings: 'tnum' 1, 'lnum' 1;   /* tabular lining numerals */
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.turnsu-link {
+  color: var(--turnsu-text-hyperlink);
+  text-decoration: none;
+}
+.turnsu-link:hover { text-decoration: underline; }
+
+.turnsu-mono {
+  font-family: var(--turnsu-font-mono);
+  font-size: var(--turnsu-font-caption);
+}
+
+/* ==========================================================================
+   CANONICAL TEXT STYLES — mirrors `textStyles` from theme/text-styles.ts
+   Three text/body styles (body line-height 1.5) + six display styles
+   (heading line-height 1.3) for the full type ramp.
+   ========================================================================== */
+
+.turnsu-text-xs {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-50);    /* 11px */
+  line-height: var(--c-line-heights-body);
+  letter-spacing: 0;
+}
+.turnsu-text-sm {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-75);    /* 12px */
+  line-height: var(--c-line-heights-body);
+  letter-spacing: 0;
+}
+.turnsu-text-md {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-100);   /* 14px */
+  line-height: var(--c-line-heights-body);
+  letter-spacing: 0;
+}
+
+.turnsu-display-md {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-200);   /* 16px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-medium);    /* 500 */
+}
+.turnsu-display-lg {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-300);   /* 18px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-medium);    /* 500 */
+}
+.turnsu-display-xl {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-400);   /* 20px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-semibold);  /* 600 */
+}
+.turnsu-display-2xl {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-600);   /* 25px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-bold);      /* 700 */
+}
+.turnsu-display-3xl {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-800);   /* 32px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-bold);      /* 700 */
+}
+.turnsu-display-4xl {
+  font-family: var(--turnsu-font-sans);
+  font-size: var(--c-font-sizes-1000);  /* 40px */
+  line-height: var(--c-line-heights-heading);
+  letter-spacing: 0;
+  font-weight: var(--turnsu-fw-extrabold); /* 900 */
+}
+
+/* Brand interaction and keyboard states shared by all examples. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--c-colors-focus-ring); outline-offset: 3px;
+}
+::selection { background: var(--c-colors-brand-200); color: var(--turnsu-ink); }
+input, textarea { caret-color: var(--c-colors-text-hyperlink); }
+::placeholder { color: var(--c-colors-text-caption); opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

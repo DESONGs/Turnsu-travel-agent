@@ -1,0 +1,248 @@
+@import "./colors_and_type.css";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Editorial Modern Theme Foundation (Direction A)
+   Warm Stone Paper · Obsidian Ink · Burnt Terracotta Commit · Slate-Teal Route
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root, .atlas-shell, .journey-shell, .place-detail-sheet, .ui-sheet, .account-overlay, .account-fullpage {
+  --editorial-serif: "New York", "Iowan Old Style", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+  --font-sans: var(--turnsu-font-sans);
+
+  /* Core Ink & Warm Paper Hierarchy */
+  --ink: #161513;
+  --ink-soft: #3A3732;
+  --muted: #686259;
+  --quiet: #867F75;
+
+  --canvas: #F6F3EC;
+  --surface: #FFFFFF;
+  --surface-subtle: #EFEBE2;
+  --surface-warm: #FAF8F4;
+  --surface-glass: rgba(251, 249, 244, 0.86);
+
+  --line: rgba(24, 21, 17, 0.085);
+  --line-strong: rgba(24, 21, 17, 0.16);
+
+  /* Distinct Semantic Accents — NO monochrome orange collapse */
+  --coral: #C45200;
+  --coral-action: #C45200;
+  --coral-deep: #A34200;
+  --coral-soft: #FFF3E8;
+
+  --blue: #1D5C70;
+  --blue-deep: #154656;
+  --blue-soft: #EAF3F6;
+
+  --green: #1E6B47;
+  --green-soft: #E9F5EE;
+
+  --amber: #945400;
+  --amber-soft: #FDF4E3;
+
+  --danger: #B82935;
+  --danger-soft: #FCECEE;
+
+  /* Consistent Radii & Ambient Shadows */
+  --r-pill: 9999px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 26px;
+
+  --shadow-card: 0 1px 2px rgba(22, 18, 13, 0.04), 0 10px 28px -10px rgba(22, 18, 13, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(22, 18, 13, 0.06), 0 18px 38px -12px rgba(22, 18, 13, 0.11);
+  --shadow-float: 0 12px 36px -8px rgba(20, 17, 13, 0.16), 0 2px 8px rgba(20, 17, 13, 0.06);
+  --shadow-popover: 0 18px 48px -10px rgba(20, 17, 13, 0.18), 0 2px 6px rgba(20, 17, 13, 0.06);
+}
+
+body, .atlas-shell, .place-detail-sheet, .account-overlay {
+  font-family: var(--turnsu-font-sans);
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.num, time, .price-slot strong {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.travel-brand-symbol {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* Primary commitment buttons use Burnt Terracotta; secondary controls stay crisp Ink/Paper */
+body .button.primary,
+.atlas-shell .button.primary,
+.place-detail-sheet .button.primary,
+.account-action {
+  background: var(--coral-action);
+  border-color: var(--coral-action);
+  color: #FFFFFF;
+}
+body .button.primary:hover:enabled,
+.atlas-shell .button.primary:hover:enabled,
+.place-detail-sheet .button.primary:hover:enabled,
+.account-action:hover:enabled {
+  background: var(--coral-deep);
+  border-color: var(--coral-deep);
+}
+
+.atlas-shell :is(button, a, input, textarea, summary):focus-visible,
+[role="dialog"] :is(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--coral-action);
+  outline-offset: 2px;
+}
+
+/* ── Enforce 12px Typography Floor & Harmonize Legacy Sub-panels ─────── */
+.transport-endpoints small,
+.transport-endpoints em,
+.transport-service-line,
+.transport-fares small,
+.transport-fares em,
+.transport-freshness,
+.evidence-companion-summary small,
+.evidence-companion-summary > em,
+.evidence-media-grid figcaption,
+.evidence-companion-section > header small,
+.evidence-reading > header > button,
+.evidence-translated-state,
+.evidence-sections article > small,
+.evidence-sections summary,
+.evidence-sections details p,
+.evidence-inline-warning,
+.evidence-empty-copy,
+.evidence-claims article small,
+.evidence-sources article small,
+.evidence-claims article > em,
+.evidence-decision-fit > ul li,
+.evidence-unknowns p,
+.evidence-sources article a,
+.evidence-sources article > em,
+.evidence-source-only,
+.evidence-share-link small,
+.evidence-share-link form button,
+.evidence-companion-caveats p,
+.agent-progress-rail > header small,
+.agent-progress-rail li small,
+.price-slot small,
+.budget-board > summary small,
+.budget-domain-rows em,
+.budget-domain-rows > div > small,
+.budget-usage small,
+.route-leg-summary small,
+.route-leg > em,
+.route-leg-steps > summary,
+.route-leg-steps li,
+.route-leg-steps li strong {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+.transport-endpoints strong,
+.transport-fares strong,
+.evidence-claims article strong,
+.evidence-sources article strong,
+.evidence-share-link input,
+.agent-progress-rail li strong,
+.route-stop-main strong,
+.route-leg-summary strong,
+.route-leg-summary span {
+  font-size: 13px !important;
+}
+
+/* Harmonize Evidence Companion & Weather Cards into Warm Editorial Paper */
+.evidence-companion-summary {
+  background: var(--surface-subtle) !important;
+  border: 1px solid var(--line);
+}
+.evidence-companion-summary > span {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+}
+.weather-card,
+.mobility-card,
+.route-weather-disclosure {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: var(--r-md) !important;
+}
+.weather-card > header > span,
+.mobility-card > header > span,
+.route-weather-disclosure > summary > svg {
+  background: var(--blue-soft) !important;
+  color: var(--blue) !important;
+}
+
+/* Map Marker & Route Chip Editorial Polish */
+.trip-map-marker {
+  min-width: 30px !important;
+  height: 30px !important;
+  padding: 0 8px !important;
+  border: 2px solid #FFFFFF !important;
+  border-radius: 999px !important;
+  background: var(--ink) !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(20, 17, 13, 0.24) !important;
+  transition: transform 220ms cubic-bezier(0.175, 0.885, 0.32, 1.15), background-color 180ms ease, box-shadow 220ms ease !important;
+}
+.trip-map-marker.trial {
+  background: var(--coral-action) !important;
+  color: #FFFFFF !important;
+}
+.trip-map-marker.active {
+  transform: scale(1.22) translateY(-3px) !important;
+  background: var(--coral-action) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 0 5px rgba(196, 82, 0, 0.22), 0 8px 20px rgba(20, 17, 13, 0.3) !important;
+  z-index: 20 !important;
+}
+.trip-map-marker.current-only {
+  background: var(--surface) !important;
+  border-color: var(--quiet) !important;
+  border-style: dashed !important;
+  color: var(--muted) !important;
+}
+.trip-map-route-chip {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--line-strong) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px);
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 12px rgba(20, 17, 13, 0.12) !important;
+}
+.trip-map-route-chip.trial {
+  border-color: rgba(196, 82, 0, 0.35) !important;
+  color: var(--coral-action) !important;
+}
+
+/* Embedded Host Safety Overrides */
+[data-travel-embedded] .place-detail-sheet :is(.destination-photo-actions .button.primary, .destination-experience-actions .button.primary) {
+  color: #FFFFFF;
+  background: var(--coral-action);
+  border-color: var(--coral-action);
+}
+[data-travel-embedded] :is(.destination-photo-actions select, .painting-view-controls button, .destination-photo-picker button) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+[data-travel-embedded] .destination-photo-picker button[aria-pressed="true"] {
+  border-color: var(--coral-action);
+}
+[data-travel-embedded] :is(.destination-photo-actions > span, .destination-photo-source, .painting-view-controls > span) {
+  color: var(--muted);
+}
+[data-travel-embedded] :is(.destination-photo-error, .memory-book [role="alert"]) {
+  color: var(--danger);
+}

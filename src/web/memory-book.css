@@ -1,0 +1,215 @@
+.memory-book,
+.memory-share {
+  --paper: #fcf9f2;
+  --rule: var(--turnsu-border-strong, #d9d3ca);
+  color: var(--turnsu-text-primary, #171715);
+  font-family: var(--turnsu-font-sans, system-ui);
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 34px);
+  box-sizing: border-box;
+}
+.memory-book-header,
+.memory-share header,
+.memory-actions,
+.memory-pages {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.memory-book-header,
+.memory-share header {
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.memory-book small,
+.memory-share small,
+.memory-text-leaf time {
+  color: var(--turnsu-text-secondary);
+  font: 400 13px/1.65 var(--turnsu-font-sans, system-ui);
+}
+.memory-book-header small,
+.memory-share h3,
+.memory-actions button,
+.memory-book-header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.memory-book h2,
+.memory-share h3 {
+  margin: 2px 0 0;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+.memory-book button,
+.memory-share button,
+.memory-actions a {
+  min-height: 44px;
+  padding: 8px 14px;
+  color: var(--turnsu-text-primary);
+  background: var(--turnsu-surface-1);
+  border: 1px solid var(--rule);
+  border-radius: var(--turnsu-radius-default, 8px);
+  font: inherit;
+  cursor: pointer;
+}
+.memory-book button:disabled,
+.memory-share button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.memory-book .button.primary,
+.memory-share .button.primary {
+  color: white;
+  background: var(--turnsu-action);
+  border-color: var(--turnsu-action);
+}
+.memory-spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+  margin: 24px 0 12px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  box-shadow:
+    0 4px 0 -2px var(--paper),
+    0 5px 0 -2px var(--rule);
+}
+.memory-image-leaf,
+.memory-text-leaf {
+  min-width: 0;
+  padding: clamp(12px, 2vw, 24px);
+}
+.memory-image-leaf {
+  align-self: center;
+}
+.memory-image-leaf .painting-stage {
+  min-height: 0;
+}
+.memory-text-leaf {
+  border-left: 1px solid var(--rule);
+  background: linear-gradient(90deg, rgb(70 53 28/0.045), transparent 12px);
+}
+.memory-text-leaf h3,
+.memory-place strong {
+  font:
+    600 clamp(22px, 3vw, 32px) / 1.45 "Songti SC",
+    Georgia,
+    serif;
+  margin: 6px 0 14px;
+}
+.memory-script {
+  font-family: "Kaiti SC", STKaiti, KaiTi, "Songti SC", "Noto Serif CJK SC", Georgia, serif;
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.9;
+  letter-spacing: 0.025em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.memory-text-leaf p.memory-script {
+  min-height: 4.9em;
+  margin: 0 0 18px;
+  background: repeating-linear-gradient(
+    transparent 0 calc(1.9em - 1px),
+    rgb(79 64 41/0.13) calc(1.9em - 1px) 1.9em
+  );
+}
+.memory-book fieldset {
+  margin: 0;
+  border: 0;
+  min-width: 0;
+  padding: 0;
+}
+.memory-book label,
+.memory-share label {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+.memory-book input,
+.memory-book textarea,
+.memory-share textarea,
+.memory-share select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #fffdf8;
+  color: var(--turnsu-text-primary);
+  border: 1px solid var(--turnsu-gray-500);
+  padding: 9px 12px;
+  border-radius: 6px;
+  min-height: 44px;
+}
+.memory-book textarea,
+.memory-share textarea {
+  resize: vertical;
+}
+.memory-pages {
+  justify-content: center;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.memory-empty {
+  padding-block: 18px;
+  line-height: 1.8;
+  max-width: 50ch;
+}
+.memory-book .memory-legacy {
+  margin-top: 18px;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  color: var(--turnsu-text-hyperlink);
+}
+.memory-place {
+  display: grid;
+  align-content: center;
+  min-height: 145px;
+  border-block: 1px solid var(--rule);
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+.memory-place span {
+  color: var(--turnsu-text-caption);
+  font-variant-numeric: tabular-nums;
+}
+.memory-card-proof canvas,
+.memory-card-proof img {
+  display: block;
+  width: min(100%, 540px);
+  height: auto;
+  margin: 18px auto;
+  border: 1px solid var(--rule);
+}
+.memory-share .memory-actions {
+  margin: 14px 0;
+}
+.memory-book [role="alert"],
+.memory-share [role="alert"] {
+  margin-top: 12px;
+  color: var(--turnsu-negative);
+}
+@media (max-width: 680px) {
+  .memory-spread {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .memory-text-leaf {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    background: none;
+  }
+  .memory-image-leaf,
+  .memory-text-leaf {
+    padding: 16px;
+  }
+  .memory-actions {
+    gap: 8px;
+  }
+  .memory-place {
+    min-height: 80px;
+  }
+}

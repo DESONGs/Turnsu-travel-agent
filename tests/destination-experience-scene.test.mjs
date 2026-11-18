@@ -146,3 +146,16 @@ test("sketch WebGL does not need coordinates or an AMap key; reduced motion pres
   assert.deepEqual(destinationSketchPolicy({ saveData: true }), { mode: "webgl", reason: "save_data", canTour: false });
   assert.deepEqual(destinationSketchPolicy({ webglAvailable: false }), { mode: "static_sketch", reason: "webgl_unavailable", canTour: false });
 });
+
+test("attributed CC BY Commons photographs are selectable only on their own media origin", () => {
+  const url = "https://upload.wikimedia.org/wikipedia/commons/1/1d/Huangshan_pic_4.jpg";
+  const source = "Chi King · Wikimedia Commons · CC BY 2.0";
+  const node = { nodeId: "hs", domain: "play", title: "黄山风景区", media: [
+    { url, title: "黄山", source },
+    { url, title: "西海大峡谷", source: "颐园新居 · Wikimedia Commons · CC BY-SA 4.0" },
+    { url, title: "unknown rights", source: "Wikimedia Commons" },
+    { url: url.replace("wikimedia.org", "wikimedia.org.example"), title: "wrong host", source },
+  ] };
+  const { media } = buildDestinationExperienceScene({ node, plan });
+  assert.deepEqual(media.map(item => [item.displayUrl, item.source]), [[url, source], [url, "颐园新居 · Wikimedia Commons · CC BY-SA 4.0"]]);
+});
