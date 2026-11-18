@@ -12,6 +12,7 @@ import { api, isEmbeddedTravelClient, clearDesktopAccessToken, setDesktopAccessT
 import { LoginScreen, AccountCenter } from "./account-experience.jsx";
 import { shouldHideMobileNavigation } from "./mobile-keyboard-state.js";
 import { shouldSendComposerKey, nextTrialNodeId, runJourneyAction, hasRouteMeasurements, hasTripMapPoints } from "./journey-interaction.js";
+import { JournalExitContext, useJournalExitGuard } from "./ui/journal-exit.jsx";
 import { OverlaySurface } from "./ui/overlay.jsx";
 import { runSpatialTransition, useContentMotion, usePresenceValue } from "./ui/content-motion.js";
 import { AnimatedCount, SmoothDisclosure } from "./ui/editorial-primitives.jsx";
@@ -692,7 +693,7 @@ function VisitFeedbackSection({ node, onSubmit }) {
   </section>;
 }
 
-function EvidenceCompanionPanel({ bundle, loading, error, node, shareUrl, onShareUrlChange, onResolveShare, onReloadNodeEvidence, onTranslate, translating, resolvingShare, onTrialCandidate }) {
+function EvidenceCompanionPanel({ inDraft, bundle, loading, error, node, shareUrl, onShareUrlChange, onResolveShare, onReloadNodeEvidence, onTranslate, translating, resolvingShare, onTrialCandidate }) {
   const { locale, pick } = useUiLocale();
   if (loading) return <section className="evidence-companion-state" role="status"><CircleNotch className="spin" /><div><strong>{pick("正在整理可追溯证据", "Preparing traceable evidence")}</strong><p>{pick("只读取当前候选已有资料，不会把来源内容当作 Agent 指令。", "Only existing candidate evidence is read; source content is never treated as Agent instructions.")}</p></div></section>;
   if (!bundle) return <section className="evidence-companion-state error" role="alert"><WarningCircle weight="fill" /><div><strong>{pick("暂时无法打开图文证据", "Evidence is temporarily unavailable")}</strong><p>{error || pick("地点详情仍可继续使用，稍后可以重试。", "Place details remain available; try again later.")}</p><button type="button" onClick={onReloadNodeEvidence}><ArrowsClockwise />{pick("重试", "Retry")}</button></div></section>;
@@ -745,7 +746,7 @@ function EvidenceCompanionPanel({ bundle, loading, error, node, shareUrl, onShar
       {bundle.sections?.length ? <div className="evidence-sections">{bundle.sections.map((section) => <article key={section.sectionId}><small>{localizedSectionLabel(section.label)}</small>{section.translatedText ? <><p className="translated">{section.translatedText}</p><SmoothDisclosure className="evidence-original-disclosure" summaryClassName="evidence-original-trigger" panelClassName="evidence-original-panel" summary={<span>{pick("查看原文", "View original")}</span>}><p>{section.originalText}</p></SmoothDisclosure></> : <p>{section.originalText}</p>}</article>)}</div> : <p className="evidence-empty-copy">{pick("当前公开页面没有可读取正文；不会绕过登录或风控。", "No public body text is available; login or platform controls will not be bypassed.")}</p>}
     </section>
     {bundle.claimGroups?.length ? <section className="evidence-companion-section evidence-claims"><header><div><CheckCircle weight="duotone" /></div><span><strong>{pick("哪些信息有依据", "What the evidence supports")}</strong><small>{pick("同源转载不会被算成多数", "Reposts from the same source are not counted as a majority")}</small></span></header><div>{bundle.claimGroups.map((group) => { const translatedClaims = group.claimRefs.map((claimRef) => bundle.sections.find((section) => section.claimRefs?.includes(claimRef))?.translatedText).filter(Boolean); const summary = translatedClaims.length ? translatedClaims.join("; ") : group.summary; return <article key={group.groupId}><span><strong>{summary}</strong><small>{pick(`${group.independentSourceCount} 个独立来源`, `${group.independentSourceCount} independent source${group.independentSourceCount === 1 ? "" : "s"}`)}</small></span>{group.repeatedSourceCount ? <em>{pick(`${group.repeatedSourceCount} 条可能同源`, `${group.repeatedSourceCount} possibly repeated`)}</em> : null}</article>; })}</div></section> : null}
-    <section className="evidence-companion-section evidence-decision-fit"><header><div><MapTrifold weight="duotone" /></div><span><strong>{pick("对这趟旅行有什么用", "How this helps this trip")}</strong><small>{localizedFixedEvidenceCopy(bundle.decisionFit.routeReason)}</small></span></header>{bundle.decisionFit.travelerImpacts?.length ? <ul>{bundle.decisionFit.travelerImpacts.map((impact) => <li key={impact}><Heart weight="fill" />{localizedFixedEvidenceCopy(impact)}</li>)}</ul> : null}{bundle.decisionFit.unknowns?.length ? <div className="evidence-unknowns">{bundle.decisionFit.unknowns.map((unknown) => <p key={unknown}><WarningCircle weight="fill" />{localizedFixedEvidenceCopy(unknown)}</p>)}</div> : null}<button type="button" className="button primary evidence-trial-action" onClick={onTrialCandidate} disabled={!canTrial}><MapTrifold />{node.selected ? pick("已在当前旅行中", "Already in this trip") : canTrial ? pick("加入路线试排", "Add to route draft") : pick("暂不能加入路线", "Not route-ready")}</button></section>
+    <section className="evidence-companion-section evidence-decision-fit"><header><div><MapTrifold weight="duotone" /></div><span><strong>{pick("对这趟旅行有什么用", "How this helps this trip")}</strong><small>{localizedFixedEvidenceCopy(bundle.decisionFit.routeReason)}</small></span></header>{bundle.decisionFit.travelerImpacts?.length ? <ul>{bundle.decisionFit.travelerImpacts.map((impact) => <li key={impact}><Heart weight="fill" />{localizedFixedEvidenceCopy(impact)}</li>)}</ul> : null}{bundle.decisionFit.unknowns?.length ? <div className="evidence-unknowns">{bundle.decisionFit.unknowns.map((unknown) => <p key={unknown}><WarningCircle weight="fill" />{localizedFixedEvidenceCopy(unknown)}</p>)}</div> : null}<button type="button" className="button primary evidence-trial-action" onClick={onTrialCandidate} disabled={!canTrial}><MapTrifold />{node.selected ? pick("已在当前旅行中", "Already in this trip") : canTrial && inDraft ? pick("移出路线试排", "Remove from route draft") : canTrial ? pick("加入路线试排", "Add to route draft") : pick("暂不能加入路线", "Not route-ready")}</button></section>
     <section className="evidence-companion-section evidence-sources"><header><div><LinkSimple weight="duotone" /></div><span><strong>{pick("来源与新鲜度", "Sources and freshness")}</strong><small>{pick("每条资料都保留访问边界和核验时间", "Each source keeps its access boundary and checked time")}</small></span></header><div>{bundle.sources?.map((source) => <article key={source.contentItemId}><span><strong>{source.title || consumerProviderLabel(source.provider)}</strong><small>{consumerProviderLabel(source.provider)} · {evidenceCheckedAt(source.checkedAt)}</small></span>{source.sourceUrl ? <a href={source.sourceUrl} target="_blank" rel="noreferrer" onClick={(event) => openOriginalSource(event, source)}>{source.sourceType === "user_supplied_public_share_link" ? (window.travelDesktop ? pick("同窗打开原文", "Open beside companion") : pick("打开原文", "Open original")) : pick("来源说明", "Source notes")}<NavigationArrow /></a> : <em>{source.access === "login_required" ? pick("来源要求登录", "Login required") : pick("无公开跳转", "No public link")}</em>}</article>)}</div>{sourceOnlyMedia.length ? <p className="evidence-source-only"><ImageSquare />{pick("来源图片因显示权限制未在此处复制；请回到原页面查看。", "Source images are not copied here because display rights are not available; view them on the source page.")}</p> : null}</section>
     <section className="evidence-share-link"><div><LinkSimple weight="duotone" /><span><strong>{pick("补充一条你看到的旅行分享", "Add a travel share link")}</strong><small>{pick("只读取公开可见部分，不使用你的 Cookie 或平台账号。", "Only public content is read; your cookies and platform account are never used.")}</small></span></div><form onSubmit={onResolveShare}><input type="url" required value={shareUrl} onChange={(event) => onShareUrlChange(event.target.value)} placeholder={pick("粘贴小红书、抖音或微信文章链接", "Paste a Xiaohongshu, Douyin or WeChat article link")} /><button type="submit" disabled={resolvingShare}>{resolvingShare ? <CircleNotch className="spin" /> : <NavigationArrow />}{pick("读取公开部分", "Read public part")}</button></form>{isShareBundle ? <button type="button" className="quiet-action evidence-return-node" onClick={onReloadNodeEvidence}><ArrowCounterClockwise />{pick("返回地点已有证据", "Return to place evidence")}</button> : null}</section>
     <footer className="evidence-companion-caveats">{bundle.caveats?.map((caveat) => <p key={caveat}><Info weight="fill" />{localizedFixedEvidenceCopy(caveat)}</p>)}</footer>
@@ -761,12 +762,13 @@ function PlaceDetailSheet({ node: liveNode, plan, tripId, unavailable = false, i
   const [summaryExpanded, setSummaryExpanded] = useState(false);
   const [view, setView] = useState("detail");
   const [stageDirection, setStageDirection] = useState("push");
-  const [journalDirty, setJournalDirty] = useState(false);
-  const mayLeaveJournal = () => !journalDirty || window.confirm(pick("放弃尚未保存的照片和备注？", "Discard unsaved photos and notes?"));
-  const onClose = () => { if (mayLeaveJournal()) closeSheet(); };
-  const switchSubView = (nextView) => {
-    if (nextView === view) return;
-    if (!mayLeaveJournal()) return;
+  const journal = useJournalExitGuard(pick);
+  const onClose = async () => { if (await journal.mayLeave()) closeSheet(); };
+  const toggleTrial = onTrialCandidate && (async () => {
+    if (await journal.mayLeave()) onTrialCandidate(!inDraft);
+  });
+  const switchSubView = async (nextView) => {
+    if (nextView === view || !await journal.mayLeave()) return;
     if (view === "detail" && nextView !== "detail") detailScrollTopRef.current = scrollRef.current?.scrollTop ?? 0;
     setStageDirection(nextView === "detail" ? "pop" : "push");
     setView(nextView);
@@ -856,6 +858,8 @@ function PlaceDetailSheet({ node: liveNode, plan, tripId, unavailable = false, i
   const longSummary = String(node.summary ?? "").length > 320;
   const headerSubcopy = `${sourceLabel} · ${formatCheckedAt(detail.checkedAt, detail.timeZone ?? node.location?.timeZone, locale)}`;
   return <OverlaySurface open={Boolean(liveNode)} placement="right" mobileBottomSheet surfaceClassName={`place-detail-sheet${view === "sense" ? " destination-sense-sheet" : ""}`} labelledBy={view === "detail" ? "place-detail-title" : undefined} label={view === "journal" ? pick(`${node.title}旅行手账`, `Travel journal for ${node.title}`) : view === "sense" ? pick(`走进${node.title}`, `Step into ${node.title}`) : view === "evidence" ? pick(`${node.title}图文证据`, `Evidence for ${node.title}`) : undefined} onClose={onClose} initialFocusRef={closeRef}>
+    <JournalExitContext.Provider value={journal.mayLeave}>
+      {journal.confirmation}
       <header className={`place-detail-header ${view !== "detail" ? "evidence-mode" : ""}`}>
         <div>
           <span className="detail-domain"><meta.icon weight="duotone" />{domainLabel(node.domain, locale)} · {node.title}</span>
@@ -875,7 +879,7 @@ function PlaceDetailSheet({ node: liveNode, plan, tripId, unavailable = false, i
       <div ref={scrollRef} className="place-detail-scroll">
         {unavailable ? <p className="journey-stale-place" role="status">{pick("这个候选已更新。这里保留打开时的资料和未保存内容，但不能再加入试排；保存新照片时可能需要重新选择地点。", "This option has changed. Your open details and unsaved work are kept, but it can no longer be drafted. New photos may require a current place.")}</p> : null}
         <div key={view} className={stageDirection === "pop" ? "detail-stage-pop" : "detail-stage-push"}>
-        {view === "journal" ? <Suspense fallback={<p role="status">{pick("正在打开手账…", "Opening journal…")}</p>}><LazyTravelPhotoJournal key={node.nodeId} node={node} tripId={tripId} locale={locale} onPlanPhoto={onPlanPhoto} onDirtyChange={setJournalDirty} /></Suspense> : view === "evidence" ? <EvidenceCompanionPanel bundle={evidence} loading={evidenceState.loading} error={evidenceState.error} node={node} shareUrl={shareUrl} onShareUrlChange={setShareUrl} onResolveShare={resolveShare} onReloadNodeEvidence={loadEvidence} onTranslate={translateEvidence} translating={evidenceState.translating} resolvingShare={evidenceState.resolvingShare} onTrialCandidate={onTrialCandidate} /> : view === "sense" ? <Suspense fallback={<section className="evidence-companion-state" role="status"><CircleNotch className="spin" /><div><strong>{pick("正在打开景点视角", "Opening place photos")}</strong><p>{pick("正在准备来源照片。", "Preparing source photographs.")}</p></div></section>}><LazyDestinationExperiencePreview key={node.nodeId} node={mappedNode} plan={plan} locale={locale} onTrialCandidate={onTrialCandidate} onOpenEvidence={openEvidence} onOpenJournal={openJournal} onDirtyChange={setJournalDirty} /></Suspense> : <>
+        {view === "journal" ? <Suspense fallback={<p role="status">{pick("正在打开手账…", "Opening journal…")}</p>}><LazyTravelPhotoJournal key={node.nodeId} node={node} tripId={tripId} locale={locale} onPlanPhoto={onPlanPhoto} onDirtyChange={journal.report} /></Suspense> : view === "evidence" ? <EvidenceCompanionPanel bundle={evidence} loading={evidenceState.loading} error={evidenceState.error} node={node} shareUrl={shareUrl} onShareUrlChange={setShareUrl} onResolveShare={resolveShare} onReloadNodeEvidence={loadEvidence} onTranslate={translateEvidence} translating={evidenceState.translating} resolvingShare={evidenceState.resolvingShare} inDraft={inDraft} onTrialCandidate={toggleTrial} /> : view === "sense" ? <Suspense fallback={<section className="evidence-companion-state" role="status"><CircleNotch className="spin" /><div><strong>{pick("正在打开景点视角", "Opening place photos")}</strong><p>{pick("正在准备来源照片。", "Preparing source photographs.")}</p></div></section>}><LazyDestinationExperiencePreview key={node.nodeId} node={mappedNode} plan={plan} locale={locale} inDraft={inDraft} onTrialCandidate={toggleTrial} onOpenEvidence={openEvidence} onOpenJournal={openJournal} onDirtyChange={journal.report} /></Suspense> : <>
         {node.media?.length ? <figure className={`place-gallery count-${Math.min(node.media.length, 4)}`} style={isHeroTarget && view === "detail" && liveNode ? { viewTransitionName: "hero-place-media" } : undefined}>{node.media.slice(0, 4).map((media, index) => <img key={`${media.url}-${index}`} src={media.url} alt={media.title || `${node.title} ${index + 1}`} loading="eager" referrerPolicy="no-referrer" />)}<figcaption>{node.media.length === 1 ? pick("来源实景图 · 1 张", "1 verified source photo") : pick(`来源实景图 · ${node.media.length} 张`, `${node.media.length} source photos`)}</figcaption></figure> : <div className="detail-media-missing"><MapPin weight="duotone" /><span><strong>{pick("当前来源没有返回图片", "No source photo returned")}</strong><small>{pick("不会用通用风景图冒充真实地点。", "Generic stock scenery is never substituted.")}</small></span></div>}
         <section className="place-detail-intro"><span className="detail-domain"><meta.icon weight="duotone" />{domainLabel(node.domain, locale)}</span><h2 id="place-detail-title">{node.title}</h2><p className={summaryExpanded ? "expanded" : ""}>{node.summary || pick("当前来源返回了地点名称与位置坐标。", "Name and location returned from source.")}</p>{longSummary ? <button type="button" className="detail-text-toggle" onClick={() => setSummaryExpanded((current) => !current)}>{summaryExpanded ? pick("收起介绍", "Show less") : pick("展开完整介绍", "Read full description")}<CaretDown className={summaryExpanded ? "expanded" : ""} /></button> : null}</section>
         <nav className="journey-place-tools" aria-label={pick("探索和记录这个地点", "Explore and remember this place")}>
@@ -897,8 +901,9 @@ function PlaceDetailSheet({ node: liveNode, plan, tripId, unavailable = false, i
           {mapUrl ? <a href={mapUrl} target="_blank" rel="noreferrer"><MapPin weight="duotone" />{pick("高德地图", "Open in Amap")}<NavigationArrow /></a> : null}
           {detail.bookingUrl ? <a href={detail.bookingUrl} target="_blank" rel="noreferrer"><LinkSimple />{pick(`去${detail.bookingProviderLabel || "供应方"}核价`, `View on ${detail.bookingProviderLabel || "provider"}`)}<NavigationArrow /></a> : null}
         </div>
-        {node.selected ? <span className="atlas-place-confirmed-tag"><CheckCircle weight="fill" />{pick("已确认在行程中", "Confirmed in trip")}</span> : onTrialCandidate ? <button type="button" className="button primary" onClick={onTrialCandidate}>{inDraft ? <><Check weight="bold" />{pick("已在试排草稿中", "In draft")}</> : <><Plus weight="bold" />{pick("加入行程试排", "Try in trip")}</>}</button> : null}
+        {node.selected ? <span className="atlas-place-confirmed-tag"><CheckCircle weight="fill" />{pick("已确认在行程中", "Confirmed in trip")}</span> : onTrialCandidate ? <button type="button" className="button primary" onClick={toggleTrial}>{inDraft ? <><X weight="bold" />{pick("移出路线试排", "Remove from route draft")}</> : <><Plus weight="bold" />{pick("加入行程试排", "Try in trip")}</>}</button> : null}
       </footer> : null}
+    </JournalExitContext.Provider>
   </OverlaySurface>;
 }
 
@@ -2028,7 +2033,7 @@ function PlanCanvas({ conversation, trip, plan, agentTrial, planningRequestActiv
       proposal || items.length ? <PlanningWorkbench activeDomain={activeDomain} onDomainChange={setActiveDomain} heroNodeId={detailNodeId ? null : heroNodeId} trip={trip} plan={plan} proposal={proposal} acceptedItems={items} onSelectCandidate={chooseCandidateWithFeedback} previewModel={previewModel} onPreviewCandidate={openPlaceDetail} onAskAgent={onPrefill} onClearAgentTrial={onClearAgentTrial} onUpdateReadiness={onUpdateReadiness} onRequestLogin={onRequestLogin} onShowMap={() => changeView("map")} onConfirmDraft={confirmDraft} loading={loading} planningRequestActive={planningRequestActive} /> :
       <div className="atlas-empty"><h2>{dataUnavailable ? pick("地点资料暂时未能加载", "Place sources are temporarily unavailable") : pick("把这趟旅行再说具体一点", "A little more about your trip")}</h2><p>{pick("旅行要求已经保留。补充关键偏好后，继续查找适合你的地点。", "Your requirements are saved. Add the important details and continue finding places.")}</p><button type="button" className="button primary" disabled={loading} onClick={dataUnavailable ? onRetryResearch : () => onPrefill(pick("继续完善我的旅行计划：", "Continue planning my trip: "), pick("旅行要求", "Trip needs"))}>{pick("继续规划", "Continue planning")}<NavigationArrow /></button></div>}
     </div>
-    <PlaceDetailSheet node={detailNode} plan={plan} tripId={trip?.tripId} unavailable={Boolean(detailNode && !liveDetailNode)} inDraft={Boolean(detailNode && previewModel.activeSelections[detailNode.domain] === detailNode.nodeId)} isHeroTarget={Boolean(detailNode && heroNodeId === detailNode.nodeId)} onClose={closePlaceDetail} onPlanPhoto={async (photo) => { if (await onPlanPhoto(photo) !== false) closePlaceDetail(); }} onSubmitFeedback={(input) => onSubmitFeedback(detailNode, input)} onTrialCandidate={liveDetailNode ? () => { if (!liveDetailNode || liveDetailNode.selected) return; chooseCandidateWithFeedback(detailNode.domain, nextTrialNodeId(previewModel.activeSelections[detailNode.domain], detailNode.nodeId)); closePlaceDetail(); } : undefined} />
+    <PlaceDetailSheet node={detailNode} plan={plan} tripId={trip?.tripId} unavailable={Boolean(detailNode && !liveDetailNode)} inDraft={Boolean(detailNode && previewModel.activeSelections[detailNode.domain] === detailNode.nodeId)} isHeroTarget={Boolean(detailNode && heroNodeId === detailNode.nodeId)} onClose={closePlaceDetail} onPlanPhoto={async (photo) => { if (await onPlanPhoto(photo) !== false) closePlaceDetail(); }} onSubmitFeedback={(input) => onSubmitFeedback(detailNode, input)} onTrialCandidate={liveDetailNode && !loading ? (include) => { if (liveDetailNode.selected) return; chooseCandidateWithFeedback(detailNode.domain, include ? detailNode.nodeId : null); closePlaceDetail(); } : undefined} />
     {actionToast ? <div className="workspace-toast tactile-toast" role="status"><CheckCircle weight="fill" /><span>{actionToast}</span></div> : null}
     {conversation?.messages?.some((message) => message.role === "status" && message.kind?.includes("model")) ? <div className="canvas-warning workspace-warning"><WarningCircle /><p>{pick("旅行助手暂时无法回应，需求会保留。", "The assistant is unavailable. Your request is kept.")}</p></div> : null}
   </section>;
@@ -2074,14 +2079,9 @@ function TravelEditor({ session, onAccount, onRequestLogin }) {
   const [providerStatus, setProviderStatus] = useState(null);
   const [selectedModelId, setSelectedModelId] = useState("");
   const [mobileView, setMobileView] = useState("conversation");
-  const journalDirty = useRef(false);
-  const noteDirty = useCallback(value => { journalDirty.current = value; }, []);
-  const discardMessage = useRef("");
-  discardMessage.current = pick("放弃未保存的手账文字？", "Discard unsaved journal edits?");
-  const mayLeaveMemory = useCallback(() => !journalDirty.current || window.confirm(discardMessage.current), []);
-  const chooseView = (nextView) => {
-    if (nextView === mobileView) return;
-    if (!mayLeaveMemory()) return;
+  const { report: noteDirty, mayLeave: mayLeaveMemory, confirmation: journalConfirmation } = useJournalExitGuard(pick);
+  const chooseView = async (nextView) => {
+    if (nextView === mobileView || !await mayLeaveMemory()) return;
     runSpatialTransition(() => setMobileView(nextView));
   };
   const [isWideDesktop, setIsWideDesktop] = useState(() => (typeof window !== "undefined" ? Boolean(window.matchMedia?.("(min-width: 1120px)")?.matches) : true));
@@ -2213,7 +2213,7 @@ function TravelEditor({ session, onAccount, onRequestLogin }) {
     }
   }, []);
   const selectConversation = useCallback(async (conversationId) => {
-    if (!mayLeaveMemory()) return;
+    if (!await mayLeaveMemory()) return;
     executionWatchRef.current?.abort();
     actionInFlight.current = true;
     requestSequenceRef.current += 1;
@@ -2319,7 +2319,7 @@ function TravelEditor({ session, onAccount, onRequestLogin }) {
     return true;
   };
   const createConversation = async () => {
-    if (!mayLeaveMemory()) return;
+    if (!await mayLeaveMemory()) return;
     if (!canLeaveJourney()) return;
     executionWatchRef.current?.abort();
     actionInFlight.current = true;
@@ -2606,7 +2606,7 @@ function TravelEditor({ session, onAccount, onRequestLogin }) {
         {failedDraft ? <div className="journey-draft-recovery" role="status"><p>{pick("上一条请求未收到成功回执，文字和照片已保留。恢复前请先检查对话，避免重复发送。", "No success receipt was received. Text and photo are kept. Check the conversation before resending.")}</p><div><button type="button" onClick={restoreFailedDraft}>{pick("恢复到输入框", "Restore draft")}</button><button type="button" onClick={() => { if (window.confirm(pick("放弃这条待恢复的文字和照片？", "Discard the saved text and photo?"))) setFailedDraft(null); }}>{pick("放弃待恢复内容", "Discard saved draft")}</button></div></div> : null}
         {isWelcoming ? <><StarterSuggestions onPrompt={(prompt) => prepareDraft(prompt, "")} /><p className="journey-start-note"><CheckCircle weight="fill" />{pick("免登录直接开始 · 所有变动均需你确认", "Start without signing in · Every change requires your confirmation")}</p></> : null}
       </section>);
-  return <main className={`atlas-shell ${isStarting ? "is-starting" : "has-journey"} ${isWelcoming ? "is-welcoming" : ""} ${mobileKeyboardOpen ? "mobile-keyboard-open" : ""}`}>
+  return <JournalExitContext.Provider value={mayLeaveMemory}><main className={`atlas-shell ${isStarting ? "is-starting" : "has-journey"} ${isWelcoming ? "is-welcoming" : ""} ${mobileKeyboardOpen ? "mobile-keyboard-open" : ""}`}>
     <header className="atlas-topbar">
       <a className="atlas-brand" href="/" onClick={(event) => { event.preventDefault(); if (trip) chooseView("itinerary"); }} aria-label="Travel Agent">
         <img className="travel-brand-symbol" src={turnsuSymbol} alt="" />
@@ -2662,7 +2662,8 @@ function TravelEditor({ session, onAccount, onRequestLogin }) {
     {!isStarting && !isWideDesktop ? <OverlaySurface open={!conversationCollapsed} placement="right" mobileBottomSheet overlayClassName="atlas-assistant-overlay" surfaceClassName="atlas-assistant-sheet" label={pick("旅行助手", "Travel assistant")} initialFocusRef={composerRef} onClose={() => { setConversationCollapsed(true); if (mobileView === "conversation") setMobileView("itinerary"); }}>{assistant}</OverlaySurface> : null}
     {!isStarting ? <nav className="atlas-mobile-nav" aria-label={pick("旅行导航", "Travel navigation")}><button type="button" aria-current={!["map", "journal"].includes(mobileView) && conversationCollapsed ? "page" : undefined} onClick={() => { setConversationCollapsed(true); chooseView("itinerary"); }}><Compass />{pick("探索", "Explore")}</button><button type="button" aria-current={mobileView === "map" && conversationCollapsed ? "page" : undefined} onClick={() => { setConversationCollapsed(true); chooseView("map"); }}><MapTrifold />{pick("路书", "Route")}{trialState.count ? <AnimatedCount value={trialState.count} className="mobile-badge" /> : null}</button><button type="button" aria-current={mobileView === "journal" && conversationCollapsed ? "page" : undefined} onClick={() => { setConversationCollapsed(true); chooseView("journal"); }}><ImageSquare />{pick("手账", "Journal")}</button><button type="button" aria-current={!conversationCollapsed ? "page" : undefined} onClick={() => setConversationCollapsed((prev) => !prev)}><Sparkle />{pick("助手", "Assistant")}{assistantBusy ? <i className="mobile-busy-dot" /> : null}</button></nav> : null}
     {status.error && conversationCollapsed ? <div className="workspace-toast error" role="alert"><WarningCircle /><span>{status.error}</span><button type="button" aria-label={pick("关闭提示", "Dismiss")} onClick={() => setStatus({})}><X /></button></div> : null}
-  </main>;
+    {journalConfirmation}
+  </main></JournalExitContext.Provider>;
 }
 
 export function TravelApp() {

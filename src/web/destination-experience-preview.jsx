@@ -5,12 +5,12 @@ import { DestinationPaintingWorkspace } from "./destination-painting-workspace.j
 import "./destination-sketch.css";
 import "./destination-photo-scene.css";
 
-export function DestinationExperiencePreview({ node, plan, locale = "zh-CN", onTrialCandidate, onOpenEvidence, onOpenJournal, onDirtyChange }) {
+export function DestinationExperiencePreview({ node, plan, locale = "zh-CN", inDraft = false, onTrialCandidate, onOpenEvidence, onOpenJournal, onDirtyChange }) {
   const scene = useMemo(() => buildDestinationExperienceScene({ node, plan }), [node, plan]);
   const english = locale === "en", pick = (zh, en) => english ? en : zh;
   if (!scene) return null;
   const trialSelection = onTrialCandidate ? buildDestinationTrialSelection(scene) : null;
-  const trialLabel = node.selected ? pick("已在当前旅行中", "Already in this trip") : trialSelection ? pick("加入路线试排", "Add to route draft") : !onTrialCandidate ? pick("候选已变化，暂不能试排", "Option no longer available") : pick("坐标待补，暂不能试排", "Coordinates needed for drafting");
+  const trialLabel = node.selected ? pick("已在当前旅行中", "Already in this trip") : trialSelection && inDraft ? pick("移出路线试排", "Remove from route draft") : trialSelection ? pick("加入路线试排", "Add to route draft") : !onTrialCandidate ? pick("候选已变化，暂不能试排", "Option no longer available") : pick("坐标待补，暂不能试排", "Coordinates needed for drafting");
   return <section className="destination-sketch-preview destination-photo-scene" aria-labelledby="destination-experience-title">
     <header className="destination-photo-heading"><small>{pick("立体视角 · 来源照片与手绘分镜", "3D Scene · Verified Photos & Ink Layers")}</small><h2 id="destination-experience-title">{scene.title}</h2></header>
     <DestinationPaintingWorkspace key={node.nodeId} scene={scene} node={node} tripId={plan?.tripId} english={english} onDirtyChange={onDirtyChange} />

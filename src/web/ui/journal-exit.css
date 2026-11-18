@@ -1,0 +1,22 @@
+.journal-discard-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgb(25 27 22 / 38%);
+}
+.journal-discard-prompt {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  z-index: 111;
+  width: min(380px, calc(100% - 32px));
+  padding: 24px;
+  border: 1px solid var(--line, #dcd7ce);
+  border-radius: 18px;
+  background: var(--paper, #fffcf6);
+  color: var(--ink, #24231f);
+  box-shadow: 0 12px 38px rgb(28 27 21 / 18%);
+}
+.journal-discard-prompt h2 { margin: 0; font-size: 20px; }
+.journal-discard-prompt p { margin: 10px 0 22px; line-height: 1.6; }
+.journal-discard-prompt > div { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }

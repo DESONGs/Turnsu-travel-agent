@@ -54,7 +54,8 @@
     "native:sync": "npm run web:build && cap sync",
     "mcp:build": "node --import tsx scripts/build-mcp-app.mjs",
     "mcp:serve": "node --import tsx src/mcp/http-server.mjs",
-    "plugins:pack": "node scripts/package-travel-plugins.mjs"
+    "plugins:pack": "node scripts/package-travel-plugins.mjs",
+    "test:browser:journal": "npm --prefix tests/browser test"
   },
   "devDependencies": {
     "@capacitor/cli": "7.6.8",

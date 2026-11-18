@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import { Camera, Plus, ArrowLeft, ArrowRight, Trash, ArrowClockwise } from "@phosphor-icons/react";
 import { api, isEmbeddedTravelClient } from "./api-client.js";
+import { useJournalExit } from "./ui/journal-exit.jsx";
 import { MemoryBook } from "./memory-book.jsx";
 import { blobBase64, prepareJournalPhoto } from "./travel-journal-photo.js";
 import { PhotoReliefPreview } from "./photo-relief-preview.jsx";
@@ -80,14 +81,16 @@ function SavedPhotos({ tripId, entry, pick, onPlanPhoto, onDelete }) {
 }
 
 export function TravelPhotoJournal(props) {
+  const mayLeave = useJournalExit();
   const [legacy, showLegacy] = useState(false);
   if (!isEmbeddedTravelClient()) return <TripPhotoRecords {...props}/>;
-  if (legacy) return <><button type="button" className="button secondary" onClick={()=>showLegacy(false)}>{props.locale==="en"?"My journal":"回到我的手账"}</button><TripPhotoRecords {...props}/></>;
+  if (legacy) return <><button type="button" className="button secondary" onClick={async () => { if (await mayLeave()) showLegacy(false); }}>{props.locale==="en"?"My journal":"回到我的手账"}</button><TripPhotoRecords {...props}/></>;
   return <MemoryBook tripId={props.tripId} node={props.node} english={props.locale==="en"} onDirtyChange={props.onDirtyChange} onOpenLegacy={()=>showLegacy(true)}/>;
 }
 
 function TripPhotoRecords({ node = null, tripId, locale, onPlanPhoto, onDirtyChange }) {
   const pick = (zh, en) => locale === "en" ? en : zh;
+  const mayLeave = useJournalExit();
   const titleId = useId();
   const [entries, setEntries] = useState([]), [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true), [loadError, setLoadError] = useState(false), [attempt, retry] = useState(0);
@@ -98,7 +101,7 @@ function TripPhotoRecords({ node = null, tripId, locale, onPlanPhoto, onDirtyCha
   const [writing, setWriting] = useState(false);
   const id = useRef(crypto.randomUUID()), input = useRef(null), operation = useRef(false);
   const dirty = photos.length > 0 || note.length > 0 || takenOn.length > 0 || busy;
-  useEffect(() => { onDirtyChange?.(dirty); return () => onDirtyChange?.(false); }, [dirty, onDirtyChange]);
+  useEffect(() => { onDirtyChange?.(dirty, busy); return () => onDirtyChange?.(false); }, [dirty, busy, onDirtyChange]);
   useEffect(() => {
     const block = (event) => { event.preventDefault(); event.returnValue = ""; };
     if (dirty) window.addEventListener("beforeunload", block);
@@ -138,8 +141,8 @@ function TripPhotoRecords({ node = null, tripId, locale, onPlanPhoto, onDirtyCha
   const edit = (setter, value) => { setter(value); id.current = crypto.randomUUID(); };
   const current = entries.find((entry) => entry.id === selected);
   const activePhotoIndex = Math.min(previewIndex, Math.max(0, photos.length - 1)), activePhoto = photos[activePhotoIndex];
-  const selectEntry = (entryId) => {
-    if (busy || (dirty && !window.confirm(pick("放弃尚未保存的照片和备注？", "Discard unsaved photos and notes?")))) return;
+  const selectEntry = async (entryId) => {
+    if (!await mayLeave()) return;
     setPhotos([]); setNote(""); setTakenOn(""); setSelected(entryId); setWriting(false); setNotice(""); setError("");
   };
   const historyKeys = (event) => {

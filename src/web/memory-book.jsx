@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Envelope, PencilSimple, ShareNetwork } from "@phosphor-icons/react";
+import { useJournalExit } from "./ui/journal-exit.jsx";
 import { api } from "./api-client.js";
 import { createPaintingPlates } from "./painting-plates.js";
 import { PaintingPreview } from "./painting-preview.jsx";
@@ -230,6 +231,7 @@ export function MemoryBook({
   onDirtyChange,
 }) {
   const t = (zh, en) => (english ? en : zh);
+  const mayLeave = useJournalExit();
   const [entries, setEntries] = useState([]),
     [load, setLoad] = useState(0),
     [loading, setLoading] = useState(true);
@@ -272,7 +274,7 @@ export function MemoryBook({
   }, [tripId, node?.nodeId, load]);
   useEffect(() => {
     const warn = event => { event.preventDefault(); event.returnValue = ""; };
-    onDirtyChange?.(dirty || busy);
+    onDirtyChange?.(dirty, busy);
     if (dirty || busy) window.addEventListener("beforeunload", warn);
     return () => { onDirtyChange?.(false); window.removeEventListener("beforeunload", warn); };
   }, [onDirtyChange, dirty, busy]);
@@ -292,7 +294,7 @@ export function MemoryBook({
     setEdit(true);
     share(false);
     fail("");
-    mark(false);
+    mark(Boolean(drawing));
   }
   async function save() {
     if (busy || (!note.trim() && !drawing && !entry?.photos.length)) return;
@@ -331,8 +333,8 @@ export function MemoryBook({
       work(false);
     }
   }
-  const closeEdit = () => {
-    if (!dirty || window.confirm(t("放弃这次修改？", "Discard changes?"))) {
+  const closeEdit = async () => {
+    if (await mayLeave()) {
       setEdit(false);
       mark(false);
       fail("");
