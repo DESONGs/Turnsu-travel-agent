@@ -292,7 +292,7 @@ export const LocationSchema = Type.Object({
   coordinates: Type.Optional(Type.Object({
     longitude: Type.Number({ minimum: -180, maximum: 180 }),
     latitude: Type.Number({ minimum: -90, maximum: 90 }),
-    coordinateSystem: Type.Optional(Type.Literal("GCJ-02")),
+    coordinateSystem: Type.Optional(Type.Union([Type.Literal("GCJ-02"), Type.Literal("WGS-84")])),
   }, { additionalProperties: false })),
 }, { additionalProperties: true });
 export const LocationValueSchema = Type.Union([LocationSchema, Type.String(), Type.Null()]);

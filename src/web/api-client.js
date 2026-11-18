@@ -1,3 +1,7 @@
+let injectedClient = null;
+export function configureTravelClient(client) { injectedClient = client; }
+export function isEmbeddedTravelClient() { return Boolean(injectedClient); }
+
 const desktopBridge = typeof window !== "undefined" ? window.travelDesktop : null;
 const apiBaseUrl = String(desktopBridge?.runtimeConfig?.apiBaseUrl ?? import.meta.env?.VITE_TRAVEL_API_BASE_URL ?? "").trim().replace(/\/$/, "");
 let desktopAccessToken = null;
@@ -25,11 +29,13 @@ export async function clearDesktopAccessToken() {
 }
 
 export function apiPublicUrl(path) {
+  if (injectedClient?.host?.publicOrigin) return new URL(path, injectedClient.host.publicOrigin).toString();
   if (!apiBaseUrl) return new URL(path, window.location.origin).toString();
   return new URL(path, `${apiBaseUrl}/`).toString();
 }
 
 async function request(path, { method = "GET", body, token, signal } = {}) {
+  if (injectedClient) return injectedClient.request(path, { method, body, signal });
   await desktopSessionReady;
   const authorizationToken = token ?? desktopAccessToken;
   const response = await fetch(`${apiBaseUrl}${path}`, {
@@ -65,6 +71,24 @@ const pause = (ms, signal) => new Promise((resolve, reject) => {
 
 export async function watchTravelRun(runId, { onProgress, signal } = {}) {
   let cursor = 0;
+  if (injectedClient) {
+    const events = new Map(); let failures = 0;
+    while (!signal?.aborted) {
+      try {
+        const run = await request(`/api/runs/${encodeURIComponent(runId)}?after=${cursor}`, { signal });
+        for (const event of run.events ?? []) { events.set(event.sequence, event); cursor = Math.max(cursor, event.sequence); }
+        const progress = { ...run, events: [...events.values()].slice(-80), connection: "connected" };
+        onProgress?.(progress); failures = 0;
+        if (terminalRuns.has(run.status) && cursor >= run.sequence) return progress;
+      } catch (error) {
+        if (signal?.aborted || ["authentication_required", "mcp_authorization_required", "conversation_access_denied", "execution_not_found"].includes(error.code)) throw error;
+        if (++failures >= 8) throw error;
+        onProgress?.({ runId, connection: "reconnecting" });
+      }
+      await pause(typeof document !== "undefined" && document.hidden ? 10_000 : 1500, signal);
+    }
+    throw signal?.reason ?? new Error("execution_watch_cancelled");
+  }
   let failures = 0;
   const events = new Map();
   while (!signal?.aborted) {
@@ -117,10 +141,16 @@ async function executionResult(run) {
 }
 
 export const api = {
+  memories: (trip, nodeId, signal) => request(`/api/trips/${encodeURIComponent(trip)}/memories${nodeId ? "?nodeId="+encodeURIComponent(nodeId) : ""}`, { signal }),
+  saveMemory: (trip, body) => request(`/api/trips/${encodeURIComponent(trip)}/memories`, { method:"POST", body }),
+  reviseMemory: (trip, id, body) => request(`/api/trips/${encodeURIComponent(trip)}/memories/${encodeURIComponent(id)}`, { method:"POST", body }),
+  deleteMemory: (trip,id) => request(`/api/trips/${encodeURIComponent(trip)}/memories/${encodeURIComponent(id)}`, { method:"DELETE" }),
+  memoryArt: (trip,id,signal) => injectedClient.binary(`/api/trips/${encodeURIComponent(trip)}/memories/${encodeURIComponent(id)}/art`,{signal}),
   journal: (tripId, nodeId, signal) => request(`/api/trips/${encodeURIComponent(tripId)}/journal${nodeId ? `?nodeId=${encodeURIComponent(nodeId)}` : ""}`, { signal }),
   saveJournalEntry: (tripId, body) => request(`/api/trips/${encodeURIComponent(tripId)}/journal`, { method: "POST", body }),
   deleteJournalEntry: (tripId, id) => request(`/api/trips/${encodeURIComponent(tripId)}/journal/${encodeURIComponent(id)}`, { method: "DELETE" }),
   journalPhoto: async (tripId, entryId, photoId, signal) => {
+    if (injectedClient) return injectedClient.binary(`/api/trips/${encodeURIComponent(tripId)}/journal/${encodeURIComponent(entryId)}/photos/${encodeURIComponent(photoId)}`, { signal });
     await desktopSessionReady;
     const response = await fetch(`${apiBaseUrl}/api/trips/${encodeURIComponent(tripId)}/journal/${encodeURIComponent(entryId)}/photos/${encodeURIComponent(photoId)}`, {
       headers: { ...(desktopAccessToken ? { Authorization: `Bearer ${desktopAccessToken}` } : {}), ...(desktopBridge ? { "X-Travel-Client": "desktop" } : {}) },
@@ -129,6 +159,10 @@ export const api = {
     if (!response.ok) throw Object.assign(new Error("journal_photo_unavailable"), { code: "journal_photo_unavailable" });
     return response.blob();
   },
+  mapConfig: () => request("/api/maps/config"),
+  googleTiles: (body, signal) => request("/api/maps/google/tiles", { method: "POST", body, signal }),
+  googlePlace: (placeId) => request(`/api/maps/google/places/${encodeURIComponent(placeId)}`),
+  googlePhoto: (name, signal) => request("/api/maps/google/photo", { method: "POST", body: { name }, signal }),
   health: () => request("/api/health"),
   account: () => request("/api/account"),
   updateProfile: (displayName) => request("/api/account/profile", { method: "POST", body: { displayName } }),
@@ -136,8 +170,9 @@ export const api = {
   unlinkIdentity: (identityId) => request(`/api/account/identities/${encodeURIComponent(identityId)}`, { method: "DELETE" }),
   revokeSession: (sessionId) => request(`/api/account/sessions/${encodeURIComponent(sessionId)}`, { method: "DELETE" }),
   revokeOtherSessions: () => request("/api/account/sessions/others", { method: "DELETE" }),
+  revokeConnection: (id) => request(`/api/account/connections/${encodeURIComponent(id)}`, { method: "DELETE" }),
   authProviders: () => request("/api/auth/providers"),
-  authStartUrl: (provider, returnTo = "/") => `${apiBaseUrl}/api/auth/${encodeURIComponent(provider)}/start?returnTo=${encodeURIComponent(returnTo)}${desktopBridge ? "&client=desktop" : ""}`,
+  authStartUrl: (provider, returnTo = "/") => apiPublicUrl(`/api/auth/${encodeURIComponent(provider)}/start?returnTo=${encodeURIComponent(returnTo)}${desktopBridge ? "&client=desktop" : ""}`),
   createDevelopmentSession: (provider, identity) => request("/api/auth/session", { method: "POST", body: { provider, identity } }),
   createGuestSession: () => request("/api/auth/guest-session", { method: "POST" }),
   desktopExchange: (code) => request("/api/auth/desktop-exchange", { method: "POST", body: { code } }),
@@ -166,6 +201,7 @@ export const api = {
     return executionResult(await watchTravelRun(run.runId, options));
   },
   inspectVisualEvidence: (input) => request("/api/visual-evidence/inspect", { method: "POST", body: input }),
+  artworkRequest: (tripId, requestId, method, signal) => request(`/api/trips/${encodeURIComponent(tripId)}/artwork/${encodeURIComponent(requestId)}`, { method, signal }),
   createTrip: (input) => request("/api/trips", { method: "POST", body: input }),
   control: (tripId) => request(`/api/trips/${encodeURIComponent(tripId)}/control`),
   plan: (tripId) => request(`/api/trips/${encodeURIComponent(tripId)}/plan`),
@@ -176,6 +212,7 @@ export const api = {
   updateReadiness: (tripId, signalId, status) => request(`/api/trips/${encodeURIComponent(tripId)}/readiness`, { method: "POST", body: { signalId, status } }),
   mapUrl: (tripId) => `${apiBaseUrl}/api/trips/${encodeURIComponent(tripId)}/map`,
   mapBlob: async (tripId, signal = undefined) => {
+    if (injectedClient) return injectedClient.binary(`/api/trips/${encodeURIComponent(tripId)}/map`, { signal });
     const response = await fetch(`${apiBaseUrl}/api/trips/${encodeURIComponent(tripId)}/map`, {
       headers: { ...(desktopAccessToken ? { Authorization: `Bearer ${desktopAccessToken}` } : {}), ...(desktopBridge ? { "X-Travel-Client": "desktop" } : {}) },
       credentials: "same-origin",

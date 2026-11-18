@@ -15,11 +15,14 @@ import { createAmapJsSecurityProxy } from "./amap-js-security-proxy.mjs";
 import { httpError, sendError } from "./http-errors.mjs";
 import { TravelJournalRepository } from "../persistence/travel-journal-repository.mjs";
 import { registerTravelJournalRoutes } from "./travel-journal.mjs";
+import { registerDestinationArtwork } from "./destination-artwork.mjs";
 import { registerTravelRuntimeRoutes } from "./travel-runtime-routes.mjs";
 import { registerTravelExecutionRoutes } from "./travel-execution-routes.mjs";
 import { ExecutionRepository } from "../persistence/execution-repository.mjs";
 import { TravelExecutionService } from "../agent/travel-execution-service.mjs";
 import { randomUUID } from "node:crypto";
+import { TravelMcpOAuth, registerMcpOAuth } from "../mcp/oauth.mjs";
+import { registerGoogleMapRoutes } from "./google-map-routes.mjs";
 
 function cookieValue(request, name) {
   const values = String(request.headers.cookie ?? "").split(";").map((item) => item.trim());
@@ -165,6 +168,11 @@ export function createHttpApp({
     ]);
   };
   const desktopAuth = desktopAuthConfiguration(runtimeEnv);
+  const oauthOrigin = String(runtimeEnv.TRAVEL_AGENT_PUBLIC_ORIGIN ?? "").replace(/\/$/, "");
+  const mcpOAuth = oauthOrigin && (oauthOrigin.startsWith("https://") || (runtimeEnv.NODE_ENV !== "production" && isLocalDevelopmentOrigin(oauthOrigin)))
+    ? new TravelMcpOAuth({ repository: accountService.repository, origin: oauthOrigin, clock,
+      redirectUris: String(runtimeEnv.TRAVEL_AGENT_MCP_REDIRECT_URIS ?? "https://chatgpt.com/connector_platform_oauth_redirect,https://claude.ai/api/mcp/auth_callback").split(",").map(x => x.trim()).filter(Boolean), development: runtimeEnv.NODE_ENV !== "production" }) : null;
+  app.locals.mcpOAuth = mcpOAuth;
   app.disable("x-powered-by");
   app.use(express.json({ limit: "6mb", type: "application/json" }));
   app.use(express.urlencoded({ extended: false, limit: "32kb" }));
@@ -198,7 +206,9 @@ export function createHttpApp({
   }));
 
   const currentSession = async (request) => {
-    const session = await sessionStore.read(sessionTokenFromRequest(request));
+    const token = sessionTokenFromRequest(request);
+    if (String(token ?? "").startsWith("mcp_")) return mcpOAuth?.session(token, !["GET", "HEAD", "OPTIONS"].includes(request.method) && !/^\/api\/maps\/google\/(tiles|photo)$/.test(request.path) && request.path !== "/api/mcp/connection") ?? null;
+    const session = await sessionStore.read(token);
     return session?.provider === "email_otp" && !developmentAuthEnabled ? null : session;
   };
   const publicSession = (session, extra = {}) => ({
@@ -209,6 +219,8 @@ export function createHttpApp({
   });
   const claimGuestData = async (session, userId) => {
     if (session?.provider !== "guest" || !session.userId || session.userId === userId) return { transferredTrips: 0, transferredConversations: 0 };
+    const { trips } = await travelService.listTrips({ userId: session.userId });
+    for (const { tripId } of trips) await journalRepository.transferMemories(tripId, session.userId, userId);
     const tripResult = await travelService.transferUserOwnership({ fromUserId: session.userId, toUserId: userId });
     const conversationResult = typeof conversationRepository.transferUserOwnership === "function"
       ? await conversationRepository.transferUserOwnership(session.userId, userId)
@@ -238,7 +250,7 @@ export function createHttpApp({
     const state = await travelService.store.get(tripId);
     if (!state) throw httpError("trip_not_found", 404, { tripId });
     const members = state.collaboration?.memberUserIds;
-    if (members && !members.includes(session.userId)) throw httpError("trip_access_denied", 403, { tripId });
+    if ((!members && (session.provider === "mcp" || runtimeEnv.NODE_ENV === "production")) || (members && !members.includes(session.userId))) throw httpError("trip_access_denied", 403, { tripId });
     if (session.provider === "guest" && state.collaboration?.guestExpiresAt && new Date(state.collaboration.guestExpiresAt).getTime() <= clock().getTime()) {
       throw httpError("guest_trip_expired", 410, { tripId });
     }
@@ -263,6 +275,41 @@ export function createHttpApp({
     if (fresh && (!session.createdAt || clock().getTime() - new Date(session.createdAt).getTime() > 15 * 60 * 1000)) throw httpError("recent_login_required", 403);
     return session;
   };
+  if (mcpOAuth) registerMcpOAuth({ app, oauth: mcpOAuth, currentSession, authService, asyncRoute });
+  registerGoogleMapRoutes({ app, asyncRoute, requireSession, env: runtimeEnv, google: travelService.researchProvider?.google });
+  app.get("/api/mcp/session", asyncRoute(async (request, response) => {
+    const session = await requireSession(request);
+    if (session.provider !== "mcp") throw httpError("mcp_authorization_required", 401);
+    response.json({ schemaVersion: "auth-session-v1", ...session, guest: false });
+  }));
+  app.get("/api/mcp/workspace", asyncRoute(async (request, response) => {
+    await requireConversationOwner(request, request.query.conversationId);
+    const session = await requireSession(request);
+    const conversation = await travelConversationAgent.getConversation({ conversationId: request.query.conversationId, userId: session.userId });
+    const tripId = conversation.tripId;
+    if (tripId) await requireTripMember(request, tripId);
+    let control = null, plan = null;
+    if (tripId) for (let attempt = 0; attempt < 3; attempt++) {
+      control = await travelService.getTripControlView(tripId);
+      plan = await travelService.getTripPlanView(tripId);
+      if (control.revision === plan.revision) break;
+      if (attempt === 2) throw httpError("workspace_changed_retry", 409);
+    }
+    const runs = await executionService.list({ conversationId: conversation.conversationId, userId: session.userId });
+    response.json({ schemaVersion: "travel-workspace-v1", conversation, tripId, revision: control?.revision ?? null, control, plan, runs: runs.runs });
+  }));
+  app.delete("/api/mcp/connection", asyncRoute(async (request, response) => {
+    const session = await requireSession(request);
+    if (!mcpOAuth || session.provider !== "mcp") throw httpError("mcp_authorization_required", 401);
+    await mcpOAuth.revokeConnection(session.userId, session.sessionId);
+    response.json({ status: "disconnected" });
+  }));
+  app.delete("/api/account/connections/:connectionId", asyncRoute(async (request, response) => {
+    const session = await requireSession(request);
+    if (!mcpOAuth || session.provider === "guest") throw httpError("account_login_required", 403);
+    await mcpOAuth.revokeConnection(session.userId, request.params.connectionId);
+    response.json({ status: "revoked" });
+  }));
   const linkVerifiedIdentity = async (session, identity) => {
     const originalId = authenticatedUserId(identity);
     if (originalId !== session.userId) {
@@ -285,6 +332,7 @@ export function createHttpApp({
     response.json({ userId: session.userId, displayName: session.displayName, provider: session.provider,
       identities: await accountService.identities(session.userId),
       sessions: await accountService.listSessions(session.userId, session.sessionId),
+      connections: mcpOAuth ? await mcpOAuth.connections(session.userId, session.provider === "mcp" ? session.sessionId : null) : [],
     });
   }));
   app.post("/api/account/profile", asyncRoute(async (request, response) => {
@@ -544,6 +592,7 @@ export function createHttpApp({
     response.json(await evidenceCompanionService.presentationForNode({ tripId: request.params.tripId, nodeId: request.params.nodeId, targetLanguage: request.query.targetLanguage }));
   }));
   registerTravelJournalRoutes({ app, asyncRoute, requireTripMember, travelService, repository: journalRepository, clock });
+  registerDestinationArtwork({ app, asyncRoute, requireTripMember, clock });
   registerTravelRuntimeRoutes({ app, asyncRoute, requireTripMember, travelService });
   app.post("/api/trips/:tripId/evidence/resolve", asyncRoute(async (request, response) => {
     await requireTripMember(request, request.params.tripId);
